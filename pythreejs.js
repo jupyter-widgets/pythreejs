@@ -1,5 +1,7 @@
 // we do this so it works in IPython or the sage cell server
-require = require || sagecell.require;
+var require = require || sagecell.require;
+var requirejs = requirejs || sagecell.requirejs
+var define = define || sagecell.define;
 
 requirejs.config({
   paths: {
