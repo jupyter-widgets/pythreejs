@@ -60,10 +60,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     });
 
     IPython.WidgetManager.register_widget_view('RendererView', RendererView);
-        console.log('RendererView registered');
-    var ThreeView = IPython.WidgetView.extend({
 
-        
+    var ThreeView = IPython.WidgetView.extend({        
         replace_obj: function(new_obj) {
             var old_obj = this.obj;
             this.obj = new_obj;
@@ -273,6 +271,4 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     IPython.WidgetManager.register_widget_view('SpotLight', SpotLight);
 
 });
-
-console.log('pythreejs registered');
 
