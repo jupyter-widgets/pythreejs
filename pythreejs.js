@@ -94,16 +94,17 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         },
         
         update_children: function(oldchildren, newchildren) {
+            var that = this;
             this.do_diff(oldchildren, newchildren, function(deleted) {
-                            var view = this.child_views[deleted.id];
-                            this.obj.remove(view.obj);
-                            view.off('replace_obj', null, this);
-                            this.delete_child_view(deleted);
+                            var view = that.child_views[deleted.id];
+                            that.obj.remove(view.obj);
+                            view.off('replace_obj', null, that);
+                            that.delete_child_view(deleted);
                          }, 
                          function(added) {
-                            var view = this.create_child_view(added);
-                            this.obj.add(view.obj);
-                            view.on('replace_obj', this.replace_child_obj, this);
+                            var view = that.create_child_view(added);
+                            that.obj.add(view.obj);
+                            view.on('replace_obj', that.replace_child_obj, that);
                          });
         },
 
