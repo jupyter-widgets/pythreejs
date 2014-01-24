@@ -34,13 +34,13 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                 this.renderer = new THREE.CanvasRenderer(); 
             this.renderer.setSize( width, height);
             this.$el.empty().append( this.renderer.domElement );
-            this.camera = this.child_view(this.model.get('camera'));
-            this.scene = this.child_view(this.model.get('scene'));
+            this.camera = this.create_child_view(this.model.get('camera'));
+            this.scene = this.create_child_view(this.model.get('scene'));
             this.scene.obj.add(this.camera.obj);
             console.log('renderer', this.model, this.scene.obj, this.camera.obj);
             this.update();
             var that = this;
-            this.controls = this.child_view(this.model.get('controls'), {dom: this.renderer.domElement, 
+            this.controls = this.create_child_view(this.model.get('controls'), {dom: this.renderer.domElement, 
                                                                          update: function(fn, context) {
                                                                                     that.on('render:update', fn, context);
                                                                                  }
@@ -212,8 +212,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
 
     var MeshView = Object3dView.extend({
         render: function() {
-            this.geometryview = this.child_view(this.model.get('geometry'));
-            this.materialview = this.child_view(this.model.get('material'));
+            this.geometryview = this.create_child_view(this.model.get('geometry'));
+            this.materialview = this.create_child_view(this.model.get('material'));
             this.geometryview.on('replace_obj', this.update, this);
             this.materialview.on('replace_obj', this.update, this);
             this.update()
