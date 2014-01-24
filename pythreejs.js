@@ -60,7 +60,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     });
 
     IPython.WidgetManager.register_widget_view('RendererView', RendererView);
-    
+        console.log('RendererView registered');
     var ThreeView = IPython.WidgetView.extend({
 
         
