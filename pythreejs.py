@@ -58,7 +58,7 @@ class Material(Widget):
     wireframe = Bool(False, sync=True)
 
 class Mesh(Object3d):
-    __view_name = Unicode('MeshView', sync=True)
+    _view_name = Unicode('MeshView', sync=True)
     geometry = Instance(Geometry, sync=True)
     material = Instance(Material, sync=True)
 
