@@ -27,24 +27,24 @@ class Object3d(Widget):
     children = List(trait=None, default_value=[], allow_none=False, sync=True)
 
 class Controls(Widget):
-    _view_name = 'ControlsView'
+    _view_name = Unicode('ControlsView', sync=True)
     controlling = Instance(Object3d, sync=True)
 
 class OrbitControls(Controls):
-    _view_name = 'OrbitControlsView'
+    _view_name = Unicode('OrbitControlsView', sync=True)
     
 class Geometry(Widget):
-    _view_name = 'GeometryView'
+    _view_name = Unicode('GeometryView', sync=True)
 
 class SphereGeometry(Geometry):
-    _view_name = 'SphereGeometryView'
+    _view_name = Unicode('SphereGeometryView', sync=True)
     radius = CFloat(1, sync=True)
 
 class SurfaceGeometry(Geometry):
     """
     A regular grid with heights
     """
-    _view_name = 'SurfaceGeometryView'
+    _view_name = Unicode('SurfaceGeometryView', sync=True)
     z = List(CFloat, [0]*100, sync=True)
     width = CInt(10, sync=True)
     height = CInt(10, sync=True)
@@ -52,26 +52,26 @@ class SurfaceGeometry(Geometry):
     height_segments = CInt(10, sync=True)
 
 class Material(Widget):
-    _view_name = 'MaterialView'
+    _view_name = Unicode('MaterialView', sync=True)
     color = Any('yellow', sync=True)
     opacity = CFloat(1.0, sync=True)
     wireframe = Bool(False, sync=True)
 
 class Mesh(Object3d):
-    __view_name = 'MeshView'
+    __view_name = Unicode('MeshView', sync=True)
     geometry = Instance(Geometry, sync=True)
     material = Instance(Material, sync=True)
 
 class Camera(Object3d):
-    _view_name = 'CameraView'
+    _view_name = Unicode('CameraView', sync=True)
     fov = CFloat(40, sync=True)
     ratio = CFloat(600.0/400.0, sync=True)
     
 class Scene(Object3d):
-    _view_name = 'SceneView'
+    _view_name = Unicode('SceneView', sync=True)
     
 class Renderer(DOMWidget):
-    _view_name = 'RendererView'
+    _view_name = Unicode('RendererView', sync=True)
     width = CInt(600, sync=True)
     height = CInt(400, sync=True)
     renderer_type = Enum(['webgl', 'canvas', 'auto'], 'auto', sync=True)
@@ -84,21 +84,21 @@ class Light(Object3d):
     color = Any('white', sync=True) # could be string or number or tuple
 
 class AmbientLight(Light):
-    _view_name = 'AmbientLight'
+    _view_name = Unicode('AmbientLight', sync=True)
 
 class PositionLight(Light):
-    _view_name = 'PositionLight'
+    _view_name = Unicode('PositionLight', sync=True)
     intensity = CFloat(1, sync=True)
     
 class DirectionalLight(PositionLight):
-    _view_name = 'DirectionalLight'
+    _view_name = Unicode('DirectionalLight', sync=True)
 
 class PointLight(PositionLight):
-    _view_name = 'PointLight'
+    _view_name = Unicode('PointLight', sync=True)
     distance = CFloat(10, sync=True)
 
 class SpotLight(PointLight):
-    _view_name = 'SpotLight'
+    _view_name = Unicode('SpotLight', sync=True)
     angle = CFloat(10, sync=True)
     exponent = CFloat(0.5, sync=True)
     
