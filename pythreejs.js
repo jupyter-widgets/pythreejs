@@ -140,7 +140,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
 
     var OrbitControlsView = ThreeView.extend({
         render: function() {
-            this.controlled_view = this.model.widget_manager.get_model(this.model.get('controlling')).views[0];
+            this.controlled_view = this.model.get('controlling').views[0];
             this.obj = new THREE.OrbitControls(this.controlled_view.obj, this.options.dom);
             this.options.update(this.obj.update, this.obj);
             delete this.options.renderer; 
