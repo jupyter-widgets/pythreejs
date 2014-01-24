@@ -270,6 +270,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         }
     });   
     IPython.WidgetManager.register_widget_view('SpotLight', SpotLight);
+        console.log('pythreejs registered');
 
 });
 
