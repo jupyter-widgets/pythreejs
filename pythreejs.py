@@ -86,14 +86,18 @@ class Light(Object3d):
 class AmbientLight(Light):
     _view_name = Unicode('AmbientLight', sync=True)
 
-class PositionLight(Light):
+class IntensityLight(Light):
     _view_name = Unicode('PositionLight', sync=True)
     intensity = CFloat(1, sync=True)
-    
-class DirectionalLight(PositionLight):
+
+class HemisphereLight(IntensityLight):
+    _view_name = Unicode('HemisphereLight', sync=True)
+    ground_color = Any('blue', sync=True) # could be string, number, or RGB tuple
+
+class DirectionalLight(IntensityLight):
     _view_name = Unicode('DirectionalLight', sync=True)
 
-class PointLight(PositionLight):
+class PointLight(IntensityLight):
     _view_name = Unicode('PointLight', sync=True)
     distance = CFloat(10, sync=True)
 

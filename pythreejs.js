@@ -270,5 +270,14 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     });   
     IPython.WidgetManager.register_widget_view('SpotLight', SpotLight);
 
+    var HemisphereLight = Basic3dObject.extend({
+        new_obj: function() {
+            return new THREE.HemisphereLight(this.model.get('color'),
+                                             this.model.get('ground_color'),
+                                             this.model.get('intensity'));
+        }
+    });
+    IPython.WidgetManager.register_widget_view('HemisphereLight', HemisphereLight);
+
 });
 
