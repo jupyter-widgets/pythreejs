@@ -179,6 +179,44 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         }
     });
     IPython.WidgetManager.register_widget_view('SurfaceGeometryView', SurfaceGeometryView);
+
+    var FaceGeometryView = ThreeView.extend({
+        render: function() {
+            this.update();
+            return this.obj;
+        },
+        update: function() {
+            // Construct triangles
+            var geometry = new THREE.Geometry();
+            var vertices = this.model.get('vertices');
+            var face3 = this.model.get('face3');
+            var face4 = this.model.get('face4');
+            var i, len;
+            var v0, v1, v2;
+            var f0,f1,f2,f3;
+            for(i = 0, len=vertices.length; i<len; i+=3) {
+                v0=vertices[i]; v1=vertices[i+1]; v2=vertices[i+2];
+                geometry.vertices.push(new THREE.Vector3(v0, v1, v2));
+            }
+            for(i=0, len=face3.length; i<len; i+=3) {
+                f0 = face3[i]; f1 = face3[i+1]; f2=face3[i+2];
+                geometry.faces.push(new THREE.Face3(f0, f1, f2));
+            }
+            for(i=0, len=face4.length; i<len; i+=4) {
+                f0=face4[i]; f1=face4[i+1]; f2=face4[i+2]; f3=face4[i+3];
+                geometry.faces.push(new THREE.Face3(f0, f1, f2));
+                geometry.faces.push(new THREE.Face3(f0, f2, f3));
+            }
+            geometry.mergeVertices();
+            geometry.computeCentroids();
+            geometry.computeFaceNormals();
+            geometry.computeVertexNormals();
+            geometry.computeBoundingSphere();
+            this.replace_obj(geometry);
+        }
+    });
+    IPython.WidgetManager.register_widget_view('FaceGeometryView', FaceGeometryView);
+
     
     var SphereGeometryView = ThreeView.extend({
         render: function() {
@@ -209,6 +247,10 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         IPython.WidgetManager.register_widget_view('MaterialView', MaterialView);
 
     var MeshView = Object3dView.extend({
+        // if we replace the geometry or material, do a full re-render
+        // TODO: make sure we don't set multiple such handlers, so this should probably happen in the init, not the render
+        //this.model.on('change:geometry', this.render, this);
+        //this.model.on('change:material', this.render, this);
         render: function() {
             this.geometryview = this.create_child_view(this.model.get('geometry'));
             this.materialview = this.create_child_view(this.model.get('material'));

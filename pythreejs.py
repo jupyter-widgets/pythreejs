@@ -51,6 +51,15 @@ class SurfaceGeometry(Geometry):
     width_segments = CInt(10, sync=True)
     height_segments = CInt(10, sync=True)
 
+class FaceGeometry(Geometry):
+    """
+    List of vertices and faces
+    """
+    _view_name = Unicode('FaceGeometryView', sync=True)
+    vertices = List(CFloat, sync=True) # [x0, y0, z0, x1, y1, z1, x2, y2, z2, ...]
+    face3 = List(CInt, sync=True) # [v0,v1,v2, v0,v1,v2, v0,v1,v2, ...]
+    face4 = List(CInt, sync=True) # [v0,v1,v2,v3, v0,v1,v2,v3, v0,v1,v2,v3, ...]
+
 class Material(Widget):
     _view_name = Unicode('MaterialView', sync=True)
     color = Any('yellow', sync=True)
@@ -61,6 +70,37 @@ class Mesh(Object3d):
     _view_name = Unicode('MeshView', sync=True)
     geometry = Instance(Geometry, sync=True)
     material = Instance(Material, sync=True)
+
+class PlotMesh(Mesh):
+    plot = Instance('sage.plot.plot3d.base.Graphics3d')
+
+    def _plot_changed(self, name, old, new):
+        self.geometry = self.geometry_from_plot(new)
+        self.material = self.material_from_plot(new)
+
+    def material_from_plot(self, p):
+        # TODO: do this without scenetree_json()
+        t = p.texture.scenetree_json()
+        m = Material()
+        m.color = t['color']
+        m.opacity = t['opacity']
+        # TODO: support other attributes
+        return m
+
+    def geometry_from_plot(self, p):
+        from itertools import groupby, chain
+        def flatten(ll):
+            return list(chain.from_iterable(ll))
+        p.triangulate()
+
+        g = FaceGeometry()
+        g.vertices = flatten(p.vertices())
+        f = p.index_faces()
+        f.sort(key=len)
+        faces = {k:flatten(v) for k,v in groupby(f,len)}
+        g.face3 = faces.get(3,[])
+        g.face4 = faces.get(4,[])
+        return g
 
 class Camera(Object3d):
     _view_name = Unicode('CameraView', sync=True)
@@ -162,3 +202,4 @@ class Connect(object):
     def disconnect(self):
         for obj,attr in self.objects:
             obj.on_trait_change(self._update, attr, remove=True)
+
