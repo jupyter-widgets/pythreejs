@@ -46,7 +46,7 @@ class CylinderGeometry(Geometry):
     radiusBottom = CFloat(1, sync=True)
     height = CFloat(1, sync=True)
     heightSegments = CFloat(1, sync=True)
-    openEnded = CBool(False, sync=True)
+    openEnded = Bool(False, sync=True)
 
 class SurfaceGeometry(Geometry):
     """
