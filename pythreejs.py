@@ -48,6 +48,14 @@ class CylinderGeometry(Geometry):
     radiusSegments = CFloat(1, sync=True)
     heightSegments = CFloat(1, sync=True)
     openEnded = Bool(False, sync=True)
+    
+class CubeGeometry(Geometry):
+    _view_name = Unicode('CubeGeometryView', sync=True)
+    width = CFloat(1, sync=True)
+    height = CFloat(1, sync=True)
+    depth = CFloat(1, sync=True)
+    widthSegments = CFloat(1, sync=True)
+    depthSegments = CFloat(1, sync=True)
 
 class SurfaceGeometry(Geometry):
     """
