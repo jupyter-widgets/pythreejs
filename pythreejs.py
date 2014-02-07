@@ -55,6 +55,7 @@ class CubeGeometry(Geometry):
     height = CFloat(1, sync=True)
     depth = CFloat(1, sync=True)
     widthSegments = CFloat(1, sync=True)
+    heightSegments = CFloat(1, sync=True)
     depthSegments = CFloat(1, sync=True)
 
 class SurfaceGeometry(Geometry):
