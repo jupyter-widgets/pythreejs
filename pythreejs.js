@@ -237,9 +237,9 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         update: function() {
             this.replace_obj(new THREE.CylinderGeometry(this.model.get('radiusTop'),
                                                         this.model.get('radiusBottom'),
-                                                        this.model.get('height')
-                                                        this.model.get('radiusSegments')
-                                                        this.model.get('heightSegments')
+                                                        this.model.get('height'),
+                                                        this.model.get('radiusSegments'),
+                                                        this.model.get('heightSegments'),
                                                         this.model.get('openEnded')));
         }
     })
