@@ -39,6 +39,14 @@ class Geometry(Widget):
 class SphereGeometry(Geometry):
     _view_name = Unicode('SphereGeometryView', sync=True)
     radius = CFloat(1, sync=True)
+    
+class CylinderGeometry(Geometry):
+    _view_name = Unicode('CylinderGeometryView', sync=True)
+    radiusTop = CFloat(1, sync=True)
+    radiusBottom = CFloat(1, sync=True)
+    height = CFloat(1, sync=True)
+    heightSegments = CFloat(1, sync=True)
+    openEnded = CBool(False, sync=True)
 
 class SurfaceGeometry(Geometry):
     """
