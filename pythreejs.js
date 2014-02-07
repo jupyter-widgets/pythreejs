@@ -244,6 +244,22 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         }
     })
     IPython.WidgetManager.register_widget_view('CylinderGeometryView', CylinderGeometryView);
+    
+    var CubeGeometryView = ThreeView.extend({
+        render: function() {
+            this.update()
+            return this.obj;
+        },
+        update: function() {
+            this.replace_obj(new THREE.CubeGeometry(this.model.get('width'),
+                                                        this.model.get('height'),
+                                                        this.model.get('depth'),
+                                                        this.model.get('widthSegments'),
+                                                        this.model.get('heightSegments'),
+                                                        this.model.get('depthSegments')));
+        }
+    })
+    IPython.WidgetManager.register_widget_view('CylinderGeometryView', CylinderGeometryView);
 
     
     var MaterialView = ThreeView.extend({
