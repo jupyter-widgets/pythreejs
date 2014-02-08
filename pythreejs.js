@@ -260,6 +260,20 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         }
     })
     IPython.WidgetManager.register_widget_view('CubeGeometryView', CubeGeometryView);
+    
+    var CircleGeometryView = ThreeView.extend({
+        render: function() {
+            this.update()
+            return this.obj;
+        },
+        update: function() {
+            this.replace_obj(new THREE.CircleGeometry(this.model.get('radius'),
+                                                        this.model.get('segments'),
+                                                        this.model.get('thetaStart'),
+                                                        this.model.get('thetaLength')));
+        }
+    })
+    IPython.WidgetManager.register_widget_view('CircleGeometryView', CircleGeometryView);
 
     
     var MaterialView = ThreeView.extend({
