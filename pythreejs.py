@@ -86,6 +86,14 @@ class TetrahedronGeometry(Geometry):
     _view_name = Unicode('TetrahedronGeometryView', sync=True)
     radius = CFloat(1, sync=True)
     detail = CFloat(0, sync=True)
+    
+class TorusGeometry(Geometry):
+    _view_name = Unicode('TorusGeometryView', sync=True)
+    radius = CFloat(1, sync=True)
+    tube = CFloat(1, sync=True)
+    radialSegments = CFloat(1, sync=True)
+    tubularSegments = CFloat(1, sync=True)
+    arc = CFloat(math.pi*2, sync=True)
 
 class SurfaceGeometry(Geometry):
     """
