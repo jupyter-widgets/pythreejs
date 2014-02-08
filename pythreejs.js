@@ -259,7 +259,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                                                         this.model.get('depthSegments')));
         }
     })
-    IPython.WidgetManager.register_widget_view('CylinderGeometryView', CylinderGeometryView);
+    IPython.WidgetManager.register_widget_view('CubeGeometryView', CubeGeometryView);
 
     
     var MaterialView = ThreeView.extend({
