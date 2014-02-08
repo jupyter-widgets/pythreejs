@@ -286,6 +286,18 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         }
     })
     IPython.WidgetManager.register_widget_view('IcosahedronGeometryView', IcosahedronGeometryView);
+    
+    var OctahedronGeometryView = ThreeView.extend({
+        render: function() {
+            this.update()
+            return this.obj;
+        },
+        update: function() {
+            this.replace_obj(new THREE.OctahedronGeometry(this.model.get('radius'),
+                                                        this.model.get('detail')));
+        }
+    })
+    IPython.WidgetManager.register_widget_view('OctahedronGeometryView', OctahedronGeometryView);
 
     
     var MaterialView = ThreeView.extend({
