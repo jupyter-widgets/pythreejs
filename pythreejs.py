@@ -57,6 +57,13 @@ class CubeGeometry(Geometry):
     widthSegments = CFloat(1, sync=True)
     heightSegments = CFloat(1, sync=True)
     depthSegments = CFloat(1, sync=True)
+    
+class CircleGeometry(Geometry):
+    _view_name = Unicode('CircleGeometryView', sync=True)
+    radius = CFloat(1, sync=True)
+    segments = CFloat(8, sync=True)
+    thetaStart = CFloat(0, sync=True)
+    thetaLength = CFloat(2*math.pi, sync=True)
 
 class SurfaceGeometry(Geometry):
     """
