@@ -325,6 +325,21 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     })
     IPython.WidgetManager.register_widget_view('TetrahedronGeometryView', TetrahedronGeometryView);
     
+    var TorusGeometryView = ThreeView.extend({
+        render: function() {
+            this.update()
+            return this.obj;
+        },
+        update: function() {
+            this.replace_obj(new THREE.TorusGeometry(this.model.get('radius'),
+                                                        this.model.get('tube'),
+                                                        this.model.get('radialSegments'),
+                                                        this.model.get('tubularSegments'),
+                                                        this.model.get('arc')));
+        }
+    })
+    IPython.WidgetManager.register_widget_view('TorusGeometryView', TorusGeometryView);
+    
     var MaterialView = ThreeView.extend({
         render: function() {
             this.obj = new THREE.MeshLambertMaterial({color: this.model.get('color'), 
