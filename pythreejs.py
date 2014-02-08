@@ -69,6 +69,11 @@ class IcosahedronGeometry(Geometry):
     _view_name = Unicode('IcosahedronGeometryView', sync=True)
     radius = CFloat(1, sync=True)
     detail = CFloat(0, sync=True)
+    
+class OctahedronGeometry(Geometry):
+    _view_name = Unicode('OctahedronGeometryView', sync=True)
+    radius = CFloat(1, sync=True)
+    detail = CFloat(0, sync=True)
 
 class SurfaceGeometry(Geometry):
     """
