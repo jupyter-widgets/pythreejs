@@ -94,6 +94,16 @@ class TorusGeometry(Geometry):
     radialSegments = CFloat(1, sync=True)
     tubularSegments = CFloat(1, sync=True)
     arc = CFloat(math.pi*2, sync=True)
+    
+class TorusKnotGeometry(Geometry):
+    _view_name = Unicode('TorusKnotGeometry', sync=True)
+    radius = CFloat(1, sync=True)
+    tube = CFloat(1, sync=True)
+    radialSegments = CFloat(10, sync=True)
+    tubularSegments = CFloat(10, sync=True)
+    p = CFloat(2, sync=True)
+    q = CFloat(3, sync=True)
+    heightScale = CFloat(1, sync=True)
 
 class SurfaceGeometry(Geometry):
     """
