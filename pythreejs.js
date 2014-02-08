@@ -274,6 +274,18 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         }
     })
     IPython.WidgetManager.register_widget_view('CircleGeometryView', CircleGeometryView);
+    
+    var IcosahedronGeometryView = ThreeView.extend({
+        render: function() {
+            this.update()
+            return this.obj;
+        },
+        update: function() {
+            this.replace_obj(new THREE.IcosahedronGeometry(this.model.get('radius'),
+                                                        this.model.get('detail')));
+        }
+    })
+    IPython.WidgetManager.register_widget_view('IcosahedronGeometryView', IcosahedronGeometryView);
 
     
     var MaterialView = ThreeView.extend({
@@ -290,7 +302,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.obj.needsUpdate=true;
         }
     })
-        IPython.WidgetManager.register_widget_view('MaterialView', MaterialView);
+    IPython.WidgetManager.register_widget_view('MaterialView', MaterialView);
 
     var MeshView = Object3dView.extend({
         // if we replace the geometry or material, do a full re-render
