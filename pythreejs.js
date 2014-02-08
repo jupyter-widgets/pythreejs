@@ -340,6 +340,23 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     })
     IPython.WidgetManager.register_widget_view('TorusGeometryView', TorusGeometryView);
     
+    var TorusKnotGeometryView = ThreeView.extend({
+        render: function() {
+            this.update()
+            return this.obj;
+        },
+        update: function() {
+            this.replace_obj(new THREE.TorusKnotGeometry(this.model.get('radius'),
+                                                        this.model.get('tube'),
+                                                        this.model.get('radialSegments'),
+                                                        this.model.get('tubularSegments'),
+                                                        this.model.get('p'),
+                                                        this.model.get('q'),
+                                                        this.model.get('heightScale')));
+        }
+    })
+    IPython.WidgetManager.register_widget_view('TorusKnotGeometryView', TorusKnotGeometryView);
+    
     var MaterialView = ThreeView.extend({
         render: function() {
             this.obj = new THREE.MeshLambertMaterial({color: this.model.get('color'), 
