@@ -76,11 +76,16 @@ class OctahedronGeometry(Geometry):
     detail = CFloat(0, sync=True)
     
 class PlaneGeometry(Geometry):
-    _view_name = Unicord('PlaneGeometryView', sync=True)
+    _view_name = Unicode('PlaneGeometryView', sync=True)
     width = CFloat(1, sync=True)
     height = CFloat(1, sync=True)
     widthSegments = CFloat(1, sync=True)
     heightSegments = CFloat(1, sync=True)
+    
+class TetrahedronGeometry(Geometry):
+    _view_name = Unicode('TetrahedronGeometryView', sync=True)
+    radius = CFloat(1, sync=True)
+    detail = CFloat(0, sync=True)
 
 class SurfaceGeometry(Geometry):
     """
