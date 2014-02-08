@@ -313,6 +313,17 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     })
     IPython.WidgetManager.register_widget_view('PlaneGeometryView', PlaneGeometryView);
 
+    var TetrahedronGeometryView = ThreeView.extend({
+        render: function() {
+            this.update()
+            return this.obj;
+        },
+        update: function() {
+            this.replace_obj(new THREE.TetrahedronGeometry(this.model.get('radius'),
+                                                        this.model.get('detail')));
+        }
+    })
+    IPython.WidgetManager.register_widget_view('TetrahedronGeometryView', TetrahedronGeometryView);
     
     var MaterialView = ThreeView.extend({
         render: function() {
