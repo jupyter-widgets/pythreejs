@@ -64,6 +64,11 @@ class CircleGeometry(Geometry):
     segments = CFloat(8, sync=True)
     thetaStart = CFloat(0, sync=True)
     thetaLength = CFloat(2*math.pi, sync=True)
+    
+class IcosahedronGeometry(radius, detail):
+    _view_name = Unicode('IcosahedronGeometryView', sync=True)
+    radius = CFloat(1, sync=True)
+    detail = CFloat(0, sync=True)
 
 class SurfaceGeometry(Geometry):
     """
