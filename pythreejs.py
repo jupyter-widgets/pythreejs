@@ -96,7 +96,7 @@ class TorusGeometry(Geometry):
     arc = CFloat(math.pi*2, sync=True)
     
 class TorusKnotGeometry(Geometry):
-    _view_name = Unicode('TorusKnotGeometry', sync=True)
+    _view_name = Unicode('TorusKnotGeometryView', sync=True)
     radius = CFloat(1, sync=True)
     tube = CFloat(1, sync=True)
     radialSegments = CFloat(10, sync=True)
