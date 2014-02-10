@@ -359,7 +359,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     
     var MaterialView = ThreeView.extend({
         render: function() {
-            this.obj = new THREE.MeshMaterial({color: this.model.get('color'), 
+            this.obj = new THREE.MeshLambertMaterial({color: this.model.get('color'),
                                                       side: THREE.DoubleSide});
             return this.obj;
         },
@@ -371,7 +371,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.obj.needsUpdate=true;
         }
     })
-    IPython.WidgetManager.register_widget_view('MaterialView', MaterialView);
+        IPython.WidgetManager.register_widget_view('MaterialView', MaterialView);
     
     var LambertMaterialView = ThreeView.extend({
         render: function() {
@@ -408,7 +408,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     var DepthMaterialView = ThreeView.extend({
         render: function() {
             this.obj = new THREE.MeshDepthMaterial({wireframe : this.obj.get('wireframe'), 
-                                                      wireframeLinewidth = this.model.get('wireframeLinewidth')});
+                                                      wireframeLinewidth : this.model.get('wireframeLinewidth')});
             return this.obj;
         },
         update: function() {
