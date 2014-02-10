@@ -141,7 +141,7 @@ class PhongMaterial(Material):
     _view_name = Unicode('PhongMaterialView', sync=True)
     color = Any('yellow', sync=True)
     opacity = CFloat(1.0, sync=True)
-    wirefram = Bool(False, sync=True)
+    wireframe = Bool(False, sync=True)
     
 class DepthMaterial(Material):
     _view_name = Unicode('DepthMaterialView', sync=True)
