@@ -125,11 +125,17 @@ class FaceGeometry(Geometry):
     face3 = List(CInt, sync=True) # [v0,v1,v2, v0,v1,v2, v0,v1,v2, ...]
     face4 = List(CInt, sync=True) # [v0,v1,v2,v3, v0,v1,v2,v3, v0,v1,v2,v3, ...]
 
-class Material(Widget):
-    _view_name = Unicode('MaterialView', sync=True)
+class LambertMaterial(Widget):
+    _view_name = Unicode('LambertMaterialView', sync=True)
     color = Any('yellow', sync=True)
     opacity = CFloat(1.0, sync=True)
     wireframe = Bool(False, sync=True)
+    
+class PhongMaterial(Widget):
+    _view_name = Unicode('PhongMaterialView', sync=True)
+    color = Any('yellow', sync=True)
+    opacity = CFloat(1.0, sync=True)
+    wirefram = Bool(False, sync=True)
 
 class Mesh(Object3d):
     _view_name = Unicode('MeshView', sync=True)
