@@ -371,50 +371,40 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.obj.needsUpdate=true;
         }
     })
-        IPython.WidgetManager.register_widget_view('MaterialView', MaterialView);
+    IPython.WidgetManager.register_widget_view('MaterialView', MaterialView);
     
-    var LambertMaterialView = ThreeView.extend({
+    var LambertMaterialView = MaterialView.extend({
         render: function() {
             this.obj = new THREE.MeshLambertMaterial({color: this.model.get('color'), 
                                                       side: THREE.DoubleSide});
             return this.obj;
         },
         update: function() {
-            this.obj.color.set(this.model.get('color'));
-            this.obj.opacity = this.model.get('opacity');
-            this.obj.transparent = (this.obj.opacity<1.0);
-            this.obj.wireframe = this.model.get('wireframe');
-            this.obj.needsUpdate=true;
+            MaterialView.call(this);
         }
     })
     IPython.WidgetManager.register_widget_view('LambertMaterialView', LambertMaterialView);
     
-    var PhongMaterialView = ThreeView.extend({
+    var PhongMaterialView = MaterialView.extend({
         render: function() {
             this.obj = new THREE.MeshPhongMaterial({color: this.model.get('color'), 
                                                       side: THREE.DoubleSide});
             return this.obj;
         },
         update: function() {
-            this.obj.color.set(this.model.get('color'));
-            this.obj.opacity = this.model.get('opacity');
-            this.obj.transparent = (this.obj.opacity<1.0);
-            this.obj.wireframe = this.model.get('wireframe');
-            this.obj.needsUpdate=true;
+            MaterialView.call(this);
         }
     })
     IPython.WidgetManager.register_widget_view('PhongMaterialView', PhongMaterialView);
     
-    var DepthMaterialView = ThreeView.extend({
+    var DepthMaterialView = MaterialView.extend({
         render: function() {
             this.obj = new THREE.MeshDepthMaterial({wireframe : this.obj.get('wireframe'), 
                                                       wireframeLinewidth : this.model.get('wireframeLinewidth')});
             return this.obj;
         },
         update: function() {
-            this.obj.wireframe = this.model.get('wireframe');
-            this.obj.wireframeLinewidth = this.model.get('wireframeLinewidth')
-            this.obj.needsUpdate=true;
+            MaterialView.call(this);
         }
     })
     IPython.WidgetManager.register_widget_view('DepthMaterialView', DepthMaterialView);
