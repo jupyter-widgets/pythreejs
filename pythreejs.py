@@ -131,19 +131,19 @@ class Material(Widget):
     opacity = CFloat(1.0, sync=True)
     wireframe = Bool(False, sync=True)
 
-class LambertMaterial(Widget):
+class LambertMaterial(Material):
     _view_name = Unicode('LambertMaterialView', sync=True)
     color = Any('yellow', sync=True)
     opacity = CFloat(1.0, sync=True)
     wireframe = Bool(False, sync=True)
     
-class PhongMaterial(Widget):
+class PhongMaterial(Material):
     _view_name = Unicode('PhongMaterialView', sync=True)
     color = Any('yellow', sync=True)
     opacity = CFloat(1.0, sync=True)
     wirefram = Bool(False, sync=True)
     
-class DepthMaterial(Widget):
+class DepthMaterial(Material):
     _view_name = Unicode('DepthMaterialView', sync=True)
     wireframe = Bool(False, sync=True)
     wireframeLinewidth = CFloat(1.0, sync=True)
