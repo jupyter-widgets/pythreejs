@@ -136,6 +136,11 @@ class PhongMaterial(Widget):
     color = Any('yellow', sync=True)
     opacity = CFloat(1.0, sync=True)
     wirefram = Bool(False, sync=True)
+    
+class DepthMaterial(Widget):
+    _view_name = Unicode('DepthMaterialView', sync=True)
+    wireframe = Bool(False, sync=True)
+    wireframeLinewidth = CFloat(1.0, sync=True)
 
 class Mesh(Object3d):
     _view_name = Unicode('MeshView', sync=True)
