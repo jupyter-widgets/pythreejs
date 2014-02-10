@@ -388,6 +388,20 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         }
     })
     IPython.WidgetManager.register_widget_view('PhongMaterialView', PhongMaterialView);
+    
+    var DepthMaterialView = ThreeView.extend({
+        render: function() {
+            this.obj = new THREE.MeshDepthMaterial({wireframe : this.obj.get('wireframe'), 
+                                                      wireframeLinewidth = this.model.get('wireframeLinewidth')});
+            return this.obj;
+        },
+        update: function() {
+            this.obj.wireframe = this.model.get('wireframe');
+            this.obj.wireframeLinewidth = this.model.get('wireframeLinewidth')
+            this.obj.needsUpdate=true;
+        }
+    })
+    IPython.WidgetManager.register_widget_view('DepthMaterialView', DepthMaterialView);
 
     var MeshView = Object3dView.extend({
         // if we replace the geometry or material, do a full re-render
