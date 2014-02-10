@@ -357,7 +357,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     })
     IPython.WidgetManager.register_widget_view('TorusKnotGeometryView', TorusKnotGeometryView);
     
-    var MaterialView = ThreeView.extend({
+    var LambertMaterialView = ThreeView.extend({
         render: function() {
             this.obj = new THREE.MeshLambertMaterial({color: this.model.get('color'), 
                                                       side: THREE.DoubleSide});
@@ -371,7 +371,23 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.obj.needsUpdate=true;
         }
     })
-    IPython.WidgetManager.register_widget_view('MaterialView', MaterialView);
+    IPython.WidgetManager.register_widget_view('LambertMaterialView', LambertMaterialView);
+    
+    var PhongMaterialView = ThreeView.extend({
+        render: function() {
+            this.obj = new THREE.MeshPhongMaterial({color: this.model.get('color'), 
+                                                      side: THREE.DoubleSide});
+            return this.obj;
+        },
+        update: function() {
+            this.obj.color.set(this.model.get('color'));
+            this.obj.opacity = this.model.get('opacity');
+            this.obj.transparent = (this.obj.opacity<1.0);
+            this.obj.wireframe = this.model.get('wireframe');
+            this.obj.needsUpdate=true;
+        }
+    })
+    IPython.WidgetManager.register_widget_view('PhongMaterialView', PhongMaterialView);
 
     var MeshView = Object3dView.extend({
         // if we replace the geometry or material, do a full re-render
