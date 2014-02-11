@@ -368,6 +368,17 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.obj.opacity = this.model.get('opacity');
             this.obj.transparent = (this.obj.opacity<1.0);
             this.obj.wireframe = this.model.get('wireframe');
+            this.obj.wireframeLinewidth = this.model.get('wireframeLinewidth');
+            this.obj.wireframeLinecap = this.model.get('wireframeLinecap');
+            this.obj.wireframeLinejoin = this.model.get('wireframeLinejoin');
+            this.obj.shading = this.model.get('shading');
+            this.obj.vertexColors = this.model.get('vertexColors');
+            this.obj.fog = this.model.get('fog');
+            this.obj.lightMap = this.model.get('lightMap');
+            this.obj.specularMap = this.model.get('specularMap');
+            this.obj.envMap = this.model.get('envMap');
+            this.obj.skinning = this.model.get('skinning');
+            this.obj.morphTargets = this.model.get('morphTargets');
             this.obj.needsUpdate=true;
         }
     })
@@ -393,6 +404,12 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         },
         update: function() {
             MaterialView.prototype.update.call(this);
+            this.obj.ambient.set(this.model.get('ambient'));
+            this.obj.emissive.set(this.model.get('emissibe'));
+            this.obj.shading.set(this.model.get('shading'));
+            this.obj.reflectivity.set(this.model.get('reflectivity'));
+            this.obj.refractionRatio.set(this.model.get('refractionRatio'));
+            this.obj.combine.set(this.model.get('combine'));
         }
     })
     IPython.WidgetManager.register_widget_view('PhongMaterialView', PhongMaterialView);
