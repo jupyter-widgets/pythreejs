@@ -380,7 +380,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             return this.obj;
         },
         update: function() {
-            MaterialView.call(this);
+            MaterialView.prototype.update.call(this);
         }
     })
     IPython.WidgetManager.register_widget_view('LambertMaterialView', LambertMaterialView);
@@ -392,7 +392,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             return this.obj;
         },
         update: function() {
-            MaterialView.call(this);
+            MaterialView.prototype.update.call(this);
         }
     })
     IPython.WidgetManager.register_widget_view('PhongMaterialView', PhongMaterialView);
@@ -404,7 +404,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             return this.obj;
         },
         update: function() {
-            MaterialView.call(this);
+            MaterialView.prototype.update.call(this);
         }
     })
     IPython.WidgetManager.register_widget_view('DepthMaterialView', DepthMaterialView);
