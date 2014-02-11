@@ -144,6 +144,12 @@ class Material(Widget):
 
 class LambertMaterial(Material):
     _view_name = Unicode('LambertMaterialView', sync=True)
+    ambient = Any('white', sync=True)
+    emissive = Any('black', sync=True)
+    shading = Any('THREE.SmothShading', sync=True)
+    reflectivity = CFloat(1.0, sync=True)
+    refractionRatio = CFloat(0.98, sync=True)
+    combine = Any('THREE.Multiply', sync=True)
     
 class PhongMaterial(Material):
     _view_name = Unicode('PhongMaterialView', sync=True)
