@@ -130,23 +130,26 @@ class Material(Widget):
     color = Any('yellow', sync=True)
     opacity = CFloat(1.0, sync=True)
     wireframe = Bool(False, sync=True)
+    wireframeLinewidth = CFloat(1.0, sync=True)
+    wireframeLinecap = Any('round', sync=True)
+    wireframeLinejoin = Any('round', sync=True)
+    shading = Any('THREE.SmothShading', sync=True)
+    vertexColors = Any('THREE.NoColors', sync=True)
+    fog = Bool(False, sync=True)
+    lightMap = Any('null', sync=True)
+    specularMap = Any('null', sync=True)
+    envMap = Any('null', sync=True)
+    skinning = Bool(False, sync=True)
+    morphTargets = Bool(False, sync=True)
 
 class LambertMaterial(Material):
     _view_name = Unicode('LambertMaterialView', sync=True)
-    color = Any('yellow', sync=True)
-    opacity = CFloat(1.0, sync=True)
-    wireframe = Bool(False, sync=True)
     
 class PhongMaterial(Material):
     _view_name = Unicode('PhongMaterialView', sync=True)
-    color = Any('yellow', sync=True)
-    opacity = CFloat(1.0, sync=True)
-    wireframe = Bool(False, sync=True)
     
 class DepthMaterial(Material):
     _view_name = Unicode('DepthMaterialView', sync=True)
-    wireframe = Bool(False, sync=True)
-    wireframeLinewidth = CFloat(1.0, sync=True)
 
 class Mesh(Object3d):
     _view_name = Unicode('MeshView', sync=True)
