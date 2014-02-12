@@ -359,7 +359,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     
     var MaterialView = ThreeView.extend({
         render: function() {
-            this.obj = new THREE.MeshLambertMaterial({color: this.model.get('color'),
+            this.obj = new THREE.MeshBasicMaterial({color: this.model.get('color'),
                                                       side: THREE.DoubleSide});
             return this.obj;
         },
