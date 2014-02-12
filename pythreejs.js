@@ -393,7 +393,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         update: function() {
             MaterialView.prototype.update.call(this);
             this.obj.ambient.set(this.model.get('ambient'));
-            this.obj.emissive.set(this.model.get('emissibe'));
+            this.obj.emissive.set(this.model.get('emissive'));
             this.obj.reflectivity.set(this.model.get('reflectivity'));
             this.obj.refractionRatio.set(this.model.get('refractionRatio'));
             this.obj.combine.set(this.model.get('combine'));
