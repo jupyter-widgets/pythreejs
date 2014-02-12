@@ -152,6 +152,13 @@ class LambertMaterial(Material):
     
 class PhongMaterial(Material):
     _view_name = Unicode('PhongMaterialView', sync=True)
+    ambient = Any('white', sync=True)
+    emissive = Any('black', sync=True)
+    specular = Any('darkgray', sync=True)
+    shininess = CFloat(30, sync=True)
+    reflectivity = CFloat(1.0, sync=True)
+    refractionRatio = CFloat(0.98, sync=True)
+    combine = Any('THREE.MultiplyOperation', sync=True)
     
 class DepthMaterial(Material):
     _view_name = Unicode('DepthMaterialView', sync=True)
