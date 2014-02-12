@@ -409,6 +409,13 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         },
         update: function() {
             MaterialView.prototype.update.call(this);
+            this.obj.ambient = this.model.get('ambient');
+            this.obj.emissive = this.model.get('emissive');
+            this.obj.specular = this.model.get('specular');
+            this.obj.shininess = this.model.get('shininess');
+            this.obj.reflectivity = this.model.get('reflectivity');
+            this.obj.refractionRatio = this.model.get('refractionRatio');
+            this.obj.combine = this.model.get('combine');
         }
     })
     IPython.WidgetManager.register_widget_view('PhongMaterialView', PhongMaterialView);
