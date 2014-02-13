@@ -1,5 +1,4 @@
 # Import the base Widget class and the traitlets Unicode class.
-#ksjadf
 from IPython.html.widgets.widget import Widget, DOMWidget
 from IPython.utils.traitlets import (Unicode, Int, Instance, Enum, List, Float, 
                                      Any, CFloat, Bool, This, CInt)
