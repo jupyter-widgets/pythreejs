@@ -441,6 +441,21 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     })
     IPython.WidgetManager.register_widget_view('DepthMaterialView', DepthMaterialView);
 
+    var LineBasicMaterial = MaterialView.extend({
+        render: function() {
+            this.obj = new THREE.LineBasicMaterial({color: this.model.get('color'), 
+                                                      side: THREE.DoubleSide});
+            return this.obj;
+        },
+        update: function() {
+            MaterialView.prototype.update.call(this);
+            this.obj.blending = this.model.get('blending');
+            this.obj.depthTest = this.model.get('depthTest');
+            this.obj.depthWrite = this.model.get('depthWrite');
+        }
+    })
+    IPython.WidgetManager.register_widget_view('LineBasicMaterial', LineBasicMaterial);
+    
     var MeshView = Object3dView.extend({
         // if we replace the geometry or material, do a full re-render
         // TODO: make sure we don't set multiple such handlers, so this should probably happen in the init, not the render
