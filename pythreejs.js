@@ -359,11 +359,14 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     
     var MaterialView = ThreeView.extend({
         render: function() {
-            
+          this.obj = new THREE.Material();
+          
+          return this.obj;
         },
-    update: function() {
-        
-    }
+      update: function() {
+          this.obj.opacity = this.model.get('opacity');
+          this.obj.transparent = (this.obj.opacity<1.0);
+      }
     })
     
     var BasicMaterialView = MaterialView.extend({
@@ -374,9 +377,6 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         },
         update: function() {
             this.obj.color.set(this.model.get('color'));
-            this.obj.opacity = this.model.get('opacity');
-            this.obj.transparent = (this.obj.opacity<1.0);
-            this.obj.wireframe = this.model.get('wireframe');
             this.obj.wireframeLinewidth = this.model.get('wireframeLinewidth');
             this.obj.wireframeLinecap = this.model.get('wireframeLinecap');
             this.obj.wireframeLinejoin = this.model.get('wireframeLinejoin');
@@ -393,7 +393,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     })
     IPython.WidgetManager.register_widget_view('MaterialView', MaterialView);
     
-    var LambertMaterialView = MaterialView.extend({
+    var LambertMaterialView = BasicMaterialView.extend({
         render: function() {
             this.obj = new THREE.MeshLambertMaterial({color: this.model.get('color'), 
                                                       side: THREE.DoubleSide});
@@ -410,7 +410,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     })
     IPython.WidgetManager.register_widget_view('LambertMaterialView', LambertMaterialView);
     
-    var PhongMaterialView = MaterialView.extend({
+    var PhongMaterialView = BasicMaterialView.extend({
         render: function() {
             this.obj = new THREE.MeshPhongMaterial({color: this.model.get('color'), 
                                                       side: THREE.DoubleSide});
