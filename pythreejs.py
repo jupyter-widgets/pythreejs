@@ -127,8 +127,10 @@ class FaceGeometry(Geometry):
     
 class Material(Widget):
     _view_name = Unicode('MaterialView', sync=True)
+    
+class BasicMaterial(Material):
+    _view_name = Unicode('BasicMaterialView', sync=True)
     color = Any('yellow', sync=True)
-    opacity = CFloat(1.0, sync=True)
     wireframe = Bool(False, sync=True)
     wireframeLinewidth = CFloat(1.0, sync=True)
     wireframeLinecap = Any('round', sync=True)
@@ -162,6 +164,8 @@ class PhongMaterial(Material):
     
 class DepthMaterial(Material):
     _view_name = Unicode('DepthMaterialView', sync=True)
+    wireframe = Bool(False, sync=True)
+    wireframeLinewidth = CFloat(1.0, sync=True)
 
 class Mesh(Object3d):
     _view_name = Unicode('MeshView', sync=True)
