@@ -432,7 +432,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     
     var DepthMaterialView = MaterialView.extend({
         render: function() {
-            this.obj = new THREE.MeshDepthMaterial({wireframe : this.obj.get('wireframe'), 
+            this.obj = new THREE.MeshDepthMaterial({wireframe : this.model.get('wireframe'), 
                                                       wireframeLinewidth : this.model.get('wireframeLinewidth')});
             return this.obj;
         },
