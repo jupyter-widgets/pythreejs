@@ -359,6 +359,15 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     
     var MaterialView = ThreeView.extend({
         render: function() {
+            
+        },
+    update: function() {
+        
+    }
+    })
+    
+    var BasicMaterialView = MaterialView.extend({
+        render: function() {
             this.obj = new THREE.MeshBasicMaterial({color: this.model.get('color'),
                                                       side: THREE.DoubleSide});
             return this.obj;
