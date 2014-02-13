@@ -376,6 +376,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             return this.obj;
         },
         update: function() {
+            MaterialView.prototype.update.call(this);
             this.obj.color.set(this.model.get('color'));
             this.obj.wireframeLinewidth = this.model.get('wireframeLinewidth');
             this.obj.wireframeLinecap = this.model.get('wireframeLinecap');
@@ -400,7 +401,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             return this.obj;
         },
         update: function() {
-            MaterialView.prototype.update.call(this);
+            BasicMaterialView.prototype.update.call(this);
             this.obj.ambient = this.model.get('ambient');
             this.obj.emissive = this.model.get('emissive');
             this.obj.reflectivity = this.model.get('reflectivity');
@@ -417,7 +418,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             return this.obj;
         },
         update: function() {
-            MaterialView.prototype.update.call(this);
+            BasicMaterialView.prototype.update.call(this);
             this.obj.ambient = this.model.get('ambient');
             this.obj.emissive = this.model.get('emissive');
             this.obj.specular = this.model.get('specular');
