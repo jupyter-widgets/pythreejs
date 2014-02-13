@@ -127,6 +127,8 @@ class FaceGeometry(Geometry):
     
 class Material(Widget):
     _view_name = Unicode('MaterialView', sync=True)
+    opacity = CFloat(1.0, sync=True)
+    transparent = Bool(False, sync=True)
     
 class BasicMaterial(Material):
     _view_name = Unicode('BasicMaterialView', sync=True)
