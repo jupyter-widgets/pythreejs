@@ -146,7 +146,7 @@ class BasicMaterial(Material):
     skinning = Bool(False, sync=True)
     morphTargets = Bool(False, sync=True)
 
-class LambertMaterial(Material):
+class LambertMaterialBasic(Material):
     _view_name = Unicode('LambertMaterialView', sync=True)
     ambient = Any('white', sync=True)
     emissive = Any('black', sync=True)
@@ -154,7 +154,7 @@ class LambertMaterial(Material):
     refractionRatio = CFloat(0.98, sync=True)
     combine = Any('THREE.Multiply', sync=True)
     
-class PhongMaterial(Material):
+class PhongMaterial(BasicMaterial):
     _view_name = Unicode('PhongMaterialView', sync=True)
     ambient = Any('white', sync=True)
     emissive = Any('black', sync=True)
