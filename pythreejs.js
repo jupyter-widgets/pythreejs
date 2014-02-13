@@ -391,7 +391,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.obj.needsUpdate=true;
         }
     })
-    IPython.WidgetManager.register_widget_view('MaterialView', MaterialView);
+    IPython.WidgetManager.register_widget_view('BasicMaterialView', BasicMaterialView);
     
     var LambertMaterialView = BasicMaterialView.extend({
         render: function() {
