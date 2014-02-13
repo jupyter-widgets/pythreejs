@@ -360,6 +360,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     var MaterialView = ThreeView.extend({
         render: function() {
           this.obj = new THREE.Material();
+          
+          return this.obj;
         },
       update: function() {
           this.obj.opacity = this.model.get('opacity');
