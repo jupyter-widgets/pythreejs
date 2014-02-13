@@ -146,7 +146,7 @@ class BasicMaterial(Material):
     skinning = Bool(False, sync=True)
     morphTargets = Bool(False, sync=True)
 
-class LambertMaterialBasic(Material):
+class LambertMaterial(BasicMaterial):
     _view_name = Unicode('LambertMaterialView', sync=True)
     ambient = Any('white', sync=True)
     emissive = Any('black', sync=True)
