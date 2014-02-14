@@ -110,7 +110,7 @@ class PolyhedronGeometry(Geometry):
     radius = CFloat(1, sync=True)
     detail = Int(0, sync=True)
     vertices = List(List(CFloat), sync=True)
-    faces = List(List(Int), sync=True)
+    faces = List(List(CFloat), sync=True)
 
 class SurfaceGeometry(Geometry):
     """
