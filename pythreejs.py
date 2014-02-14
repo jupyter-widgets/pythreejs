@@ -134,9 +134,24 @@ class FaceGeometry(Geometry):
     
 class Material(Widget):
     _view_name = Unicode('MaterialView', sync=True)
+    # id = TODO
+    name = Any('', sync=True) 
+    side = Enum(['FrontSide', 'BackSide', 'DoubleSide'], 'FrontSide',  sync=True]) 
     opacity = CFloat(1.0, sync=True)
     transparent = Bool(False, sync=True)
-    blending = Enum(['NormalBlending'], 'NormalBlending', sync=True) #todo mirror threejs
+    blending = Enum(['NoBlending', 'NormalBlending', 'AdditiveBlending', 'SubtractiveBlending', 'MultiplyBlending', 'CustomBlending'], 'NormalBlending', sync=True) 
+    blendSrc = Enum(['ZeroFactor', 'OneFactor', 'SrcColorFactor', 'OneMinusSrcColorFactor', 'SrcAlphaFactor', 'OneMinusSrcAlphaFactor', 'DstAlphaFactor', 'OneMinusDstAlphaFactor'], 'SrcAlphaFactor', sync=True) 
+    blendDst = Enum(['DstColorFactor', 'OneMinusDstColorFactor', 'SrcAlphaSaturateFactor'], 'OneMinusDstColorFactor', sync=True) # add to js side
+    blendEquation = Enum(['AddEquation', 'SubtractEquation', 'ReverseSubtractEquation'], 'AddEquation', sync=True) # add to js side
+    depthTest = Bool(True, sync=True) 
+    depthWrite = Bool(True, sync=True) 
+    polygonOffset = Bool(False, sync=True) 
+    polygonOffsetFactor = CFloat(1.0, sync=True) 
+    polygonOffsetUnits = CFloat(1.0, sync=True) 
+    alphaTest = CFloat(1.0, sync=True) 
+    overdraw = CFloat(1.0, sync=True) 
+    visible = Bool(True, sync=True) 
+    needsUpdate = Bool(True, sync=True) 
     
 class BasicMaterial(Material):
     _view_name = Unicode('BasicMaterialView', sync=True)
