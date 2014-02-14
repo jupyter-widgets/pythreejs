@@ -442,7 +442,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     })
     IPython.WidgetManager.register_widget_view('DepthMaterialView', DepthMaterialView);
 
-    var LineBasicMaterial = BasicMaterialView.extend({
+    var LineBasicMaterial = MaterialView.extend({
         render: function() {
             this.obj = new THREE.LineBasicMaterial({color: this.model.get('color'), 
                                                       side: THREE.DoubleSide});
@@ -453,6 +453,12 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.obj.blending = this.model.get('blending');
             this.obj.depthTest = this.model.get('depthTest');
             this.obj.depthWrite = this.model.get('depthWrite');
+            this.obj.color = this.model.get('color');
+            this.obj.linewidth = this.model.get('linewidth');
+            this.obj.linecap = this.model.get('linecap');
+            this.obj.linejoin = this.model.get('linejoin');
+            this.obj.vertexColors = this.model.get('vertexColors');
+            this.obj.fog = this.model.get('fog');
         }
     })
     IPython.WidgetManager.register_widget_view('LineBasicMaterial', LineBasicMaterial);

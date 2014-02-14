@@ -169,11 +169,17 @@ class DepthMaterial(Material):
     wireframe = Bool(False, sync=True)
     wireframeLinewidth = CFloat(1.0, sync=True)
 
-class LineBasicMaterial(BasicMaterial):
+class LineBasicMaterial(Material):
     _view_name = Unicode('LineBasicMaterial', sync=True)
     blending = Any('THREE.NormalBlending', sync=True)
     depthTest = Bool(False, sync=True)
     depthWrite = Bool(False, sync=True)
+    color = Any('yellow', sync=True)
+    linewidth = CFloat(1.0, sync=True)
+    linecap = Any('round', sync=True)
+    linejoin = Any('round', sync=True)
+    fog = Bool(False, sync=True)
+    vertexColors = Bool(False, sync=True)
 
 class Mesh(Object3d):
     _view_name = Unicode('MeshView', sync=True)
