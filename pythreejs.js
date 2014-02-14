@@ -365,6 +365,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         },
       update: function() {
           this.obj.opacity = this.model.get('opacity');
+          this.obj.blending = this.model.get('blending');
           this.obj.transparent = (this.obj.opacity<1.0);
       }
     })
@@ -450,7 +451,6 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         },
         update: function() {
             MaterialView.prototype.update.call(this);
-            this.obj.blending = this.model.get('blending');
             this.obj.depthTest = this.model.get('depthTest');
             this.obj.depthWrite = this.model.get('depthWrite');
             this.obj.color = this.model.get('color');

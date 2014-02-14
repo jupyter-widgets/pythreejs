@@ -129,6 +129,7 @@ class Material(Widget):
     _view_name = Unicode('MaterialView', sync=True)
     opacity = CFloat(1.0, sync=True)
     transparent = Bool(False, sync=True)
+    blending = Enum(['NormalBlending'], 'NormalBlending', sync=True) #todo mirror threejs
     
 class BasicMaterial(Material):
     _view_name = Unicode('BasicMaterialView', sync=True)
@@ -137,7 +138,7 @@ class BasicMaterial(Material):
     wireframeLinewidth = CFloat(1.0, sync=True)
     wireframeLinecap = Any('round', sync=True)
     wireframeLinejoin = Any('round', sync=True)
-    shading = Any('THREE.SmothShading', sync=True)
+    shading = Any('THREE.SmoothShading', sync=True)
     vertexColors = Any('THREE.NoColors', sync=True)
     fog = Bool(False, sync=True)
     lightMap = Any('null', sync=True)
@@ -171,13 +172,12 @@ class DepthMaterial(Material):
 
 class LineBasicMaterial(Material):
     _view_name = Unicode('LineBasicMaterial', sync=True)
-    blending = Any('THREE.NormalBlending', sync=True)
     depthTest = Bool(False, sync=True)
     depthWrite = Bool(False, sync=True)
     color = Any('yellow', sync=True)
     linewidth = CFloat(1.0, sync=True)
-    linecap = Any('round', sync=True)
-    linejoin = Any('round', sync=True)
+    linecap = Any('round', sync=True)#todo
+    linejoin = Any('round', sync=True)#todo
     fog = Bool(False, sync=True)
     vertexColors = Bool(False, sync=True)
 
