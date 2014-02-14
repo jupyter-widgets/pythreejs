@@ -442,7 +442,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     })
     IPython.WidgetManager.register_widget_view('DepthMaterialView', DepthMaterialView);
 
-    var LineBasicMaterial = BasicMaterialView.extend({
+    var LineBasicMaterial = MaterialView.extend({
         render: function() {
             this.obj = new THREE.LineBasicMaterial({color: this.model.get('color'), 
                                                       side: THREE.DoubleSide});
