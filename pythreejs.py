@@ -169,7 +169,7 @@ class DepthMaterial(Material):
     wireframe = Bool(False, sync=True)
     wireframeLinewidth = CFloat(1.0, sync=True)
 
-class LineBasicMaterial(Material):
+class LineBasicMaterial(BasicMaterial):
     _view_name = Unicode('LineBasicMaterial', sync=True)
     blending = Any('THREE.NormalBlending', sync=True)
     depthTest = Bool(False, sync=True)
