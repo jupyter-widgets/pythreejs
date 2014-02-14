@@ -104,6 +104,13 @@ class TorusKnotGeometry(Geometry):
     p = CFloat(2, sync=True)
     q = CFloat(3, sync=True)
     heightScale = CFloat(1, sync=True)
+    
+class PolyhedronGeometry(Geometry):
+    _view_name = Unicode('PolyhedronGeometryView', sync=True)
+    radius = CFloat(1, sync=True)
+    detail = Int(0, sync=True)
+    vertices = List(List(CFloat), sync=True)
+    faces = List(List(Int), sync=True)
 
 class SurfaceGeometry(Geometry):
     """

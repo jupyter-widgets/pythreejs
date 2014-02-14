@@ -357,6 +357,20 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     })
     IPython.WidgetManager.register_widget_view('TorusKnotGeometryView', TorusKnotGeometryView);
     
+    var PolyhedronGeometryView = ThreeView.extend({
+        render: function() {
+            this.update()
+            return this.obj;
+        },
+        update: function() {
+            this.replace_obj(new THREE.TorusKnotGeometry(this.model.get('vertices'),
+                                                        this.model.get('faces'),
+                                                        this.model.get('radius'),
+                                                        this.model.get('detail')));
+        }
+    })
+    IPython.WidgetManager.register_widget_view('PolyhedronGeometryView', PolyhedronGeometryView);
+    
     var MaterialView = ThreeView.extend({
         render: function() {
           this.obj = new THREE.Material();
