@@ -364,9 +364,9 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         },
         update: function() {
             this.replace_obj(new THREE.PolyhedronGeometry(this.model.get('vertices'),
-                                                        this.model.get('faces'),
-                                                        this.model.get('radius'),
-                                                        this.model.get('detail')));
+                                                          this.model.get('faces'),
+                                                          this.model.get('radius'),
+                                                          this.model.get('detail')));
         }
     })
     IPython.WidgetManager.register_widget_view('PolyhedronGeometryView', PolyhedronGeometryView);
