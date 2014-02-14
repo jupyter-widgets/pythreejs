@@ -363,7 +363,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             return this.obj;
         },
         update: function() {
-            this.replace_obj(new THREE.TorusKnotGeometry(this.model.get('vertices'),
+            this.replace_obj(new THREE.PolyhedronGeometry(this.model.get('vertices'),
                                                         this.model.get('faces'),
                                                         this.model.get('radius'),
                                                         this.model.get('detail')));
