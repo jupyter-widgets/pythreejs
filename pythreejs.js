@@ -479,8 +479,6 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         },
         update: function() {
             MaterialView.prototype.update.call(this);
-            this.obj.depthTest = this.model.get('depthTest');
-            this.obj.depthWrite = this.model.get('depthWrite');
             this.obj.color = this.model.get('color');
             this.obj.linewidth = this.model.get('linewidth');
             this.obj.linecap = this.model.get('linecap');
