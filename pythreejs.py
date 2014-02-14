@@ -136,7 +136,7 @@ class Material(Widget):
     _view_name = Unicode('MaterialView', sync=True)
     # id = TODO
     name = Any('', sync=True) 
-    side = Enum(['FrontSide', 'BackSide', 'DoubleSide'], 'FrontSide',  sync=True]) 
+    side = Enum(['FrontSide', 'BackSide', 'DoubleSide'], 'FrontSide',  sync=True) 
     opacity = CFloat(1.0, sync=True)
     transparent = Bool(False, sync=True)
     blending = Enum(['NoBlending', 'NormalBlending', 'AdditiveBlending', 'SubtractiveBlending', 'MultiplyBlending', 'CustomBlending'], 'NormalBlending', sync=True) 
