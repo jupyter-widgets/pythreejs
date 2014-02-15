@@ -110,7 +110,7 @@ class PolyhedronGeometry(Geometry):
     radius = CFloat(1, sync=True)
     detail = Int(0, sync=True)
     vertices = List(List(CFloat), sync=True)
-    faces = List(List(Int), sync=True)
+    faces = List(List(CInt), sync=True)
 
 class SurfaceGeometry(Geometry):
     """
@@ -135,7 +135,7 @@ class FaceGeometry(Geometry):
 class Material(Widget):
     _view_name = Unicode('MaterialView', sync=True)
     # id = TODO
-    name = Any('', sync=True) 
+    name = Unicode('', sync=True) 
     side = Enum(['FrontSide', 'BackSide', 'DoubleSide'], 'FrontSide',  sync=True) 
     opacity = CFloat(1.0, sync=True)
     transparent = Bool(False, sync=True)
@@ -155,27 +155,27 @@ class Material(Widget):
     
 class BasicMaterial(Material):
     _view_name = Unicode('BasicMaterialView', sync=True)
-    color = Any('yellow', sync=True)
+    color = Unicode('yellow', sync=True)
     wireframe = Bool(False, sync=True)
     wireframeLinewidth = CFloat(1.0, sync=True)
-    wireframeLinecap = Any('round', sync=True)
-    wireframeLinejoin = Any('round', sync=True)
-    shading = Any('THREE.SmoothShading', sync=True)
-    vertexColors = Any('THREE.NoColors', sync=True)
+    wireframeLinecap = Unicode('round', sync=True)
+    wireframeLinejoin = Unicode('round', sync=True)
+    shading = Enum(['SmoothShading', 'FlatShading', 'NoShading'], 'SmoothShading', sync=True)
+    vertexColors = Enum(['NoColors', 'FaceColors', 'VertexColors'], 'NoColors', sync=True)
     fog = Bool(False, sync=True)
-    lightMap = Any('null', sync=True)
-    specularMap = Any('null', sync=True)
-    envMap = Any('null', sync=True)
+    lightMap = Any(None, sync=True)
+    specularMap = Any(None, sync=True)
+    envMap = Any(None, sync=True)
     skinning = Bool(False, sync=True)
     morphTargets = Bool(False, sync=True)
 
 class LambertMaterial(BasicMaterial):
     _view_name = Unicode('LambertMaterialView', sync=True)
-    ambient = Any('white', sync=True)
-    emissive = Any('black', sync=True)
+    ambient = Unicode('white', sync=True)
+    emissive = Unicode('black', sync=True)
     reflectivity = CFloat(1.0, sync=True)
     refractionRatio = CFloat(0.98, sync=True)
-    combine = Any('THREE.Multiply', sync=True)
+    combine = Enum(['MultiplyOperation', 'MixOperation', 'AddOperation'], 'MultiplyOperation', sync=True)
     
 class PhongMaterial(BasicMaterial):
     _view_name = Unicode('PhongMaterialView', sync=True)
@@ -185,7 +185,7 @@ class PhongMaterial(BasicMaterial):
     shininess = CFloat(30, sync=True)
     reflectivity = CFloat(1.0, sync=True)
     refractionRatio = CFloat(0.98, sync=True)
-    combine = Any('THREE.MultiplyOperation', sync=True)
+    combine = Enum(['MultiplyOperation', 'MixOperation', 'AddOperation'], 'MultiplyOperation', sync=True)
     
 class DepthMaterial(Material):
     _view_name = Unicode('DepthMaterialView', sync=True)
