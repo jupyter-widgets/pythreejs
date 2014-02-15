@@ -379,7 +379,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         },
       update: function() {
           this.obj.name = this.model.get('name');
-          this.obj.side = THREE.this.model.get('side');
+          this.obj.side = this.model.get('side');
           this.obj.opacity = this.model.get('opacity');
           this.obj.blending = THREE.this.model.get('blending');
           this.obj.transparent = (this.obj.opacity<1.0);
@@ -394,7 +394,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
           this.obj.alphaTest = this.model.get('alphaTest');
           this.obj.overdraw = this.model.get('overdraw');
           this.obj.visible = this.model.get('visible');
-          this.obj.needsUpdate = this.model.get('needsUpdate');
+          this.obj.needsUpdate = true;
       }
     })
     
