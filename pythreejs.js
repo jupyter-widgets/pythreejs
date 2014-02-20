@@ -385,33 +385,6 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     })
     IPython.WidgetManager.register_widget_view('PolyhedronGeometryView', PolyhedronGeometryView);
     
-    var MaterialView = ThreeView.extend({
-        render: function() {
-          this.obj = new THREE.Material();
-          
-          return this.obj;
-        },
-      update: function() {
-          this.obj.name = this.model.get('name');
-          this.obj.side = this.model.get('side');
-          this.obj.opacity = this.model.get('opacity');
-          this.obj.blending = THREE[this.model.get('blending')];
-          this.obj.transparent = (this.obj.opacity<1.0);
-          this.obj.blendSrc = THREE[this.model.get('blendSrc')];
-          this.obj.blendDst = THREE[this.model.get('blendDst')];
-          this.obj.blendEquation = THREE[this.model.get('blendEquation')];
-          this.obj.depthTest = this.model.get('depthTest');
-          this.obj.depthWrite = this.model.get('depthWrite');
-          this.obj.polygonOffset = this.model.get('polygonOffset');
-          this.obj.polygonOffsetFactor = this.model.get('polygonOffsetFactor');
-          this.obj.polygonOffsetUnits = this.model.get('polygonOffsetUnits');
-          this.obj.alphaTest = this.model.get('alphaTest');
-          this.obj.overdraw = this.model.get('overdraw');
-          this.obj.visible = this.model.get('visible');
-          this.obj.needsUpdate = true;
-      }
-    })
-    
     function setProperties(obj, model) {
       console.log('in setProperties');
       for (var key in model) {
@@ -419,6 +392,19 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         console.log(key);
       }
     }
+    
+    var MaterialView = ThreeView.extend({
+        render: function() {
+          this.obj = new THREE.Material();
+          
+          return this.obj;
+        },
+      update: function() {
+          setProperties(this.obj, this.model);
+          this.obj.needsUpdate = true;
+      }
+    })
+    IPython.WidgetManager.register_widget_view('MaterialView', MaterialView);
     
     var BasicMaterialView = MaterialView.extend({
         render: function() {
@@ -428,7 +414,6 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         },
         update: function() {
             MaterialView.prototype.update.call(this);
-            console.log('updating basicmaterial');
             setProperties(this.obj, this.model);
             this.obj.needsUpdate=true;
         }
@@ -443,11 +428,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         },
         update: function() {
             BasicMaterialView.prototype.update.call(this);
-            this.obj.ambient = this.model.get('ambient');
-            this.obj.emissive.set(this.model.get('emissive'));
-            this.obj.reflectivity = this.model.get('reflectivity');
-            this.obj.refractionRatio = this.model.get('refractionRatio');
-            this.obj.combine = THREE[this.model.get('combine')];
+            setProperties(this.obj, this.model);
+            this.obj.needsUpdate=true;
         }
     })
     IPython.WidgetManager.register_widget_view('LambertMaterialView', LambertMaterialView);
@@ -460,13 +442,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         },
         update: function() {
             BasicMaterialView.prototype.update.call(this);
-            this.obj.ambient = this.model.get('ambient');
-            this.obj.emissive = this.model.get('emissive');
-            this.obj.specular = this.model.get('specular');
-            this.obj.shininess = this.model.get('shininess');
-            this.obj.reflectivity = this.model.get('reflectivity');
-            this.obj.refractionRatio = this.model.get('refractionRatio');
-            this.obj.combine = THREE[this.model.get('combine')];
+            setProperties(this.obj, this.model);
+            this.obj.needsUpdate=true;
         }
     })
     IPython.WidgetManager.register_widget_view('PhongMaterialView', PhongMaterialView);
@@ -479,6 +456,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         },
         update: function() {
             MaterialView.prototype.update.call(this);
+            this.obj.needsUpdate=true;
         }
     })
     IPython.WidgetManager.register_widget_view('DepthMaterialView', DepthMaterialView);
@@ -491,12 +469,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         },
         update: function() {
             MaterialView.prototype.update.call(this);
-            this.obj.color = this.model.get('color');
-            this.obj.linewidth = this.model.get('linewidth');
-            this.obj.linecap = this.model.get('linecap');
-            this.obj.linejoin = this.model.get('linejoin');
-            this.obj.vertexColors = this.model.get('vertexColors');
-            this.obj.fog = this.model.get('fog');
+            setProperties(this.obj, this.model);
+            this.obj.needsUpdate=true;
         }
     })
     IPython.WidgetManager.register_widget_view('LineBasicMaterial', LineBasicMaterial);
