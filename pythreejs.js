@@ -412,7 +412,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
       }
     })
     
-    setProperties: function(obj, model) {
+    function setProperties(obj, model) {
       console.log('in setProperties');
       for (var key in model) {
         obj[key] = model[key];
