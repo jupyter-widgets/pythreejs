@@ -428,6 +428,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         },
         update: function() {
             MaterialView.prototype.update.call(this);
+            console.log('updating basicmaterial');
             setProperties(this.obj, this.model);
             this.obj.needsUpdate=true;
         }
