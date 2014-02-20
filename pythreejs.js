@@ -395,11 +395,11 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
           this.obj.name = this.model.get('name');
           this.obj.side = this.model.get('side');
           this.obj.opacity = this.model.get('opacity');
-          this.obj.blending = THREE.this.model.get('blending');
+          this.obj.blending = THREE[this.model.get('blending')];
           this.obj.transparent = (this.obj.opacity<1.0);
-          this.obj.blendSrc = THREE.this.model.get('blendSrc');
-          this.obj.blendDst = THREE.this.model.get('blendDst');
-          this.obj.blendEquation = THREE.this.model.get('blendEquation');
+          this.obj.blendSrc = THREE[this.model.get('blendSrc')];
+          this.obj.blendDst = THREE[this.model.get('blendDst')];
+          this.obj.blendEquation = THREE[this.model.get('blendEquation')];
           this.obj.depthTest = this.model.get('depthTest');
           this.obj.depthWrite = this.model.get('depthWrite');
           this.obj.polygonOffset = this.model.get('polygonOffset');
@@ -424,8 +424,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.obj.wireframeLinewidth = this.model.get('wireframeLinewidth');
             this.obj.wireframeLinecap = this.model.get('wireframeLinecap');
             this.obj.wireframeLinejoin = this.model.get('wireframeLinejoin');
-            this.obj.shading = this.model.get('shading');
-            this.obj.vertexColors = this.model.get('vertexColors');
+            this.obj.shading = THREE[this.model.get('shading')];
+            this.obj.vertexColors = THREE[this.model.get('vertexColors')];
             this.obj.fog = this.model.get('fog');
             this.obj.lightMap = this.model.get('lightMap');
             this.obj.specularMap = this.model.get('specularMap');
@@ -449,7 +449,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.obj.emissive.set(this.model.get('emissive'));
             this.obj.reflectivity = this.model.get('reflectivity');
             this.obj.refractionRatio = this.model.get('refractionRatio');
-            this.obj.combine = his.model.get('combine');
+            this.obj.combine = THREE[this.model.get('combine')];
         }
     })
     IPython.WidgetManager.register_widget_view('LambertMaterialView', LambertMaterialView);
@@ -468,7 +468,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.obj.shininess = this.model.get('shininess');
             this.obj.reflectivity = this.model.get('reflectivity');
             this.obj.refractionRatio = this.model.get('refractionRatio');
-            this.obj.combine = this.model.get('combine');
+            this.obj.combine = THREE[this.model.get('combine')];
         }
     })
     IPython.WidgetManager.register_widget_view('PhongMaterialView', PhongMaterialView);
