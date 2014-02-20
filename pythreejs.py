@@ -65,6 +65,13 @@ class CircleGeometry(Geometry):
     thetaStart = CFloat(0, sync=True)
     thetaLength = CFloat(2*math.pi, sync=True)
     
+class LatheGeometry(Geometry):
+    _view_name = Unicode('LatheGeometryView', sync=True)
+    points = List(CFloat, sync=True)
+    segments = CInt(12, sync=True)
+    phiStart = CFloat(0, sync=True)
+    phiLength = CFloat(2*math.pi, sync=True)
+    
 class IcosahedronGeometry(Geometry):
     _view_name = Unicode('IcosahedronGeometryView', sync=True)
     radius = CFloat(1, sync=True)
