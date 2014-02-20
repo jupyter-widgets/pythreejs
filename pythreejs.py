@@ -14,7 +14,7 @@ class Color(Enum):
     def __init__(self, default_value='yellow', allow_none=False, **metadata):
         self.value = range(0x000000, 0xFFFFFF)
         self.allow_none = allow_none
-        super(Enum, self).__init__(self.value, default_value, allow_none, **metadata)
+        super(Color, self).__init__(self.value, default_value, allow_none, **metadata)
 
     def validate(self, obj, value):
         if value in self.value:
