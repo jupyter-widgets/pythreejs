@@ -412,6 +412,15 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
       }
     })
     
+    function setProperties(o, m) {
+      var object = o;
+      var model = m;
+      
+      for (var key in model) {
+        object[key] = model[key];
+      }
+    }
+    
     var BasicMaterialView = MaterialView.extend({
         render: function() {
             this.obj = new THREE.MeshBasicMaterial({color: this.model.get('color'),
@@ -420,18 +429,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         },
         update: function() {
             MaterialView.prototype.update.call(this);
-            this.obj.color.set(this.model.get('color'));
-            this.obj.wireframeLinewidth = this.model.get('wireframeLinewidth');
-            this.obj.wireframeLinecap = this.model.get('wireframeLinecap');
-            this.obj.wireframeLinejoin = this.model.get('wireframeLinejoin');
-            this.obj.shading = THREE[this.model.get('shading')];
-            this.obj.vertexColors = THREE[this.model.get('vertexColors')];
-            this.obj.fog = this.model.get('fog');
-            this.obj.lightMap = this.model.get('lightMap');
-            this.obj.specularMap = this.model.get('specularMap');
-            this.obj.envMap = this.model.get('envMap');
-            this.obj.skinning = this.model.get('skinning');
-            this.obj.morphTargets = this.model.get('morphTargets');
+            setProperties(this.obj, this.model);
             this.obj.needsUpdate=true;
         }
     })
