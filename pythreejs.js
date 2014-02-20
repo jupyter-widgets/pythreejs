@@ -275,6 +275,20 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     })
     IPython.WidgetManager.register_widget_view('CircleGeometryView', CircleGeometryView);
     
+    var LatheGeometryView = ThreeView.extend({
+        render: function() {
+            this.update()
+            return this.obj;
+        },
+        update: function() {
+            this.replace_obj(new THREE.LatheGeometry(this.model.get('segments'),
+                                                        this.model.get('points'),
+                                                        this.model.get('phiLength'),
+                                                        this.model.get('phiStart')));
+        }
+    })
+    IPython.WidgetManager.register_widget_view('CircleGeometryView', CircleGeometryView);
+    
     var IcosahedronGeometryView = ThreeView.extend({
         render: function() {
             this.update()
