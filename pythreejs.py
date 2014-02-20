@@ -173,7 +173,7 @@ class Material(Widget):
     
 class BasicMaterial(Material):
     _view_name = Unicode('BasicMaterialView', sync=True)
-    color = Color('yellow', sync=True)
+    color = Unicode('yellow', sync=True)
     wireframe = Bool(False, sync=True)
     wireframeLinewidth = CFloat(1.0, sync=True)
     wireframeLinecap = Unicode('round', sync=True)
@@ -189,7 +189,7 @@ class BasicMaterial(Material):
 
 class LambertMaterial(BasicMaterial):
     _view_name = Unicode('LambertMaterialView', sync=True)
-    ambient = Color('white', sync=True)
+    ambient = Unicode('white', sync=True)
     emissive = Unicode('black', sync=True)
     reflectivity = CFloat(1.0, sync=True)
     refractionRatio = CFloat(0.98, sync=True)
@@ -197,9 +197,9 @@ class LambertMaterial(BasicMaterial):
     
 class PhongMaterial(BasicMaterial):
     _view_name = Unicode('PhongMaterialView', sync=True)
-    ambient = Color('white', sync=True)
-    emissive = Color('black', sync=True)
-    specular = Color('darkgray', sync=True)
+    ambient = Unicode('white', sync=True)
+    emissive = Unicode('black', sync=True)
+    specular = Unicode('darkgray', sync=True)
     shininess = CFloat(30, sync=True)
     reflectivity = CFloat(1.0, sync=True)
     refractionRatio = CFloat(0.98, sync=True)
