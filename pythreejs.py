@@ -197,9 +197,9 @@ class LambertMaterial(BasicMaterial):
     
 class PhongMaterial(BasicMaterial):
     _view_name = Unicode('PhongMaterialView', sync=True)
-    ambient = Any('white', sync=True)
-    emissive = Any('black', sync=True)
-    specular = Any('darkgray', sync=True)
+    ambient = Color('white', sync=True)
+    emissive = Color('black', sync=True)
+    specular = Color('darkgray', sync=True)
     shininess = CFloat(30, sync=True)
     reflectivity = CFloat(1.0, sync=True)
     refractionRatio = CFloat(0.98, sync=True)
