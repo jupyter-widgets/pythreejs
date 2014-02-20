@@ -10,6 +10,17 @@ def vector3(trait_type, default=None, **kwargs):
     return List(trait_type, default_value=default, 
                 minlen=3, maxlen=3, allow_none=False, **kwargs)
 
+class Color(Enum):
+    def __init__(self, default_value='yellow', allow_none=False, **metadata):
+        self.value = range(0x000000, 0xFFFFFF)
+        self.allow_none = allow_none
+        super(Enum, self).__init__(self.value, default_value, allow_none, **metadata)
+
+    def validate(self, obj, value):
+        if value in self.value:
+            return value
+        self.error(obj, value)
+
 
 class Object3d(Widget):
     """
@@ -67,7 +78,7 @@ class CircleGeometry(Geometry):
     
 class LatheGeometry(Geometry):
     _view_name = Unicode('LatheGeometryView', sync=True)
-    points = List(CFloat, sync=True)
+    points = List(List(CFloat), sync=True)
     segments = CInt(12, sync=True)
     phiStart = CFloat(0, sync=True)
     phiLength = CFloat(2*math.pi, sync=True)
@@ -162,7 +173,7 @@ class Material(Widget):
     
 class BasicMaterial(Material):
     _view_name = Unicode('BasicMaterialView', sync=True)
-    color = Unicode('yellow', sync=True)
+    color = Color('yellow', sync=True)
     wireframe = Bool(False, sync=True)
     wireframeLinewidth = CFloat(1.0, sync=True)
     wireframeLinecap = Unicode('round', sync=True)
@@ -178,7 +189,7 @@ class BasicMaterial(Material):
 
 class LambertMaterial(BasicMaterial):
     _view_name = Unicode('LambertMaterialView', sync=True)
-    ambient = Unicode('white', sync=True)
+    ambient = Color('white', sync=True)
     emissive = Unicode('black', sync=True)
     reflectivity = CFloat(1.0, sync=True)
     refractionRatio = CFloat(0.98, sync=True)
