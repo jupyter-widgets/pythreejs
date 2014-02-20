@@ -418,6 +418,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
       
       for (var key in model) {
         object[key] = model[key];
+        console.log(key);
       }
     }
     
