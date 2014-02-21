@@ -148,12 +148,9 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
 
 
     var SceneView = Object3dView.extend({
-        render: function() {
-            var scene = this.obj = new THREE.Scene();
-            this.update_children([], this.model.get('children'))
-            this.update();
-            return scene;
-        }    
+        new_obj: function() {
+            return new THREE.Scene();
+        }
     });
     IPython.WidgetManager.register_widget_view('SceneView', SceneView);
 
