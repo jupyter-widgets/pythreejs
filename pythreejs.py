@@ -1,7 +1,7 @@
 # Import the base Widget class and the traitlets Unicode class.
 from IPython.html.widgets.widget import Widget, DOMWidget
 from IPython.utils.traitlets import (Unicode, Int, Instance, Enum, List, Float, 
-                                     Any, CFloat, Bool, This, CInt)
+                                     Any, CFloat, Bool, This, CInt, TraitType)
 import numpy
 
 def vector3(trait_type=CFloat, default=None, **kwargs):
