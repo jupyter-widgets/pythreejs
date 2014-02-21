@@ -183,11 +183,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     IPython.WidgetManager.register_widget_view('SceneView', SceneView);
 
     var SurfaceGeometryView = ThreeView.extend({
-        render: function() {
-            this.update()
-            return this.obj;
-        },
-        update: function() {
+        update_object_parameters: function() {
             var obj = new THREE.PlaneGeometry(this.model.get('width'),
                                               this.model.get('height'),
                                               this.model.get('width_segments'),
@@ -197,6 +193,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             for (var i = 0, len = obj.vertices.length; i<len; i++) {
                 obj.vertices[i].z = z[i];
             }
+        },
+        needs_update: function() {
             obj.computeCentroids()
             obj.computeFaceNormals();
             obj.computeVertexNormals();
@@ -206,11 +204,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     IPython.WidgetManager.register_widget_view('SurfaceGeometryView', SurfaceGeometryView);
 
     var FaceGeometryView = ThreeView.extend({
-        render: function() {
-            this.update();
-            return this.obj;
-        },
-        update: function() {
+
+        update_object_parameters: function() {
             // Construct triangles
             var geometry = new THREE.Geometry();
             var vertices = this.model.get('vertices');
@@ -232,6 +227,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                 geometry.faces.push(new THREE.Face3(f0, f1, f2));
                 geometry.faces.push(new THREE.Face3(f0, f2, f3));
             }
+        }
+        needs_update: function() {
             geometry.mergeVertices();
             geometry.computeCentroids();
             geometry.computeFaceNormals();
@@ -410,24 +407,14 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     })
     IPython.WidgetManager.register_widget_view('PolyhedronGeometryView', PolyhedronGeometryView);
     
-    function setProperties(obj, model) {
-      console.log('in setProperties');
-      for (var key in model) {
-        obj[key] = model[key];
-        console.log(key);
-      }
-    }
-    
     var MaterialView = ThreeView.extend({
-        render: function() {
-          this.obj = new THREE.Material();
-          
-          return this.obj;
+        new_properties: function() {
+            ThreeView.prototype.new_properties.call(this);
+            this.scalar_properties.push('color');
         },
-      update: function() {
-          setProperties(this.obj, this.model);
-          this.obj.needsUpdate = true;
-      }
+        new_obj: function() {
+            return new THREE.Material();
+        }
     })
     IPython.WidgetManager.register_widget_view('MaterialView', MaterialView);
     
