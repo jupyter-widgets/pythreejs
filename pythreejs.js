@@ -134,6 +134,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         },
         update: function() {
             if (this.model.hasChanged('children')) {
+                console.log('updating children',this.model.previous('children'), this.model.get('children'));
                 // Is the very first this.model.previous('children') the empty list, so that the list initially gets populated?
                 this.update_children(this.model.previous('children'), this.model.get('children'));
             }
