@@ -31,7 +31,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             if ( Detector.webgl )
                 this.renderer = new THREE.WebGLRenderer( {antialias:true} );
             else
-                this.renderer = new THREE.CanvasRenderer(); 
+                this.renderer = new THREE.CanvasRenderer();
             this.renderer.setSize( width, height);
             this.$el.empty().append( this.renderer.domElement );
             this.camera = this.create_child_view(this.model.get('camera'));
@@ -40,7 +40,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             console.log('renderer', this.model, this.scene.obj, this.camera.obj);
             this.update();
             var that = this;
-            this.controls = this.create_child_view(this.model.get('controls'), {dom: this.renderer.domElement, 
+            this.controls = this.create_child_view(this.model.get('controls'), {dom: this.renderer.domElement,
                                                                          update: function(fn, context) {
                                                                                     that.on('render:update', fn, context);
                                                                                  }
@@ -56,7 +56,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         update : function(){
             console.log('update renderer', this.scene.obj, this.camera.obj);
             return IPython.DOMWidgetView.prototype.update.call(this);
-        },        
+        },
     });
 
     IPython.WidgetManager.register_widget_view('RendererView', RendererView);
@@ -106,7 +106,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         }
     });
 
-    
+
     var Object3dView = ThreeView.extend({
         new_properties: function() {
             ThreeView.prototype.new_properties.call(this);
@@ -124,7 +124,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                             that.obj.remove(view.obj);
                             view.off('replace_obj', null, that);
                             that.delete_child_view(deleted);
-                         }, 
+                         },
                          function(added) {
                             var view = that.create_child_view(added);
                             that.obj.add(view.obj);
@@ -173,7 +173,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.controlled_view = this.model.get('controlling').views[0];
             this.obj = new THREE.OrbitControls(this.controlled_view.obj, this.options.dom);
             this.options.update(this.obj.update, this.obj);
-            delete this.options.renderer; 
+            delete this.options.renderer;
         }
     });
     IPython.WidgetManager.register_widget_view('OrbitControlsView', OrbitControlsView);
@@ -359,7 +359,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         }
     })
     IPython.WidgetManager.register_widget_view('PolyhedronGeometryView', PolyhedronGeometryView);
-    
+
     var MaterialView = ThreeView.extend({
         new_properties: function() {
             ThreeView.prototype.new_properties.call(this);
@@ -447,32 +447,32 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         new_obj: function() {
             return new THREE.AmbientLight(this.model.get('color'));
         }
-    });   
+    });
     IPython.WidgetManager.register_widget_view('AmbientLight', AmbientLight);
-    
+
     var DirectionalLight = Basic3dObject.extend({
         new_obj: function() {
             return new THREE.DirectionalLight(this.model.get('color'), this.model.get('intensity'));
         }
-    });   
+    });
     IPython.WidgetManager.register_widget_view('DirectionalLight', DirectionalLight);
 
     var PointLight = Basic3dObject.extend({
         new_obj: function() {
-            return new THREE.PointLight(this.model.get('color'), 
+            return new THREE.PointLight(this.model.get('color'),
                                         this.model.get('intensity'),
                                         this.model.get('distance'));
         }
-    });   
+    });
     IPython.WidgetManager.register_widget_view('PointLight', PointLight);
-    
+
     var SpotLight = Basic3dObject.extend({
         new_obj: function() {
-            return new THREE.SpotLight(this.model.get('color'), 
+            return new THREE.SpotLight(this.model.get('color'),
                                         this.model.get('intensity'),
                                         this.model.get('distance'));
         }
-    });   
+    });
     IPython.WidgetManager.register_widget_view('SpotLight', SpotLight);
 
     var HemisphereLight = Basic3dObject.extend({
@@ -485,4 +485,3 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     IPython.WidgetManager.register_widget_view('HemisphereLight', HemisphereLight);
 
 });
-
