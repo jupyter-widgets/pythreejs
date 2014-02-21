@@ -61,36 +61,59 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
 
     IPython.WidgetManager.register_widget_view('RendererView', RendererView);
 
-    var ThreeView = IPython.WidgetView.extend({        
+    var ThreeView = IPython.WidgetView.extend({
+        // list of model keys
+        array_props: [],
+        scalar_props: [],
+        render: function() {
+            this.new_properties();
+            this.obj = this.new_obj();
+            this.update()
+            return this.obj;
+        },
+        new_properties: function() {},
+        update: function() {
+            //this.replace_obj(this.new_obj());
+            this.update_object_parameters();
+            this.needs_update();
+        },
+
         replace_obj: function(new_obj) {
             var old_obj = this.obj;
             this.obj = new_obj;
             this.trigger('replace_obj', old_obj, new_obj);
         }
+        new_obj: function() {
+        },
+
+        needs_update: function() {
+            this.obj.needsUpdate = true;
+        }
+        update_object_parameters: function() {
+            var array_props = this.array_props;
+            for (var p_index=0,len=array_props.length; p_index<len; p_index++) {
+                var p = array_props[p_index];
+                var prop = this.model.get(p)
+                if (prop.length !== 0) {
+                    // the default is the empty list
+                    this.obj[p].fromArray(prop);
+                }
+            }
+            var scalar_props = this.scalar_props;
+            for (var p_index=0,len=scalar_props.length; p_index<len; p_index++) {
+                var p = scalar_props[p_index]
+                this.obj[p] = this.model.get(p);
+            }
+        }
     });
 
     
     var Object3dView = ThreeView.extend({
-        // this is meant to be called *after* the object has been created, and modifies the object
-        // to reflect rotation, matrix, etc.
-        update_object_parameters: function() {
-            var array_props = ['position', 'rotation', 'up', 'scale']
-            for (var prop=0,len=array_props.length; prop<len; prop++) {
-                var p = array_props[prop];
-                if (p !== null) {
-                    this.obj[p].fromArray(this.model.get(p));
-                }
-            }
-            var bool_props = ['visible', 'castShadow', 'receiveShadow']
-            for (var prop=0,len=bool_props.length; prop<len; prop++) {
-                var p = bool_props[prop]
-                this.obj[p] = this.model.get(p);
-            }
-            if (this.model.get('matrix').length===16) {
-                this.obj.matrix.fromArray(this.model.get('matrix'));
-            }
-        },
-        
+        new_properties: function() {
+            ThreeView.prototype.new_properties.call(this);
+            this.array_props.push('position', 'rotation', 'up', 'scale', 'matrix');
+            this.scalar_props.push('visible', 'castShadow', 'receiveShadow');
+        }
         update_children: function(oldchildren, newchildren) {
             var that = this;
             this.do_diff(oldchildren, newchildren, function(deleted) {
@@ -106,20 +129,15 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                          });
         },
 
-        render: function() {
-            this.obj = this.new_obj();
-            this.update_children([], this.model.get('children'));
-            this.update();
-        },
         new_obj: function() {
             return new THREE.Object3D();
         },
         update: function() {
-            //this.replace_obj(this.new_obj());
-            this.update_object_parameters();
             if (this.model.hasChanged('children')) {
+                // Is the very first this.model.previous('children') the empty list, so that the list initially gets populated?
                 this.update_children(this.model.previous('children'), this.model.get('children'));
             }
+            ThreeView.prototype.update.call(this);
         },
         replace_child_obj: function(old_obj, new_obj) {
             this.obj.remove(old_obj);
@@ -128,10 +146,17 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         },
     });
     IPython.WidgetManager.register_widget_view('Object3dView', SceneView);
-    
+
     var CameraView = Object3dView.extend({
+        new_properties: function() {
+            Object3dView.prototype.new_properties.call(this);
+            this.scalar_properties.push('fov', 'ratio');
+        },
         new_obj: function() {
             return new THREE.PerspectiveCamera( this.model.get('fov'), this.model.get('ratio'), 1, 1000 );
+        },
+        needs_update: function() {
+            this.obj.updateProjectionMatrix()
         }
     });
     IPython.WidgetManager.register_widget_view('CameraView', CameraView);
