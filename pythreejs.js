@@ -76,6 +76,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             // initialize properties arrays
             this.array_properties = [];
             this.scalar_properties = [];
+            this.enum_properties = [];
             // TODO: handle submodel properties?
         },
         update: function() {
@@ -108,6 +109,11 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             for (var p_index=0,len=scalar_properties.length; p_index<len; p_index++) {
                 var p = scalar_properties[p_index]
                 this.obj[p] = this.model.get(p);
+            }
+            var enum_properties = this.enum_properties;
+            for (var p_index=0,len=enum_properties.length; p_index<len; p_index++) {
+                var p = enum_properties[p_index]
+                this.obj[p] = THREE[this.model.get(p)];
             }
         }
     });
@@ -368,6 +374,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         new_properties: function() {
             ThreeView.prototype.new_properties.call(this);
             this.scalar_properties.push('color');
+            this.enum_properties.push('side');
         },
         new_obj: function() {return new THREE.Material();},
         needs_update: function() {
