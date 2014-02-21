@@ -62,8 +62,12 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     IPython.WidgetManager.register_widget_view('RendererView', RendererView);
 
     var ThreeView = IPython.WidgetView.extend({
-        render: function() {
+        initialize: function () {
+            IPython.WidgetView.prototype.initialize.apply(this, arguments);
             this.new_properties();
+        },
+
+        render: function() {
             this.obj = this.new_obj();
             this.update()
             return this.obj;
