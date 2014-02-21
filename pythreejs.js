@@ -77,6 +77,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.array_properties = [];
             this.scalar_properties = [];
             this.enum_properties = [];
+            this.set_properties = []; // properties we set using the set method
             // TODO: handle submodel properties?
         },
         update: function() {
@@ -115,6 +116,12 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                 var p = enum_properties[p_index]
                 this.obj[p] = THREE[this.model.get(p)];
             }
+            var set_properties = this.set_properties;
+            for (var p_index=0,len=set_properties.length; p_index<len; p_index++) {
+                var p = set_properties[p_index]
+                this.obj[p].set(this.model.get(p));
+            }
+
         }
     });
 
@@ -373,7 +380,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     var MaterialView = ThreeView.extend({
         new_properties: function() {
             ThreeView.prototype.new_properties.call(this);
-            this.scalar_properties.push('color');
+            this.set_properties.push('color');
             this.enum_properties.push('side');
         },
         new_obj: function() {return new THREE.Material();},
