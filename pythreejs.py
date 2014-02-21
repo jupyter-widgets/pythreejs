@@ -4,11 +4,22 @@ from IPython.utils.traitlets import (Unicode, Int, Instance, Enum, List, Float,
                                      Any, CFloat, Bool, This, CInt)
 import numpy
 
-def vector3(trait_type, default=None, **kwargs):
+def vector3(trait_type=CFloat, default=None, **kwargs):
     if default is None: 
         default=[0,0,0]
     return List(trait_type, default_value=default, 
                 minlen=3, maxlen=3, allow_none=False, **kwargs)
+
+class Color(Enum):
+    def __init__(self, default_value='yellow', allow_none=False, **metadata):
+        self.value = range(0x000000, 0xFFFFFF)
+        self.allow_none = allow_none
+        super(Color, self).__init__(self.value, default_value, allow_none, **metadata)
+
+    def validate(self, obj, value):
+        if value in self.value:
+            return value
+        self.error(obj, value)
 
 
 class Object3d(Widget):
@@ -41,6 +52,85 @@ class Geometry(Widget):
 class SphereGeometry(Geometry):
     _view_name = Unicode('SphereGeometryView', sync=True)
     radius = CFloat(1, sync=True)
+    
+class CylinderGeometry(Geometry):
+    _view_name = Unicode('CylinderGeometryView', sync=True)
+    radiusTop = CFloat(1, sync=True)
+    radiusBottom = CFloat(1, sync=True)
+    height = CFloat(1, sync=True)
+    radiusSegments = CFloat(1, sync=True)
+    heightSegments = CFloat(1, sync=True)
+    openEnded = Bool(False, sync=True)
+    
+class CubeGeometry(Geometry):
+    _view_name = Unicode('CubeGeometryView', sync=True)
+    width = CFloat(1, sync=True)
+    height = CFloat(1, sync=True)
+    depth = CFloat(1, sync=True)
+    widthSegments = CFloat(1, sync=True)
+    heightSegments = CFloat(1, sync=True)
+    depthSegments = CFloat(1, sync=True)
+    
+class CircleGeometry(Geometry):
+    _view_name = Unicode('CircleGeometryView', sync=True)
+    radius = CFloat(1, sync=True)
+    segments = CFloat(8, sync=True)
+    thetaStart = CFloat(0, sync=True)
+    thetaLength = CFloat(2*math.pi, sync=True)
+    
+class LatheGeometry(Geometry):
+    _view_name = Unicode('LatheGeometryView', sync=True)
+    points = List(vector3(), sync=True)
+    segments = CInt(12, sync=True)
+    phiStart = CFloat(0, sync=True)
+    phiLength = CFloat(2*math.pi, sync=True)
+    
+class IcosahedronGeometry(Geometry):
+    _view_name = Unicode('IcosahedronGeometryView', sync=True)
+    radius = CFloat(1, sync=True)
+    detail = CFloat(0, sync=True)
+    
+class OctahedronGeometry(Geometry):
+    _view_name = Unicode('OctahedronGeometryView', sync=True)
+    radius = CFloat(1, sync=True)
+    detail = CFloat(0, sync=True)
+    
+class PlaneGeometry(Geometry):
+    _view_name = Unicode('PlaneGeometryView', sync=True)
+    width = CFloat(1, sync=True)
+    height = CFloat(1, sync=True)
+    widthSegments = CFloat(1, sync=True)
+    heightSegments = CFloat(1, sync=True)
+    
+class TetrahedronGeometry(Geometry):
+    _view_name = Unicode('TetrahedronGeometryView', sync=True)
+    radius = CFloat(1, sync=True)
+    detail = CFloat(0, sync=True)
+    
+class TorusGeometry(Geometry):
+    _view_name = Unicode('TorusGeometryView', sync=True)
+    radius = CFloat(1, sync=True)
+    tube = CFloat(1, sync=True)
+    radialSegments = CFloat(1, sync=True)
+    tubularSegments = CFloat(1, sync=True)
+    arc = CFloat(math.pi*2, sync=True)
+    
+class TorusKnotGeometry(Geometry):
+    _view_name = Unicode('TorusKnotGeometryView', sync=True)
+    radius = CFloat(1, sync=True)
+    tube = CFloat(1, sync=True)
+    radialSegments = CFloat(10, sync=True)
+    tubularSegments = CFloat(10, sync=True)
+    p = CFloat(2, sync=True)
+    q = CFloat(3, sync=True)
+    heightScale = CFloat(1, sync=True)
+    
+class PolyhedronGeometry(Geometry):
+    _view_name = Unicode('PolyhedronGeometryView', sync=True)
+    radius = CFloat(1, sync=True)
+    detail = Int(0, sync=True)
+    vertices = List(List(CFloat), sync=True)
+    faces = List(List(CInt), sync=True)
 
 class SurfaceGeometry(Geometry):
     """
@@ -61,12 +151,75 @@ class FaceGeometry(Geometry):
     vertices = List(CFloat, sync=True) # [x0, y0, z0, x1, y1, z1, x2, y2, z2, ...]
     face3 = List(CInt, sync=True) # [v0,v1,v2, v0,v1,v2, v0,v1,v2, ...]
     face4 = List(CInt, sync=True) # [v0,v1,v2,v3, v0,v1,v2,v3, v0,v1,v2,v3, ...]
-
+    
 class Material(Widget):
     _view_name = Unicode('MaterialView', sync=True)
-    color = Any('yellow', sync=True)
+    # id = TODO
+    name = Unicode('', sync=True) 
+    side = Enum(['FrontSide', 'BackSide', 'DoubleSide'], 'FrontSide',  sync=True) 
     opacity = CFloat(1.0, sync=True)
+    transparent = Bool(False, sync=True)
+    blending = Enum(['NoBlending', 'NormalBlending', 'AdditiveBlending', 'SubtractiveBlending', 'MultiplyBlending', 'CustomBlending'], 'NormalBlending', sync=True) 
+    blendSrc = Enum(['ZeroFactor', 'OneFactor', 'SrcColorFactor', 'OneMinusSrcColorFactor', 'SrcAlphaFactor', 'OneMinusSrcAlphaFactor', 'DstAlphaFactor', 'OneMinusDstAlphaFactor'], 'SrcAlphaFactor', sync=True) 
+    blendDst = Enum(['DstColorFactor', 'OneMinusDstColorFactor', 'SrcAlphaSaturateFactor'], 'OneMinusDstColorFactor', sync=True) # add to js side
+    blendEquation = Enum(['AddEquation', 'SubtractEquation', 'ReverseSubtractEquation'], 'AddEquation', sync=True) # add to js side
+    depthTest = Bool(True, sync=True) 
+    depthWrite = Bool(True, sync=True) 
+    polygonOffset = Bool(False, sync=True) 
+    polygonOffsetFactor = CFloat(1.0, sync=True) 
+    polygonOffsetUnits = CFloat(1.0, sync=True) 
+    alphaTest = CFloat(1.0, sync=True) 
+    overdraw = CFloat(1.0, sync=True) 
+    visible = Bool(True, sync=True) 
+    needsUpdate = Bool(True, sync=True) 
+    
+class BasicMaterial(Material):
+    _view_name = Unicode('BasicMaterialView', sync=True)
+    color = Unicode('yellow', sync=True)
     wireframe = Bool(False, sync=True)
+    wireframeLinewidth = CFloat(1.0, sync=True)
+    wireframeLinecap = Unicode('round', sync=True)
+    wireframeLinejoin = Unicode('round', sync=True)
+    shading = Enum(['SmoothShading', 'FlatShading', 'NoShading'], 'SmoothShading', sync=True)
+    vertexColors = Enum(['NoColors', 'FaceColors', 'VertexColors'], 'NoColors', sync=True)
+    fog = Bool(False, sync=True)
+    lightMap = Any(None, sync=True)
+    specularMap = Any(None, sync=True)
+    envMap = Any(None, sync=True)
+    skinning = Bool(False, sync=True)
+    morphTargets = Bool(False, sync=True)
+
+class LambertMaterial(BasicMaterial):
+    _view_name = Unicode('LambertMaterialView', sync=True)
+    ambient = Unicode('white', sync=True)
+    emissive = Unicode('black', sync=True)
+    reflectivity = CFloat(1.0, sync=True)
+    refractionRatio = CFloat(0.98, sync=True)
+    combine = Enum(['MultiplyOperation', 'MixOperation', 'AddOperation'], 'MultiplyOperation', sync=True)
+    
+class PhongMaterial(BasicMaterial):
+    _view_name = Unicode('PhongMaterialView', sync=True)
+    ambient = Unicode('white', sync=True)
+    emissive = Unicode('black', sync=True)
+    specular = Unicode('darkgray', sync=True)
+    shininess = CFloat(30, sync=True)
+    reflectivity = CFloat(1.0, sync=True)
+    refractionRatio = CFloat(0.98, sync=True)
+    combine = Enum(['MultiplyOperation', 'MixOperation', 'AddOperation'], 'MultiplyOperation', sync=True)
+    
+class DepthMaterial(Material):
+    _view_name = Unicode('DepthMaterialView', sync=True)
+    wireframe = Bool(False, sync=True)
+    wireframeLinewidth = CFloat(1.0, sync=True)
+
+class LineBasicMaterial(Material):
+    _view_name = Unicode('LineBasicMaterial', sync=True)
+    color = Any('yellow', sync=True)
+    linewidth = CFloat(1.0, sync=True)
+    linecap = Any('round', sync=True)#todo Enum
+    linejoin = Any('round', sync=True)#todo Enum
+    fog = Bool(False, sync=True) 
+    vertexColors = Bool(False, sync=True)
 
 class Mesh(Object3d):
     _view_name = Unicode('MeshView', sync=True)

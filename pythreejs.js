@@ -225,24 +225,253 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         }
     })
     IPython.WidgetManager.register_widget_view('SphereGeometryView', SphereGeometryView);
+    
+    var CylinderGeometryView = ThreeView.extend({
+        render: function() {
+            this.update()
+            return this.obj;
+        },
+        update: function() {
+            this.replace_obj(new THREE.CylinderGeometry(this.model.get('radiusTop'),
+                                                        this.model.get('radiusBottom'),
+                                                        this.model.get('height'),
+                                                        this.model.get('radiusSegments'),
+                                                        this.model.get('heightSegments'),
+                                                        this.model.get('openEnded')));
+        }
+    })
+    IPython.WidgetManager.register_widget_view('CylinderGeometryView', CylinderGeometryView);
+    
+    var CubeGeometryView = ThreeView.extend({
+        render: function() {
+            this.update()
+            return this.obj;
+        },
+        update: function() {
+            this.replace_obj(new THREE.CubeGeometry(this.model.get('width'),
+                                                        this.model.get('height'),
+                                                        this.model.get('depth'),
+                                                        this.model.get('widthSegments'),
+                                                        this.model.get('heightSegments'),
+                                                        this.model.get('depthSegments')));
+        }
+    })
+    IPython.WidgetManager.register_widget_view('CubeGeometryView', CubeGeometryView);
+    
+    var CircleGeometryView = ThreeView.extend({
+        render: function() {
+            this.update()
+            return this.obj;
+        },
+        update: function() {
+            this.replace_obj(new THREE.CircleGeometry(this.model.get('radius'),
+                                                        this.model.get('segments'),
+                                                        this.model.get('thetaStart'),
+                                                        this.model.get('thetaLength')));
+        }
+    })
+    IPython.WidgetManager.register_widget_view('CircleGeometryView', CircleGeometryView);
+    
+    var LatheGeometryView = ThreeView.extend({
+        render: function() {
+            this.update()
+            return this.obj;
+        },
+        update: function() {
+            this.replace_obj(new THREE.LatheGeometry(this.model.get('segments'),
+                                                        this.model.get('points'),
+                                                        this.model.get('phiLength'),
+                                                        this.model.get('phiStart')));
+        }
+    })
+    IPython.WidgetManager.register_widget_view('CircleGeometryView', CircleGeometryView);
+    
+    var IcosahedronGeometryView = ThreeView.extend({
+        render: function() {
+            this.update()
+            return this.obj;
+        },
+        update: function() {
+            this.replace_obj(new THREE.IcosahedronGeometry(this.model.get('radius'),
+                                                        this.model.get('detail')));
+        }
+    })
+    IPython.WidgetManager.register_widget_view('IcosahedronGeometryView', IcosahedronGeometryView);
+    
+    var OctahedronGeometryView = ThreeView.extend({
+        render: function() {
+            this.update()
+            return this.obj;
+        },
+        update: function() {
+            this.replace_obj(new THREE.OctahedronGeometry(this.model.get('radius'),
+                                                        this.model.get('detail')));
+        }
+    })
+    IPython.WidgetManager.register_widget_view('OctahedronGeometryView', OctahedronGeometryView);
+    
+    var PlaneGeometryView = ThreeView.extend({
+        render: function() {
+            this.update()
+            return this.obj;
+        },
+        update: function() {
+            this.replace_obj(new THREE.PlaneGeometry(this.model.get('width'),
+                                                        this.model.get('height'),
+                                                        this.model.get('widthSegments'),
+                                                        this.model.get('heightSegments')));
+        }
+    })
+    IPython.WidgetManager.register_widget_view('PlaneGeometryView', PlaneGeometryView);
 
+    var TetrahedronGeometryView = ThreeView.extend({
+        render: function() {
+            this.update()
+            return this.obj;
+        },
+        update: function() {
+            this.replace_obj(new THREE.TetrahedronGeometry(this.model.get('radius'),
+                                                        this.model.get('detail')));
+        }
+    })
+    IPython.WidgetManager.register_widget_view('TetrahedronGeometryView', TetrahedronGeometryView);
+    
+    var TorusGeometryView = ThreeView.extend({
+        render: function() {
+            this.update()
+            return this.obj;
+        },
+        update: function() {
+            this.replace_obj(new THREE.TorusGeometry(this.model.get('radius'),
+                                                        this.model.get('tube'),
+                                                        this.model.get('radialSegments'),
+                                                        this.model.get('tubularSegments'),
+                                                        this.model.get('arc')));
+        }
+    })
+    IPython.WidgetManager.register_widget_view('TorusGeometryView', TorusGeometryView);
+    
+    var TorusKnotGeometryView = ThreeView.extend({
+        render: function() {
+            this.update()
+            return this.obj;
+        },
+        update: function() {
+            this.replace_obj(new THREE.TorusKnotGeometry(this.model.get('radius'),
+                                                        this.model.get('tube'),
+                                                        this.model.get('radialSegments'),
+                                                        this.model.get('tubularSegments'),
+                                                        this.model.get('p'),
+                                                        this.model.get('q'),
+                                                        this.model.get('heightScale')));
+        }
+    })
+    IPython.WidgetManager.register_widget_view('TorusKnotGeometryView', TorusKnotGeometryView);
+    
+    var PolyhedronGeometryView = ThreeView.extend({
+        render: function() {
+            this.update()
+            return this.obj;
+        },
+        update: function() {
+            this.replace_obj(new THREE.PolyhedronGeometry(this.model.get('vertices'),
+                                                          this.model.get('faces'),
+                                                          this.model.get('radius'),
+                                                          this.model.get('detail')));
+        }
+    })
+    IPython.WidgetManager.register_widget_view('PolyhedronGeometryView', PolyhedronGeometryView);
+    
+    function setProperties(obj, model) {
+      console.log('in setProperties');
+      for (var key in model) {
+        obj[key] = model[key];
+        console.log(key);
+      }
+    }
     
     var MaterialView = ThreeView.extend({
+        render: function() {
+          this.obj = new THREE.Material();
+          
+          return this.obj;
+        },
+      update: function() {
+          setProperties(this.obj, this.model);
+          this.obj.needsUpdate = true;
+      }
+    })
+    IPython.WidgetManager.register_widget_view('MaterialView', MaterialView);
+    
+    var BasicMaterialView = MaterialView.extend({
+        render: function() {
+            this.obj = new THREE.MeshBasicMaterial({color: this.model.get('color'),
+                                                      side: THREE.DoubleSide});
+            return this.obj;
+        },
+        update: function() {
+            MaterialView.prototype.update.call(this);
+            setProperties(this.obj, this.model);
+            this.obj.needsUpdate=true;
+        }
+    })
+    IPython.WidgetManager.register_widget_view('BasicMaterialView', BasicMaterialView);
+    
+    var LambertMaterialView = BasicMaterialView.extend({
         render: function() {
             this.obj = new THREE.MeshLambertMaterial({color: this.model.get('color'), 
                                                       side: THREE.DoubleSide});
             return this.obj;
         },
         update: function() {
-            this.obj.color.set(this.model.get('color'));
-            this.obj.opacity = this.model.get('opacity');
-            this.obj.transparent = (this.obj.opacity<1.0);
-            this.obj.wireframe = this.model.get('wireframe');
+            BasicMaterialView.prototype.update.call(this);
+            setProperties(this.obj, this.model);
             this.obj.needsUpdate=true;
         }
     })
-        IPython.WidgetManager.register_widget_view('MaterialView', MaterialView);
+    IPython.WidgetManager.register_widget_view('LambertMaterialView', LambertMaterialView);
+    
+    var PhongMaterialView = BasicMaterialView.extend({
+        render: function() {
+            this.obj = new THREE.MeshPhongMaterial({color: this.model.get('color'), 
+                                                      side: THREE.DoubleSide});
+            return this.obj;
+        },
+        update: function() {
+            BasicMaterialView.prototype.update.call(this);
+            setProperties(this.obj, this.model);
+            this.obj.needsUpdate=true;
+        }
+    })
+    IPython.WidgetManager.register_widget_view('PhongMaterialView', PhongMaterialView);
+    
+    var DepthMaterialView = MaterialView.extend({
+        render: function() {
+            this.obj = new THREE.MeshDepthMaterial({wireframe : this.model.get('wireframe'), 
+                                                      wireframeLinewidth : this.model.get('wireframeLinewidth')});
+            return this.obj;
+        },
+        update: function() {
+            MaterialView.prototype.update.call(this);
+            this.obj.needsUpdate=true;
+        }
+    })
+    IPython.WidgetManager.register_widget_view('DepthMaterialView', DepthMaterialView);
 
+    var LineBasicMaterial = MaterialView.extend({
+        render: function() {
+            this.obj = new THREE.LineBasicMaterial({color: this.model.get('color'), 
+                                                      side: THREE.DoubleSide});
+            return this.obj;
+        },
+        update: function() {
+            MaterialView.prototype.update.call(this);
+            setProperties(this.obj, this.model);
+            this.obj.needsUpdate=true;
+        }
+    })
+    IPython.WidgetManager.register_widget_view('LineBasicMaterial', LineBasicMaterial);
+    
     var MeshView = Object3dView.extend({
         // if we replace the geometry or material, do a full re-render
         // TODO: make sure we don't set multiple such handlers, so this should probably happen in the init, not the render
