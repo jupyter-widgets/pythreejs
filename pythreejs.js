@@ -82,13 +82,13 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             var old_obj = this.obj;
             this.obj = new_obj;
             this.trigger('replace_obj', old_obj, new_obj);
-        }
+        },
         new_obj: function() {
         },
 
         needs_update: function() {
             this.obj.needsUpdate = true;
-        }
+        },
         update_object_parameters: function() {
             var array_props = this.array_props;
             for (var p_index=0,len=array_props.length; p_index<len; p_index++) {
@@ -113,7 +113,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             ThreeView.prototype.new_properties.call(this);
             this.array_props.push('position', 'rotation', 'up', 'scale', 'matrix');
             this.scalar_props.push('visible', 'castShadow', 'receiveShadow');
-        }
+        },
         update_children: function(oldchildren, newchildren) {
             var that = this;
             this.do_diff(oldchildren, newchildren, function(deleted) {
