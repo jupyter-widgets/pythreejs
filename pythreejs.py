@@ -4,7 +4,7 @@ from IPython.utils.traitlets import (Unicode, Int, Instance, Enum, List, Float,
                                      Any, CFloat, Bool, This, CInt)
 import numpy
 
-def vector3(trait_type, default=None, **kwargs):
+def vector3(trait_type=CFloat, default=None, **kwargs):
     if default is None: 
         default=[0,0,0]
     return List(trait_type, default_value=default, 
