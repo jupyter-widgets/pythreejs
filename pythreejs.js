@@ -180,9 +180,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
 
 
     var SceneView = Object3dView.extend({
-        new_obj: function() {
-            return new THREE.Scene();
-        }
+        new_obj: function() {return new THREE.Scene();}
     });
     IPython.WidgetManager.register_widget_view('SceneView', SceneView);
 
@@ -365,9 +363,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             ThreeView.prototype.new_properties.call(this);
             this.scalar_properties.push('color');
         },
-        new_obj: function() {
-            return new THREE.Material();
-        },
+        new_obj: function() {return new THREE.Material();},
         needs_update: function() {
             this.obj.needsUpdate = true;
         }
@@ -375,37 +371,27 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     IPython.WidgetManager.register_widget_view('MaterialView', MaterialView);
 
     var BasicMaterialView = MaterialView.extend({
-        new_obj: function() {
-            return new THREE.MeshBasicMaterial();
-        },
+        new_obj: function() {return new THREE.MeshBasicMaterial();},
     })
     IPython.WidgetManager.register_widget_view('BasicMaterialView', BasicMaterialView);
 
     var LambertMaterialView = BasicMaterialView.extend({
-        new_obj: function() {
-            return new THREE.MeshLambertMaterial();
-        }
+        new_obj: function() {return new THREE.MeshLambertMaterial();}
     })
     IPython.WidgetManager.register_widget_view('LambertMaterialView', LambertMaterialView);
 
     var PhongMaterialView = BasicMaterialView.extend({
-        new_obj: function() {
-            return new THREE.MeshPhongMaterial();
-        }
+        new_obj: function() {return new THREE.MeshPhongMaterial();}
     })
     IPython.WidgetManager.register_widget_view('PhongMaterialView', PhongMaterialView);
 
     var DepthMaterialView = MaterialView.extend({
-        new_obj: function() {
-            return new THREE.MeshDepthMaterial();
-        }
+        new_obj: function() {return new THREE.MeshDepthMaterial();}
     })
     IPython.WidgetManager.register_widget_view('DepthMaterialView', DepthMaterialView);
 
     var LineBasicMaterialView = MaterialView.extend({
-        new_obj: function() {
-            return new THREE.LineBasicMaterial();
-        }
+        new_obj: function() {return new THREE.LineBasicMaterial();}
     })
     IPython.WidgetManager.register_widget_view('LineBasicMaterialView', LineBasicMaterialView);
 
@@ -444,15 +430,14 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         }
     });
     var AmbientLight = Basic3dObject.extend({
-        new_obj: function() {
-            return new THREE.AmbientLight(this.model.get('color'));
-        }
+        new_obj: function() {return new THREE.AmbientLight(this.model.get('color'));}
     });
     IPython.WidgetManager.register_widget_view('AmbientLight', AmbientLight);
 
     var DirectionalLight = Basic3dObject.extend({
         new_obj: function() {
-            return new THREE.DirectionalLight(this.model.get('color'), this.model.get('intensity'));
+            return new THREE.DirectionalLight(this.model.get('color'),
+                                              this.model.get('intensity'));
         }
     });
     IPython.WidgetManager.register_widget_view('DirectionalLight', DirectionalLight);
@@ -469,8 +454,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     var SpotLight = Basic3dObject.extend({
         new_obj: function() {
             return new THREE.SpotLight(this.model.get('color'),
-                                        this.model.get('intensity'),
-                                        this.model.get('distance'));
+                                       this.model.get('intensity'),
+                                       this.model.get('distance'));
         }
     });
     IPython.WidgetManager.register_widget_view('SpotLight', SpotLight);
