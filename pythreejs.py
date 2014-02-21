@@ -10,17 +10,33 @@ def vector3(trait_type=CFloat, default=None, **kwargs):
     return List(trait_type, default_value=default, 
                 minlen=3, maxlen=3, allow_none=False, **kwargs)
 
-class Color(Enum):
-    def __init__(self, default_value='yellow', allow_none=False, **metadata):
-        self.value = range(0x000000, 0xFFFFFF)
-        self.allow_none = allow_none
-        super(Color, self).__init__(self.value, default_value, allow_none, **metadata)
+# python 3 compatibility stuff
+# http://www.voidspace.org.uk/python/articles/porting-mock-to-python-3.shtml
+try:
+    unicode
+except NameError:
+    # Python 3
+    basestring = unicode = str
+
+class Color(TraitType):
+    default_value = 'black'
+    info_text = 'a color as an rgb tuple, an integer, or a string'
 
     def validate(self, obj, value):
-        if value in self.value:
+        if isinstance(value, (tuple, list)) and len(value)==3:
+            return 'rgb(%d,%d,%d)'%(int(value[0]), int(value[1]), int(value[2]))
+        elif isinstance(value, basestring):
+            # from https://github.com/mrdoob/three.js/blob/master/src/math/Color.js
+            # there are lots of color names, as well as things like
+            # rgb(?,?,?), rgb(?%,?%,?%), #XXXXXX, #XXX
+            # TODO: validate one of those patterns, or just pass the buck to three.js
             return value
+        else:
+            try:
+                return int(value)
+            except:
+                pass
         self.error(obj, value)
-
 
 class Object3d(Widget):
     """
