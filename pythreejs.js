@@ -114,6 +114,10 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.array_properties.push('position', 'rotation', 'up', 'scale', 'matrix');
             this.scalar_properties.push('visible', 'castShadow', 'receiveShadow');
         },
+        render: function() {
+            ThreeView.prototype.render.call(this);
+            this.update_children([], this.model.get('children'));
+        },
         update_children: function(oldchildren, newchildren) {
             var that = this;
             this.do_diff(oldchildren, newchildren, function(deleted) {
@@ -134,8 +138,6 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         },
         update: function() {
             if (this.model.hasChanged('children')) {
-                console.log('updating children',this.model.previous('children'), this.model.get('children'));
-                // Is the very first this.model.previous('children') the empty list, so that the list initially gets populated?
                 this.update_children(this.model.previous('children'), this.model.get('children'));
             }
             ThreeView.prototype.update.call(this);
