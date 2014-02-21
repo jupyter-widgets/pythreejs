@@ -62,16 +62,18 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     IPython.WidgetManager.register_widget_view('RendererView', RendererView);
 
     var ThreeView = IPython.WidgetView.extend({
-        // list of model keys
-        array_properties: [],
-        scalar_properties: [],
         render: function() {
             this.new_properties();
             this.obj = this.new_obj();
             this.update()
             return this.obj;
         },
-        new_properties: function() {},
+        new_properties: function() {
+            // initialize properties arrays
+            this.array_properties = [];
+            this.scalar_properties = [];
+            // TODO: handle submodel properties?
+        },
         update: function() {
             //this.replace_obj(this.new_obj());
             this.update_object_parameters();
