@@ -22,6 +22,8 @@ class Object3d(Widget):
     visible = Bool(True, sync=True)
     castShadow = Bool(False, sync=True)
     receiveShadow = Bool(False, sync=True)
+    # FYI, this matrix has the translation in the 4th row, which is is the
+    # transpose of Sage's transformation matrices
     matrix = List(CFloat, sync=True)
     # TODO: figure out how to get a list of instances of Object3d
     children = List(trait=None, default_value=[], allow_none=False, sync=True)
