@@ -63,8 +63,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
 
     var ThreeView = IPython.WidgetView.extend({
         // list of model keys
-        array_props: [],
-        scalar_props: [],
+        array_properties: [],
+        scalar_properties: [],
         render: function() {
             this.new_properties();
             this.obj = this.new_obj();
@@ -90,18 +90,18 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.obj.needsUpdate = true;
         },
         update_object_parameters: function() {
-            var array_props = this.array_props;
-            for (var p_index=0,len=array_props.length; p_index<len; p_index++) {
-                var p = array_props[p_index];
+            var array_properties = this.array_properties;
+            for (var p_index=0,len=array_properties.length; p_index<len; p_index++) {
+                var p = array_properties[p_index];
                 var prop = this.model.get(p)
                 if (prop.length !== 0) {
                     // the default is the empty list
                     this.obj[p].fromArray(prop);
                 }
             }
-            var scalar_props = this.scalar_props;
-            for (var p_index=0,len=scalar_props.length; p_index<len; p_index++) {
-                var p = scalar_props[p_index]
+            var scalar_properties = this.scalar_properties;
+            for (var p_index=0,len=scalar_properties.length; p_index<len; p_index++) {
+                var p = scalar_properties[p_index]
                 this.obj[p] = this.model.get(p);
             }
         }
@@ -111,8 +111,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     var Object3dView = ThreeView.extend({
         new_properties: function() {
             ThreeView.prototype.new_properties.call(this);
-            this.array_props.push('position', 'rotation', 'up', 'scale', 'matrix');
-            this.scalar_props.push('visible', 'castShadow', 'receiveShadow');
+            this.array_properties.push('position', 'rotation', 'up', 'scale', 'matrix');
+            this.scalar_properties.push('visible', 'castShadow', 'receiveShadow');
         },
         update_children: function(oldchildren, newchildren) {
             var that = this;
