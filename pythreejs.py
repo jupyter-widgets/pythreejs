@@ -3,6 +3,7 @@ from IPython.html.widgets.widget import Widget, DOMWidget
 from IPython.utils.traitlets import (Unicode, Int, Instance, Enum, List, Float, 
                                      Any, CFloat, Bool, This, CInt, TraitType)
 import numpy
+import math
 
 def vector3(trait_type=CFloat, default=None, **kwargs):
     if default is None: 
