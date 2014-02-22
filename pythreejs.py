@@ -43,6 +43,7 @@ class Object3d(Widget):
     """
     If matrix is not None, it overrides the position, rotation, scale, and up variables.
     """
+    _view_name = Unicode('Object3dView', sync=True)
     position = vector3(CFloat, sync=True)
     rotation = vector3(CFloat, sync=True)
     scale = vector3(CFloat, [1,1,1], sync=True)

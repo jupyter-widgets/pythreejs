@@ -171,7 +171,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             // TODO: trigger re-render, when we have an event-driven rendering loop
         },
     });
-    IPython.WidgetManager.register_widget_view('Object3dView', SceneView);
+    IPython.WidgetManager.register_widget_view('Object3dView', Object3dView);
 
     var CameraView = Object3dView.extend({
         new_properties: function() {
