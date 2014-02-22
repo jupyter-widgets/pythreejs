@@ -189,7 +189,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
 
     var OrbitControlsView = ThreeView.extend({
         render: function() {
-            this.controlled_view = this.model.get('controlling').views[0];
+            // .view or .views--- this is to make things backwards compatible until my PR gets merged to IPython
+            this.controlled_view = this.model.get('controlling').view || this.model.get('controlling').views[0];
             this.obj = new THREE.OrbitControls(this.controlled_view.obj, this.options.dom);
             this.options.update(this.obj.update, this.obj);
             delete this.options.renderer;
