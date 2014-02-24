@@ -406,7 +406,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     IPython.WidgetManager.register_widget_view('BasicMaterialView', BasicMaterialView);
 
     var LambertMaterialView = BasicMaterialView.extend({
-        new_obj: function() {return new THREE.MeshLambertMaterial();}
+        new_obj: function() {return new THREE.MeshLambertMaterial();},
         new_properties: function() {
             BasicMaterialView.prototype.new_properties.call(this);
             this.set_properties.push('ambient', 'emissive');
