@@ -381,9 +381,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     var MaterialView = ThreeView.extend({
         new_properties: function() {
             ThreeView.prototype.new_properties.call(this);
-            this.set_properties.push('color');
             this.enum_properties.push('side', 'blending', 'blendSrc', 'blendDst', 'blendEquation');
-            this.scalar_properties.push('wireframe', 'opacity', 'transparent', 'depthTest', 'depthWrite',
+            this.scalar_properties.push('opacity', 'transparent', 'depthTest', 'depthWrite',
                                         'polygonOffset', 'polygonOffsetFactor', 'polygonOffsetUnits',
                                         'alphaTest', 'overdraw', 'visible');
         },
@@ -397,7 +396,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     var BasicMaterialView = MaterialView.extend({
         new_obj: function() {return new THREE.MeshBasicMaterial();},
         new_properties: function() {
-            
+            MaterialView.prototype.new_properties.call(this);
+            this.set_properties.push('color');
         }
     })
     IPython.WidgetManager.register_widget_view('BasicMaterialView', BasicMaterialView);
