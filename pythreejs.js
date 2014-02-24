@@ -407,6 +407,13 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
 
     var LambertMaterialView = BasicMaterialView.extend({
         new_obj: function() {return new THREE.MeshLambertMaterial();}
+        new_properties: function() {
+            BasicMaterialView.prototype.new_properties.call(this);
+            this.set_properties.push('ambient', 'emissive');
+            this.enum_properties.push('combine', 'shading', 'vertexColors');
+            this.scalar_properties.push('fog', 'reflectivity', 'refractionRatio', 'skinning', 'morphTargets',
+                                        'morphNormals', 'wrapAround');
+        }
     })
     IPython.WidgetManager.register_widget_view('LambertMaterialView', LambertMaterialView);
 
