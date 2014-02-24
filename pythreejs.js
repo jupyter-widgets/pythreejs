@@ -400,7 +400,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             MaterialView.prototype.new_properties.call(this);
             this.enum_properties.push('shading', 'vertexColors');
             this.scalar_properties.push('wireframeLinewidth', 'wirerameLinecap', 'wireframeLinejoin',
-                                        'fog')
+                                        'fog');
         }
     })
     IPython.WidgetManager.register_widget_view('BasicMaterialView', BasicMaterialView);
