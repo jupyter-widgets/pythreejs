@@ -398,7 +398,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         new_obj: function() {return new THREE.MeshBasicMaterial();},
         new_properties: function() {
             MaterialView.prototype.new_properties.call(this);
-            this.set_properties.push('lightMap', 'specularMap', 'envMap')
+            //this.set_properties.push('lightMap', 'specularMap', 'envMap')
             this.enum_properties.push('shading', 'vertexColors');
             this.scalar_properties.push('wireframeLinewidth', 'wirerameLinecap', 'wireframeLinejoin',
                                         'fog', 'skinning', 'morphTargets');
