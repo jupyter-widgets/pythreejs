@@ -448,7 +448,15 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     IPython.WidgetManager.register_widget_view('DepthMaterialView', DepthMaterialView);
 
     var LineBasicMaterialView = MaterialView.extend({
-        new_obj: function() {return new THREE.LineBasicMaterial();}
+        new_properties: function() {
+            MaterialView.prototype.new_properties.call(this);
+            this.set_properties.push('color', 'linecap', 'linejoin');
+            this.scalar_properties.push('linewidth', 'fog', 'vertexColors');
+        },
+        new_obj: function() {return new THREE.LineBasicMaterial();},
+        needs_update: function() {
+            MaterialView.prototype.needs_update.call(this);
+        }
     })
     IPython.WidgetManager.register_widget_view('LineBasicMaterialView', LineBasicMaterialView);
 
