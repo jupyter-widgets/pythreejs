@@ -395,6 +395,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     var BasicMaterialView = MaterialView.extend({
         new_properties: function() {
             MaterialView.prototype.new_properties.call(this);
+            this.enum_properties.push('shading', 'vertexColors');
             this.set_properties.push('color');
             this.scalar_properties.push('wireframe');
         },
