@@ -436,7 +436,14 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     IPython.WidgetManager.register_widget_view('PhongMaterialView', PhongMaterialView);
 
     var DepthMaterialView = MaterialView.extend({
-        new_obj: function() {return new THREE.MeshDepthMaterial();}
+        new_properties: function() {
+            MaterialView.prototype.new_properties.call(this);
+            this.scalar_properties.push('wireframe', 'wireframeLinewidth');
+        },
+        new_obj: function() {return new THREE.MeshDepthMaterial();},
+        needs_update: function() {
+            MaterialView.prototype.needs_update.call(this);
+        }
     })
     IPython.WidgetManager.register_widget_view('DepthMaterialView', DepthMaterialView);
 
