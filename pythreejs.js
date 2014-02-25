@@ -451,7 +451,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         new_properties: function() {
             MaterialView.prototype.new_properties.call(this);
             this.set_properties.push('color', 'linecap', 'linejoin');
-            this.scalar_properties.push('linewidth', 'fog', 'vertexColors');
+            this.scalar_properties.push('linewidth', 'fog');
         },
         new_obj: function() {return new THREE.LineBasicMaterial();},
         needs_update: function() {
