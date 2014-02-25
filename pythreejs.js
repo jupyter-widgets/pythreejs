@@ -382,8 +382,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         new_properties: function() {
             ThreeView.prototype.new_properties.call(this);
             this.enum_properties.push('side', 'blending', 'blendSrc', 'blendDst', 'blendEquation');
-            this.scalar_properties.push('wireframe', 'opacity', 'depthTest', 'depthWrite', 'polygonOffset',
-                                        'polygonOffsetFactor', 'polygonOffsetUnits', 'overdraw', 'visible');
+            this.scalar_properties.push('opacity', 'depthTest', 'depthWrite', 'polygonOffset', 'polygonOffsetFactor',
+                                        'polygonOffsetUnits', 'overdraw', 'visible', 'alphaTest');
         },
         new_obj: function() {return new THREE.Material();},
         needs_update: function() {
@@ -396,6 +396,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         new_properties: function() {
             MaterialView.prototype.new_properties.call(this);
             this.set_properties.push('color');
+            this.scalar_properties.push('wireframe');
         },
         new_obj: function() {return new THREE.MeshBasicMaterial();},
         needs_update: function() {
