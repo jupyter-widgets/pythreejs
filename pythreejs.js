@@ -395,7 +395,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         new_properties: function() {
             MaterialView.prototype.new_properties.call(this);
             this.set_properties.push('color');
-        }
+        },
         new_obj: function() {return new THREE.MeshBasicMaterial();},
         needs_update: function() {
             MaterialView.prototype.update.call(this);
