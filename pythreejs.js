@@ -422,7 +422,16 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     IPython.WidgetManager.register_widget_view('LambertMaterialView', LambertMaterialView);
 
     var PhongMaterialView = BasicMaterialView.extend({
-        new_obj: function() {return new THREE.MeshPhongMaterial();}
+        new_properties: function() {
+            BasicMaterialView.prototype.new_properties.call(this);
+            this.enum_properties.push('combine');
+            this.set_properties.push('ambient', 'emissive', 'specular');
+            this.scalar_properties.push('shininess', 'reflectivity', 'refractionRatio');
+        },
+        new_obj: function() {return new THREE.MeshPhongMaterial();},
+        needs_update: function() {
+            BasicMaterialView.prototype.needs_update.call(this);
+        }
     })
     IPython.WidgetManager.register_widget_view('PhongMaterialView', PhongMaterialView);
 
