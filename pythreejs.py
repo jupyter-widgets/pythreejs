@@ -231,7 +231,7 @@ class DepthMaterial(Material):
     wireframeLinewidth = CFloat(1.0, sync=True)
 
 class LineBasicMaterial(Material):
-    _view_name = Unicode('LineBasicMaterial', sync=True)
+    _view_name = Unicode('LineBasicMaterialView', sync=True)
     color = Unicode('yellow', sync=True)
     linewidth = CFloat(1.0, sync=True)
     linecap = Unicode('round', sync=True)
