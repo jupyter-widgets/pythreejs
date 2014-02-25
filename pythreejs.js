@@ -382,7 +382,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         new_properties: function() {
             ThreeView.prototype.new_properties.call(this);
             this.enum_properties.push('side');
-            this.scalar_properties.push('wireframe', 'opacity', 'transparent', 'blending');
+            this.scalar_properties.push('wireframe', 'opacity', 'transparent', 'blending', 'blendSrc', 'blendDst',
+                                        'blendEquation');
         },
         new_obj: function() {return new THREE.Material();},
         needs_update: function() {
