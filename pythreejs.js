@@ -381,9 +381,9 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     var MaterialView = ThreeView.extend({
         new_properties: function() {
             ThreeView.prototype.new_properties.call(this);
-            this.set_properties.push('color');
-            this.enum_properties.push('side');
-            this.scalar_properties.push('wireframe', 'opacity', 'transparent');
+            this.enum_properties.push('side', 'blending', 'blendSrc', 'blendDst', 'blendEquation');
+            this.scalar_properties.push('opacity', 'depthTest', 'depthWrite', 'polygonOffset', 'polygonOffsetFactor',
+                                        'polygonOffsetUnits', 'overdraw', 'visible');
         },
         new_obj: function() {return new THREE.Material();},
         needs_update: function() {
@@ -393,29 +393,86 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     IPython.WidgetManager.register_widget_view('MaterialView', MaterialView);
 
     var BasicMaterialView = MaterialView.extend({
+        new_properties: function() {
+            MaterialView.prototype.new_properties.call(this);
+            this.enum_properties.push('shading', 'vertexColors');
+            this.set_properties.push('color');
+            this.scalar_properties.push('wireframe', 'wireframeLinewidth', 'wireframeLinecap', 'wireframeLinejoin',
+                                        'fog', 'skinning', 'morphTargets', 'lightMap', 'specularMap', 'envMap');
+        },
         new_obj: function() {return new THREE.MeshBasicMaterial();},
+        needs_update: function() {
+            MaterialView.prototype.needs_update.call(this);
+        }
     })
     IPython.WidgetManager.register_widget_view('BasicMaterialView', BasicMaterialView);
 
     var LambertMaterialView = BasicMaterialView.extend({
-        new_obj: function() {return new THREE.MeshLambertMaterial();}
+        new_properties: function() {
+            BasicMaterialView.prototype.new_properties.call(this);
+            this.enum_properties.push('combine');
+            this.set_properties.push('ambient', 'emissive');
+            this.scalar_properties.push('reflectivity', 'refractionRatio');
+        },
+        new_obj: function() {return new THREE.MeshLambertMaterial();},
+        needs_update: function() {
+            BasicMaterialView.prototype.needs_update.call(this);
+        }
     })
     IPython.WidgetManager.register_widget_view('LambertMaterialView', LambertMaterialView);
 
     var PhongMaterialView = BasicMaterialView.extend({
-        new_obj: function() {return new THREE.MeshPhongMaterial();}
+        new_properties: function() {
+            BasicMaterialView.prototype.new_properties.call(this);
+            this.enum_properties.push('combine');
+            this.set_properties.push('ambient', 'emissive', 'specular');
+            this.scalar_properties.push('shininess', 'reflectivity', 'refractionRatio');
+        },
+        new_obj: function() {return new THREE.MeshPhongMaterial();},
+        needs_update: function() {
+            BasicMaterialView.prototype.needs_update.call(this);
+        }
     })
     IPython.WidgetManager.register_widget_view('PhongMaterialView', PhongMaterialView);
 
     var DepthMaterialView = MaterialView.extend({
-        new_obj: function() {return new THREE.MeshDepthMaterial();}
+        new_properties: function() {
+            MaterialView.prototype.new_properties.call(this);
+            this.scalar_properties.push('wireframe', 'wireframeLinewidth');
+        },
+        new_obj: function() {return new THREE.MeshDepthMaterial();},
+        needs_update: function() {
+            MaterialView.prototype.needs_update.call(this);
+        }
     })
     IPython.WidgetManager.register_widget_view('DepthMaterialView', DepthMaterialView);
 
     var LineBasicMaterialView = MaterialView.extend({
-        new_obj: function() {return new THREE.LineBasicMaterial();}
+        new_properties: function() {
+            MaterialView.prototype.new_properties.call(this);
+            this.enum_properties.push('vertexColors');
+            this.set_properties.push('color');
+            this.scalar_properties.push('linewidth', 'fog', 'linecap', 'linejoin');
+        },
+        new_obj: function() {return new THREE.LineBasicMaterial();},
+        needs_update: function() {
+            MaterialView.prototype.needs_update.call(this);
+        }
     })
     IPython.WidgetManager.register_widget_view('LineBasicMaterialView', LineBasicMaterialView);
+
+    var NormalMaterialView = MaterialView.extend({
+        new_properties: function() {
+            MaterialView.prototype.new_properties.call(this);
+            this.enum_properties.push('shading');
+            this.scalar_properties.push('wireframe', 'wireframeLinewidth', 'morphTargets');
+        },
+        new_obj: function() {return new THREE.MeshNormalMaterial();},
+        needs_update: function() {
+            MaterialView.prototype.needs_update.call(this);
+        }
+    })
+    IPython.WidgetManager.register_widget_view('NormalMaterialView', NormalMaterialView);
 
     var MeshView = Object3dView.extend({
         // if we replace the geometry or material, do a full re-render
