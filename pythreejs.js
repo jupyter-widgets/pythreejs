@@ -398,7 +398,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         },
         new_obj: function() {return new THREE.MeshBasicMaterial();},
         needs_update: function() {
-            MaterialView.prototype.update.call(this);
+            MaterialView.prototype.needs_update.call(this);
         }
     })
     IPython.WidgetManager.register_widget_view('BasicMaterialView', BasicMaterialView);
