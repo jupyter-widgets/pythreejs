@@ -239,6 +239,13 @@ class LineBasicMaterial(Material):
     fog = Bool(False, sync=True) 
     vertexColors = Enum(['NoColors', 'FaceColors', 'VertexColors'], 'NoColors', sync=True)
 
+class NormalMaterial(Material):
+    _view_name = Unicode('NormalMaterialView')
+    morphTargets = Bool(False, sync=True)
+    shading = Enum(['SmoothShading', 'FlatShading', 'NoShading'], 'SmoothShading', sync=True)
+    wireframe = Bool(False, sync=True)
+    wireframeLinewidth = CFloat(1.0, sync=True)
+
 class Mesh(Object3d):
     _view_name = Unicode('MeshView', sync=True)
     geometry = Instance(Geometry, sync=True)
