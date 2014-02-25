@@ -232,12 +232,12 @@ class DepthMaterial(Material):
 
 class LineBasicMaterial(Material):
     _view_name = Unicode('LineBasicMaterial', sync=True)
-    color = Any('yellow', sync=True)
+    color = Unicode('yellow', sync=True)
     linewidth = CFloat(1.0, sync=True)
-    linecap = Any('round', sync=True)#todo Enum
-    linejoin = Any('round', sync=True)#todo Enum
+    linecap = Unicode('round', sync=True)
+    linejoin = Unicode('round', sync=True)
     fog = Bool(False, sync=True) 
-    vertexColors = Bool(False, sync=True)
+    vertexColors = Enum(['NoColors', 'FaceColors', 'VertexColors'], 'NoColors', sync=True)
 
 class Mesh(Object3d):
     _view_name = Unicode('MeshView', sync=True)
