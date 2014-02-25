@@ -240,7 +240,7 @@ class LineBasicMaterial(Material):
     vertexColors = Enum(['NoColors', 'FaceColors', 'VertexColors'], 'NoColors', sync=True)
 
 class NormalMaterial(Material):
-    _view_name = Unicode('NormalMaterialView')
+    _view_name = Unicode('NormalMaterialView', sync=True)
     morphTargets = Bool(False, sync=True)
     shading = Enum(['SmoothShading', 'FlatShading', 'NoShading'], 'SmoothShading', sync=True)
     wireframe = Bool(False, sync=True)
