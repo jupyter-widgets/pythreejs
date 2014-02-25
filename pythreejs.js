@@ -383,7 +383,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             ThreeView.prototype.new_properties.call(this);
             this.enum_properties.push('side', 'blending', 'blendSrc', 'blendDst', 'blendEquation');
             this.scalar_properties.push('wireframe', 'opacity', 'depthTest', 'depthWrite', 'polygonOffset',
-                                        'polygonOffsetFactor', 'polygonOffsetUnits', 'alphaTest', 'overdraw',
+                                        'polygonOffsetFactor', 'polygonOffsetUnits',
                                         'visible');
         },
         new_obj: function() {return new THREE.Material();},
