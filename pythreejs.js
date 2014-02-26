@@ -378,6 +378,18 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     })
     IPython.WidgetManager.register_widget_view('PolyhedronGeometryView', PolyhedronGeometryView);
 
+    var RingGeometryView = ThreeView.extend({
+        update: function() {
+            this.replace_obj(new THREE.RingGeometry(this.model.get('innerRadius'),
+                                                    this.model.get('outerRadius'),
+                                                    this.model.get('thetaSegments'),
+                                                    this.model.get('phiSegments'),
+                                                    this.model.get('thetaStart'),
+                                                    this.model.get('thetaLength')));
+        }
+    })
+    IPython.WidgetManager.register_widget_view('RingGeometryView', RingGeometryView);
+
     var MaterialView = ThreeView.extend({
         new_properties: function() {
             ThreeView.prototype.new_properties.call(this);

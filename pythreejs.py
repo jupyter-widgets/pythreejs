@@ -150,6 +150,15 @@ class PolyhedronGeometry(Geometry):
     vertices = List(List(CFloat), sync=True)
     faces = List(List(CInt), sync=True)
 
+class RingGeometry(Geometry):
+    _view_name = Unicode('RingGeometryView', sync=True)
+    innerRadius = CFloat(1.0, sync=True)
+    outerRadius = CFloat(3.0, sync=True)
+    thetaSegments = CInt(8, sync=True)
+    phiSegments = CInt(8, sync=True)
+    thetaStart = CFloat(0, sync=True)
+    thetaLength = CFloat(math.pi*2, sync=True)
+
 class SurfaceGeometry(Geometry):
     """
     A regular grid with heights
