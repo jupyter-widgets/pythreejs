@@ -256,6 +256,15 @@ class NormalMaterial(Material):
     wireframe = Bool(False, sync=True)
     wireframeLinewidth = CFloat(1.0, sync=True)
 
+class ParticleSystemMaterial(Material):
+    _view_name = Unicode('ParticleSystemMaterialView', sync=True)
+    color = Unicode('yellow')
+    map = Any(None)
+    size = CFloat(1.0, sync=True)
+    sizeAttenuation = Bool(False, sync=True)
+    vertexColors = Bool(False, sync=True)
+    fog = Bool(False, sync=True)
+
 class Mesh(Object3d):
     _view_name = Unicode('MeshView', sync=True)
     geometry = Instance(Geometry, sync=True)
