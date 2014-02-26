@@ -278,9 +278,9 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     })
     IPython.WidgetManager.register_widget_view('CylinderGeometryView', CylinderGeometryView);
 
-    var CubeGeometryView = ThreeView.extend({
+    var BoxGeometryView = ThreeView.extend({
         update: function() {
-            this.replace_obj(new THREE.CubeGeometry(this.model.get('width'),
+            this.replace_obj(new THREE.BoxGeometry(this.model.get('width'),
                                                         this.model.get('height'),
                                                         this.model.get('depth'),
                                                         this.model.get('widthSegments'),

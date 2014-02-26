@@ -80,7 +80,7 @@ class CylinderGeometry(Geometry):
     heightSegments = CFloat(1, sync=True)
     openEnded = Bool(False, sync=True)
     
-class CubeGeometry(Geometry):
+class BoxGeometry(Geometry):
     _view_name = Unicode('CubeGeometryView', sync=True)
     width = CFloat(1, sync=True)
     height = CFloat(1, sync=True)
