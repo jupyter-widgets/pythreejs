@@ -239,6 +239,16 @@ class LineBasicMaterial(Material):
     fog = Bool(False, sync=True) 
     vertexColors = Enum(['NoColors', 'FaceColors', 'VertexColors'], 'NoColors', sync=True)
 
+class LineDashedMaterial(Material):
+    _view_name = Unicode('LineDashedMaterialView', sync=True)
+    color = Unicode('yellow', sync=True)
+    linewidth = CFloat(1.0, sync=True)
+    scale = CFloat(1.0, sync=True)
+    dashSize = CFloat(3.0, sync=True)
+    gapSize = CFloat(1.0, sync=True)
+    vertexColors = Enum(['NoColors', 'FaceColors', 'VertexColors'], 'NoColors', sync=True)
+    fog = Bool(False, sync=True)
+
 class NormalMaterial(Material):
     _view_name = Unicode('NormalMaterialView', sync=True)
     morphTargets = Bool(False, sync=True)

@@ -461,6 +461,20 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     })
     IPython.WidgetManager.register_widget_view('LineBasicMaterialView', LineBasicMaterialView);
 
+    var LineDashedMaterialView = MaterialView.extend({
+        new_properties: function() {
+            MaterialView.prototype.new_properties.call(this);
+            this.enum_properties.push('vertexColors');
+            this.set_properties.push('color');
+            this.scalar_properties.push('linewidth', 'scale', 'dashSize', 'gapSize', 'fog');
+        },
+        new_obj: function() {return new THREE.LineDashedMaterial();},
+        needs_update: function() {
+            MaterialView.prototype.needs_update.call(this);
+        }
+    })
+    IPython.WidgetManager.register_widget_view('LineDashedMaterialView', LineDashedMaterialView);
+
     var NormalMaterialView = MaterialView.extend({
         new_properties: function() {
             MaterialView.prototype.new_properties.call(this);
