@@ -274,6 +274,21 @@ class ParticleSystemMaterial(Material):
     vertexColors = Bool(False, sync=True)
     fog = Bool(False, sync=True)
 
+class ShaderMaterial(Material):
+    _view_name = Unicode('ShaderMaterialView', sync=True)
+    fragmentShader = Unicode(None, sync=True)
+    vertexShader = Unicode(None, sync=True)
+    morphTargets = Bool(False, sync=True)
+    lights = Bool(False, sync=True)
+    morphNormals = Bool(False, sync=True)
+    wireframe = Bool(False, sync=True)
+    vertexColors = Enum(['NoColors', 'FaceColors', 'VertexColors'], 'NoColors', sync=True)
+    skinning = Bool(False, sync=True)
+    fog = Bool(False, sync=True)
+    shading = Enum(['SmoothShading', 'FlatShading', 'NoShading'], 'SmoothShading', sync=True)
+    linewidth = CFloat(1.0, sync=True)
+    wireframeLinewidth = CFloat(1.0, sync=True)
+
 class Mesh(Object3d):
     _view_name = Unicode('MeshView', sync=True)
     geometry = Instance(Geometry, sync=True)

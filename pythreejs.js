@@ -489,6 +489,15 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     })
     IPython.WidgetManager.register_widget_view('ParticleSystemMaterialView', ParticleSystemMaterialView);
 
+    var ShaderMaterialView = MaterialView.extend({
+        new_properties: function() {
+            MaterialView.prototype.new_properties.call(this);
+            this.enum_properties.push('vertexColors', 'shading');
+            this.scalar_properties.push('morphTargets', 'lights', 'morphNormals', 'wireframe', 'skinning', 'fog',
+                                        'linewidth', 'wireframeLinewidth','fragmentShader', 'vertexShader');
+        }
+    })
+
     var MeshView = Object3dView.extend({
         // if we replace the geometry or material, do a full re-render
         // TODO: make sure we don't set multiple such handlers, so this should probably happen in the init, not the render
