@@ -81,7 +81,7 @@ class CylinderGeometry(Geometry):
     openEnded = Bool(False, sync=True)
     
 class BoxGeometry(Geometry):
-    _view_name = Unicode('CubeGeometryView', sync=True)
+    _view_name = Unicode('BoxGeometryView', sync=True)
     width = CFloat(1, sync=True)
     height = CFloat(1, sync=True)
     depth = CFloat(1, sync=True)
