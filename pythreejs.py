@@ -258,8 +258,8 @@ class NormalMaterial(Material):
 
 class ParticleSystemMaterial(Material):
     _view_name = Unicode('ParticleSystemMaterialView', sync=True)
-    color = Unicode('yellow')
-    map = Any(None)
+    color = Unicode('yellow', sync=True)
+    map = Any(None, sync=True)
     size = CFloat(1.0, sync=True)
     sizeAttenuation = Bool(False, sync=True)
     vertexColors = Bool(False, sync=True)
