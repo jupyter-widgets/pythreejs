@@ -174,18 +174,48 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     IPython.WidgetManager.register_widget_view('Object3dView', Object3dView);
 
     var CameraView = Object3dView.extend({
-        new_properties: function() {
-            Object3dView.prototype.new_properties.call(this);
-            this.scalar_properties.push('fov', 'ratio');
-        },
         new_obj: function() {
-            return new THREE.PerspectiveCamera( this.model.get('fov'), this.model.get('ratio'), 1, 1000 );
+            return new THREE.Camera();
         },
         needs_update: function() {
-            this.obj.updateProjectionMatrix()
         }
     });
     IPython.WidgetManager.register_widget_view('CameraView', CameraView);
+
+    var PerspectiveCameraView = CameraView.extend({
+        new_properties: function() {
+            Camera.prototype.new_properties.call(this);
+            this.scalar_properties.push('fov', 'aspect', 'near', 'far');
+        },
+        new_obj: function() {
+            return new THREE.PerspectiveCamera(this.model.get('fov'),
+                                                this.model.get('aspect'),
+                                                this.model.get('near'),
+                                                this.model.get('far'));
+        },
+        needs_update: function() {
+            this.obj.updateProjectionMatrix();
+        }
+    })
+    IPython.WidgetManager.register_widget_view('PerspectiveCameraView', PerspectiveCameraView);
+
+    var OrthographicCameraView = CameraView.extend({
+        new_properties: function() {
+            Camera.prototype.new_properties.call(this);
+            this.scalar_properties.push('left', 'right', 'top', 'bottom', 'near', 'far');
+        },
+        new_obj: function() {
+            return new THREE.OrthographicCamera(this.model.get('left'),
+                                                this.model.get('right'),
+                                                this.model.get('top'),
+                                                this.model.get('bottom'),
+                                                this.model.get('near'),
+                                                this.model.get('far'));
+        },
+        needs_update: function() {
+            this.obj.updateProjectionMatrix();
+        }
+    })
 
     var OrbitControlsView = ThreeView.extend({
         render: function() {
@@ -215,7 +245,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             for (var i = 0, len = obj.vertices.length; i<len; i++) {
                 obj.vertices[i].z = z[i];
             }
-            obj.computeCentroids()
+            obj.computeCentroids();
             obj.computeFaceNormals();
             obj.computeVertexNormals();
             this.replace_obj(obj);
