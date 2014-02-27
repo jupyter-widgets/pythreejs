@@ -438,7 +438,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.scalar_properties.push('wireframe', 'wireframeLinewidth', 'wireframeLinecap', 'wireframeLinejoin',
                                         'fog', 'skinning', 'morphTargets', 'lightMap', 'specularMap', 'envMap');
         },
-        new_obj: function() {return new THREE.MeshBasicMaterial();},
+        new_obj: function() {return new THREE.MeshBasicMaterial();}
     })
     IPython.WidgetManager.register_widget_view('BasicMaterialView', BasicMaterialView);
 
@@ -449,7 +449,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.set_properties.push('ambient', 'emissive');
             this.scalar_properties.push('reflectivity', 'refractionRatio');
         },
-        new_obj: function() {return new THREE.MeshLambertMaterial();},
+        new_obj: function() {return new THREE.MeshLambertMaterial();}
     })
     IPython.WidgetManager.register_widget_view('LambertMaterialView', LambertMaterialView);
 
@@ -460,7 +460,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.set_properties.push('ambient', 'emissive', 'specular');
             this.scalar_properties.push('shininess', 'reflectivity', 'refractionRatio');
         },
-        new_obj: function() {return new THREE.MeshPhongMaterial();},
+        new_obj: function() {return new THREE.MeshPhongMaterial();}
     })
     IPython.WidgetManager.register_widget_view('PhongMaterialView', PhongMaterialView);
 
@@ -469,7 +469,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             MaterialView.prototype.new_properties.call(this);
             this.scalar_properties.push('wireframe', 'wireframeLinewidth');
         },
-        new_obj: function() {return new THREE.MeshDepthMaterial();},
+        new_obj: function() {return new THREE.MeshDepthMaterial();}
     })
     IPython.WidgetManager.register_widget_view('DepthMaterialView', DepthMaterialView);
 
@@ -480,7 +480,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.set_properties.push('color');
             this.scalar_properties.push('linewidth', 'fog', 'linecap', 'linejoin');
         },
-        new_obj: function() {return new THREE.LineBasicMaterial();},
+        new_obj: function() {return new THREE.LineBasicMaterial();}
     })
     IPython.WidgetManager.register_widget_view('LineBasicMaterialView', LineBasicMaterialView);
 
@@ -491,7 +491,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.set_properties.push('color');
             this.scalar_properties.push('linewidth', 'scale', 'dashSize', 'gapSize', 'fog');
         },
-        new_obj: function() {return new THREE.LineDashedMaterial();},
+        new_obj: function() {return new THREE.LineDashedMaterial();}
     })
     IPython.WidgetManager.register_widget_view('LineDashedMaterialView', LineDashedMaterialView);
 
@@ -501,7 +501,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.enum_properties.push('shading');
             this.scalar_properties.push('wireframe', 'wireframeLinewidth', 'morphTargets');
         },
-        new_obj: function() {return new THREE.MeshNormalMaterial();},
+        new_obj: function() {return new THREE.MeshNormalMaterial();}
     })
     IPython.WidgetManager.register_widget_view('NormalMaterialView', NormalMaterialView);
 
@@ -535,7 +535,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.materialview = this.create_child_view(this.model.get('material'));
             this.geometryview.on('replace_obj', this.update, this);
             this.materialview.on('replace_obj', this.update, this);
-            this.update()
+            this.update();
             return this.obj;
         },
         update: function() {
