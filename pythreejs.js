@@ -328,10 +328,10 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
 
     var LatheGeometryView = ThreeView.extend({
         update: function() {
-            this.replace_obj(new THREE.LatheGeometry(this.model.get('segments'),
-                                                        this.model.get('points'),
-                                                        this.model.get('phiLength'),
-                                                        this.model.get('phiStart')));
+            this.replace_obj(new THREE.LatheGeometry(this.model.get('points'),
+                                                        this.model.get('segments'),
+                                                        this.model.get('phiStart'),
+                                                        this.model.get('phiLength')));
         }
     });
     IPython.WidgetManager.register_widget_view('CircleGeometryView', CircleGeometryView);
