@@ -331,16 +331,16 @@ class Camera(Object3d):
 class PerspectiveCamera(Camera):
     _view_name = Unicode('PerspectiveCameraView', sync=True)
     fov = CFloat(50.0, sync=True)
-    aspect = CFloat(1.0, sync=True)
+    aspect = CFloat(6.0/4.0, sync=True)
     near = CFloat(0.1, sync=True)
     far = CFloat(2000.0, sync=True)
 
 class OrthographicCamera(Camera):
     _view_name = Unicode('OrthographicCameraView', sync=True)
-    left = CFloat(-1.0, sync=True)
-    right = CFloat(1.0, sync=True)
-    top = CFloat(-1.0, sync=True)
-    bottom = CFloat(1.0, sync=True)
+    left = CFloat(-10.0, sync=True)
+    right = CFloat(10.0, sync=True)
+    top = CFloat(-10.0, sync=True)
+    bottom = CFloat(10.0, sync=True)
     near = CFloat(0.1, sync=True)
     far = CFloat(2000.0, sync=True)
     
