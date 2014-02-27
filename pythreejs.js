@@ -416,6 +416,15 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     });
     IPython.WidgetManager.register_widget_view('RingGeometryView', RingGeometryView);
 
+    var ParametricGeometryView = ThreeView.extend({
+        update: function() {
+            this.replace_obj(new THREE.ParametricGeometry(this.model.get('func'),
+                                                    this.model.get('slices'),
+                                                    this.model.get('stacks')));
+        }
+    });
+    IPython.WidgetManager.register_widget_view('ParametricGeometryView', ParametricGeometryView);
+    
     var MaterialView = ThreeView.extend({
         new_properties: function() {
             ThreeView.prototype.new_properties.call(this);
