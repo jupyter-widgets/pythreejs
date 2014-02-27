@@ -183,7 +183,7 @@ class ParametricGeometry(Geometry):
     _view_name = Unicode('ParametricGeometryView', sync=True)
     func = Unicode(None, sync=True)
     slices = CInt(105, sync=True)
-    stack = CInt(105,sync=True)
+    stacks = CInt(105,sync=True)
     
 class Material(Widget):
     _view_name = Unicode('MaterialView', sync=True)
