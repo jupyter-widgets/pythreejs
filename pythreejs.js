@@ -1,6 +1,6 @@
 // we do this so it works in IPython or the sage cell server
 var require = require || sagecell.require;
-var requirejs = requirejs || sagecell.requirejs
+var requirejs = requirejs || sagecell.requirejs;
 var define = define || sagecell.define;
 
 requirejs.config({
@@ -44,7 +44,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                                                                          update: function(fn, context) {
                                                                                     that.on('render:update', fn, context);
                                                                                  }
-                                                                        })
+                                                                        });
             this.animate();
             window.r = this;
         },
@@ -69,7 +69,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
 
         render: function() {
             this.obj = this.new_obj();
-            this.update()
+            this.update();
             return this.obj;
         },
         new_properties: function() {
@@ -100,7 +100,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             var array_properties = this.array_properties;
             for (var p_index=0,len=array_properties.length; p_index<len; p_index++) {
                 var p = array_properties[p_index];
-                var prop = this.model.get(p)
+                var prop = this.model.get(p);
                 if (prop.length !== 0) {
                     // the default is the empty list
                     this.obj[p].fromArray(prop);
@@ -108,17 +108,17 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             }
             var scalar_properties = this.scalar_properties;
             for (var p_index=0,len=scalar_properties.length; p_index<len; p_index++) {
-                var p = scalar_properties[p_index]
+                var p = scalar_properties[p_index];
                 this.obj[p] = this.model.get(p);
             }
             var enum_properties = this.enum_properties;
             for (var p_index=0,len=enum_properties.length; p_index<len; p_index++) {
-                var p = enum_properties[p_index]
+                var p = enum_properties[p_index];
                 this.obj[p] = THREE[this.model.get(p)];
             }
             var set_properties = this.set_properties;
             for (var p_index=0,len=set_properties.length; p_index<len; p_index++) {
-                var p = set_properties[p_index]
+                var p = set_properties[p_index];
                 this.obj[p].set(this.model.get(p));
             }
 
@@ -194,7 +194,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                                                 this.model.get('near'),
                                                 this.model.get('far'));
         }
-    })
+    });
     IPython.WidgetManager.register_widget_view('PerspectiveCameraView', PerspectiveCameraView);
 
     var OrthographicCameraView = CameraView.extend({
@@ -210,7 +210,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                                                 this.model.get('near'),
                                                 this.model.get('far'));
         }
-    })
+    });
     IPython.WidgetManager.register_widget_view('OrthographicCameraView', OrthographicCameraView);
 
     var OrbitControlsView = ThreeView.extend({
@@ -289,7 +289,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         update: function() {
             this.replace_obj(new THREE.SphereGeometry(this.model.get('radius'), 32,16));
         }
-    })
+    });
     IPython.WidgetManager.register_widget_view('SphereGeometryView', SphereGeometryView);
 
     var CylinderGeometryView = ThreeView.extend({
@@ -301,7 +301,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                                                         this.model.get('heightSegments'),
                                                         this.model.get('openEnded')));
         }
-    })
+    });
     IPython.WidgetManager.register_widget_view('CylinderGeometryView', CylinderGeometryView);
 
     var BoxGeometryView = ThreeView.extend({
@@ -313,7 +313,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                                                         this.model.get('heightSegments'),
                                                         this.model.get('depthSegments')));
         }
-    })
+    });
     IPython.WidgetManager.register_widget_view('BoxGeometryView', BoxGeometryView);
 
     var CircleGeometryView = ThreeView.extend({
@@ -323,7 +323,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                                                         this.model.get('thetaStart'),
                                                         this.model.get('thetaLength')));
         }
-    })
+    });
     IPython.WidgetManager.register_widget_view('CircleGeometryView', CircleGeometryView);
 
     var LatheGeometryView = ThreeView.extend({
@@ -333,7 +333,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                                                         this.model.get('phiLength'),
                                                         this.model.get('phiStart')));
         }
-    })
+    });
     IPython.WidgetManager.register_widget_view('CircleGeometryView', CircleGeometryView);
 
     var IcosahedronGeometryView = ThreeView.extend({
@@ -341,7 +341,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.replace_obj(new THREE.IcosahedronGeometry(this.model.get('radius'),
                                                         this.model.get('detail')));
         }
-    })
+    });
     IPython.WidgetManager.register_widget_view('IcosahedronGeometryView', IcosahedronGeometryView);
 
     var OctahedronGeometryView = ThreeView.extend({
@@ -349,7 +349,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.replace_obj(new THREE.OctahedronGeometry(this.model.get('radius'),
                                                         this.model.get('detail')));
         }
-    })
+    });
     IPython.WidgetManager.register_widget_view('OctahedronGeometryView', OctahedronGeometryView);
 
     var PlaneGeometryView = ThreeView.extend({
@@ -359,7 +359,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                                                         this.model.get('widthSegments'),
                                                         this.model.get('heightSegments')));
         }
-    })
+    });
     IPython.WidgetManager.register_widget_view('PlaneGeometryView', PlaneGeometryView);
 
     var TetrahedronGeometryView = ThreeView.extend({
@@ -367,7 +367,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.replace_obj(new THREE.TetrahedronGeometry(this.model.get('radius'),
                                                         this.model.get('detail')));
         }
-    })
+    });
     IPython.WidgetManager.register_widget_view('TetrahedronGeometryView', TetrahedronGeometryView);
 
     var TorusGeometryView = ThreeView.extend({
@@ -378,7 +378,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                                                         this.model.get('tubularSegments'),
                                                         this.model.get('arc')));
         }
-    })
+    });
     IPython.WidgetManager.register_widget_view('TorusGeometryView', TorusGeometryView);
 
     var TorusKnotGeometryView = ThreeView.extend({
@@ -391,7 +391,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                                                         this.model.get('q'),
                                                         this.model.get('heightScale')));
         }
-    })
+    });
     IPython.WidgetManager.register_widget_view('TorusKnotGeometryView', TorusKnotGeometryView);
 
     var PolyhedronGeometryView = ThreeView.extend({
@@ -401,7 +401,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                                                           this.model.get('radius'),
                                                           this.model.get('detail')));
         }
-    })
+    });
     IPython.WidgetManager.register_widget_view('PolyhedronGeometryView', PolyhedronGeometryView);
 
     var RingGeometryView = ThreeView.extend({
@@ -413,7 +413,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                                                     this.model.get('thetaStart'),
                                                     this.model.get('thetaLength')));
         }
-    })
+    });
     IPython.WidgetManager.register_widget_view('RingGeometryView', RingGeometryView);
 
     var MaterialView = ThreeView.extend({
@@ -427,7 +427,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         needs_update: function() {
             this.obj.needsUpdate = true;
         }
-    })
+    });
     IPython.WidgetManager.register_widget_view('MaterialView', MaterialView);
 
     var BasicMaterialView = MaterialView.extend({
@@ -439,7 +439,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                                         'fog', 'skinning', 'morphTargets', 'lightMap', 'specularMap', 'envMap');
         },
         new_obj: function() {return new THREE.MeshBasicMaterial();}
-    })
+    });
     IPython.WidgetManager.register_widget_view('BasicMaterialView', BasicMaterialView);
 
     var LambertMaterialView = BasicMaterialView.extend({
@@ -450,7 +450,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.scalar_properties.push('reflectivity', 'refractionRatio');
         },
         new_obj: function() {return new THREE.MeshLambertMaterial();}
-    })
+    });
     IPython.WidgetManager.register_widget_view('LambertMaterialView', LambertMaterialView);
 
     var PhongMaterialView = BasicMaterialView.extend({
@@ -461,7 +461,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.scalar_properties.push('shininess', 'reflectivity', 'refractionRatio');
         },
         new_obj: function() {return new THREE.MeshPhongMaterial();}
-    })
+    });
     IPython.WidgetManager.register_widget_view('PhongMaterialView', PhongMaterialView);
 
     var DepthMaterialView = MaterialView.extend({
@@ -470,7 +470,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.scalar_properties.push('wireframe', 'wireframeLinewidth');
         },
         new_obj: function() {return new THREE.MeshDepthMaterial();}
-    })
+    });
     IPython.WidgetManager.register_widget_view('DepthMaterialView', DepthMaterialView);
 
     var LineBasicMaterialView = MaterialView.extend({
@@ -481,7 +481,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.scalar_properties.push('linewidth', 'fog', 'linecap', 'linejoin');
         },
         new_obj: function() {return new THREE.LineBasicMaterial();}
-    })
+    });
     IPython.WidgetManager.register_widget_view('LineBasicMaterialView', LineBasicMaterialView);
 
     var LineDashedMaterialView = MaterialView.extend({
@@ -492,7 +492,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.scalar_properties.push('linewidth', 'scale', 'dashSize', 'gapSize', 'fog');
         },
         new_obj: function() {return new THREE.LineDashedMaterial();}
-    })
+    });
     IPython.WidgetManager.register_widget_view('LineDashedMaterialView', LineDashedMaterialView);
 
     var NormalMaterialView = MaterialView.extend({
@@ -502,7 +502,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.scalar_properties.push('wireframe', 'wireframeLinewidth', 'morphTargets');
         },
         new_obj: function() {return new THREE.MeshNormalMaterial();}
-    })
+    });
     IPython.WidgetManager.register_widget_view('NormalMaterialView', NormalMaterialView);
 
     var ParticleSystemMaterialView = MaterialView.extend({
@@ -512,7 +512,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.scalar_properties.push('map', 'size', 'sizeAttenuation', 'vertexColors', 'fog');
         },
         new_obj: function() {return new THREE.ParticleSystemMaterial();}
-    })
+    });
     IPython.WidgetManager.register_widget_view('ParticleSystemMaterialView', ParticleSystemMaterialView);
 
     var ShaderMaterialView = MaterialView.extend({
@@ -523,7 +523,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                                         'linewidth', 'wireframeLinewidth','fragmentShader', 'vertexShader');
         },
         new_obj: function() {return new THREE.ShaderMaterial();}
-    })
+    });
 
     var MeshView = Object3dView.extend({
         // if we replace the geometry or material, do a full re-render
@@ -551,7 +551,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
 
     var Basic3dObject = Object3dView.extend({
         render: function() {
-            this.update()
+            this.update();
             return this.obj;
         },
         update: function() {
