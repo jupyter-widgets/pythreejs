@@ -511,7 +511,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.set_properties.push('color');
             this.scalar_properties.push('map', 'size', 'sizeAttenuation', 'vertexColors', 'fog');
         },
-        new_obj: function() {return new THREE.ParticleSystemMaterial();},
+        new_obj: function() {return new THREE.ParticleSystemMaterial();}
     })
     IPython.WidgetManager.register_widget_view('ParticleSystemMaterialView', ParticleSystemMaterialView);
 
@@ -521,7 +521,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.enum_properties.push('vertexColors', 'shading');
             this.scalar_properties.push('morphTargets', 'lights', 'morphNormals', 'wireframe', 'skinning', 'fog',
                                         'linewidth', 'wireframeLinewidth','fragmentShader', 'vertexShader');
-        }
+        },
+        new_obj: function() {return new THREE.ShaderMaterial();}
     })
 
     var MeshView = Object3dView.extend({
