@@ -178,6 +178,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             return new THREE.Camera();
         },
         needs_update: function() {
+            this.obj.updateProjectionMatrix();
         }
     });
     IPython.WidgetManager.register_widget_view('CameraView', CameraView);
@@ -192,9 +193,6 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                                                 this.model.get('aspect'),
                                                 this.model.get('near'),
                                                 this.model.get('far'));
-        },
-        needs_update: function() {
-            this.obj.updateProjectionMatrix();
         }
     })
     IPython.WidgetManager.register_widget_view('PerspectiveCameraView', PerspectiveCameraView);
@@ -211,9 +209,6 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                                                 this.model.get('bottom'),
                                                 this.model.get('near'),
                                                 this.model.get('far'));
-        },
-        needs_update: function() {
-            this.obj.updateProjectionMatrix();
         }
     })
     IPython.WidgetManager.register_widget_view('OrthographicCameraView', OrthographicCameraView);
