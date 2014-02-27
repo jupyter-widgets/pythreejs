@@ -328,8 +328,8 @@ class PlotMesh(Mesh):
 class Camera(Object3d):
     _view_name = Unicode('CameraView', sync=True)
 
-class Perspectivecamera(Camera):
-    _view_name = Unicode('PerspectivecameraView', sync=True)
+class PerspectiveCamera(Camera):
+    _view_name = Unicode('PerspectiveCameraView', sync=True)
     fov = CFloat(50.0, sync=True)
     aspect = CFloat(1.0, sync=True)
     near = CFloat(0.1, sync=True)

@@ -216,6 +216,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.obj.updateProjectionMatrix();
         }
     })
+    IPython.WidgetManager.register_widget_view('OrthographicCameraView', OrthographicCameraView);
 
     var OrbitControlsView = ThreeView.extend({
         render: function() {
