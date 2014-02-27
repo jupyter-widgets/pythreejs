@@ -185,7 +185,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
 
     var PerspectiveCameraView = CameraView.extend({
         new_properties: function() {
-            Camera.prototype.new_properties.call(this);
+            CameraView.prototype.new_properties.call(this);
             this.scalar_properties.push('fov', 'aspect', 'near', 'far');
         },
         new_obj: function() {
@@ -199,7 +199,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
 
     var OrthographicCameraView = CameraView.extend({
         new_properties: function() {
-            Camera.prototype.new_properties.call(this);
+            CameraView.prototype.new_properties.call(this);
             this.scalar_properties.push('left', 'right', 'top', 'bottom', 'near', 'far');
         },
         new_obj: function() {
