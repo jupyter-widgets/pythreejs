@@ -78,6 +78,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.scalar_properties = [];
             this.enum_properties = [];
             this.set_properties = []; // properties we set using the set method
+            this.child_properties = [];
             // TODO: handle submodel properties?
         },
         update: function() {
