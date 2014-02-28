@@ -11,6 +11,18 @@ def vector3(trait_type=CFloat, default=None, **kwargs):
     return List(trait_type, default_value=default, 
                 minlen=3, maxlen=3, allow_none=False, **kwargs)
 
+class Texture(Widget):
+    _view_name = Unicode('TextureView', sync=True)
+
+class ImageTexture(Texture):
+    _view_name = Unicode('ImageTextureView', sync=True)
+    imageuri = Unicode('',sync=True)
+
+class DataTexture(Texture):
+    _view_name = Unicode('DataTextureView', sync=True)
+    data = Any(sync=True)
+    format = Unicode('',sync=True)
+
 # python 3 compatibility stuff
 # http://www.voidspace.org.uk/python/articles/porting-mock-to-python-3.shtml
 try:
@@ -80,8 +92,8 @@ class CylinderGeometry(Geometry):
     heightSegments = CFloat(1, sync=True)
     openEnded = Bool(False, sync=True)
     
-class CubeGeometry(Geometry):
-    _view_name = Unicode('CubeGeometryView', sync=True)
+class BoxGeometry(Geometry):
+    _view_name = Unicode('BoxGeometryView', sync=True)
     width = CFloat(1, sync=True)
     height = CFloat(1, sync=True)
     depth = CFloat(1, sync=True)
@@ -146,9 +158,18 @@ class TorusKnotGeometry(Geometry):
 class PolyhedronGeometry(Geometry):
     _view_name = Unicode('PolyhedronGeometryView', sync=True)
     radius = CFloat(1, sync=True)
-    detail = Int(0, sync=True)
+    detail = CInt(0, sync=True)
     vertices = List(List(CFloat), sync=True)
     faces = List(List(CInt), sync=True)
+
+class RingGeometry(Geometry):
+    _view_name = Unicode('RingGeometryView', sync=True)
+    innerRadius = CFloat(1.0, sync=True)
+    outerRadius = CFloat(3.0, sync=True)
+    thetaSegments = CInt(8, sync=True)
+    phiSegments = CInt(8, sync=True)
+    thetaStart = CFloat(0, sync=True)
+    thetaLength = CFloat(math.pi*2, sync=True)
 
 class SurfaceGeometry(Geometry):
     """
@@ -169,6 +190,12 @@ class FaceGeometry(Geometry):
     vertices = List(CFloat, sync=True) # [x0, y0, z0, x1, y1, z1, x2, y2, z2, ...]
     face3 = List(CInt, sync=True) # [v0,v1,v2, v0,v1,v2, v0,v1,v2, ...]
     face4 = List(CInt, sync=True) # [v0,v1,v2,v3, v0,v1,v2,v3, v0,v1,v2,v3, ...]
+
+class ParametricGeometry(Geometry):
+    _view_name = Unicode('ParametricGeometryView', sync=True)
+    func = Unicode('', sync=True)
+    slices = CInt(105, sync=True)
+    stacks = CInt(105,sync=True)
     
 class Material(Widget):
     _view_name = Unicode('MaterialView', sync=True)
@@ -201,6 +228,7 @@ class BasicMaterial(Material):
     shading = Enum(['SmoothShading', 'FlatShading', 'NoShading'], 'SmoothShading', sync=True)
     vertexColors = Enum(['NoColors', 'FaceColors', 'VertexColors'], 'NoColors', sync=True)
     fog = Bool(False, sync=True)
+    map = Instance(Texture, sync=True)
     lightMap = Any(None, sync=True)
     specularMap = Any(None, sync=True)
     envMap = Any(None, sync=True)
@@ -239,11 +267,45 @@ class LineBasicMaterial(Material):
     fog = Bool(False, sync=True) 
     vertexColors = Enum(['NoColors', 'FaceColors', 'VertexColors'], 'NoColors', sync=True)
 
+class LineDashedMaterial(Material):
+    _view_name = Unicode('LineDashedMaterialView', sync=True)
+    color = Unicode('yellow', sync=True)
+    linewidth = CFloat(1.0, sync=True)
+    scale = CFloat(1.0, sync=True)
+    dashSize = CFloat(3.0, sync=True)
+    gapSize = CFloat(1.0, sync=True)
+    vertexColors = Enum(['NoColors', 'FaceColors', 'VertexColors'], 'NoColors', sync=True)
+    fog = Bool(False, sync=True)
+
 class NormalMaterial(Material):
     _view_name = Unicode('NormalMaterialView', sync=True)
     morphTargets = Bool(False, sync=True)
     shading = Enum(['SmoothShading', 'FlatShading', 'NoShading'], 'SmoothShading', sync=True)
     wireframe = Bool(False, sync=True)
+    wireframeLinewidth = CFloat(1.0, sync=True)
+
+class ParticleSystemMaterial(Material):
+    _view_name = Unicode('ParticleSystemMaterialView', sync=True)
+    color = Unicode('yellow', sync=True)
+    map = Any(None, sync=True)
+    size = CFloat(1.0, sync=True)
+    sizeAttenuation = Bool(False, sync=True)
+    vertexColors = Bool(False, sync=True)
+    fog = Bool(False, sync=True)
+
+class ShaderMaterial(Material):
+    _view_name = Unicode('ShaderMaterialView', sync=True)
+    fragmentShader = Unicode('void main(){ }', sync=True)
+    vertexShader = Unicode('void main(){ }', sync=True)
+    morphTargets = Bool(False, sync=True)
+    lights = Bool(False, sync=True)
+    morphNormals = Bool(False, sync=True)
+    wireframe = Bool(False, sync=True)
+    vertexColors = Enum(['NoColors', 'FaceColors', 'VertexColors'], 'NoColors', sync=True)
+    skinning = Bool(False, sync=True)
+    fog = Bool(False, sync=True)
+    shading = Enum(['SmoothShading', 'FlatShading', 'NoShading'], 'SmoothShading', sync=True)
+    linewidth = CFloat(1.0, sync=True)
     wireframeLinewidth = CFloat(1.0, sync=True)
 
 class Mesh(Object3d):
@@ -284,8 +346,22 @@ class PlotMesh(Mesh):
 
 class Camera(Object3d):
     _view_name = Unicode('CameraView', sync=True)
-    fov = CFloat(40, sync=True)
-    ratio = CFloat(600.0/400.0, sync=True)
+
+class PerspectiveCamera(Camera):
+    _view_name = Unicode('PerspectiveCameraView', sync=True)
+    fov = CFloat(50.0, sync=True)
+    aspect = CFloat(6.0/4.0, sync=True)
+    near = CFloat(0.1, sync=True)
+    far = CFloat(2000.0, sync=True)
+
+class OrthographicCamera(Camera):
+    _view_name = Unicode('OrthographicCameraView', sync=True)
+    left = CFloat(-10.0, sync=True)
+    right = CFloat(10.0, sync=True)
+    top = CFloat(-10.0, sync=True)
+    bottom = CFloat(10.0, sync=True)
+    near = CFloat(0.1, sync=True)
+    far = CFloat(2000.0, sync=True)
     
 class Scene(Object3d):
     _view_name = Unicode('SceneView', sync=True)
@@ -298,7 +374,6 @@ class Renderer(DOMWidget):
     scene = Instance(Scene, sync=True)
     camera = Instance(Camera, sync=True)
     controls = Instance(Controls, sync=True)
-
     
 class Light(Object3d):
     color = Any('white', sync=True) # could be string or number or tuple
