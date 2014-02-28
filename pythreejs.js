@@ -418,7 +418,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
 
     var ParametricGeometryView = ThreeView.extend({
         update: function() {
-            eval('var s='+this.model.get('func'));
+            eval('var s='.concat(this.model.get('func')));
             this.replace_obj(new THREE.ParametricGeometry(s,
                                                     this.model.get('slices'),
                                                     this.model.get('stacks')));
