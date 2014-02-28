@@ -328,7 +328,13 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
 
     var LatheGeometryView = ThreeView.extend({
         update: function() {
-            this.replace_obj(new THREE.LatheGeometry(this.model.get('points'),
+            var points = this.model.get('points');
+            var pnt = [];
+            for (var p_index = 0, len = points.length; p_index < len; p_index++ ) {
+                var a = new THREE.Vector3().fromArray(points[p_index]);
+                pnt.push(a);
+            }
+            this.replace_obj(new THREE.LatheGeometry(pnt,
                                                         this.model.get('segments'),
                                                         this.model.get('phiStart'),
                                                         this.model.get('phiLength')));
