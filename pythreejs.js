@@ -583,6 +583,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         },
         needs_update: function() {
             this.obj.needsUpdate = true;
+            console.log("Texture needsupdate");
         }
     });
     IPython.WidgetManager.register_widget_view('ImageTextureView', ImageTextureView);
