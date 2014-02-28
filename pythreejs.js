@@ -121,6 +121,11 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                 var p = set_properties[p_index];
                 this.obj[p].set(this.model.get(p));
             }
+            var child_properties = this.child_properties;
+            for (var p_index=0, len=set_properties.length; p_index<len; p_index++) {
+                var p = child_properties[p_index];
+                this.obj[p].create_child_view(this.model.get(p));
+            }
 
         }
     });
@@ -453,6 +458,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.set_properties.push('color');
             this.scalar_properties.push('wireframe', 'wireframeLinewidth', 'wireframeLinecap', 'wireframeLinejoin',
                                         'fog', 'skinning', 'morphTargets', 'lightMap', 'specularMap', 'envMap');
+            this.child_properties.push('map');
         },
         new_obj: function() {return new THREE.MeshBasicMaterial();}
     });

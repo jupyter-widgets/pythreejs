@@ -216,6 +216,7 @@ class BasicMaterial(Material):
     shading = Enum(['SmoothShading', 'FlatShading', 'NoShading'], 'SmoothShading', sync=True)
     vertexColors = Enum(['NoColors', 'FaceColors', 'VertexColors'], 'NoColors', sync=True)
     fog = Bool(False, sync=True)
+    map = Instance(Texture, sync=True)
     lightMap = Any(None, sync=True)
     specularMap = Any(None, sync=True)
     envMap = Any(None, sync=True)
