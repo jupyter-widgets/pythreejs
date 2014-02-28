@@ -533,6 +533,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         },
         new_obj: function() {return new THREE.ShaderMaterial();}
     });
+    IPython.WidgetManager.register_widget_view('ShaderMaterialView', ShaderMaterialView);
 
     var MeshView = Object3dView.extend({
         // if we replace the geometry or material, do a full re-render
