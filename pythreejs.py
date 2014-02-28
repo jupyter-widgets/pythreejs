@@ -11,6 +11,18 @@ def vector3(trait_type=CFloat, default=None, **kwargs):
     return List(trait_type, default_value=default, 
                 minlen=3, maxlen=3, allow_none=False, **kwargs)
 
+    class Texture(Widget):
+    _view_name = Unicode('TextureView', sync=True)
+
+class ImageTexture(Texture):
+    _view_name = Unicode('ImageTextureView', sync=True)
+    imageuri = Unicode('',sync=True)
+
+class DataTexture(Texture):
+    _view_name = Unicode('DataTextureView', sync=True)
+    data = Any(sync=True)
+    format = Unicode('',sync=True)
+
 # python 3 compatibility stuff
 # http://www.voidspace.org.uk/python/articles/porting-mock-to-python-3.shtml
 try:
@@ -362,18 +374,6 @@ class Renderer(DOMWidget):
     scene = Instance(Scene, sync=True)
     camera = Instance(Camera, sync=True)
     controls = Instance(Controls, sync=True)
-
-class Texture(Widget):
-    _view_name = Unicode('TextureView', sync=True)
-
-class ImageTexture(Texture):
-    _view_name = Unicode('ImageTextureView', sync=True)
-    imageuri = Unicode('',sync=True)
-
-class DataTexture(Texture):
-    _view_name = Unicode('DataTextureView', sync=True)
-    data = Any(sync=True)
-    format = Unicode('',sync=True)
     
 class Light(Object3d):
     color = Any('white', sync=True) # could be string or number or tuple
