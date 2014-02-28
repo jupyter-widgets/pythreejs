@@ -578,7 +578,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     var ImageTextureView = ThreeView.extend({
         update: function() {
             var img = new Image();
-            img.crossOrigin='anonymous';
+            //img.crossOrigin='anonymous';
             img.src = this.model.get('imageuri');
             img.onload = $.proxy(this.needs_update, this);
             this.replace_obj(new THREE.Texture(img));
