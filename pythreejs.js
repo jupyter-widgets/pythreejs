@@ -580,6 +580,11 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             var img = $('<img>')[0];
             img.src = this.model.get('imageuri');
             this.replace_obj(new THREE.Texture(img));
+            ThreeView.prototype.update.call(this);
+        },
+        needs_update: function() {
+            this.obj.needsUpdate = true;
+            console.log("Texture needsupdate");
         }
     });
     IPython.WidgetManager.register_widget_view('ImageTextureView', ImageTextureView);
