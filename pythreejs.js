@@ -334,7 +334,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                                                         this.model.get('phiLength')));
         }
     });
-    IPython.WidgetManager.register_widget_view('CircleGeometryView', CircleGeometryView);
+    IPython.WidgetManager.register_widget_view('LatheGeometryView', LatheGeometryView);
 
     var IcosahedronGeometryView = ThreeView.extend({
         update: function() {
