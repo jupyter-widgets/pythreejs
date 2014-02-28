@@ -123,7 +123,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                 this.obj[p].set(this.model.get(p));
             }
             var child_properties = this.child_properties;
-            for (var p_index=0, len=set_properties.length; p_index<len; p_index++) {
+            for (var p_index=0, len=child_properties.length; p_index<len; p_index++) {
                 var p = child_properties[p_index];
                 this[p] = this.create_child_view(this.model.get(p));
                 this.obj[p] = this[p].obj;
