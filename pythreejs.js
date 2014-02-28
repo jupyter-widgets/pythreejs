@@ -125,10 +125,12 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             var child_properties = this.child_properties;
             for (var p_index=0, len=child_properties.length; p_index<len; p_index++) {
                 var p = child_properties[p_index];
-                this[p] = this.create_child_view(this.model.get(p));
-                this.obj[p] = this[p].obj;
+                var prop = this.model.get(p);
+                if (prop) {
+                    this[p] = this.create_child_view(prop);
+                    this.obj[p] = this[p].obj;
+                }
             }
-
         }
     });
 
