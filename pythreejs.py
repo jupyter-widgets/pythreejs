@@ -362,6 +362,17 @@ class Renderer(DOMWidget):
     camera = Instance(Camera, sync=True)
     controls = Instance(Controls, sync=True)
 
+class Texture(Widget):
+    _view_name = Unicode('TextureView', sync=True)
+
+class ImageTexture(Texture):
+    _view_name = Unicode('ImageTextureView', sync=True)
+    imageuri = Unicode('',sync=True)
+
+class DataTexture(Texture):
+    _view_name = Unicode('DataTextureView', sync=True)
+    data = Any(sync=True)
+    format = Unicode('',sync=True)
     
 class Light(Object3d):
     color = Any('white', sync=True) # could be string or number or tuple
