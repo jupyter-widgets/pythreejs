@@ -564,7 +564,15 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         }
     });
         IPython.WidgetManager.register_widget_view('MeshView', MeshView);
-
+        
+var ImageTextureView = ThreeView.extend({
+        update: function() {
+            var img = $('img')[0];
+            img.src = this.model.get('imageurl');
+            this.replace_obj(new THREE.Texture(img));
+        }
+    });
+    IPython.WidgetManager.register_widget_view('ImageTextureView', ImageTextureView);
 
     var Basic3dObject = Object3dView.extend({
         render: function() {
