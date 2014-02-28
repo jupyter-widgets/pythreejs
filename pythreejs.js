@@ -129,6 +129,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                 if (prop) {
                     this[p] = this.create_child_view(prop);
                     this.obj[p] = this[p].obj;
+                    this[p].on('replace_obj', function() {this.obj[p] = this[p].obj; this.needs_update()}, this);
                 }
             }
         }
