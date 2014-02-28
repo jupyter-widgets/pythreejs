@@ -282,8 +282,8 @@ class ParticleSystemMaterial(Material):
 
 class ShaderMaterial(Material):
     _view_name = Unicode('ShaderMaterialView', sync=True)
-    fragmentShader = Unicode('int main(){ }', sync=True)
-    vertexShader = Unicode('int main(){ }', sync=True)
+    fragmentShader = Unicode('void main(){ }', sync=True)
+    vertexShader = Unicode('void main(){ }', sync=True)
     morphTargets = Bool(False, sync=True)
     lights = Bool(False, sync=True)
     morphNormals = Bool(False, sync=True)
