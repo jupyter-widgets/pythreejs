@@ -11,8 +11,8 @@ def vector3(trait_type=CFloat, default=None, **kwargs):
     return List(trait_type, default_value=default, 
                 minlen=3, maxlen=3, allow_none=False, **kwargs)
 
-    class Texture(Widget):
-    _view_name = Unicode('TextureView', sync=True)
+class Texture(Widget):
+        _view_name = Unicode('TextureView', sync=True)
 
 class ImageTexture(Texture):
     _view_name = Unicode('ImageTextureView', sync=True)
