@@ -129,6 +129,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                 if (prop) {
                     this[p] = this.create_child_view(prop);
                     this.obj[p] = this[p].obj;
+                    this[p].on('replace_obj', function() {this.obj[p] = this[p].obj; this.needs_update()}, this);
                 }
             }
         }
@@ -224,8 +225,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
 
     var OrbitControlsView = ThreeView.extend({
         render: function() {
-            // .view or .views--- this is to make things backwards compatible until my PR gets merged to IPython
-            this.controlled_view = this.model.get('controlling').view || this.model.get('controlling').views[0];
+            // retrieve the first view of the controlled object
+            this.controlled_view = this.model.get('controlling').views[0];
             this.obj = new THREE.OrbitControls(this.controlled_view.obj, this.options.dom);
             this.options.update(this.obj.update, this.obj);
             delete this.options.renderer;
@@ -445,7 +446,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         new_properties: function() {
             ThreeView.prototype.new_properties.call(this);
             this.enum_properties.push('side', 'blending', 'blendSrc', 'blendDst', 'blendEquation');
-            this.scalar_properties.push('opacity', 'depthTest', 'depthWrite', 'polygonOffset', 'polygonOffsetFactor',
+            this.scalar_properties.push('opacity', 'transparent', 'depthTest', 'depthWrite', 'polygonOffset', 'polygonOffsetFactor',
                                         'polygonOffsetUnits', 'overdraw', 'visible');
         },
         new_obj: function() {return new THREE.Material();},
@@ -577,8 +578,10 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         
     var ImageTextureView = ThreeView.extend({
         update: function() {
-            var img = $('<img>')[0];
+            var img = new Image();
+            //img.crossOrigin='anonymous';
             img.src = this.model.get('imageuri');
+            img.onload = $.proxy(this.needs_update, this);
             this.replace_obj(new THREE.Texture(img));
             ThreeView.prototype.update.call(this);
         },
