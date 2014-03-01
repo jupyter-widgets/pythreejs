@@ -461,8 +461,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.enum_properties.push('shading', 'vertexColors');
             this.set_properties.push('color');
             this.scalar_properties.push('wireframe', 'wireframeLinewidth', 'wireframeLinecap', 'wireframeLinejoin',
-                                        'fog', 'skinning', 'morphTargets', 'lightMap', 'specularMap', 'envMap');
-            this.child_properties.push('map');
+                                        'fog', 'skinning', 'morphTargets');
+            this.child_properties.push('map', 'lightMap', 'specularMap', 'envMap');
         },
         new_obj: function() {return new THREE.MeshBasicMaterial();}
     });
@@ -535,7 +535,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         new_properties: function() {
             MaterialView.prototype.new_properties.call(this);
             this.set_properties.push('color');
-            this.scalar_properties.push('map', 'size', 'sizeAttenuation', 'vertexColors', 'fog');
+            this.scalar_properties.push('size', 'sizeAttenuation', 'vertexColors', 'fog');
+            this.child_properties.push('map');
         },
         new_obj: function() {return new THREE.ParticleSystemMaterial();}
     });

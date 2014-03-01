@@ -229,9 +229,9 @@ class BasicMaterial(Material):
     vertexColors = Enum(['NoColors', 'FaceColors', 'VertexColors'], 'NoColors', sync=True)
     fog = Bool(False, sync=True)
     map = Instance(Texture, sync=True)
-    lightMap = Any(None, sync=True)
-    specularMap = Any(None, sync=True)
-    envMap = Any(None, sync=True)
+    lightMap = Instance(Texture, sync=True)
+    specularMap = Instance(Texture, sync=True)
+    envMap = Instance(Texture, sync=True)
     skinning = Bool(False, sync=True)
     morphTargets = Bool(False, sync=True)
 
@@ -287,7 +287,7 @@ class NormalMaterial(Material):
 class ParticleSystemMaterial(Material):
     _view_name = Unicode('ParticleSystemMaterialView', sync=True)
     color = Unicode('yellow', sync=True)
-    map = Any(None, sync=True)
+    map = Instance(Texture, sync=True)
     size = CFloat(1.0, sync=True)
     sizeAttenuation = Bool(False, sync=True)
     vertexColors = Bool(False, sync=True)
