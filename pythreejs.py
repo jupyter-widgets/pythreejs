@@ -220,7 +220,7 @@ class Material(Widget):
     
 class BasicMaterial(Material):
     _view_name = Unicode('BasicMaterialView', sync=True)
-    color = Unicode('yellow', sync=True)
+    color = Color('yellow', sync=True)
     wireframe = Bool(False, sync=True)
     wireframeLinewidth = CFloat(1.0, sync=True)
     wireframeLinecap = Unicode('round', sync=True)
@@ -237,17 +237,17 @@ class BasicMaterial(Material):
 
 class LambertMaterial(BasicMaterial):
     _view_name = Unicode('LambertMaterialView', sync=True)
-    ambient = Unicode('white', sync=True)
-    emissive = Unicode('black', sync=True)
+    ambient = Color('white', sync=True)
+    emissive = Color('black', sync=True)
     reflectivity = CFloat(1.0, sync=True)
     refractionRatio = CFloat(0.98, sync=True)
     combine = Enum(['MultiplyOperation', 'MixOperation', 'AddOperation'], 'MultiplyOperation', sync=True)
     
 class PhongMaterial(BasicMaterial):
     _view_name = Unicode('PhongMaterialView', sync=True)
-    ambient = Unicode('white', sync=True)
-    emissive = Unicode('black', sync=True)
-    specular = Unicode('darkgray', sync=True)
+    ambient = Color('white', sync=True)
+    emissive = Color('black', sync=True)
+    specular = Color('darkgray', sync=True)
     shininess = CFloat(30, sync=True)
     reflectivity = CFloat(1.0, sync=True)
     refractionRatio = CFloat(0.98, sync=True)
@@ -260,7 +260,7 @@ class DepthMaterial(Material):
 
 class LineBasicMaterial(Material):
     _view_name = Unicode('LineBasicMaterialView', sync=True)
-    color = Unicode('yellow', sync=True)
+    color = Color('yellow', sync=True)
     linewidth = CFloat(1.0, sync=True)
     linecap = Unicode('round', sync=True)
     linejoin = Unicode('round', sync=True)
@@ -269,7 +269,7 @@ class LineBasicMaterial(Material):
 
 class LineDashedMaterial(Material):
     _view_name = Unicode('LineDashedMaterialView', sync=True)
-    color = Unicode('yellow', sync=True)
+    color = Color('yellow', sync=True)
     linewidth = CFloat(1.0, sync=True)
     scale = CFloat(1.0, sync=True)
     dashSize = CFloat(3.0, sync=True)
@@ -286,7 +286,7 @@ class NormalMaterial(Material):
 
 class ParticleSystemMaterial(Material):
     _view_name = Unicode('ParticleSystemMaterialView', sync=True)
-    color = Unicode('yellow', sync=True)
+    color = Color('yellow', sync=True)
     map = Instance(Texture, sync=True)
     size = CFloat(1.0, sync=True)
     sizeAttenuation = Bool(False, sync=True)
@@ -376,7 +376,7 @@ class Renderer(DOMWidget):
     controls = Instance(Controls, sync=True)
     
 class Light(Object3d):
-    color = Any('white', sync=True) # could be string or number or tuple
+    color = Color('white', sync=True) # could be string or number or tuple
 
 class AmbientLight(Light):
     _view_name = Unicode('AmbientLight', sync=True)
@@ -387,7 +387,7 @@ class IntensityLight(Light):
 
 class HemisphereLight(IntensityLight):
     _view_name = Unicode('HemisphereLight', sync=True)
-    ground_color = Any('blue', sync=True) # could be string, number, or RGB tuple
+    ground_color = Color('blue', sync=True) # could be string, number, or RGB tuple
 
 class DirectionalLight(IntensityLight):
     _view_name = Unicode('DirectionalLight', sync=True)
