@@ -333,7 +333,7 @@ class PlotMesh(Mesh):
         from itertools import groupby, chain
         def flatten(ll):
             return list(chain.from_iterable(ll))
-        p.triangulate()
+        #p.triangulate()
 
         g = FaceGeometry()
         g.vertices = flatten(p.vertices())
