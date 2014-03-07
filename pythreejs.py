@@ -220,7 +220,7 @@ class Material(Widget):
     
 class BasicMaterial(Material):
     _view_name = Unicode('BasicMaterialView', sync=True)
-    color = Unicode('yellow', sync=True)
+    color = Color('yellow', sync=True)
     wireframe = Bool(False, sync=True)
     wireframeLinewidth = CFloat(1.0, sync=True)
     wireframeLinecap = Unicode('round', sync=True)
