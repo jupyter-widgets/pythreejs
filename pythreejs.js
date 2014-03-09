@@ -591,15 +591,13 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     IPython.WidgetManager.register_widget_view('ImageTextureView', ImageTextureView);
 
     var DataTextureView = ThreeView.extend({
-        new_properties: function() {
-            MaterialView.prototype.new_properties.call(this);
-            this.enum_properties.push('format', 'type', 'mapping', 'wrapS', 'wrapT', 'magFilter',
-                                        'minFilter');
-            this.scalar_properties.push('width', 'height', 'anisotropy');
-            this.array_properties.push('data');
-            
-        },
         update: function() {
+            this.replace_obj(new THREE.DataTexture(this.model.get('data'), this.model.get('width'),
+                                                    this.model.get('height'), this.model.get('format'),
+                                                    this.model.get('type'), this.model.get('mapping'),
+                                                    this.model.get('wrapS'), this.model.get('wrapT'),
+                                                    this.model.get('magFilter'), this.model.get('minFilter'),
+                                                    this.model.get('anisotropy')));
             ThreeView.prototype.update.call(this);
         },
         needs_update: function() {
