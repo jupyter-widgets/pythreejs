@@ -251,7 +251,6 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             for (var i = 0, len = obj.vertices.length; i<len; i++) {
                 obj.vertices[i].z = z[i];
             }
-            obj.computeCentroids();
             obj.computeFaceNormals();
             obj.computeVertexNormals();
             this.replace_obj(obj);
@@ -285,7 +284,6 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             }
 
             geometry.mergeVertices();
-            geometry.computeCentroids();
             geometry.computeFaceNormals();
             geometry.computeVertexNormals();
             geometry.computeBoundingSphere();
