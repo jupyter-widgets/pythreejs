@@ -574,12 +574,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         }
     });
     IPython.WidgetManager.register_widget_view('MeshView', MeshView);
-        
-    var TextureView = ThreeView.extend({
-    });
-    IPython.WidgetManager.register_widget_view('TextureView', TextureView);
 
-    var ImageTextureView = TexureView.extend({
+    var ImageTextureView = ThreeView.extend({
         update: function() {
             var img = new Image();
             //img.crossOrigin='anonymous';
@@ -594,7 +590,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     });
     IPython.WidgetManager.register_widget_view('ImageTextureView', ImageTextureView);
 
-    var DataTextureView = TextureView.extend({
+    var DataTextureView = ThreeView.extend({
         new_properties: function() {
             MaterialView.prototype.new_properties.call(this);
             this.enum_properties.push('format', 'type', 'mapping', 'wrapS', 'wrapT', 'magFilter',
