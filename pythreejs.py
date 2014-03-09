@@ -20,8 +20,25 @@ class ImageTexture(Texture):
 
 class DataTexture(Texture):
     _view_name = Unicode('DataTextureView', sync=True)
-    data = Any(sync=True)
-    format = Unicode('',sync=True)
+    data = List(CInt, sync=True)
+    format = Enum(['RGBAFormat', 'AlphaFormat', 'RGBFormat', 'LuminanceFormat', 'LuminanceAlphaFormat'],
+                'RGBAFormat', sync=True)
+    width = CInt(16, sync=True)
+    height = CInt(16, sync=True)
+    type = Enum(['UnsignedByteType', 'ByteType', 'ShortType', 'UnsignedShortType', 'IntType',
+                'UnsignedIntType', 'FloatType', 'UnsignedShort4444Type', 'UnsignedShort5551Type',
+                'UnsignedShort565Type'], 'UnsingedByteType', sync=True)
+    mapping = Enum(['UVMapping', 'CubeReflectionMapping', 'CubeRefractionMapping', 'SphericalReflectionMapping',
+                    'SphericalRefractionMapping'], 'UVMapping', sync=True)
+    wrapS = Enum(['ClampToEdgeWrapping', 'RepeatWrapping', 'MirroredRepeatWrapping'], 'ClampToEdgeWrapping',
+                sync=True)
+    wrapT = Enum(['ClampToEdgeWrapping', 'RepeatWrapping', 'MirroredRepeatWrapping'], 'ClampToEdgeWrapping',
+                sync=True)
+    magFilter = Enum(['LinearFilter', 'NearestFilter'], 'LinearFilter', sync=True)
+    minFilter = Enum(['NearestFilter', 'NearestMipMapNearestFilter', 'NearestMipMapLinearFilter',
+                        'LinearFilter', 'LinearMipMapNearestFilter'], 'NearestFilter', sync=True)
+    anisotropy = CInt(1, sync=True)
+
 
 # python 3 compatibility stuff
 # http://www.voidspace.org.uk/python/articles/porting-mock-to-python-3.shtml

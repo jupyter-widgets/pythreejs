@@ -575,9 +575,13 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             Object3dView.prototype.update.call(this);
         }
     });
-        IPython.WidgetManager.register_widget_view('MeshView', MeshView);
+    IPython.WidgetManager.register_widget_view('MeshView', MeshView);
         
-    var ImageTextureView = ThreeView.extend({
+    var TextureView = ThreeView.extend({
+    });
+    IPython.WidgetManager.register_widget_view('TextureView', TextureView);
+
+    var ImageTextureView = TexureView.extend({
         update: function() {
             var img = new Image();
             //img.crossOrigin='anonymous';
@@ -591,6 +595,24 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         }
     });
     IPython.WidgetManager.register_widget_view('ImageTextureView', ImageTextureView);
+
+    var DataTextureView = TextureView.extend({
+        new_properties: function() {
+            MaterialView.prototype.new_properties.call(this);
+            this.enum_properties.push('format', 'type', 'mapping', 'wrapS', 'wrapT', 'magFilter',
+                                        'minFilter');
+            this.scalar_properties.push('width', 'height', 'anisotropy');
+            this.array_properties.push('data');
+            
+        },
+        update: function() {
+            ThreeView.prototype.update.call(this);
+        },
+        needs_update: function() {
+            this.obj.needsUpdate = true;
+        }
+    });
+    IPython.WidgetManager.register_widget_view('DataTextureView', DataTextureView);
 
     var Basic3dObject = Object3dView.extend({
         render: function() {
