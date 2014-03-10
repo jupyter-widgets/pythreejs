@@ -27,7 +27,7 @@ class DataTexture(Texture):
     height = CInt(16, sync=True)
     type = Enum(['UnsignedByteType', 'ByteType', 'ShortType', 'UnsignedShortType', 'IntType',
                 'UnsignedIntType', 'FloatType', 'UnsignedShort4444Type', 'UnsignedShort5551Type',
-                'UnsignedShort565Type'], 'UnsingedByteType', sync=True)
+                'UnsignedShort565Type'], 'UnsignedByteType', sync=True)
     mapping = Enum(['UVMapping', 'CubeReflectionMapping', 'CubeRefractionMapping', 'SphericalReflectionMapping',
                     'SphericalRefractionMapping'], 'UVMapping', sync=True)
     wrapS = Enum(['ClampToEdgeWrapping', 'RepeatWrapping', 'MirroredRepeatWrapping'], 'ClampToEdgeWrapping',
