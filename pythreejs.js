@@ -593,7 +593,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     var DataTextureView = ThreeView.extend({
         update: function() {
             this.replace_obj(new THREE.DataTexture(new Uint8Array(this.model.get('data')), this.model.get('width'),
-                                                    this.model.get('height'), this.model.get('format')));
+                                                    this.model.get('height'), THREE[this.model.get('format')]));
             /*,
                                                     this.model.get('type'), this.model.get('mapping'),
                                                     this.model.get('wrapS'), this.model.get('wrapT'),
