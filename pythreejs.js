@@ -593,13 +593,12 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     var DataTextureView = ThreeView.extend({
         update: function() {
             this.replace_obj(new THREE.DataTexture(new Uint8Array(this.model.get('data')), this.model.get('width'),
-                                                    this.model.get('height'), THREE[this.model.get('format')]));
-            /*,
-                                                    this.model.get('type'), this.model.get('mapping'),
-                                                    this.model.get('wrapS'), this.model.get('wrapT'),
-                                                    this.model.get('magFilter'), this.model.get('minFilter'),
-                                                    this.model.get('anisotropy*/
-            ThreeView.prototype.update.call(this);
+                                                    this.model.get('height'), THREE[this.model.get('format')],
+                                                    THREE[this.model.get('type')], THREE[this.model.get('mapping')],
+                                                    THREE[this.model.get('wrapS')], THREE[this.model.get('wrapT')],
+                                                    THREE[this.model.get('magFilter')], THREE[this.model.get('minFilter')],
+                                                    this.model.get('anisotropy')));
+          ThreeView.prototype.update.call(this);
         },
         needs_update: function() {
             this.obj.needsUpdate = true;
