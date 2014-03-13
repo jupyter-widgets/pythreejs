@@ -361,13 +361,13 @@ class PlotMesh(Mesh):
         return m
 
     def material_from_other(self, p):
-            # TODO: do this without scenetree_json()
-            t = p.scenetree_json()['children'][0]['texture']
-            m = LambertMaterial(side='DoubleSide')
-            m.color = t['color']
-            m.opacity = t['opacity']
-            # TODO: support other attributes
-            return m
+        # TODO: do this without scenetree_json()
+        t = p.scenetree_json()['children'][0]['texture']
+        m = LambertMaterial(side='DoubleSide')
+        m.color = t['color']
+        m.opacity = t['opacity']
+        # TODO: support other attributes
+        return m
 
     def geometry_from_box(self, p):
         g = BoxGeometry()
