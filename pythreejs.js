@@ -592,9 +592,39 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
 
     var DataTextureView = ThreeView.extend({
         update: function() {
-            this.replace_obj(new THREE.DataTexture(new Uint8Array(this.model.get('data')), this.model.get('width'),
+            var dataType = THREE[this.model.get('type');
+            var dataArr;
+            switch (dataType)
+            {
+                case 'UnsignedByteType':
+                    dataArr = new Uint8Array();
+                    break;
+                case 'ByteType':
+                    dataArr = new Int8Array();
+                    break;
+                case 'ShortType':
+                    dataArr = new Int16Array();
+                    break;
+                case 'IntType':
+                    dataArr = new Int32Aarray();
+                    break;
+                case 'UnsignedIntType':
+                    dataArr = new Uint32Array();
+                    break;
+                case 'FloatType':
+                    dataArr = new Float32Array();
+                    break;
+                case 'UnsignedShortType':
+                case 'UnsignedShort4444Type':
+                case 'UnsignedShort5551Type':
+                case 'UnsignedShort565Type':
+                    dataArr = new Uint16Array();
+                    break;
+            }
+            dataArr.set(this.model.get('data'));
+            this.replace_obj(new THREE.DataTexture(dataArr, this.model.get('width'),
                                                     this.model.get('height'), THREE[this.model.get('format')],
-                                                    THREE[this.model.get('type')], THREE[this.model.get('mapping')],
+                                                    dataType, THREE[this.model.get('mapping')],
                                                     THREE[this.model.get('wrapS')], THREE[this.model.get('wrapT')],
                                                     THREE[this.model.get('magFilter')], THREE[this.model.get('minFilter')],
                                                     this.model.get('anisotropy')));
