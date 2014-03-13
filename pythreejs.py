@@ -337,10 +337,10 @@ class PlotMesh(Mesh):
 
     def _plot_changed(self, name, old, new):
         self.type = new.scenetree_json()['type']
-        if (self.type == 'object'):
+        try:
             self.type = new.scenetree_json()['geometry']['type']
             self.material = self.material_from_object(new)
-        else: 
+        except: 
             self.type = new.scenetree_json()['children'][0]['geometry']['type']
             self.material = self.material_from_other(new)
         if(self.type == 'index_face_set'): 
