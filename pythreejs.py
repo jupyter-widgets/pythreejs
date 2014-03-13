@@ -339,15 +339,17 @@ class PlotMesh(Mesh):
         self.type = new.scenetree_json()['type']
         if (self.type == 'object'):
             self.type = new.scenetree_json()['geometry']['type']
+            self.material = self.material_from_object(new)
         else: 
             self.type = new.scenetree_json()['children'][0]['geometry']['type']
+            self.material = self.material_from_other(new)
         if(self.type == 'index_face_set'): 
             self.geometry = self.geometry_from_plot(new)
         elif(self.type == 'sphere'):
             self.geometry = self.geometry_from_sphere(new)
-        self.material = self.material_from_plot(new)
+        
 
-    def material_from_plot(self, p):
+    def material_from_object(self, p):
         # TODO: do this without scenetree_json()
         t = p.texture.scenetree_json()
         m = LambertMaterial(side='DoubleSide')
@@ -355,6 +357,15 @@ class PlotMesh(Mesh):
         m.opacity = t['opacity']
         # TODO: support other attributes
         return m
+
+    def material_from_other(self, p):
+            # TODO: do this without scenetree_json()
+            t = p.scenetree_json()['children'][0]['texture']
+            m = LambertMaterial(side='DoubleSide')
+            m.color = t['color']
+            m.opacity = t['opacity']
+            # TODO: support other attributes
+            return m
 
     def geometry_from_sphere(self, p):
         g = SphereGeometry()
