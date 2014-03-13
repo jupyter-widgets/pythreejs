@@ -20,8 +20,25 @@ class ImageTexture(Texture):
 
 class DataTexture(Texture):
     _view_name = Unicode('DataTextureView', sync=True)
-    data = Any(sync=True)
-    format = Unicode('',sync=True)
+    data = List(CInt, sync=True)
+    format = Enum(['RGBAFormat', 'AlphaFormat', 'RGBFormat', 'LuminanceFormat', 'LuminanceAlphaFormat'],
+                'RGBAFormat', sync=True)
+    width = CInt(16, sync=True)
+    height = CInt(16, sync=True)
+    type = Enum(['UnsignedByteType', 'ByteType', 'ShortType', 'UnsignedShortType', 'IntType',
+                'UnsignedIntType', 'FloatType', 'UnsignedShort4444Type', 'UnsignedShort5551Type',
+                'UnsignedShort565Type'], 'UnsignedByteType', sync=True)
+    mapping = Enum(['UVMapping', 'CubeReflectionMapping', 'CubeRefractionMapping', 'SphericalReflectionMapping',
+                    'SphericalRefractionMapping'], 'UVMapping', sync=True)
+    wrapS = Enum(['ClampToEdgeWrapping', 'RepeatWrapping', 'MirroredRepeatWrapping'], 'ClampToEdgeWrapping',
+                sync=True)
+    wrapT = Enum(['ClampToEdgeWrapping', 'RepeatWrapping', 'MirroredRepeatWrapping'], 'ClampToEdgeWrapping',
+                sync=True)
+    magFilter = Enum(['LinearFilter', 'NearestFilter'], 'LinearFilter', sync=True)
+    minFilter = Enum(['NearestFilter', 'NearestMipMapNearestFilter', 'NearestMipMapLinearFilter',
+                        'LinearFilter', 'LinearMipMapNearestFilter'], 'NearestFilter', sync=True)
+    anisotropy = CInt(1, sync=True)
+
 
 # python 3 compatibility stuff
 # http://www.voidspace.org.uk/python/articles/porting-mock-to-python-3.shtml
@@ -329,7 +346,11 @@ class PlotMesh(Mesh):
     def material_from_plot(self, p):
         # TODO: do this without scenetree_json()
         t = p.texture.scenetree_json()
+<<<<<<< HEAD
         m = LambertMaterial(side = 'DoubleSide')
+=======
+        m = LambertMaterial(side='DoubleSide')
+>>>>>>> 27c6a18ade0e6509bb5dff950854f894014a1fc8
         m.color = t['color']
         m.opacity = t['opacity']
         # TODO: support other attributes

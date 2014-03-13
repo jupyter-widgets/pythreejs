@@ -251,7 +251,6 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             for (var i = 0, len = obj.vertices.length; i<len; i++) {
                 obj.vertices[i].z = z[i];
             }
-            obj.computeCentroids();
             obj.computeFaceNormals();
             obj.computeVertexNormals();
             this.replace_obj(obj);
@@ -285,7 +284,6 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             }
 
             geometry.mergeVertices();
-            geometry.computeCentroids();
             geometry.computeFaceNormals();
             geometry.computeVertexNormals();
             geometry.computeBoundingSphere();
@@ -575,8 +573,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             Object3dView.prototype.update.call(this);
         }
     });
-        IPython.WidgetManager.register_widget_view('MeshView', MeshView);
-        
+    IPython.WidgetManager.register_widget_view('MeshView', MeshView);
+
     var ImageTextureView = ThreeView.extend({
         update: function() {
             var img = new Image();
@@ -591,6 +589,22 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         }
     });
     IPython.WidgetManager.register_widget_view('ImageTextureView', ImageTextureView);
+
+    var DataTextureView = ThreeView.extend({
+        update: function() {
+            this.replace_obj(new THREE.DataTexture(new Uint8Array(this.model.get('data')), this.model.get('width'),
+                                                    this.model.get('height'), THREE[this.model.get('format')],
+                                                    THREE[this.model.get('type')], THREE[this.model.get('mapping')],
+                                                    THREE[this.model.get('wrapS')], THREE[this.model.get('wrapT')],
+                                                    THREE[this.model.get('magFilter')], THREE[this.model.get('minFilter')],
+                                                    this.model.get('anisotropy')));
+          ThreeView.prototype.update.call(this);
+        },
+        needs_update: function() {
+            this.obj.needsUpdate = true;
+        }
+    });
+    IPython.WidgetManager.register_widget_view('DataTextureView', DataTextureView);
 
     var Basic3dObject = Object3dView.extend({
         render: function() {
