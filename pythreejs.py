@@ -346,11 +346,7 @@ class PlotMesh(Mesh):
     def material_from_plot(self, p):
         # TODO: do this without scenetree_json()
         t = p.texture.scenetree_json()
-<<<<<<< HEAD
-        m = LambertMaterial(side = 'DoubleSide')
-=======
         m = LambertMaterial(side='DoubleSide')
->>>>>>> 27c6a18ade0e6509bb5dff950854f894014a1fc8
         m.color = t['color']
         m.opacity = t['opacity']
         # TODO: support other attributes
