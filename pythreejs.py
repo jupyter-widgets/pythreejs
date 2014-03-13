@@ -347,6 +347,8 @@ class PlotMesh(Mesh):
             self.geometry = self.geometry_from_plot(new)
         elif(self.type == 'sphere'):
             self.geometry = self.geometry_from_sphere(new)
+        elif(self.type == 'box'):
+            self.geometry = self.geometry_from_box(new)
         
 
     def material_from_object(self, p):
@@ -366,6 +368,13 @@ class PlotMesh(Mesh):
             m.opacity = t['opacity']
             # TODO: support other attributes
             return m
+
+    def geometry_from_box(self, p):
+        g = BoxGeometry()
+        g.width = p.scenetree_json()['geometry']['size'][0]
+        g.height = p.scenetree_json()['geometry']['size'][1]
+        g.depth = p.scenetree_json()['geometry']['size'][2]
+        return g
 
     def geometry_from_sphere(self, p):
         g = SphereGeometry()
