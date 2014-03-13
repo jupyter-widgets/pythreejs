@@ -370,6 +370,7 @@ class PlotMesh(Mesh):
     def geometry_from_sphere(self, p):
         g = SphereGeometry()
         g.radius = p.scenetree_json()['children'][0]['geometry']['radius']
+        return g
 
     def geometry_from_plot(self, p):
         from itertools import groupby, chain
