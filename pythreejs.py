@@ -343,7 +343,9 @@ class PlotMesh(Mesh):
             self.type = new.scenetree_json()['children'][0]['geometry']['type']
         if(self.type == 'index_face_set'): 
             self.geometry = self.geometry_from_plot(new)
-            self.material = self.material_from_plot(new)
+        elif(self.type == 'sphere'):
+            self.geometry = self.geometry_from_sphere(new)
+        self.material = self.material_from_plot(new)
 
     def material_from_plot(self, p):
         # TODO: do this without scenetree_json()
@@ -353,6 +355,10 @@ class PlotMesh(Mesh):
         m.opacity = t['opacity']
         # TODO: support other attributes
         return m
+
+    def geometry_from_sphere(self, p):
+        g = SphereGeometry()
+        g.radius = p.scenetree_json()['children'][0]['geometry']['radius']
 
     def geometry_from_plot(self, p):
         from itertools import groupby, chain
