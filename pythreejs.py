@@ -336,13 +336,23 @@ class PlotMesh(Mesh):
     plot = Instance('sage.plot.plot3d.base.Graphics3d')
 
     def _plot_changed(self, name, old, new):
-        self.geometry = self.geometry_from_plot(new)
-        self.material = self.material_from_plot(new)
+        self.type = new.scenetree_json()['type']
+        if (self.type == 'object'):
+            self.type = new.scenetree_json()['geometry']['type']
+        else: 
+            self.type = new.scenetree_json()['children'][0]['geometry']['type']
+        if(self.type == 'index_face_set'): 
+            self.geometry = self.geometry_from_plot(new)
+            self.material = self.material_from_plot(new)
 
     def material_from_plot(self, p):
         # TODO: do this without scenetree_json()
         t = p.texture.scenetree_json()
+<<<<<<< HEAD
+        m = LambertMaterial(side = 'DoubleSide')
+=======
         m = LambertMaterial(side='DoubleSide')
+>>>>>>> 27c6a18ade0e6509bb5dff950854f894014a1fc8
         m.color = t['color']
         m.opacity = t['opacity']
         # TODO: support other attributes
