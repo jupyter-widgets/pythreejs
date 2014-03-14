@@ -592,7 +592,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
 
     var DataTextureView = ThreeView.extend({
         update: function() {
-            var dataType = THREE[this.model.get('type');
+            var dataType = THREE[this.model.get('type')];
             var dataArr;
             switch (dataType)
             {
