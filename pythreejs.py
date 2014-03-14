@@ -453,98 +453,124 @@ class SpotLight(PointLight):
     angle = CFloat(10, sync=True)
     exponent = CFloat(0.5, sync=True)
 
-class SageGraphics(Mesh):
-    plot = Instance('sage.plot.plot3d.base.Graphics3d')
-    # TODO material type option
+lights = {
+'colors': [
+    AmbientLight(color=(0.312,0.188,0.4)),
+    DirectionalLight(position=[1,0,1], color=[0.8, 0, 0]),
+    DirectionalLight(position=[1,1,1], color=[0, 0.8, 0]),
+    DirectionalLight(position=[0,1,1], color=[0, 0, 0.8]),
+    DirectionalLight(position=[-1,-1,-1], color=[.9,.7,.9]),
+    ],
+'shades': [
+    AmbientLight(color=[.6, .6, .6]),
+    DirectionalLight(position=[0,1,1], color=[.5, .5, .5]),
+    DirectionalLight(position=[0,0,1], color=[.5, .5, .5]),
+    DirectionalLight(position=[1,1,1], color=[.5, .5, .5]),
+    DirectionalLight(position=[-1,-1,-1], color=[.7,.7,.7]),
+    ],
+}
+
+
+# TODO material type option
+
+def create_from_plot(plot):
+    # get scenetree_json()
+    tree = plot.scenetree_json()
+    # dispatch of type
+    plotType = dispatch[tree['type']]
+    # call function
+    obj = eval(plotType(plot))
+    # get threejs object - create scene, camera, renderer -> pass renderer back
+    if (plotType == 'object'):
+        plotType = plot.scenetree_json()['geometry']['type']
+    else: 
+        plotType = new.scenetree_json()['children'][0]['geometry']['type']
+    if(plotType == 'index_face_set'): 
+        geometry = geometry_from_plot(plot)
+    elif(plotType == 'sphere'):
+        geometry = self.geometry_from_sphere(plot)
+    elif(self.type == 'box'):
+        geometry = self.geometry_from_box(plot)
+
+    material = dispatch[plotType['type']](new)
+    material = eval(material)
+
+    mesh = Mesh(geometry, material)
+    cam = PerspectiveCamera()
+    scene = Scene(children=[mesh, AmbientLight(color=0x777777)])
+    return scene
+    
+    # Old code
+    #self.type = new.scenetree_json()['type']
+    #self.d = new.scenetree_json()
+    #self.material = dispatch[self.d['type']](new)
+    #self.material = graphic_from_object(new)
+    # Move into graphics from object/group
+    # if (self.type == 'object'):
+    #     self.type = new.scenetree_json()['geometry']['type']
+    # else: 
+    #     self.type = new.scenetree_json()['children'][0]['geometry']['type']
+    # if(self.type == 'index_face_set'): 
+    #     self.geometry = self.geometry_from_plot(new)
+    # elif(self.type == 'sphere'):
+    #     self.geometry = self.geometry_from_sphere(new)
+    # elif(self.type == 'box'):
+    #     self.geometry = self.geometry_from_box(new)
     
 
-    def _plot_changed(self, name, old, new):
-        dispatch = {'object' : 'graphic_from_object',
-                 'group' : 'graphic_from_group',
-                 'box' : 'geometry_from_box',
-                 'sphere' : 'geometry_from_sphere',
-                 'index_face_set' : 'geometry_from_index_face_set',
-                 'cone' : 'geometry_from_cone'
-                }
-        self.type = new.scenetree_json()['type']
-        self.d = new.scenetree_json()
-        self.material = dispatch[self.d['type']](new)
-        #self.material = graphic_from_object(new)
-        # Move into graphics from object/group
-        if (self.type == 'object'):
-            self.type = new.scenetree_json()['geometry']['type']
-        else: 
-            self.type = new.scenetree_json()['children'][0]['geometry']['type']
-        if(self.type == 'index_face_set'): 
-            self.geometry = self.geometry_from_plot(new)
-        elif(self.type == 'sphere'):
-            self.geometry = self.geometry_from_sphere(new)
-        elif(self.type == 'box'):
-            self.geometry = self.geometry_from_box(new)
-        
+def graphic_from_object(self, p):
+    # TODO: do this without scenetree_json()
+    t = p.texture.scenetree_json()
+    m = LambertMaterial(side='DoubleSide')
+    m.color = t['color']
+    m.opacity = t['opacity']
+    # TODO: support other attributes
+    return m
 
-    def graphic_from_object(self, p):
-        # TODO: do this without scenetree_json()
-        t = p.texture.scenetree_json()
-        m = LambertMaterial(side='DoubleSide')
-        m.color = t['color']
-        m.opacity = t['opacity']
-        # TODO: support other attributes
-        return m
+def graphic_from_group(self, p):
+    # TODO: do this without scenetree_json()
+    # TODO: loop through children
+    t = p.scenetree_json()['children'][0]['texture']
+    m = LambertMaterial(side='DoubleSide')
+    m.color = t['color']
+    m.opacity = t['opacity']
+    # TODO: support other attributes
+    return m
 
-    def graphic_from_group(self, p):
-        # TODO: do this without scenetree_json()
-        # TODO: loop through children
-        t = p.scenetree_json()['children'][0]['texture']
-        m = LambertMaterial(side='DoubleSide')
-        m.color = t['color']
-        m.opacity = t['opacity']
-        # TODO: support other attributes
-        return m
+def geometry_from_box(self, p):
+    g = BoxGeometry()
+    g.width = p.scenetree_json()['geometry']['size'][0]
+    g.height = p.scenetree_json()['geometry']['size'][1]
+    g.depth = p.scenetree_json()['geometry']['size'][2]
+    return g
 
-    def geometry_from_box(self, p):
-        g = BoxGeometry()
-        g.width = p.scenetree_json()['geometry']['size'][0]
-        g.height = p.scenetree_json()['geometry']['size'][1]
-        g.depth = p.scenetree_json()['geometry']['size'][2]
-        return g
+def geometry_from_sphere(self, p):
+    g = SphereGeometry()
+    g.radius = p.scenetree_json()['children'][0]['geometry']['radius']
+    return g
 
-    def geometry_from_sphere(self, p):
-        g = SphereGeometry()
-        g.radius = p.scenetree_json()['children'][0]['geometry']['radius']
-        return g
+def geometry_from_index_face_set(self, p):
+    from itertools import groupby, chain
+    def flatten(ll):
+        return list(chain.from_iterable(ll))
+    p.triangulate()
 
-    def geometry_from_index_face_set(self, p):
-        from itertools import groupby, chain
-        def flatten(ll):
-            return list(chain.from_iterable(ll))
-        p.triangulate()
+    g = FaceGeometry()
+    g.vertices = flatten(p.vertices())
+    f = p.index_faces()
+    f.sort(key=len)
+    faces = {k:flatten(v) for k,v in groupby(f,len)}
+    g.face3 = faces.get(3,[])
+    g.face4 = faces.get(4,[])
+    return g   
 
-        g = FaceGeometry()
-        g.vertices = flatten(p.vertices())
-        f = p.index_faces()
-        f.sort(key=len)
-        faces = {k:flatten(v) for k,v in groupby(f,len)}
-        g.face3 = faces.get(3,[])
-        g.face4 = faces.get(4,[])
-        return g   
+def geometry_from_cone(self, p):
+    return p
 
-    def geometry_from_cone(self, p):
-        return p
-
-lights = {
-    'colors': [
-        AmbientLight(color=(0.312,0.188,0.4)),
-        DirectionalLight(position=[1,0,1], color=[0.8, 0, 0]),
-        DirectionalLight(position=[1,1,1], color=[0, 0.8, 0]),
-        DirectionalLight(position=[0,1,1], color=[0, 0, 0.8]),
-        DirectionalLight(position=[-1,-1,-1], color=[.9,.7,.9]),
-        ],
-    'shades': [
-        AmbientLight(color=[.6, .6, .6]),
-        DirectionalLight(position=[0,1,1], color=[.5, .5, .5]),
-        DirectionalLight(position=[0,0,1], color=[.5, .5, .5]),
-        DirectionalLight(position=[1,1,1], color=[.5, .5, .5]),
-        DirectionalLight(position=[-1,-1,-1], color=[.7,.7,.7]),
-        ],
-    }
+dispatch = {'object' : graphic_from_object,
+             'group' : graphic_from_group,
+             'box' : geometry_from_box,
+             'sphere' : geometry_from_sphere,
+             'index_face_set' : geometry_from_index_face_set,
+             'cone' : geometry_from_cone
+            }
