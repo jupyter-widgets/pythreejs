@@ -469,7 +469,7 @@ class SageGraphics(Mesh):
         global dispatch 
         self.type = new.scenetree_json()['type']
         self.d = new.scenetree_json()
-        self.material = exec dispatch[self.d['type']](new)
+        self.material = exec dispatch[self.d['type']]+'(new)'
         
         # Move into graphics from object/group
         if (self.type == 'object'):
