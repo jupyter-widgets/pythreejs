@@ -495,10 +495,11 @@ def create_from_plot(plot):
     material = dispatch[plotType['type']](new)
     material = eval(material)
 
-    mesh = Mesh(geometry, material)
+    mesh = Mesh(geometry=geometry, material=material)
     cam = PerspectiveCamera()
     scene = Scene(children=[mesh, AmbientLight(color=0x777777)])
-    return scene
+    renderer = Renderer(camera=cam, scene=scene, controls=OrbitControls(controlling=c))
+    return renderer
     
     # Old code
     #self.type = new.scenetree_json()['type']
