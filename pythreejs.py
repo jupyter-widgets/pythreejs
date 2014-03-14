@@ -456,12 +456,12 @@ class SpotLight(PointLight):
 class SageGraphics(Mesh):
     plot = Instance('sage.plot.plot3d.base.Graphics3d')
     # TODO material type option
-    self.dispatch = {'object' : graphic_from_object,
-                     'group' : graphic_from_group,
-                     'box' : geometry_from_box,
-                     'sphere' : geometry_from_sphere,
-                     'index_face_set' : geometry_from_index_face_set,
-                     'cone' : geometry_from_cone
+    self.dispatch = {'object' : 'graphic_from_object',
+                     'group' : 'graphic_from_group',
+                     'box' : 'geometry_from_box',
+                     'sphere' : 'geometry_from_sphere',
+                     'index_face_set' : 'geometry_from_index_face_set',
+                     'cone' : 'geometry_from_cone'
                      }
 
     def _plot_changed(self, name, old, new):
