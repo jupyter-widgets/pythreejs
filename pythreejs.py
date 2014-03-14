@@ -481,16 +481,16 @@ def create_from_plot(plot):
     # call function
     obj = plotType(plot)
     # get threejs object - create scene, camera, renderer -> pass renderer back
-    if (plotType == 'object'):
-        plotType = tree['geometry']['type']
-    else:
-        plotType = tree['children'][0]['geometry']['type']
-    if(plotType == 'index_face_set'): 
-        geometry = geometry_from_plot(plot)
-    elif(plotType == 'sphere'):
-        geometry = geometry_from_sphere(plot)
-    elif(plotType == 'box'):
-        geometry = geometry_from_box(plot)
+    # if (plotType == 'object'):
+    #     plotType = tree['geometry']['type']
+    # else:
+    #     plotType = tree['children'][0]['geometry']['type']
+    # if(plotType == 'index_face_set'): 
+    #     geometry = geometry_from_plot(plot)
+    # elif(plotType == 'sphere'):
+    #     geometry = geometry_from_sphere(plot)
+    # elif(plotType == 'box'):
+    #     geometry = geometry_from_box(plot)
 
     material = dispatch[plotType['type']](plot)
     material = material(plot)
