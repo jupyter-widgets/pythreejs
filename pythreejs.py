@@ -456,7 +456,6 @@ class SpotLight(PointLight):
 class SageGraphics(Mesh):
     plot = Instance('sage.plot.plot3d.base.Graphics3d')
     # TODO material type option
-    global dispatch 
     dispatch = {'object' : 'graphic_from_object',
                  'group' : 'graphic_from_group',
                  'box' : 'geometry_from_box',
@@ -466,11 +465,10 @@ class SageGraphics(Mesh):
                 }
 
     def _plot_changed(self, name, old, new):
-        global dispatch 
         self.type = new.scenetree_json()['type']
         self.d = new.scenetree_json()
-        #self.material = eval(dispatch[self.d['type']]+'(new)')
-        self.material = graphic_from_object(new)
+        self.material = eval(dispatch[self.d['type']]+'(new)')
+        #self.material = graphic_from_object(new)
         # Move into graphics from object/group
         if (self.type == 'object'):
             self.type = new.scenetree_json()['geometry']['type']
