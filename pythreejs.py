@@ -484,13 +484,13 @@ def create_from_plot(plot):
     if (plotType == 'object'):
         plotType = plot.scenetree_json()['geometry']['type']
     else: 
-        plotType = new.scenetree_json()['children'][0]['geometry']['type']
+        plotType = plot.scenetree_json()['children'][0]['geometry']['type']
     if(plotType == 'index_face_set'): 
         geometry = geometry_from_plot(plot)
     elif(plotType == 'sphere'):
-        geometry = self.geometry_from_sphere(plot)
+        geometry = geometry_from_sphere(plot)
     elif(self.type == 'box'):
-        geometry = self.geometry_from_box(plot)
+        geometry = geometry_from_box(plot)
 
     material = dispatch[plotType['type']](plot)
     material = material(plot)
