@@ -519,7 +519,7 @@ def create_from_plot(plot):
     #     self.geometry = self.geometry_from_box(new)
     
 
-def graphic_from_object(self, p):
+def graphic_from_object(p):
     # TODO: do this without scenetree_json()
     t = p.texture.scenetree_json()
     m = LambertMaterial(side='DoubleSide')
@@ -528,7 +528,7 @@ def graphic_from_object(self, p):
     # TODO: support other attributes
     return m
 
-def graphic_from_group(self, p):
+def graphic_from_group(p):
     # TODO: do this without scenetree_json()
     # TODO: loop through children
     t = p.scenetree_json()['children'][0]['texture']
@@ -538,19 +538,19 @@ def graphic_from_group(self, p):
     # TODO: support other attributes
     return m
 
-def geometry_from_box(self, p):
+def geometry_from_box(p):
     g = BoxGeometry()
     g.width = p.scenetree_json()['geometry']['size'][0]
     g.height = p.scenetree_json()['geometry']['size'][1]
     g.depth = p.scenetree_json()['geometry']['size'][2]
     return g
 
-def geometry_from_sphere(self, p):
+def geometry_from_sphere(p):
     g = SphereGeometry()
     g.radius = p.scenetree_json()['children'][0]['geometry']['radius']
     return g
 
-def geometry_from_index_face_set(self, p):
+def geometry_from_index_face_set(p):
     from itertools import groupby, chain
     def flatten(ll):
         return list(chain.from_iterable(ll))
@@ -565,7 +565,7 @@ def geometry_from_index_face_set(self, p):
     g.face4 = faces.get(4,[])
     return g   
 
-def geometry_from_cone(self, p):
+def geometry_from_cone(p):
     return p
 
 dispatch = {'object' : graphic_from_object,
