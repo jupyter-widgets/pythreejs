@@ -466,9 +466,10 @@ class SageGraphics(Mesh):
                 }
 
     def _plot_changed(self, name, old, new):
+        global dispatch 
         self.type = new.scenetree_json()['type']
         self.d = new.scenetree_json()
-        self.material = global dispatch[self.d['type']](new)
+        self.material = dispatch[self.d['type']](new)
         
         # Move into graphics from object/group
         if (self.type == 'object'):
