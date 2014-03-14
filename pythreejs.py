@@ -456,9 +456,9 @@ class SpotLight(PointLight):
 class SageGraphics(Mesh):
     plot = Instance('sage.plot.plot3d.base.Graphics3d')
     # TODO material type option
-    dispatch{values:fn,
-        'object': 
-    }
+    # dispatch{values:fn,
+    #     'object': 
+    # }
 
     def _plot_changed(self, name, old, new):
         self.type = new.scenetree_json()['type']
