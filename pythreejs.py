@@ -492,7 +492,7 @@ def create_from_plot(plot):
     # elif(plotType == 'box'):
     #     geometry = geometry_from_box(plot)
     
-    material = dispatch[plotType](plot)
+    material = graphic_from_object(plot)
     #material = material(plot)
 
     mesh = Mesh(geometry=geometry, material=material)
