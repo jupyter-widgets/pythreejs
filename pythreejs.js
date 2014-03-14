@@ -628,7 +628,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             dataArr.set(data);
 
             this.scalar_properties.push(dataArr, data, 'anisotropy', 'width', 'height');
-            this.enum_properties.push(type, 'format', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter');
+            this.enum_properties.push(dataType, 'format', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter');
             this.child_properties.push('map');
         },
         new_obj: function() {return new THREE.DataTexture();},
