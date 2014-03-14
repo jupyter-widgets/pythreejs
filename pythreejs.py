@@ -456,15 +456,22 @@ class SpotLight(PointLight):
 class SageGraphics(Mesh):
     plot = Instance('sage.plot.plot3d.base.Graphics3d')
     # TODO material type option
+    self.dispatch = {'object' : graphic_from_object,
+                     'group' : graphic_from_group,
+                     'box' : geometry_from_box,
+                     'sphere' : geometry_from_sphere,
+                     'index_face_set' : geometry_from_index_face_set,
+                     'cone' : geometry_from_cone
+                     }
 
     def _plot_changed(self, name, old, new):
         self.type = new.scenetree_json()['type']
+        self.d = new.scenetree_json()
+        self.material = self.dispatch[self.d['type']](new)
         if (self.type == 'object'):
             self.type = new.scenetree_json()['geometry']['type']
-            self.material = self.material_from_object(new)
         else: 
             self.type = new.scenetree_json()['children'][0]['geometry']['type']
-            self.material = self.material_from_other(new)
         if(self.type == 'index_face_set'): 
             self.geometry = self.geometry_from_plot(new)
         elif(self.type == 'sphere'):
@@ -473,7 +480,7 @@ class SageGraphics(Mesh):
             self.geometry = self.geometry_from_box(new)
         
 
-    def material_from_object(self, p):
+    def graphic_from_object(self, p):
         # TODO: do this without scenetree_json()
         t = p.texture.scenetree_json()
         m = LambertMaterial(side='DoubleSide')
@@ -482,7 +489,7 @@ class SageGraphics(Mesh):
         # TODO: support other attributes
         return m
 
-    def material_from_other(self, p):
+    def graphic_from_group(self, p):
         # TODO: do this without scenetree_json()
         t = p.scenetree_json()['children'][0]['texture']
         m = LambertMaterial(side='DoubleSide')
@@ -503,7 +510,7 @@ class SageGraphics(Mesh):
         g.radius = p.scenetree_json()['children'][0]['geometry']['radius']
         return g
 
-    def geometry_from_plot(self, p):
+    def geometry_from_index_face_set(self, p):
         from itertools import groupby, chain
         def flatten(ll):
             return list(chain.from_iterable(ll))
@@ -517,6 +524,9 @@ class SageGraphics(Mesh):
         g.face3 = faces.get(3,[])
         g.face4 = faces.get(4,[])
         return g   
+
+    def geometry_from_cone(self, p):
+
 
 lights = {
     'colors': [
