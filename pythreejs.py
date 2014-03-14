@@ -494,6 +494,7 @@ def create_from_plot(plot):
     
     material = graphic_from_object(plot)
     #material = material(plot)
+    geometry = geometry_from_box(plot)
 
     mesh = Mesh(geometry=geometry, material=material)
     cam = PerspectiveCamera()
