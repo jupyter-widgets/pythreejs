@@ -456,9 +456,9 @@ class SpotLight(PointLight):
 class SageGraphics(Mesh):
     plot = Instance('sage.plot.plot3d.base.Graphics3d')
     # TODO material type option
-    # dispatch{values:fn,
-    #     'object': 
-    # }
+    dispatch{values:fn,
+        'object': 
+    }
 
     def _plot_changed(self, name, old, new):
         self.type = new.scenetree_json()['type']
@@ -476,19 +476,19 @@ class SageGraphics(Mesh):
             self.geometry = self.geometry_from_box(new)
         
 
-    def graphic_from_object(self, p):
+    def material_from_object(self, p):
         # TODO: do this without scenetree_json()
         t = p.texture.scenetree_json()
-        m = PhongMaterial(side='DoubleSide')
+        m = LambertMaterial(side='DoubleSide')
         m.color = t['color']
         m.opacity = t['opacity']
         # TODO: support other attributes
         return m
 
-    def graphic_from_group(self, p):
+    def material_from_other(self, p):
         # TODO: do this without scenetree_json()
         t = p.scenetree_json()['children'][0]['texture']
-        m = PhongMaterial(side='DoubleSide')
+        m = LambertMaterial(side='DoubleSide')
         m.color = t['color']
         m.opacity = t['opacity']
         # TODO: support other attributes
