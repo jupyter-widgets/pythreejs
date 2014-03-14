@@ -452,7 +452,74 @@ class SpotLight(PointLight):
     _view_name = Unicode('SpotLight', sync=True)
     angle = CFloat(10, sync=True)
     exponent = CFloat(0.5, sync=True)
-    
+
+class SageGraphics(Mesh):
+    plot = Instance('sage.plot.plot3d.base.Graphics3d')
+    # TODO material type option
+    dispatch{values:fn,
+        'object': 
+    }
+
+    def _plot_changed(self, name, old, new):
+        self.type = new.scenetree_json()['type']
+        if (self.type == 'object'):
+            self.type = new.scenetree_json()['geometry']['type']
+            self.material = self.material_from_object(new)
+        else: 
+            self.type = new.scenetree_json()['children'][0]['geometry']['type']
+            self.material = self.material_from_other(new)
+        if(self.type == 'index_face_set'): 
+            self.geometry = self.geometry_from_plot(new)
+        elif(self.type == 'sphere'):
+            self.geometry = self.geometry_from_sphere(new)
+        elif(self.type == 'box'):
+            self.geometry = self.geometry_from_box(new)
+        
+
+    def graphic_from_object(self, p):
+        # TODO: do this without scenetree_json()
+        t = p.texture.scenetree_json()
+        m = PhongMaterial(side='DoubleSide')
+        m.color = t['color']
+        m.opacity = t['opacity']
+        # TODO: support other attributes
+        return m
+
+    def graphic_from_group(self, p):
+        # TODO: do this without scenetree_json()
+        t = p.scenetree_json()['children'][0]['texture']
+        m = PhongMaterial(side='DoubleSide')
+        m.color = t['color']
+        m.opacity = t['opacity']
+        # TODO: support other attributes
+        return m
+
+    def geometry_from_box(self, p):
+        g = BoxGeometry()
+        g.width = p.scenetree_json()['geometry']['size'][0]
+        g.height = p.scenetree_json()['geometry']['size'][1]
+        g.depth = p.scenetree_json()['geometry']['size'][2]
+        return g
+
+    def geometry_from_sphere(self, p):
+        g = SphereGeometry()
+        g.radius = p.scenetree_json()['children'][0]['geometry']['radius']
+        return g
+
+    def geometry_from_plot(self, p):
+        from itertools import groupby, chain
+        def flatten(ll):
+            return list(chain.from_iterable(ll))
+        p.triangulate()
+
+        g = FaceGeometry()
+        g.vertices = flatten(p.vertices())
+        f = p.index_faces()
+        f.sort(key=len)
+        faces = {k:flatten(v) for k,v in groupby(f,len)}
+        g.face3 = faces.get(3,[])
+        g.face4 = faces.get(4,[])
+        return g   
 
 lights = {
     'colors': [
