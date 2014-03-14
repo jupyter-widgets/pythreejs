@@ -595,7 +595,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         new_properties: function() {
             ThreeView.prototype.new_properties.call(this);
 
-            var dataType = THREE[this.model.get('type')];
+            var dataType = this.model.get('type');
             var dataArr;
             switch (dataType)
             {
