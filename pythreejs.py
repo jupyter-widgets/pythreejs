@@ -479,7 +479,7 @@ def create_from_plot(plot):
     # dispatch of type
     plotType = dispatch[tree['type']]
     # call function
-    obj = eval(plotType(plot))
+    obj = exec plotType(plot)
     # get threejs object - create scene, camera, renderer -> pass renderer back
     if (plotType == 'object'):
         plotType = plot.scenetree_json()['geometry']['type']
@@ -493,7 +493,7 @@ def create_from_plot(plot):
         geometry = self.geometry_from_box(plot)
 
     material = dispatch[plotType['type']](new)
-    material = eval(material)
+    material = exec material
 
     mesh = Mesh(geometry=geometry, material=material)
     cam = PerspectiveCamera()
