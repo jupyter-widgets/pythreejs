@@ -625,8 +625,9 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             dataArr.set(data);
 
             this.replace_obj(new THREE.DataTexture(dataArr, this.model.get('width'), this.model.get('height'),
-                            this.model.get('format'), dataType, this.model.get('mapping'), this.model.get('wrapS'),
-                            this.model.get('wrapT'), this.model.get('magFilter'), this.model.get('minFilter'),
+                            THREE[this.model.get('format')], THREE[dataType], THREE[this.model.get('mapping')],
+                            THREE[this.model.get('wrapS')], THREE[this.model.get('wrapT')],
+                            THREE[this.model.get('magFilter')], THREE[this.model.get('minFilter')],
                             this.model.get('anisotropy')));
             ThreeView.prototype.update.call(this);
         },
