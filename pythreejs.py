@@ -497,9 +497,10 @@ def create_from_plot(plot):
     geometry = geometry_from_box(plot)
 
     mesh = Mesh(geometry=geometry, material=material)
-    cam = PerspectiveCamera()
+    cam = PerspectiveCamera(position=[0,5,5], fov=40, 
+           children=[DirectionalLight(color=0xffffff, position=[3,5,1], intensity=0.5)])
     scene = Scene(children=[mesh, AmbientLight(color=0x777777)])
-    renderer = Renderer(camera=cam, scene=scene, controls=OrbitControls(controlling=c))
+    renderer = Renderer(camera=cam, scene=scene, controls=OrbitControls(controlling=cam))
     return renderer
     
     # Old code
