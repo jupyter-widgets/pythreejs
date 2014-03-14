@@ -626,8 +626,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             }
             dataArr.set(this.model.get('data'));
 
-            this.set_properties.push(dataArr);
-            this.scalar_properties.push('data', 'anisotropy', 'width', 'height');
+            this.scalar_properties.push(dataArr, 'data', 'anisotropy', 'width', 'height');
             this.enum_properties.push('type', 'format', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter');
             this.child_properties.push('map');
         },
