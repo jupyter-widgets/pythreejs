@@ -493,7 +493,7 @@ def create_from_plot(plot):
     #     geometry = geometry_from_box(plot)
 
     material = dispatch[plotType['type']](plot)
-    material = material(plot)
+    #material = material(plot)
 
     mesh = Mesh(geometry=geometry, material=material)
     cam = PerspectiveCamera()
