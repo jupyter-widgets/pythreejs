@@ -597,37 +597,38 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
 
             var dataType = this.model.get('type');
             var dataArr;
+            var data = this.model.get('data');
             switch (dataType)
             {
                 case 'UnsignedByteType':
-                    dataArr = new Uint8Array();
+                    dataArr = new Uint8Array(data.length);
                     break;
                 case 'ByteType':
-                    dataArr = new Int8Array();
+                    dataArr = new Int8Array(data.length);
                     break;
                 case 'ShortType':
-                    dataArr = new Int16Array();
+                    dataArr = new Int16Array(data.length);
                     break;
                 case 'IntType':
-                    dataArr = new Int32Aarray();
+                    dataArr = new Int32Aarray(data.length);
                     break;
                 case 'UnsignedIntType':
-                    dataArr = new Uint32Array();
+                    dataArr = new Uint32Array(data.length);
                     break;
                 case 'FloatType':
-                    dataArr = new Float32Array();
+                    dataArr = new Float32Array(data.length);
                     break;
                 case 'UnsignedShortType':
                 case 'UnsignedShort4444Type':
                 case 'UnsignedShort5551Type':
                 case 'UnsignedShort565Type':
-                    dataArr = new Uint16Array();
+                    dataArr = new Uint16Array(data.length);
                     break;
             }
-            dataArr.set(this.model.get('data'));
+            dataArr.set(data);
 
-            this.scalar_properties.push(dataArr, 'data', 'anisotropy', 'width', 'height');
-            this.enum_properties.push('type', 'format', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter');
+            this.scalar_properties.push(dataArr, data, 'anisotropy', 'width', 'height');
+            this.enum_properties.push(type, 'format', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter');
             this.child_properties.push('map');
         },
         new_obj: function() {return new THREE.DataTexture();},
