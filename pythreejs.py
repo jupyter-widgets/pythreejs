@@ -526,7 +526,7 @@ class SageGraphics(Mesh):
         return g   
 
     def geometry_from_cone(self, p):
-
+        return p
 
 lights = {
     'colors': [
