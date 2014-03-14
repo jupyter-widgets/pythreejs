@@ -483,7 +483,7 @@ def create_from_plot(plot):
     # get threejs object - create scene, camera, renderer -> pass renderer back
     if (plotType == 'object'):
         plotType = tree['geometry']['type']
-    else: 
+    else:
         plotType = tree['children'][0]['geometry']['type']
     if(plotType == 'index_face_set'): 
         geometry = geometry_from_plot(plot)
