@@ -591,7 +591,10 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     IPython.WidgetManager.register_widget_view('ImageTextureView', ImageTextureView);
 
     var DataTextureView = ThreeView.extend({
-        update: function() {
+
+        new_properties: function() {
+            ThreeView.prototype.new_properties.call(this);
+
             var dataType = THREE[this.model.get('type')];
             var dataArr;
             switch (dataType)
@@ -622,14 +625,13 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                     break;
             }
             dataArr.set(this.model.get('data'));
-            this.replace_obj(new THREE.DataTexture(dataArr, this.model.get('width'),
-                                                    this.model.get('height'), THREE[this.model.get('format')],
-                                                    dataType, THREE[this.model.get('mapping')],
-                                                    THREE[this.model.get('wrapS')], THREE[this.model.get('wrapT')],
-                                                    THREE[this.model.get('magFilter')], THREE[this.model.get('minFilter')],
-                                                    this.model.get('anisotropy')));
-          ThreeView.prototype.update.call(this);
+
+            this.set_properties.push(dataArr);
+            this.scalar_properties.push('data', 'anisotropy', 'width', 'height');
+            this.enum_properties.push('type', 'format', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter');
+            this.child_properties.push('map');
         },
+        new_obj: function() {return new THREE.DataTexture();},
         needs_update: function() {
             this.obj.needsUpdate = true;
         }
