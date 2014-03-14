@@ -489,7 +489,7 @@ def create_from_plot(plot):
         geometry = geometry_from_plot(plot)
     elif(plotType == 'sphere'):
         geometry = geometry_from_sphere(plot)
-    elif(self.type == 'box'):
+    elif(plotType == 'box'):
         geometry = geometry_from_box(plot)
 
     material = dispatch[plotType['type']](plot)
