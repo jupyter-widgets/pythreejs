@@ -484,6 +484,7 @@ def create_from_plot(plot):
     if (plotType == 'object'):
         plotType = tree['geometry']['type']
     else:
+        print tree + "\n" + plotType + "\n"
         plotType = tree['children'][0]['geometry']['type']
     if(plotType == 'index_face_set'): 
         geometry = geometry_from_plot(plot)
