@@ -482,9 +482,9 @@ def create_from_plot(plot):
     obj = plotType(plot)
     # get threejs object - create scene, camera, renderer -> pass renderer back
     if (plotType == 'object'):
-        plotType = plot.scenetree_json()['geometry']['type']
+        plotType = tree['geometry']['type']
     else: 
-        plotType = plot.scenetree_json()['children'][0]['geometry']['type']
+        plotType = tree['children'][0]['geometry']['type']
     if(plotType == 'index_face_set'): 
         geometry = geometry_from_plot(plot)
     elif(plotType == 'sphere'):
