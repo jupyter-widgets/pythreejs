@@ -519,6 +519,7 @@ def create_from_plot(plot):
     #     self.geometry = self.geometry_from_box(new)
     
 
+
 def graphic_from_object(p):
     # TODO: do this without scenetree_json()
     t = p.texture.scenetree_json()
