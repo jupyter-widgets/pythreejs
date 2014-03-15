@@ -484,25 +484,6 @@ def create_from_plot(plot):
     scene = Scene(children=[mesh, AmbientLight(color=0x777777)])
     renderer = Renderer(camera=cam, scene=scene, controls=OrbitControls(controlling=cam))
     return renderer
-    
-    # Old code
-    #self.type = new.scenetree_json()['type']
-    #self.d = new.scenetree_json()
-    #self.material = dispatch[self.d['type']](new)
-    #self.material = graphic_from_object(new)
-    # Move into graphics from object/group
-    # if (self.type == 'object'):
-    #     self.type = new.scenetree_json()['geometry']['type']
-    # else: 
-    #     self.type = new.scenetree_json()['children'][0]['geometry']['type']
-    # if(self.type == 'index_face_set'): 
-    #     self.geometry = self.geometry_from_plot(new)
-    # elif(self.type == 'sphere'):
-    #     self.geometry = self.geometry_from_sphere(new)
-    # elif(self.type == 'box'):
-    #     self.geometry = self.geometry_from_box(new)
-    
-
 
 def graphic_from_object(p):
     # TODO: do this without scenetree_json()
