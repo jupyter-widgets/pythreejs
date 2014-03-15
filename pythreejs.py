@@ -510,7 +510,7 @@ def graphic_from_object(p):
     m = PhongMaterial(side='DoubleSide')
     m.color = t['texture']['color']
     m.opacity = t['texture']['opacity']
-    g = dispatch[t['geometry']['type']](t['geometry'])
+    g = dispatch[t['geometry']['type']](p, t['geometry'])
     # TODO: support other attributes
     return m, g
 
@@ -521,23 +521,23 @@ def graphic_from_group(p):
     m = PhongMaterial(side='DoubleSide')
     m.color = t['texture']['color']
     m.opacity = t['texture']['opacity']
-    g = dispatch[t['geometry']['type']](t['geometry'])
+    g = dispatch[t['geometry']['type']](p, t['geometry'])
     # TODO: support other attributes
     return m, g
 
-def geometry_from_box(t):
+def geometry_from_box(p, t):
     g = BoxGeometry()
     g.width = t['size'][0]
     g.height = t['size'][1]
     g.depth = t['size'][2]
     return g
 
-def geometry_from_sphere(t):
+def geometry_from_sphere(p, t):
     g = SphereGeometry()
     g.radius = t['radius']
     return g
 
-def geometry_from_index_face_set(p):
+def geometry_from_index_face_set(p, t):
     from itertools import groupby, chain
     def flatten(ll):
         return list(chain.from_iterable(ll))
@@ -552,7 +552,7 @@ def geometry_from_index_face_set(p):
     g.face4 = faces.get(4,[])
     return g   
 
-def geometry_from_cone(p):
+def geometry_from_cone(p, t):
     return p
 
 dispatch = {'object' : graphic_from_object,
