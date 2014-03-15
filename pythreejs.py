@@ -473,6 +473,54 @@ lights = {
 
 # TODO material type option
 
+def create_from_plot(plot):
+    # get scenetree_json()
+    tree = plot.scenetree_json()
+    # dispatch of type
+    plotType = dispatch[tree['type']]
+    # call function
+    obj = plotType(plot)
+    # get threejs object - create scene, camera, renderer -> pass renderer back
+    # if (plotType == 'object'):
+    #     plotType = tree['geometry']['type']
+    # else:
+    #     plotType = tree['children'][0]['geometry']['type']
+    # if(plotType == 'index_face_set'): 
+    #     geometry = geometry_from_plot(plot)
+    # elif(plotType == 'sphere'):
+    #     geometry = geometry_from_sphere(plot)
+    # elif(plotType == 'box'):
+    #     geometry = geometry_from_box(plot)
+    
+    material = dispatch[plotType](plot)
+    #material = material(plot)
+    geometry = geometry_from_box(plot)
+
+    mesh = Mesh(geometry=geometry, material=material)
+    cam = PerspectiveCamera(position=[0,5,5], fov=40, 
+           children=[DirectionalLight(color=0xffffff, position=[3,5,1], intensity=0.5)])
+    scene = Scene(children=[mesh, AmbientLight(color=0x777777)])
+    renderer = Renderer(camera=cam, scene=scene, controls=OrbitControls(controlling=cam))
+    return renderer
+    
+    # Old code
+    #self.type = new.scenetree_json()['type']
+    #self.d = new.scenetree_json()
+    #self.material = dispatch[self.d['type']](new)
+    #self.material = graphic_from_object(new)
+    # Move into graphics from object/group
+    # if (self.type == 'object'):
+    #     self.type = new.scenetree_json()['geometry']['type']
+    # else: 
+    #     self.type = new.scenetree_json()['children'][0]['geometry']['type']
+    # if(self.type == 'index_face_set'): 
+    #     self.geometry = self.geometry_from_plot(new)
+    # elif(self.type == 'sphere'):
+    #     self.geometry = self.geometry_from_sphere(new)
+    # elif(self.type == 'box'):
+    #     self.geometry = self.geometry_from_box(new)
+    
+
 
 def graphic_from_object(p):
     # TODO: do this without scenetree_json()
@@ -530,53 +578,3 @@ dispatch = {'object' : graphic_from_object,
              'index_face_set' : geometry_from_index_face_set,
              'cone' : geometry_from_cone
             }
-            
-def create_from_plot(plot):
-    # get scenetree_json()
-    tree = plot.scenetree_json()
-    # dispatch of type
-    plotType = dispatch[tree['type']]
-    # call function
-    obj = plotType(plot)
-    # get threejs object - create scene, camera, renderer -> pass renderer back
-    # if (plotType == 'object'):
-    #     plotType = tree['geometry']['type']
-    # else:
-    #     plotType = tree['children'][0]['geometry']['type']
-    # if(plotType == 'index_face_set'): 
-    #     geometry = geometry_from_plot(plot)
-    # elif(plotType == 'sphere'):
-    #     geometry = geometry_from_sphere(plot)
-    # elif(plotType == 'box'):
-    #     geometry = geometry_from_box(plot)
-    
-    material = dispatch[plotType](plot)
-    #material = material(plot)
-    geometry = geometry_from_box(plot)
-
-    mesh = Mesh(geometry=geometry, material=material)
-    cam = PerspectiveCamera(position=[0,5,5], fov=40, 
-           children=[DirectionalLight(color=0xffffff, position=[3,5,1], intensity=0.5)])
-    scene = Scene(children=[mesh, AmbientLight(color=0x777777)])
-    renderer = Renderer(camera=cam, scene=scene, controls=OrbitControls(controlling=cam))
-    return renderer
-    
-    # Old code
-    #self.type = new.scenetree_json()['type']
-    #self.d = new.scenetree_json()
-    #self.material = dispatch[self.d['type']](new)
-    #self.material = graphic_from_object(new)
-    # Move into graphics from object/group
-    # if (self.type == 'object'):
-    #     self.type = new.scenetree_json()['geometry']['type']
-    # else: 
-    #     self.type = new.scenetree_json()['children'][0]['geometry']['type']
-    # if(self.type == 'index_face_set'): 
-    #     self.geometry = self.geometry_from_plot(new)
-    # elif(self.type == 'sphere'):
-    #     self.geometry = self.geometry_from_sphere(new)
-    # elif(self.type == 'box'):
-    #     self.geometry = self.geometry_from_box(new)
-    
-
-
