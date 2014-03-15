@@ -506,11 +506,11 @@ def create_from_plot(plot):
 
 def graphic_from_object(p):
     # TODO: do this without scenetree_json()
-    tree = p.scenetree_json()['texture']
+    t = p.scenetree_json()['texture']
     m = LambertMaterial(side='DoubleSide')
     m.color = t['color']
     m.opacity = t['opacity']
-    g = dispatch[tree['geometry']['type']](plot)
+    g = dispatch[t['geometry']['type']](plot)
     # TODO: support other attributes
     return m, g
 
