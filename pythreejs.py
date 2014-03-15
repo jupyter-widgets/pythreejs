@@ -491,8 +491,8 @@ def create_from_plot(plot):
     #     geometry = geometry_from_sphere(plot)
     # elif(plotType == 'box'):
     #     geometry = geometry_from_box(plot)
-
-    material = dispatch[plotType['type']](tree)
+    material = dispatch[tree['type']](plot)
+    #material = dispatch[plotType['type']](tree)
     #material = material(plot)
     geometry = geometry_from_box(plot)
 
@@ -522,11 +522,12 @@ def create_from_plot(plot):
     
 
 
-def graphic_from_object(self,p):
+def graphic_from_object(p):
     # TODO: do this without scenetree_json()
+    t = p.scenetree_json()['texture']
     m = LambertMaterial(side='DoubleSide')
-    m.color = p['color']
-    m.opacity = p['opacity']
+    m.color = t['color']
+    m.opacity = t['opacity']
     # TODO: support other attributes
     return m
 
