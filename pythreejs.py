@@ -510,7 +510,7 @@ def graphic_from_object(p):
     m = LambertMaterial(side='DoubleSide')
     m.color = t['texture']['color']
     m.opacity = t['texture']['opacity']
-    g = dispatch[t['geometry']['type']](p)
+    g = dispatch[t['geometry']['type']](t['geometry'])
     # TODO: support other attributes
     return m, g
 
@@ -524,11 +524,11 @@ def graphic_from_group(p):
     # TODO: support other attributes
     return m
 
-def geometry_from_box(p):
+def geometry_from_box(t):
     g = BoxGeometry()
-    g.width = p.scenetree_json()['geometry']['size'][0]
-    g.height = p.scenetree_json()['geometry']['size'][1]
-    g.depth = p.scenetree_json()['geometry']['size'][2]
+    g.width = t['size'][0]
+    g.height = t['size'][1]
+    g.depth = t['size'][2]
     return g
 
 def geometry_from_sphere(p):
