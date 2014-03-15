@@ -523,7 +523,7 @@ def graphic_from_group(p):
     m.opacity = t['texture']['opacity']
     g = dispatch[t['geometry']['type']](t['geometry'])
     # TODO: support other attributes
-    return m
+    return m, g
 
 def geometry_from_box(t):
     g = BoxGeometry()
