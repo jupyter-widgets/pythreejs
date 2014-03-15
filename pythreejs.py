@@ -521,7 +521,7 @@ def graphic_from_group(p):
     m = LambertMaterial(side='DoubleSide')
     m.color = t['texture']['color']
     m.opacity = t['texture']['opacity']
-    g = dispatch[t['children'][0]['geometry']['type']](t['children'][0]['geometry'])
+    g = dispatch[t['geometry']['type']](t['geometry'])
     # TODO: support other attributes
     return m
 
