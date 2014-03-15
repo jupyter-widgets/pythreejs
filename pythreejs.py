@@ -522,7 +522,7 @@ def create_from_plot(plot):
     
 
 
-def graphic_from_object(p):
+def graphic_from_object(self,p):
     # TODO: do this without scenetree_json()
     m = LambertMaterial(side='DoubleSide')
     m.color = p['color']
