@@ -510,7 +510,7 @@ def graphic_from_object(p):
     m = LambertMaterial(side='DoubleSide')
     m.color = t['texture']['color']
     m.opacity = t['texture']['opacity']
-    g = dispatch[t['geometry']['type']](plot)
+    g = dispatch[t['geometry']['type']](p)
     # TODO: support other attributes
     return m, g
 
