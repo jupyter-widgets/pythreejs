@@ -532,9 +532,9 @@ def geometry_from_box(t):
     g.depth = t['size'][2]
     return g
 
-def geometry_from_sphere(p):
+def geometry_from_sphere(t):
     g = SphereGeometry()
-    g.radius = p.scenetree_json()['children'][0]['geometry']['radius']
+    g.radius = t['radius']
     return g
 
 def geometry_from_index_face_set(p):
