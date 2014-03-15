@@ -476,24 +476,7 @@ lights = {
 def create_from_plot(plot):
     # get scenetree_json()
     tree = plot.scenetree_json()
-    # dispatch of type
-    plotType = dispatch[tree['type']]
-    # call function
-    #obj = plotType(plot)
-    # get threejs object - create scene, camera, renderer -> pass renderer back
-    # if (plotType == 'object'):
-    #     plotType = tree['geometry']['type']
-    # else:
-    #     plotType = tree['children'][0]['geometry']['type']
-    # if(plotType == 'index_face_set'): 
-    #     geometry = geometry_from_plot(plot)
-    # elif(plotType == 'sphere'):
-    #     geometry = geometry_from_sphere(plot)
-    # elif(plotType == 'box'):
-    #     geometry = geometry_from_box(plot)
     material = dispatch[tree['type']](plot)
-    #material = dispatch[plotType['type']](tree)
-    #material = material(plot)
     geometry = geometry_from_box(plot)
 
     mesh = Mesh(geometry=geometry, material=material)
