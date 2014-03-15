@@ -476,8 +476,7 @@ lights = {
 def create_from_plot(plot):
     # get scenetree_json()
     tree = plot.scenetree_json()
-    material = dispatch[tree['type']](plot)
-    geometry = geometry_from_box(plot)
+    material, geometry = dispatch[tree['type']](plot)
 
     mesh = Mesh(geometry=geometry, material=material)
     cam = PerspectiveCamera(position=[0,5,5], fov=40, 
@@ -507,12 +506,13 @@ def create_from_plot(plot):
 
 def graphic_from_object(p):
     # TODO: do this without scenetree_json()
-    t = p.scenetree_json()['texture']
+    tree = p.scenetree_json()['texture']
     m = LambertMaterial(side='DoubleSide')
     m.color = t['color']
     m.opacity = t['opacity']
+    g = dispatch[tree['geometry']['type']](plot)
     # TODO: support other attributes
-    return m
+    return m, g
 
 def graphic_from_group(p):
     # TODO: do this without scenetree_json()
