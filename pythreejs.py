@@ -517,10 +517,11 @@ def graphic_from_object(p):
 def graphic_from_group(p):
     # TODO: do this without scenetree_json()
     # TODO: loop through children
-    t = p.scenetree_json()['children'][0]['texture']
+    t = p.scenetree_json()['children'][0]
     m = LambertMaterial(side='DoubleSide')
-    m.color = t['color']
-    m.opacity = t['opacity']
+    m.color = t['texture']['color']
+    m.opacity = t['texture']['opacity']
+    g = dispatch[t['children'][0]['geometry']['type']](t['children'][0]['geometry'])
     # TODO: support other attributes
     return m
 
