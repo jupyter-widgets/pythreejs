@@ -479,7 +479,7 @@ def create_from_plot(plot):
     # dispatch of type
     plotType = dispatch[tree['type']]
     # call function
-    obj = plotType(plot)
+    #obj = plotType(plot)
     # get threejs object - create scene, camera, renderer -> pass renderer back
     # if (plotType == 'object'):
     #     plotType = tree['geometry']['type']
