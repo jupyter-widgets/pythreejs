@@ -453,71 +453,6 @@ class SpotLight(PointLight):
     angle = CFloat(10, sync=True)
     exponent = CFloat(0.5, sync=True)
 
-class SageGraphics(Mesh):
-    plot = Instance('sage.plot.plot3d.base.Graphics3d')
-    # TODO material type option
-
-    def _plot_changed(self, name, old, new):
-        self.type = new.scenetree_json()['type']
-        if (self.type == 'object'):
-            self.type = new.scenetree_json()['geometry']['type']
-            self.material = self.material_from_object(new)
-        else: 
-            self.type = new.scenetree_json()['children'][0]['geometry']['type']
-            self.material = self.material_from_other(new)
-        if(self.type == 'index_face_set'): 
-            self.geometry = self.geometry_from_plot(new)
-        elif(self.type == 'sphere'):
-            self.geometry = self.geometry_from_sphere(new)
-        elif(self.type == 'box'):
-            self.geometry = self.geometry_from_box(new)
-        
-
-    def material_from_object(self, p):
-        # TODO: do this without scenetree_json()
-        t = p.texture.scenetree_json()
-        m = LambertMaterial(side='DoubleSide')
-        m.color = t['color']
-        m.opacity = t['opacity']
-        # TODO: support other attributes
-        return m
-
-    def material_from_other(self, p):
-        # TODO: do this without scenetree_json()
-        t = p.scenetree_json()['children'][0]['texture']
-        m = LambertMaterial(side='DoubleSide')
-        m.color = t['color']
-        m.opacity = t['opacity']
-        # TODO: support other attributes
-        return m
-
-    def geometry_from_box(self, p):
-        g = BoxGeometry()
-        g.width = p.scenetree_json()['geometry']['size'][0]
-        g.height = p.scenetree_json()['geometry']['size'][1]
-        g.depth = p.scenetree_json()['geometry']['size'][2]
-        return g
-
-    def geometry_from_sphere(self, p):
-        g = SphereGeometry()
-        g.radius = p.scenetree_json()['children'][0]['geometry']['radius']
-        return g
-
-    def geometry_from_plot(self, p):
-        from itertools import groupby, chain
-        def flatten(ll):
-            return list(chain.from_iterable(ll))
-        p.triangulate()
-
-        g = FaceGeometry()
-        g.vertices = flatten(p.vertices())
-        f = p.index_faces()
-        f.sort(key=len)
-        faces = {k:flatten(v) for k,v in groupby(f,len)}
-        g.face3 = faces.get(3,[])
-        g.face4 = faces.get(4,[])
-        return g   
-
 lights = {
     'colors': [
         AmbientLight(color=(0.312,0.188,0.4)),
@@ -534,3 +469,54 @@ lights = {
         DirectionalLight(position=[-1,-1,-1], color=[.7,.7,.7]),
         ],
     }
+
+#######################################################################
+## Sage Graphics
+#######################################################################
+
+def convert_sage_graphics(p):
+    D = p.scenetree_json()
+    obj = sage_handlers[D['type']](D) 
+    # TODO: make a scene, renderer, and camera, and put obj inside of the scene as a child
+    # return the renderer object.
+    return obj
+
+def json_object(j):
+    geometry = sage_handlers[j['geometry']['type']](j['geometry'])
+    material = sage_handlers['texture'](j['texture'])
+    return Mesh(geometry = geometry, material = material)
+
+def json_group(j):
+    m = j['matrix']
+    # TODO: transpose m
+    children = [sage_handlers[c['type']](c) for c in j['children']]
+    return Object3d(matrix=m, children=children)
+
+def json_texture(j)
+    return LambertMaterial(side='DoubleSide',
+                           color = j['color'],
+                           opacity = j['opacity']
+                           transparent = j['opacity'] < 1)
+def json_index_face_set(j):
+    # TODO: add a facen attribute to FaceGeometry
+    g = FaceGeometry(vertices = j['vertices'],
+                     face3 = j['face3'],
+                     face4 = j['face4'],
+                     facen = j['facen'])
+
+def json_sphere(j):
+    return SphereGeometry(radius = j['radius'])
+
+def json_box(j):
+    return BoxGeometry(width = j['size'][0],
+                       height = j['size'][1],
+                       depth = j['size'][2])
+
+sage_handlers = {
+    'object': json_object,
+    'group': json_group,
+    'texture': json_texture
+    'index_face_set': json_index_face_set,
+    'sphere': json_sphere,
+    'box': json_box,
+}
