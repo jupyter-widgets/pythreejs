@@ -23,8 +23,8 @@ class DataTexture(Texture):
     data = List(CInt, sync=True)
     format = Enum(['RGBAFormat', 'AlphaFormat', 'RGBFormat', 'LuminanceFormat', 'LuminanceAlphaFormat'],
                 'RGBAFormat', sync=True)
-    width = CInt(16, sync=True)
-    height = CInt(16, sync=True)
+    width = CInt(256, sync=True)
+    height = CInt(256, sync=True)
     type = Enum(['UnsignedByteType', 'ByteType', 'ShortType', 'UnsignedShortType', 'IntType',
                 'UnsignedIntType', 'FloatType', 'UnsignedShort4444Type', 'UnsignedShort5551Type',
                 'UnsignedShort565Type'], 'UnsignedByteType', sync=True)
@@ -167,7 +167,7 @@ class TorusKnotGeometry(Geometry):
     radius = CFloat(1, sync=True)
     tube = CFloat(1, sync=True)
     radialSegments = CFloat(10, sync=True)
-    tubularSegments = CFloat(10, sync=True)
+    tubularSegments = CFlo, width=64, height=64at(10, sync=True)
     p = CFloat(2, sync=True)
     q = CFloat(3, sync=True)
     heightScale = CFloat(1, sync=True)
@@ -225,7 +225,8 @@ class Material(Widget):
                     'CustomBlending'], 'NormalBlending', sync=True) 
     blendSrc = Enum(['ZeroFactor', 'OneFactor', 'SrcColorFactor', 'OneMinusSrcColorFactor', 'SrcAlphaFactor',
                     'OneMinusSrcAlphaFactor', 'DstAlphaFactor', 'OneMinusDstAlphaFactor'], 'SrcAlphaFactor', sync=True) 
-    blendDst = Enum(['DstColorFactor', 'OneMinusDstColorFactor', 'SrcAlphaSaturateFactor'], 'OneMinusDstColorFactor', sync=True)
+    blendDst = Enum(['DstColorFactor', 'OneMinusDstColorFactor', 'SrcAlphaSaturateFactor'], 'OneMinusDstColorFactor',
+                    sync=True)
     blendEquation = Enum(['AddEquation', 'SubtractEquation', 'ReverseSubtractEquation'], 'AddEquation', sync=True)
     depthTest = Bool(True, sync=True) 
     depthWrite = Bool(True, sync=True) 
@@ -474,7 +475,6 @@ lights = {
 # TODO material type option
 
 def create_from_plot(plot):
-    # get scenetree_json()
     tree = plot.scenetree_json()
     material, geometry = dispatch[tree['type']](plot)
 

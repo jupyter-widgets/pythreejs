@@ -444,8 +444,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         new_properties: function() {
             ThreeView.prototype.new_properties.call(this);
             this.enum_properties.push('side', 'blending', 'blendSrc', 'blendDst', 'blendEquation');
-            this.scalar_properties.push('opacity', 'transparent', 'depthTest', 'depthWrite', 'polygonOffset', 'polygonOffsetFactor',
-                                        'polygonOffsetUnits', 'overdraw', 'visible');
+            this.scalar_properties.push('opacity', 'transparent', 'depthTest', 'depthWrite', 'polygonOffset',
+                                        'polygonOffsetFactor', 'polygonOffsetUnits', 'overdraw', 'visible');
         },
         new_obj: function() {return new THREE.Material();},
         needs_update: function() {
@@ -607,7 +607,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                     dataArr = new Int16Array(data.length);
                     break;
                 case 'IntType':
-                    dataArr = new Int32Aarray(data.length);
+                    dataArr = new Int32Array(data.length);
                     break;
                 case 'UnsignedIntType':
                     dataArr = new Uint32Array(data.length);
