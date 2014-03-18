@@ -167,7 +167,7 @@ class TorusKnotGeometry(Geometry):
     radius = CFloat(1, sync=True)
     tube = CFloat(1, sync=True)
     radialSegments = CFloat(10, sync=True)
-    tubularSegments = CFlo, width=64, height=64at(10, sync=True)
+    tubularSegments = CFloat(10, sync=True)
     p = CFloat(2, sync=True)
     q = CFloat(3, sync=True)
     heightScale = CFloat(1, sync=True)
