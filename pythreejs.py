@@ -207,6 +207,7 @@ class FaceGeometry(Geometry):
     vertices = List(CFloat, sync=True) # [x0, y0, z0, x1, y1, z1, x2, y2, z2, ...]
     face3 = List(CInt, sync=True) # [v0,v1,v2, v0,v1,v2, v0,v1,v2, ...]
     face4 = List(CInt, sync=True) # [v0,v1,v2,v3, v0,v1,v2,v3, v0,v1,v2,v3, ...]
+    facen = List(CInt, sync=True) # [v0,v1,v2,...,vn, v0,v1,v2,...,vn, v0,v1,v2,...,vn ...]
 
 class ParametricGeometry(Geometry):
     _view_name = Unicode('ParametricGeometryView', sync=True)
@@ -474,72 +475,54 @@ lights = {
 # TODO material type option
 
 def create_from_plot(plot):
-    # get scenetree_json()
     tree = plot.scenetree_json()
-    material, geometry = dispatch[tree['type']](plot)
-
-    mesh = Mesh(geometry=geometry, material=material)
+    obj = sage_handlers[tree['type']](tree)
     cam = PerspectiveCamera(position=[0,5,5], fov=40, 
            children=[DirectionalLight(color=0xffffff, position=[3,5,1], intensity=0.5)])
-    scene = Scene(children=[mesh, AmbientLight(color=0x777777)])
+    scene = Scene(children=[obj, AmbientLight(color=0x777777)])
     renderer = Renderer(camera=cam, scene=scene, controls=OrbitControls(controlling=cam))
     return renderer
 
-def graphic_from_object(p):
-    # TODO: do this without scenetree_json()
-    t = p.scenetree_json()
-    m = PhongMaterial(side='DoubleSide')
-    m.color = t['texture']['color']
-    m.opacity = t['texture']['opacity']
-    g = dispatch[t['geometry']['type']](p, t['geometry'])
-    # TODO: support other attributes
-    return m, g
+def json_object(t):
+    m = sage_handlers['texture'](t['texture'])
+    g = sage_handlers[t['geometry']['type']](t['geometry'])
+    return Mesh(geometry=g, material=m)
 
-def graphic_from_group(p):
-    # TODO: do this without scenetree_json()
-    # TODO: loop through children
-    t = p.scenetree_json()['children'][0]
-    m = PhongMaterial(side='DoubleSide')
-    m.color = t['texture']['color']
-    m.opacity = t['texture']['opacity']
-    g = dispatch[t['geometry']['type']](p, t['geometry'])
-    # TODO: support other attributes
-    return m, g
+def json_group(t):
+    m = t['matrix']
+    # TODO transpose m
+    children = [sage_handlers[c['type']](c) for c in j['children']]
+    return Object3d(matrix=m, children=children)
 
-def geometry_from_box(p, t):
-    g = BoxGeometry()
-    g.width = t['size'][0]
-    g.height = t['size'][1]
-    g.depth = t['size'][2]
-    return g
+def json_texture(t):
+    return PhongMaterial(side='DoubleSide',
+                            color = j['color'],
+                            opacity = j['opacity'],
+                            transparent = j['opacity'] < 1)
 
-def geometry_from_sphere(p, t):
-    g = SphereGeometry()
-    g.radius = t['radius']
-    return g
+def json_box(p, t):
+    return BoxGeometry(width=t['size'][0], 
+                        height=t['size'][1], 
+                        depth=t['size'][2])
 
-def geometry_from_index_face_set(p, t):
-    from itertools import groupby, chain
-    def flatten(ll):
-        return list(chain.from_iterable(ll))
-    p.triangulate()
+def json_index_face_set(t):
+    return FaceGeometry(vertices = j['vertices'],
+                         face3 = j['face3'],
+                         face4 = j['face4'],
+                         facen = j['facen'])
 
-    g = FaceGeometry()
-    g.vertices = flatten(p.vertices())
-    f = p.index_faces()
-    f.sort(key=len)
-    faces = {k:flatten(v) for k,v in groupby(f,len)}
-    g.face3 = faces.get(3,[])
-    g.face4 = faces.get(4,[])
-    return g   
 
-def geometry_from_cone(p, t):
+def json_cone(p, t):
     return p
 
-dispatch = {'object' : graphic_from_object,
-             'group' : graphic_from_group,
-             'box' : geometry_from_box,
-             'sphere' : geometry_from_sphere,
-             'index_face_set' : geometry_from_index_face_set,
-             'cone' : geometry_from_cone
+def json_sphere(p, t):
+    return SphereGeometry(radius=t['radius'])
+
+sage_handlers = {'object' : json_object,
+             'group' : json_group,
+             'box' : json_box,
+             'sphere' : json_sphere,
+             'index_face_set' : json_index_face_set,
+             'cone' : json_cone
+             'texture' : json_texture
             }
