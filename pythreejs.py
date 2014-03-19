@@ -23,8 +23,8 @@ class DataTexture(Texture):
     data = List(CInt, sync=True)
     format = Enum(['RGBAFormat', 'AlphaFormat', 'RGBFormat', 'LuminanceFormat', 'LuminanceAlphaFormat'],
                 'RGBAFormat', sync=True)
-    width = CInt(16, sync=True)
-    height = CInt(16, sync=True)
+    width = CInt(256, sync=True)
+    height = CInt(256, sync=True)
     type = Enum(['UnsignedByteType', 'ByteType', 'ShortType', 'UnsignedShortType', 'IntType',
                 'UnsignedIntType', 'FloatType', 'UnsignedShort4444Type', 'UnsignedShort5551Type',
                 'UnsignedShort565Type'], 'UnsignedByteType', sync=True)
@@ -226,7 +226,8 @@ class Material(Widget):
                     'CustomBlending'], 'NormalBlending', sync=True) 
     blendSrc = Enum(['ZeroFactor', 'OneFactor', 'SrcColorFactor', 'OneMinusSrcColorFactor', 'SrcAlphaFactor',
                     'OneMinusSrcAlphaFactor', 'DstAlphaFactor', 'OneMinusDstAlphaFactor'], 'SrcAlphaFactor', sync=True) 
-    blendDst = Enum(['DstColorFactor', 'OneMinusDstColorFactor', 'SrcAlphaSaturateFactor'], 'OneMinusDstColorFactor', sync=True)
+    blendDst = Enum(['DstColorFactor', 'OneMinusDstColorFactor', 'SrcAlphaSaturateFactor'], 'OneMinusDstColorFactor',
+                    sync=True)
     blendEquation = Enum(['AddEquation', 'SubtractEquation', 'ReverseSubtractEquation'], 'AddEquation', sync=True)
     depthTest = Bool(True, sync=True) 
     depthWrite = Bool(True, sync=True) 
@@ -523,6 +524,6 @@ sage_handlers = {'object' : json_object,
              'box' : json_box,
              'sphere' : json_sphere,
              'index_face_set' : json_index_face_set,
-             'cone' : json_cone
+             'cone' : json_cone,
              'texture' : json_texture
             }
