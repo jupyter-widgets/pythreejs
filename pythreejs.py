@@ -521,6 +521,11 @@ def json_cone(t):
                              radiusBottom=t['bottomradius'],
                              height=t['height'])
 
+def json_cylinder(t):
+    return CylinderGeometry(radiusTop=t['radius'],
+                             radiusBottom=t['radius'],
+                             height=t['height'])
+
 def json_sphere(t):
     return SphereGeometry(radius=t['radius'])
 
@@ -530,5 +535,6 @@ sage_handlers = {'object' : json_object,
              'sphere' : json_sphere,
              'index_face_set' : json_index_face_set,
              'cone' : json_cone,
+             'cylinder' : json_cylinder,
              'texture' : json_texture
             }
