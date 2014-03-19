@@ -517,7 +517,9 @@ def json_index_face_set(t):
 
 
 def json_cone(t):
-    return t
+    return CylinderGeometry(radiusTop=0,
+                             radiusBottom=t['bottomradius'],
+                             height=t['height'])
 
 def json_sphere(t):
     return SphereGeometry(radius=t['radius'])
