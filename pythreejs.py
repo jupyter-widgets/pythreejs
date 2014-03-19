@@ -529,6 +529,7 @@ def json_cylinder(t):
 def json_sphere(t):
     return SphereGeometry(radius=t['radius'])
 
+# TODO text, point, line, viewpoint?
 sage_handlers = {'object' : json_object,
              'group' : json_group,
              'box' : json_box,
