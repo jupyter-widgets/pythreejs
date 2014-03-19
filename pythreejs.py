@@ -492,31 +492,31 @@ def json_object(t):
 def json_group(t):
     m = t['matrix']
     # TODO transpose m
-    children = [sage_handlers[c['type']](c) for c in j['children']]
+    children = [sage_handlers[c['type']](c) for c in t['children']]
     return Object3d(matrix=m, children=children)
 
 def json_texture(t):
     return PhongMaterial(side='DoubleSide',
-                            color = j['color'],
-                            opacity = j['opacity'],
-                            transparent = j['opacity'] < 1)
+                            color = t['color'],
+                            opacity = t['opacity'],
+                            transparent = t['opacity'] < 1)
 
-def json_box(p, t):
+def json_box(t):
     return BoxGeometry(width=t['size'][0], 
                         height=t['size'][1], 
                         depth=t['size'][2])
 
 def json_index_face_set(t):
-    return FaceGeometry(vertices = j['vertices'],
-                         face3 = j['face3'],
-                         face4 = j['face4'],
-                         facen = j['facen'])
+    return FaceGeometry(vertices = t['vertices'],
+                         face3 = t['face3'],
+                         face4 = t['face4'],
+                         facen = t['facen'])
 
 
-def json_cone(p, t):
-    return p
+def json_cone(t):
+    return t
 
-def json_sphere(p, t):
+def json_sphere(t):
     return SphereGeometry(radius=t['radius'])
 
 sage_handlers = {'object' : json_object,
