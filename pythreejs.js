@@ -267,7 +267,9 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             var face3 = this.model.get('face3');
             var face4 = this.model.get('face4');
             var facen = this.model.get('facen');
-            var i, j, len, len2;
+            var facen = this.model.get('facen');
+            var face;
+            var i, f, len, lenf;
             var v0, v1, v2;
             var f0,f1,f2,f3;
             for(i = 0, len=vertices.length; i<len; i+=3) {
@@ -284,9 +286,10 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                 geometry.faces.push(new THREE.Face3(f0, f2, f3));
             }
             for(i=0, len=facen.length; i<len; i++) {
-                for (j=0, len2=facen[i].length; j<len2-2; j++) {
-                    f0 = facen[i][j]; f1 = facen[i][j+1]; f2=facen[i][j+2];
-                    geometry.faces.push(new THREE.Face3(f0, f1, f2));
+                face = facen[i];
+                f0 = face[0];
+                for(f=1, lenf=f.length-1; f<lenf; f++) {
+                    geometry.faces.push(new THREE.Face3(f0, face[f], face[f+1]))
                 }
             }
 
