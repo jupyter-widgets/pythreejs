@@ -266,7 +266,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             var vertices = this.model.get('vertices');
             var face3 = this.model.get('face3');
             var face4 = this.model.get('face4');
-            var i, len;
+            var facen = this.model.get('facen');
+            var i, j, len, len2;
             var v0, v1, v2;
             var f0,f1,f2,f3;
             for(i = 0, len=vertices.length; i<len; i+=3) {
@@ -281,6 +282,12 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                 f0=face4[i]; f1=face4[i+1]; f2=face4[i+2]; f3=face4[i+3];
                 geometry.faces.push(new THREE.Face3(f0, f1, f2));
                 geometry.faces.push(new THREE.Face3(f0, f2, f3));
+            }
+            for(i=0, len=facen.length; i<len; i++) {
+                for (j=0, len2=facen[i].length; j<len2-2; j++) {
+                    f0 = facen[i][j]; f1 = facen[i][j+1]; f2=facen[i][j+2];
+                    geometry.faces.push(new THREE.Face3(f0, f1, f2));
+                }
             }
 
             geometry.mergeVertices();
