@@ -637,6 +637,66 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     });
     IPython.WidgetManager.register_widget_view('DataTextureView', DataTextureView);
 
+//*************************************************************************************************************//
+//                                        Sprites and text - in progress                                       //
+    var SpriteMaterialView = MaterialView.extend({
+        new_properties: function() {
+            MaterialView.prototype.new_properties.call(this);
+            this.scalar_properties.push('sizeAttenuation', 'fog', 'useScreenCoordinates', 'scaleByViewport');
+            this.array_properties.push('uvScale', 'uvOffset', 'alignment');
+            this.set_properties.push('color');
+            this.child_properties.push('map');
+        },
+        new_obj: function() {return new THREE.SpriteMaterial();}
+    });
+    IPython.WidgetManager.register_widget_view('SpriteMaterialView', SpriteMaterialView);
+
+    var SpriteView = Object3dView.extend({
+        update: function() {
+            this.replace_obj(new THREE.Sprite(this.model.get('material')));
+            Object3dView.prototype.update.call(this);
+        }
+    });
+    IPython.WidgetManager.register_widget_view('SpriteView', SpriteView);
+
+    var TextTextureView = ThreeView.extend({
+        update: function() {
+            var fontFace = this.model.get('fontFace');
+            var size = this.model.get('size');
+            var color = this.model.get('color');
+            var string = this.model.get('string');
+
+            var canvas = document.createElement("canvas");
+            var context = canvas.getContext("2d");
+
+            size = size*4;
+            canvas.height = size;
+
+            var font = "Normal " + size + "px " + fontFace;
+            context.font = font;
+
+            var metrics = context.measureText(string);
+            var textWidth = metrics.width;
+            canvas.width = textWidth;
+
+            context.textAlight = "center";
+            context.textBaseline = "middle";
+            context.fillStyle = color;
+            context.font = font;
+            context.fillText(string, textWidth / 2, textHeight / 2);
+            
+            this.replace_obj(new THREE.Texture(canvas));
+            ThreeView.prototype.update.call(this);
+
+        },
+        needs_update: function() {
+            this.obj.needsUpdate = true;
+        }
+    });
+    IPython.WidgetManager.register_widget_view('TextTextureView', TextTextureView);
+
+//**************************************************************************************************************//
+
     var Basic3dObject = Object3dView.extend({
         render: function() {
             this.update();

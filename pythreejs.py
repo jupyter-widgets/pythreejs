@@ -329,6 +329,28 @@ class ShaderMaterial(Material):
     linewidth = CFloat(1.0, sync=True)
     wireframeLinewidth = CFloat(1.0, sync=True)
 
+class SpriteMaterial(Material):
+    _view_name = Unicode('SpriteMaterialView', sync=True)
+    map = Instance(Texture, sync=True)
+    uvScale = List(CFloat, sync=True)
+    sizeAttenuation = Bool(False, sync=True)
+    color = Color('yellow', sync=True)
+    uvOffset = List(CFloat, sync=True)
+    fog = Bool(False, sync=True)
+    useScreenCoordinates = Bool(False, sync=True)
+    scaleByViewport = Bool(False, sync=True)
+    alignment = List(CFloat, sync=True)
+
+class Sprite(Object3d):
+    _view_name = Unicode('SpriteView', sync=True)
+    material = Instance(Texture, sync=True)
+
+class TextTexture(Texture):
+    _view_name = Unicode('TextTextureView', sync=True)
+    font = Unicode('Arial', sync=True)
+    size = CInt(12, sync=True)
+    text = Unicode('', sync=True)
+
 class Mesh(Object3d):
     _view_name = Unicode('MeshView', sync=True)
     geometry = Instance(Geometry, sync=True)
