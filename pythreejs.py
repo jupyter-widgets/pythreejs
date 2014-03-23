@@ -347,9 +347,10 @@ class Sprite(Object3d):
 
 class TextTexture(Texture):
     _view_name = Unicode('TextTextureView', sync=True)
-    font = Unicode('Arial', sync=True)
+    fontFace = Unicode('Arial', sync=True)
     size = CInt(12, sync=True)
-    text = Unicode('', sync=True)
+    color = Color('black', sync=True)
+    string = Unicode('', sync=True)
 
 class Mesh(Object3d):
     _view_name = Unicode('MeshView', sync=True)
