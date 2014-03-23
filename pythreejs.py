@@ -207,7 +207,7 @@ class FaceGeometry(Geometry):
     vertices = List(CFloat, sync=True) # [x0, y0, z0, x1, y1, z1, x2, y2, z2, ...]
     face3 = List(CInt, sync=True) # [v0,v1,v2, v0,v1,v2, v0,v1,v2, ...]
     face4 = List(CInt, sync=True) # [v0,v1,v2,v3, v0,v1,v2,v3, v0,v1,v2,v3, ...]
-    facen = List(CInt, sync=True) # [v0,v1,v2,...,vn, v0,v1,v2,...,vn, v0,v1,v2,...,vn ...]
+    facen = List(List(CInt), sync=True) # [[v0,v1,v2,...,vn], [v0,v1,v2,...,vn], [v0,v1,v2,...,vn], ...]
 
 class ParametricGeometry(Geometry):
     _view_name = Unicode('ParametricGeometryView', sync=True)
@@ -535,7 +535,7 @@ def json_index_face_set(t):
     return FaceGeometry(vertices = flatten(t['vertices']),
                          face3 = flatten(t['face3']),
                          face4 = flatten(t['face4']),
-                         facen = flatten(t['facen']))
+                         facen = t['facen'])
 
 
 def json_cone(t):
