@@ -683,8 +683,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             var canvas = document.createElement("canvas");
             var context = canvas.getContext("2d");
 
-            size = size*4;
-            canvas.height = size;
+            var textHeight = size*4;
+            canvas.height = textHeight;
 
             var font = "Normal " + size + "px " + fontFace;
             context.font = font;
