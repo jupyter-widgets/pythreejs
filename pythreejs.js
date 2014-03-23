@@ -660,6 +660,12 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     IPython.WidgetManager.register_widget_view('SpriteMaterialView', SpriteMaterialView);
 
     var SpriteView = Object3dView.extend({
+         render: function() {
+            this.materialview = this.create_child_view(this.model.get('material'));
+            this.materialview.on('replace_obj', this.update, this);
+            this.update();
+            return this.obj;
+        },
         update: function() {
             this.replace_obj(new THREE.Sprite(this.model.get('material')));
             Object3dView.prototype.update.call(this);

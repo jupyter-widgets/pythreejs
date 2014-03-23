@@ -334,7 +334,7 @@ class SpriteMaterial(Material):
     map = Instance(Texture, sync=True)
     uvScale = List(CFloat, sync=True)
     sizeAttenuation = Bool(False, sync=True)
-    color = Color('yellow', sync=True)
+    color = Color('white', sync=True)
     uvOffset = List(CFloat, sync=True)
     fog = Bool(False, sync=True)
     useScreenCoordinates = Bool(False, sync=True)
