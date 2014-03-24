@@ -667,7 +667,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             return this.obj;
         },
         update: function() {
-            this.replace_obj(new THREE.Sprite(this.model.get('material')));
+            this.replace_obj(new THREE.Sprite(this.materialview.obj));
             Object3dView.prototype.update.call(this);
         }
     });
