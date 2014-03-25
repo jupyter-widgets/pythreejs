@@ -28,26 +28,29 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             console.log('created renderer');
             var width = this.model.get('width');
             var height = this.model.get('height');
+            var that = this;
+            var render_loop = {register_update: function(fn, context) {that.on('animate:update', fn, context);},
+                               render_frame: function () {that._render = true; that.schedule_update()},}
             if ( Detector.webgl )
                 this.renderer = new THREE.WebGLRenderer( {antialias:true} );
             else
                 this.renderer = new THREE.CanvasRenderer();
             this.renderer.setSize( width, height);
             this.$el.empty().append( this.renderer.domElement );
-            this.camera = this.create_child_view(this.model.get('camera'));
-            this.scene = this.create_child_view(this.model.get('scene'));
+            this.camera = this.create_child_view(this.model.get('camera'),
+                                                render_loop);
+            this.scene = this.create_child_view(this.model.get('scene'),
+                                               render_loop);
             this.scene.obj.add(this.camera.obj);
             console.log('renderer', this.model, this.scene.obj, this.camera.obj);
             this.update();
-            var that = this;
             this._animation_frame = false
             this.controls = this.create_child_view(this.model.get('controls'),
-                     {dom: this.renderer.domElement,
-                      start_update_loop: function() {that._update_loop = true; that.schedule_update();},
-                      end_update_loop: function() {that._update_loop = false;},
-                      register_update: function(fn, context) {that.on('animate:update', fn, context);},
-                      render_frame: function () {that._render = true; that.schedule_update()},
-                     });
+                     _.extend({},
+                              {dom: this.renderer.domElement,
+                               start_update_loop: function() {that._update_loop = true; that.schedule_update();},
+                               end_update_loop: function() {that._update_loop = false;},},
+                              render_loop));
             this._render = true;
             this.schedule_update();
             // TODO: on any object update in the scene, re-render the scene.
@@ -112,6 +115,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         },
 
         needs_update: function() {
+            this.obj.needsUpdate = true;
+            this.trigger('rerender');
         },
         update_object_parameters: function() {
             var array_properties = this.array_properties;
@@ -176,6 +181,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                             var view = that.create_child_view(added);
                             that.obj.add(view.obj);
                             view.on('replace_obj', that.replace_child_obj, that);
+                            view.on('rerender', that.needs_update, that);
                          });
         },
 
@@ -189,14 +195,10 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             ThreeView.prototype.update.call(this);
         },
 
-        needs_update: function() {
-            this.obj.needsUpdate = true;
-        },
-
         replace_child_obj: function(old_obj, new_obj) {
             this.obj.remove(old_obj);
             this.obj.add(new_obj);
-            // TODO: trigger re-render, when we have an event-driven rendering loop
+            this.needs_update()
         },
     });
     IPython.WidgetManager.register_widget_view('Object3dView', Object3dView);
@@ -207,6 +209,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         },
         needs_update: function() {
             this.obj.updateProjectionMatrix();
+            this.options.render_frame();
         }
     });
     IPython.WidgetManager.register_widget_view('CameraView', CameraView);
@@ -258,9 +261,12 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
 
 
     var SceneView = Object3dView.extend({
-        new_obj: function() {return new THREE.Scene();}
+        new_obj: function() {return new THREE.Scene();},
+        needs_update: function() {console.log('scene needs update');this.options.render_frame();}
     });
     IPython.WidgetManager.register_widget_view('SceneView', SceneView);
+
+
 
     var SurfaceGeometryView = ThreeView.extend({
         update: function() {
@@ -478,9 +484,6 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                                         'polygonOffsetFactor', 'polygonOffsetUnits', 'overdraw', 'visible');
         },
         new_obj: function() {return new THREE.Material();},
-        needs_update: function() {
-            this.obj.needsUpdate = true;
-        }
     });
     IPython.WidgetManager.register_widget_view('MaterialView', MaterialView);
 
@@ -592,6 +595,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.materialview = this.create_child_view(this.model.get('material'));
             this.geometryview.on('replace_obj', this.update, this);
             this.materialview.on('replace_obj', this.update, this);
+            this.geometryview.on('rerender', this.needs_update, this);
+            this.materialview.on('rerender', this.needs_update, this);
             this.update();
             return this.obj;
         },
@@ -614,9 +619,6 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.replace_obj(new THREE.Texture(img));
             ThreeView.prototype.update.call(this);
         },
-        needs_update: function() {
-            this.obj.needsUpdate = true;
-        }
     });
     IPython.WidgetManager.register_widget_view('ImageTextureView', ImageTextureView);
 
@@ -661,9 +663,6 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                             this.model.get('anisotropy')));
             ThreeView.prototype.update.call(this);
         },
-        needs_update: function() {
-            this.obj.needsUpdate = true;
-        }
     });
     IPython.WidgetManager.register_widget_view('DataTextureView', DataTextureView);
 
@@ -685,6 +684,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
          render: function() {
             this.materialview = this.create_child_view(this.model.get('material'));
             this.materialview.on('replace_obj', this.update, this);
+            this.materialview.on('rerender', this.needs_update(), this);
             this.update();
             return this.obj;
         },
@@ -725,9 +725,6 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             ThreeView.prototype.update.call(this);
 
         },
-        needs_update: function() {
-            this.obj.needsUpdate = true;
-        }
     });
     IPython.WidgetManager.register_widget_view('TextTextureView', TextTextureView);
 
