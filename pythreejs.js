@@ -145,7 +145,9 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                 if (prop) {
                     this[p] = this.create_child_view(prop);
                     this.obj[p] = this[p].obj;
-                    this[p].on('replace_obj', function() {this.obj[p] = this[p].obj; this.needs_update()}, this);
+                    // tricky binding of p's value for this callback function
+                    // see http://stackoverflow.com/questions/1451009/javascript-infamous-loop-issue, for example
+                    this[p].on('replace_obj', (function(p) {return function() {this.obj[p] = this[p].obj; this.needs_update()}})(p), this);
                 }
             }
         }
