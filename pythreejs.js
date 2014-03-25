@@ -705,25 +705,21 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             var canvas = document.createElement("canvas");
             var context = canvas.getContext("2d");
 
-            var textHeight = size*4;
-            canvas.height = textHeight;
-
-            var font = "Normal " + size + "px " + fontFace;
-            context.font = font;
+            canvas.height = size;
+            
+            context.font = "Normal " + size + "px " + fontFace;
 
             var metrics = context.measureText(string);
             var textWidth = metrics.width;
             canvas.width = textWidth;
 
-            context.textAlight = "center";
+            context.textAlign = "center";
             context.textBaseline = "middle";
             context.fillStyle = color;
-            context.font = font;
-            context.fillText(string, textWidth / 2, textHeight / 2);
+            context.fillText(string, textWidth / 2, size / 2);
             
             this.replace_obj(new THREE.Texture(canvas));
             ThreeView.prototype.update.call(this);
-
         },
     });
     IPython.WidgetManager.register_widget_view('TextTextureView', TextTextureView);
