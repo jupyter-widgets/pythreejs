@@ -706,8 +706,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             var context = canvas.getContext("2d");
 
             canvas.height = size;
-            
-            context.font = "Normal " + size + "px " + fontFace;
+            var font = "Normal " + size + "px " + fontFace;
+            context.font = font;
 
             var metrics = context.measureText(string);
             var textWidth = metrics.width;
@@ -716,6 +716,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             context.textAlign = "center";
             context.textBaseline = "middle";
             context.fillStyle = color;
+            // Must set the font again for the fillText call
+            context.font = font;
             context.fillText(string, textWidth / 2, size / 2);
             
             this.replace_obj(new THREE.Texture(canvas));
