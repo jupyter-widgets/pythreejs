@@ -684,7 +684,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
          render: function() {
             this.materialview = this.create_child_view(this.model.get('material'));
             this.materialview.on('replace_obj', this.update, this);
-            this.materialview.on('rerender', this.needs_update(), this);
+            this.materialview.on('rerender', this.needs_update, this);
             this.update();
             return this.obj;
         },
