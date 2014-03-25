@@ -40,18 +40,34 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             console.log('renderer', this.model, this.scene.obj, this.camera.obj);
             this.update();
             var that = this;
-            this.controls = this.create_child_view(this.model.get('controls'), {dom: this.renderer.domElement,
-                                                                         update: function(fn, context) {
-                                                                                    that.on('render:update', fn, context);
-                                                                                 }
-                                                                        });
-            this.animate();
+            this._animation_frame = false
+            this.controls = this.create_child_view(this.model.get('controls'),
+                     {dom: this.renderer.domElement,
+                      start_update_loop: function() {that._update_loop = true; that.schedule_update();},
+                      end_update_loop: function() {that._update_loop = false;},
+                      register_update: function(fn, context) {that.on('animate:update', fn, context);},
+                      render_frame: function () {that._render = true; that.schedule_update()},
+                     });
+            this._render = true;
+            this.schedule_update();
+            // TODO: on any object update in the scene, re-render the scene.
             window.r = this;
         },
+        schedule_update: function() {
+            if (!this._animation_frame) {
+                this._animation_frame = requestAnimationFrame(_.bind(this.animate, this))
+            }
+        },
         animate: function() {
-            requestAnimationFrame( _.bind(this.animate, this) );
-            this.trigger('render:update');
-            this.renderer.render(this.scene.obj, this.camera.obj);
+            this._animation_frame = false;
+            if (this._update_loop) {
+                this.schedule_update();
+            }
+            this.trigger('animate:update');
+            if (this._render) {
+                this.renderer.render(this.scene.obj, this.camera.obj)
+                this._render = false;
+            }
         },
         update : function(){
             console.log('update renderer', this.scene.obj, this.camera.obj);
@@ -225,10 +241,14 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
 
     var OrbitControlsView = ThreeView.extend({
         render: function() {
-            // retrieve the first view of the controlled object
+            // retrieve the first view of the controlled object -- this is a hack for a singleton view
             this.controlled_view = this.model.get('controlling').views[0];
             this.obj = new THREE.OrbitControls(this.controlled_view.obj, this.options.dom);
-            this.options.update(this.obj.update, this.obj);
+            this.options.register_update(this.obj.update, this.obj);
+            this.obj.addEventListener('change', this.options.render_frame);
+            this.obj.addEventListener('start', this.options.start_update_loop);
+            this.obj.addEventListener('end', this.options.end_update_loop);
+            // if there is a three.js control change, call the animate function to animate at least one more time
             delete this.options.renderer;
         }
     });
