@@ -693,7 +693,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             var textWidth = metrics.width;
             canvas.width = textWidth;
 
-            context.textAlight = "center";
+            context.textAlign = "center";
             context.textBaseline = "middle";
             context.fillStyle = color;
             context.font = font;
@@ -701,7 +701,6 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             
             this.replace_obj(new THREE.Texture(canvas));
             ThreeView.prototype.update.call(this);
-
         },
         needs_update: function() {
             this.obj.needsUpdate = true;
