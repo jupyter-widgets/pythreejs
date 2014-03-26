@@ -526,7 +526,11 @@ def create_from_plot(plot):
 def json_object(t):
     m = sage_handlers['texture'](t['texture'])
     g = sage_handlers[t['geometry']['type']](t['geometry'])
-    return Mesh(geometry=g, material=m)
+    mesh = Mesh(geometry=g, material=m)
+    if t.get('mesh',False) is True:
+        wireframe_material = BasicMaterial(color=0x222222, transparent=True, opacity=0.2, wireframe=True)
+        mesh = Object3d(children=[mesh, Mesh(geometry=g, material=wireframe_material)])
+    return mesh
 
 def json_group(t):
     m = t['matrix']
@@ -536,9 +540,13 @@ def json_group(t):
 
 def json_texture(t):
     return PhongMaterial(side='DoubleSide',
-                            color = t['color'],
-                            opacity = t['opacity'],
-                            transparent = t['opacity'] < 1)
+                         color = t['color'],
+                         opacity = t['opacity'],
+                         transparent = t['opacity'] < 1,
+                         overdraw=True,
+                         polygonOffset=True,
+                         polygonOffsetFactor=1,
+                         polygonOffsetUnits=1)
 
 def json_box(t):
     return BoxGeometry(width=t['size'][0], 
