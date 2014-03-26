@@ -730,8 +730,9 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             var canvas = document.createElement("canvas");
             var context = canvas.getContext("2d");
 
-            canvas.height = size;
-            var font = "Normal " + size + "px " + fontFace;
+            var textHeight = size*4;
+            canvas.height = textHeight;
+            var font = "Normal " + textHeight + "px " + fontFace;
             context.font = font;
 
             var metrics = context.measureText(string);
@@ -743,7 +744,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             context.fillStyle = color;
             // Must set the font again for the fillText call
             context.font = font;
-            context.fillText(string, textWidth / 2, size / 2);
+            context.fillText(string, textWidth / 2, textHeight / 2);
             
             this.replace_obj(new THREE.Texture(canvas));
             ThreeView.prototype.update.call(this);
