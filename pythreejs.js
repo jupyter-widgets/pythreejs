@@ -744,7 +744,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             context.fillStyle = color;
             // Must set the font again for the fillText call
             context.font = font;
-            context.fillText(string, textWidth / 2, textHeight / 2);
+            context.fillText(string, canvas.width / 2, canvas.height / 2);
             
             this.replace_obj(new THREE.Texture(canvas));
             ThreeView.prototype.update.call(this);
