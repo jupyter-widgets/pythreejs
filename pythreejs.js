@@ -730,14 +730,14 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             var canvas = document.createElement("canvas");
             var context = canvas.getContext("2d");
 
-            var textHeight = size*4;
-            canvas.height = textHeight;
+            var textHeight = size;
             var font = "Normal " + textHeight + "px " + fontFace;
             context.font = font;
 
             var metrics = context.measureText(string);
             var textWidth = metrics.width;
             canvas.width = textWidth;
+            canvas.height = canvas.width;
 
             context.textAlign = "center";
             context.textBaseline = "middle";
