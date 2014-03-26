@@ -64,7 +64,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             if (this._update_loop) {
                 this.schedule_update();
             }
-            this.trigger('animate:update');
+            this.trigger('animate:update', this);
             if (this._render) {
                 this.effectrenderer.render(this.scene.obj, this.camera.obj)
                 this._render = false;
@@ -154,7 +154,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                 var p = child_properties[p_index];
                 var prop = this.model.get(p);
                 if (prop) {
-                    this[p] = this.create_child_view(prop);
+                    this[p] = this.create_child_view(prop, this.options[p]);
                     this.obj[p] = this[p].obj;
                     // tricky binding of p's value for this callback function
                     // see http://stackoverflow.com/questions/1451009/javascript-infamous-loop-issue, for example
@@ -190,7 +190,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                             that.delete_child_view(deleted);
                          },
                          function(added) {
-                            var view = that.create_child_view(added);
+                            var view = that.create_child_view(added, _.pick(that.options,'register_update'));
                             that.obj.add(view.obj);
                             view.on('replace_obj', that.replace_child_obj, that);
                             view.on('rerender', that.needs_update, that);
@@ -214,6 +214,19 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         },
     });
     IPython.WidgetManager.register_widget_view('Object3dView', Object3dView);
+
+    var ScaledObjectView = Object3dView.extend({
+        render: function() {
+            this.options.register_update(this.update_scale, this);
+            Object3dView.prototype.render.call(this);
+        },
+        update_scale: function(renderer) {
+            var s = renderer.camera.obj.position.length()/10;
+            // one unit is about 1/10 the size of the window
+            this.obj.scale.set(s,s,s);
+        }
+    });
+    IPython.WidgetManager.register_widget_view('ScaledObjectView', ScaledObjectView);
 
     var CameraView = Object3dView.extend({
         new_obj: function() {

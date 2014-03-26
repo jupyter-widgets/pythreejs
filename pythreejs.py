@@ -86,6 +86,15 @@ class Object3d(Widget):
     # TODO: figure out how to get a list of instances of Object3d
     children = List(trait=None, default_value=[], allow_none=False, sync=True)
 
+class ScaledObject(Object3d):
+    """
+    This object's matrix will be scaled every time the camera is adjusted, so that the object is always the same
+    size in the viewport.
+
+    The idea is that it is the parent for objects you want to maintain the same scale.
+    """
+    _view_name = Unicode('ScaledObjectView', sync=True)
+
 class Controls(Widget):
     _view_name = Unicode('ControlsView', sync=True)
     controlling = Instance(Object3d, sync=True)
