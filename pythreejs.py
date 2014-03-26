@@ -443,6 +443,12 @@ class OrthographicCamera(Camera):
 class Scene(Object3d):
     _view_name = Unicode('SceneView', sync=True)
     
+class Effect(Widget):
+    pass
+
+class AnaglyphEffect(Effect):
+    _view_name = Unicode('AnaglyphEffectView', sync=True)
+
 class Renderer(DOMWidget):
     _view_name = Unicode('RendererView', sync=True)
     width = CInt(600, sync=True)
@@ -451,7 +457,8 @@ class Renderer(DOMWidget):
     scene = Instance(Scene, sync=True)
     camera = Instance(Camera, sync=True)
     controls = Instance(Controls, sync=True)
-    
+    effect = Instance(Effect, sync=True)
+
 class Light(Object3d):
     color = Color('white', sync=True) # could be string or number or tuple
 

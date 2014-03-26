@@ -35,7 +35,6 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                 this.renderer = new THREE.WebGLRenderer( {antialias:true} );
             else
                 this.renderer = new THREE.CanvasRenderer();
-            this.renderer.setSize( width, height);
             this.$el.empty().append( this.renderer.domElement );
             this.camera = this.create_child_view(this.model.get('camera'),
                                                 render_loop);
@@ -53,7 +52,6 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                               render_loop));
             this._render = true;
             this.schedule_update();
-            // TODO: on any object update in the scene, re-render the scene.
             window.r = this;
         },
         schedule_update: function() {
@@ -68,16 +66,24 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             }
             this.trigger('animate:update');
             if (this._render) {
-                this.renderer.render(this.scene.obj, this.camera.obj)
+                this.effectrenderer.render(this.scene.obj, this.camera.obj)
                 this._render = false;
             }
         },
         update : function(){
             console.log('update renderer', this.scene.obj, this.camera.obj);
+            if (this.model.get('effect')) {
+                this.effect = this.create_child_view(this.model.get('effect'), {renderer: this.renderer});
+                this.effectrenderer = this.effect.obj;
+            } else {
+                this.effectrenderer = this.renderer;
+            }
+            console.log(this.effect, this.model);
+            this.effectrenderer.setSize(this.model.get('width'),
+                                        this.model.get('height'));
             return IPython.DOMWidgetView.prototype.update.call(this);
         },
     });
-
     IPython.WidgetManager.register_widget_view('RendererView', RendererView);
 
     var ThreeView = IPython.WidgetView.extend({
@@ -158,6 +164,12 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         }
     });
 
+    var AnaglyphEffectView = ThreeView.extend({
+        new_obj: function() {
+	    return new THREE.AnaglyphEffect( this.options.renderer );
+        }
+    })
+    IPython.WidgetManager.register_widget_view('AnaglyphEffectView', AnaglyphEffectView);
 
     var Object3dView = ThreeView.extend({
         new_properties: function() {
