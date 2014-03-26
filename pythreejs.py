@@ -517,7 +517,7 @@ lights = {
 def create_from_plot(plot):
     tree = plot.scenetree_json()
     obj = sage_handlers[tree['type']](tree)
-    cam = PerspectiveCamera(position=[0,5,5], fov=40, 
+    cam = PerspectiveCamera(position=[5,5,5], fov=40, up=[0,0,1],
            children=[DirectionalLight(color=0xffffff, position=[3,5,1], intensity=0.5)])
     scene = Scene(children=[obj, AmbientLight(color=0x777777)])
     renderer = Renderer(camera=cam, scene=scene, controls=OrbitControls(controlling=cam))
