@@ -580,7 +580,7 @@ def json_viewpoint(t):
     return t['position']
 
 def json_point(t):
-    return # TODO 
+    return # TODO maybe need to make this a material thing
 
 sage_handlers = {'object' : json_object,
              'group' : json_group,
