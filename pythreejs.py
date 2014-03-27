@@ -571,7 +571,7 @@ def json_cone(t):
     return CylinderGeometry(radiusTop=0,
                              radiusBottom=t['bottomradius'],
                              height=t['height'],
-                             radiusSegments=20)
+                             radiusSegments=50)
 
 def json_cylinder(t):
     return CylinderGeometry(radiusTop=t['radius'],
