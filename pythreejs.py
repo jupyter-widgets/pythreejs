@@ -518,8 +518,8 @@ def create_from_plot(plot):
     tree = plot.scenetree_json()
     view_tree = plot.viewpoint().scenetree_json()
     obj = sage_handlers[tree['type']](tree)
-    view = sage_handlers[view_tree['type']](view_tree)
-    cam = PerspectiveCamera(position=list(view), fov=40, 
+    viewpoint = list(sage_handlers[view_tree['type']](view_tree))
+    cam = PerspectiveCamera(position=viewpoint, fov=40, 
            children=[DirectionalLight(color=0xffffff, position=[3,5,1], intensity=0.5)])
     scene = Scene(children=[obj, AmbientLight(color=0x777777)])
     renderer = Renderer(camera=cam, scene=scene, controls=OrbitControls(controlling=cam))
@@ -579,7 +579,9 @@ def json_text(t):
 def json_viewpoint(t):
     return t['position']
 
-# TODO point, viewpoint
+def json_point(t):
+    return # TODO 
+
 sage_handlers = {'object' : json_object,
              'group' : json_group,
              'box' : json_box,
@@ -590,5 +592,6 @@ sage_handlers = {'object' : json_object,
              'texture' : json_texture,
              'line' : json_line,
              'text' : json_text,
-             'viewpoint' : json_viewpoint
+             'viewpoint' : json_viewpoint,
+             'points' : json_point
             }
