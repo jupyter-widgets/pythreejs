@@ -519,7 +519,7 @@ def create_from_plot(plot):
     view_tree = plot.viewpoint().scenetree_json()
     obj = sage_handlers[tree['type']](tree)
     view = sage_handlers[view_tree['type']](view_tree)
-    cam = PerspectiveCamera(position=view, fov=40, 
+    cam = PerspectiveCamera(position=list(view), fov=40, 
            children=[DirectionalLight(color=0xffffff, position=[3,5,1], intensity=0.5)])
     scene = Scene(children=[obj, AmbientLight(color=0x777777)])
     renderer = Renderer(camera=cam, scene=scene, controls=OrbitControls(controlling=cam))
