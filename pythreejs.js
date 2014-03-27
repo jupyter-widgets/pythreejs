@@ -715,6 +715,11 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         },
         update: function() {
             this.replace_obj(new THREE.Sprite(this.materialview.obj));
+            if (this.model.get('scaleToTexture')) {
+                if (this.aspect) {
+                    this.obj.scale.set(this.aspect, 1, 1);
+                }
+            }
             Object3dView.prototype.update.call(this);
         }
     });
@@ -738,6 +743,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             var textWidth = metrics.width;
             canvas.width = textWidth;
             canvas.height = canvas.width;
+
+            this.aspect = textWidth / textHeight;
 
             context.textAlign = "center";
             context.textBaseline = "middle";
