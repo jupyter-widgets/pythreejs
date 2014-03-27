@@ -174,7 +174,9 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     var Object3dView = ThreeView.extend({
         new_properties: function() {
             ThreeView.prototype.new_properties.call(this);
-            this.array_properties.push('position', 'rotation', 'up', 'scale', 'matrix');
+            var position = this.model.get('position');
+            var pnt = new THREE.Vector3().fromArray(position);;
+            this.array_properties.push(pnt, 'rotation', 'up', 'scale', 'matrix');
             this.scalar_properties.push('visible', 'castShadow', 'receiveShadow');
         },
         render: function() {

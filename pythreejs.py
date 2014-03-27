@@ -526,6 +526,7 @@ def create_from_plot(plot):
     return renderer
 
 def json_object(t):
+    # TODO make material depend on object type
     m = sage_handlers['texture'](t['texture'])
     g = sage_handlers[t['geometry']['type']](t['geometry'])
     mesh = Mesh(geometry=g, material=m)
@@ -582,7 +583,7 @@ def json_sphere(t):
     return SphereGeometry(radius=t['radius'])
 
 def json_line(t):
-    return BufferGeometry()# TODO make BufferGeometry
+    return # TODO make line object type
 
 def json_text(t):
     return # TODO geometry ask david
@@ -591,7 +592,9 @@ def json_viewpoint(t):
     return t['position']
 
 def json_point(t):
-    return # TODO maybe need to make this a material thing
+    # TODO Sphere? or Particle system?
+    return SphereGeometry(radius=.01*t['size'],
+                           position=t['position'])
 
 sage_handlers = {'object' : json_object,
              'group' : json_group,
