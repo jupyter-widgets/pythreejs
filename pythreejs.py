@@ -361,7 +361,6 @@ class TextTexture(Texture):
     size = CInt(12, sync=True)
     color = Color('black', sync=True)
     string = Unicode('', sync=True)
-    aspect = CFloat(1.0, sync=True)
 
 class Mesh(Object3d):
     _view_name = Unicode('MeshView', sync=True)
