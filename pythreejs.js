@@ -742,7 +742,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             var metrics = context.measureText(string);
             var textWidth = metrics.width;
             canvas.width = textWidth;
-            canvas.height = canvas.width;
+            //canvas.height = canvas.width;
 
             this.aspect = textWidth / textHeight;
 
