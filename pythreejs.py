@@ -114,7 +114,7 @@ class CylinderGeometry(Geometry):
     radiusTop = CFloat(1, sync=True)
     radiusBottom = CFloat(1, sync=True)
     height = CFloat(1, sync=True)
-    radiusSegments = CFloat(12, sync=True)
+    radiusSegments = CFloat(20, sync=True)
     heightSegments = CFloat(1, sync=True)
     openEnded = Bool(False, sync=True)
     
