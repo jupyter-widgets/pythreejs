@@ -518,8 +518,12 @@ def create_from_plot(plot):
     tree = plot.scenetree_json()
     view_tree = plot.viewpoint().scenetree_json()
     obj = sage_handlers[tree['type']](tree)
+<<<<<<< HEAD
     viewpoint = list(sage_handlers[view_tree['type']](view_tree))
     cam = PerspectiveCamera(position=viewpoint, fov=40, 
+=======
+    cam = PerspectiveCamera(position=[5,5,5], fov=40, up=[0,0,1],
+>>>>>>> dc4b39eca7a975dcbdf1c7f22f85f16e762a0da0
            children=[DirectionalLight(color=0xffffff, position=[3,5,1], intensity=0.5)])
     scene = Scene(children=[obj, AmbientLight(color=0x777777)])
     renderer = Renderer(camera=cam, scene=scene, controls=OrbitControls(controlling=cam))
@@ -528,19 +532,29 @@ def create_from_plot(plot):
 def json_object(t):
     m = sage_handlers['texture'](t['texture'])
     g = sage_handlers[t['geometry']['type']](t['geometry'])
-    return Mesh(geometry=g, material=m)
+    mesh = Mesh(geometry=g, material=m)
+    if t.get('mesh',False) is True:
+        wireframe_material = BasicMaterial(color=0x222222, transparent=True, opacity=0.2, wireframe=True)
+        mesh = Object3d(children=[mesh, Mesh(geometry=g, material=wireframe_material)])
+    return mesh
 
 def json_group(t):
-    m = t['matrix']
-    # TODO transpose m
+    m = t.get('matrix', [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1])
+    # take the transpose of m -- is this working?
+    m[1], m[2], m[3], m[4], m[6], m[7], m[8], m[9],m[11],m[12],m[13],m[14] = \
+    m[4], m[8],m[12], m[1], m[9],m[13], m[2], m[6],m[14], m[3], m[7],m[11]
     children = [sage_handlers[c['type']](c) for c in t['children']]
     return Object3d(matrix=m, children=children)
 
 def json_texture(t):
     return PhongMaterial(side='DoubleSide',
-                            color = t['color'],
-                            opacity = t['opacity'],
-                            transparent = t['opacity'] < 1)
+                         color = t['color'],
+                         opacity = t['opacity'],
+                         transparent = t['opacity'] < 1,
+                         overdraw=True,
+                         polygonOffset=True,
+                         polygonOffsetFactor=1,
+                         polygonOffsetUnits=1)
 
 def json_box(t):
     return BoxGeometry(width=t['size'][0], 
