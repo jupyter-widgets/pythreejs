@@ -570,7 +570,8 @@ def json_index_face_set(t):
 def json_cone(t):
     return CylinderGeometry(radiusTop=0,
                              radiusBottom=t['bottomradius'],
-                             height=t['height'])
+                             height=t['height'],
+                             radiusSegments=20)
 
 def json_cylinder(t):
     return CylinderGeometry(radiusTop=t['radius'],
