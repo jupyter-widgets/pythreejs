@@ -340,7 +340,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             for(i=0, len=facen.length; i<len; i++) {
                 face = facen[i];
                 f0 = face[0];
-                for(f=1, lenf=f.length-1; f<lenf; f++) {
+                for(f=1, lenf=face.length-1; f<lenf; f++) {
                     geometry.faces.push(new THREE.Face3(f0, face[f], face[f+1]));
                 }
             }
