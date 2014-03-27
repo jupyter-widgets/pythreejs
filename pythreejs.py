@@ -516,8 +516,10 @@ lights = {
 
 def create_from_plot(plot):
     tree = plot.scenetree_json()
+    view_tree = plot.viewpoint().scenetree_json()
     obj = sage_handlers[tree['type']](tree)
-    cam = PerspectiveCamera(position=[0,5,5], fov=40, 
+    view = sage_handlers[view_tree['type']](view_tree)
+    cam = PerspectiveCamera(position=view, fov=40, 
            children=[DirectionalLight(color=0xffffff, position=[3,5,1], intensity=0.5)])
     scene = Scene(children=[obj, AmbientLight(color=0x777777)])
     renderer = Renderer(camera=cam, scene=scene, controls=OrbitControls(controlling=cam))
@@ -568,7 +570,16 @@ def json_cylinder(t):
 def json_sphere(t):
     return SphereGeometry(radius=t['radius'])
 
-# TODO text, point, line, viewpoint?
+def json_line(t):
+    return BufferGeometry()# TODO make BufferGeometry
+
+def json_text(t):
+    return # TODO geometry ask david
+
+def json_viewpoint(t):
+    return t['position']
+
+# TODO point, viewpoint
 sage_handlers = {'object' : json_object,
              'group' : json_group,
              'box' : json_box,
@@ -576,5 +587,8 @@ sage_handlers = {'object' : json_object,
              'index_face_set' : json_index_face_set,
              'cone' : json_cone,
              'cylinder' : json_cylinder,
-             'texture' : json_texture
+             'texture' : json_texture,
+             'line' : json_line,
+             'text' : json_text,
+             'viewpoint' : json_viewpoint
             }
