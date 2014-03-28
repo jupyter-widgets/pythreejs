@@ -592,8 +592,8 @@ def json_line(t):
 
 def json_text(t):
     tt = TextTexture(string=t['geometry']['string'], color=t['texture']['color'])
-    sm = SpriteMaterial(map=tt, scaleToTexture=True)
-    return Sprite(material=sm)
+    sm = SpriteMaterial(map=tt)
+    return Sprite(material=sm, scaleToTexture=True)
 
 def json_viewpoint(t):
     return t['position']
