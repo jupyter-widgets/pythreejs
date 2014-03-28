@@ -591,7 +591,7 @@ def json_line(t):
     return # TODO make line object type
 
 def json_text(t):
-    tt = TextTexture(string=t['geometry']['string'], color='white')
+    tt = TextTexture(string=t['geometry']['string'], color=t['texture']['color'])
     sm = SpriteMaterial(map=tt, scaleToTexture=True)
     return Sprite(material=sm)
 
