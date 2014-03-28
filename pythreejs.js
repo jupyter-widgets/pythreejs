@@ -166,7 +166,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
 
     var AnaglyphEffectView = ThreeView.extend({
         new_obj: function() {
-	    return new THREE.AnaglyphEffect( this.options.renderer );
+        return new THREE.AnaglyphEffect( this.options.renderer );
         }
     })
     IPython.WidgetManager.register_widget_view('AnaglyphEffectView', AnaglyphEffectView);
@@ -715,6 +715,11 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         },
         update: function() {
             this.replace_obj(new THREE.Sprite(this.materialview.obj));
+            if (this.model.get('scaleToTexture')) {
+                if (this.materialview.map.aspect) {
+                    this.model.set('scale', [this.materialview.map.aspect,1,1]);this.touch();
+                }
+            }
             Object3dView.prototype.update.call(this);
         }
     });
@@ -730,14 +735,16 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             var canvas = document.createElement("canvas");
             var context = canvas.getContext("2d");
 
-            var textHeight = size;
-            var font = "Normal " + textHeight + "px " + fontFace;
+            canvas.height = size;
+            var font = "Normal " + size + "px " + fontFace;
             context.font = font;
 
             var metrics = context.measureText(string);
             var textWidth = metrics.width;
             canvas.width = textWidth;
-            canvas.height = canvas.width;
+            //canvas.height = canvas.width;
+
+            this.aspect = canvas.width / canvas.height;
 
             context.textAlign = "center";
             context.textBaseline = "middle";

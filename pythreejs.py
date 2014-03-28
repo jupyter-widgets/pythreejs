@@ -353,6 +353,7 @@ class SpriteMaterial(Material):
 class Sprite(Object3d):
     _view_name = Unicode('SpriteView', sync=True)
     material = Instance(Material, sync=True)
+    scaleToTexture = Bool(False, sync=True)
 
 class TextTexture(Texture):
     _view_name = Unicode('TextTextureView', sync=True)
