@@ -714,6 +714,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             return this.obj;
         },
         update: function() {
+            console.log(this.materialview.textureview.aspect);
             this.replace_obj(new THREE.Sprite(this.materialview.obj));
             if (this.model.get('scaleToTexture')) {
                 if (this.materialview.textureview.aspect) {
@@ -745,7 +746,6 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             //canvas.height = canvas.width;
 
             this.aspect = textWidth / textHeight;
-            console.log(this.aspect);
 
             context.textAlign = "center";
             context.textBaseline = "middle";
