@@ -594,7 +594,7 @@ def json_viewpoint(t):
 def json_point(t):
     # TODO Sphere? or Particle system?
     return SphereGeometry(radius=.05*t['size'],
-                           position=t['position'])
+                           position=list(t['position']))
 
 sage_handlers = {'object' : json_object,
              'group' : json_group,
