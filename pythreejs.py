@@ -599,7 +599,7 @@ def json_viewpoint(t):
 
 def json_point(t):
     # TODO special case (ScaledObject), scale atribue
-    g = SphereGeometry(radius=t['size'])
+    g = SphereGeometry(radius=t['texture']['size'])
     m = sage_handlers[t['geometry']['type']](t['geometry'])
     myobject = Mesh(geometry=g, material=m, position=t['position'], scale=.05)
     return ScaledObject(children=[myobject])
