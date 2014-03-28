@@ -720,7 +720,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                 if (this.materialview.map.aspect) {
                     console.log('setting scale');
                     console.log(this.materialview.map.aspect);
-                    this.obj.scale.set(this.materialview.map.aspect, 1, 1);
+                    this.model.set('scale', [this.materialview.map.aspect,1,1]);this.touch();
                 }
             }
             Object3dView.prototype.update.call(this);
@@ -738,8 +738,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             var canvas = document.createElement("canvas");
             var context = canvas.getContext("2d");
 
-            var textHeight = size;
-            var font = "Normal " + textHeight + "px " + fontFace;
+            canvas.height = size;
+            var font = "Normal " + size + "px " + fontFace;
             context.font = font;
 
             var metrics = context.measureText(string);
@@ -747,7 +747,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             canvas.width = textWidth;
             //canvas.height = canvas.width;
 
-            this.aspect = textWidth / textHeight;
+            this.aspect = canvas.width / canvas.height;
 
             context.textAlign = "center";
             context.textBaseline = "middle";
