@@ -601,7 +601,7 @@ def json_point(t):
     # TODO special case (ScaledObject), scale atribue
     g = SphereGeometry(radius=t['geometry']['size'])
     m = sage_handlers['texture'](t['texture'])
-    myobject = Mesh(geometry=g, material=m, position=list(t['geometry']['position']), scale=[1,1,1])
+    myobject = Mesh(geometry=g, material=m, position=list(t['geometry']['position']), scale=[.05,.05,.05])
     return ScaledObject(children=[myobject])
 
 sage_handlers = {'object' : json_object,
