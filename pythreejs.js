@@ -166,7 +166,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
 
     var AnaglyphEffectView = ThreeView.extend({
         new_obj: function() {
-	    return new THREE.AnaglyphEffect( this.options.renderer );
+        return new THREE.AnaglyphEffect( this.options.renderer );
         }
     })
     IPython.WidgetManager.register_widget_view('AnaglyphEffectView', AnaglyphEffectView);
