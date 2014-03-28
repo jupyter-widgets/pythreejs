@@ -714,11 +714,10 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             return this.obj;
         },
         update: function() {
-            console.log(this.materialview.map.aspect);
             this.replace_obj(new THREE.Sprite(this.materialview.obj));
             if (this.model.get('scaleToTexture')) {
-                if (this.materialview.textureview.aspect) {
-                    this.obj.scale.set(this.materialview.textureview.aspect, 1, 1);
+                if (this.materialview.map.aspect) {
+                    this.obj.scale.set(this.materialview.map.aspect, 1, 1);
                 }
             }
             Object3dView.prototype.update.call(this);
