@@ -716,7 +716,9 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         update: function() {
             this.replace_obj(new THREE.Sprite(this.materialview.obj));
             if (this.model.get('scaleToTexture')) {
+                console.log('in scaleToTexture');
                 if (this.materialview.map.aspect) {
+                    console.log('setting scale');
                     this.obj.scale.set(this.materialview.map.aspect, 1, 1);
                 }
             }
