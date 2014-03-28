@@ -722,6 +722,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                     this.touch();
                 }
             }
+            Object3dView.prototype.needs_update.call(this);
         }
     });
     IPython.WidgetManager.register_widget_view('SpriteView', SpriteView);
