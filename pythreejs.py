@@ -591,8 +591,10 @@ def json_line(t):
     return # TODO make line object type
 
 def json_text(t):
-    tt = TextTexture(string=t['geometry']['string'], color='white')
-    sm = SpriteMaterial(map=tt)
+    tree_geometry = t['geometry']
+    tree_texture = t['texture']
+    tt = TextTexture(string=tree_geometry['string'], color=tree_texture['color'])
+    sm = SpriteMaterial(map=tt, opacity=tree_texture['opacity'], transparent = tree_texture['opacity'] < 1 )
     return Sprite(material=sm, scaleToTexture=True)
 
 def json_viewpoint(t):
