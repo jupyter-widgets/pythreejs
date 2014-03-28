@@ -528,12 +528,17 @@ def create_from_plot(plot):
 
 def json_object(t):
     # TODO make material depend on object type
-    m = sage_handlers['texture'](t['texture'])
-    g = sage_handlers[t['geometry']['type']](t['geometry'])
-    mesh = Mesh(geometry=g, material=m)
-    if t.get('mesh',False) is True:
-        wireframe_material = BasicMaterial(color=0x222222, transparent=True, opacity=0.2, wireframe=True)
-        mesh = Object3d(children=[mesh, Mesh(geometry=g, material=wireframe_material)])
+    if (t['geometry']['type']=='text'):
+        mesh = sage_handlers['text'](t)
+    elif (t['geometry']['type']=='point'):
+        mesh = sage_handlers['point'](t)
+    else:
+        m = sage_handlers['texture'](t['texture'])
+        g = sage_handlers[t['geometry']['type']](t['geometry'])
+        mesh = Mesh(geometry=g, material=m)
+        if t.get('mesh',False) is True:
+            wireframe_material = BasicMaterial(color=0x222222, transparent=True, opacity=0.2, wireframe=True)
+            mesh = Object3d(children=[mesh, Mesh(geometry=g, material=wireframe_material)])
     return mesh
 
 def json_group(t):
@@ -568,7 +573,6 @@ def json_index_face_set(t):
                          face4 = flatten(t['face4']),
                          facen = t['facen'])
 
-
 def json_cone(t):
     return CylinderGeometry(radiusTop=0,
                              radiusBottom=t['bottomradius'],
@@ -587,15 +591,18 @@ def json_line(t):
     return # TODO make line object type
 
 def json_text(t):
+    # TODO special case
     return # TODO geometry ask david
 
 def json_viewpoint(t):
     return t['position']
 
 def json_point(t):
-    # TODO Sphere? or Particle system?
-    return SphereGeometry(radius=.05*t['size'],
-                           position=list(t['position']))
+    # TODO special case (ScaledObject), scale atribue
+    g = SphereGeometry(radius=t['size'])
+    m = sage_handlers[t['geometry']['type']](t['geometry'])
+    myobject = Mesh(geometry=g, material=m, position=t['position'], scale=.05)
+    return ScaledObject(children=[myobject])
 
 sage_handlers = {'object' : json_object,
              'group' : json_group,
