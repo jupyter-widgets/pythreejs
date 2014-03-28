@@ -719,6 +719,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                 console.log('in scaleToTexture');
                 if (this.materialview.map.aspect) {
                     console.log('setting scale');
+                    console.log(this.materialview.map.aspect);
                     this.obj.scale.set(this.materialview.map.aspect, 1, 1);
                 }
             }
