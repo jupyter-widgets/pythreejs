@@ -591,14 +591,14 @@ def json_line(t):
     return # TODO make line object type
 
 def json_text(t):
-    # TODO special case
-    return # TODO geometry ask david
+    tt = TextTexture(string=t['geometry']['string'], color=t['texture']['color'])
+    sm = SpriteMaterial(map=tt, scaleToTexture=True)
+    return Sprite(material=sm)
 
 def json_viewpoint(t):
     return t['position']
 
 def json_point(t):
-    # TODO special case (ScaledObject), scale atribue
     g = SphereGeometry(radius=t['geometry']['size'])
     m = sage_handlers['texture'](t['texture'])
     myobject = Mesh(geometry=g, material=m, position=list(t['geometry']['position']), scale=[.05,.05,.05])
