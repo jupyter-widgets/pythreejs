@@ -745,6 +745,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             //canvas.height = canvas.width;
 
             this.aspect = textWidth / textHeight;
+            console.log(this.aspect);
 
             context.textAlign = "center";
             context.textBaseline = "middle";
