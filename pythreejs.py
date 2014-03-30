@@ -554,6 +554,7 @@ def json_texture(t):
                          color = t['color'],
                          opacity = t['opacity'],
                          transparent = t['opacity'] < 1,
+                         overdraw=1,
                          polygonOffset=True,
                          polygonOffsetFactor=1,
                          polygonOffsetUnits=1)
