@@ -361,6 +361,7 @@ class TextTexture(Texture):
     size = CInt(12, sync=True)
     color = Color('black', sync=True)
     string = Unicode('', sync=True)
+    squareTexture = Bool(True, sync=True)
 
 class Mesh(Object3d):
     _view_name = Unicode('MeshView', sync=True)
