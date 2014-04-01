@@ -617,6 +617,5 @@ sage_handlers = {'object' : json_object,
              'texture' : json_texture,
              'line' : json_line,
              'text' : json_text,
-             'viewpoint' : json_viewpoint,
              'point' : json_point
             }
