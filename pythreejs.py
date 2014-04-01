@@ -539,6 +539,10 @@ def json_object(t):
         if t.get('mesh',False) is True:
             wireframe_material = BasicMaterial(color=0x222222, transparent=True, opacity=0.2, wireframe=True)
             mesh = Object3d(children=[mesh, Mesh(geometry=g, material=wireframe_material)])
+    if t['geometry']['type'] in ('cone', 'cylinder'):
+        # Sage assumes the base is on the xy plane and the cylinder axis is parallel to the z-axis
+        m = [1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, t['geometry']['height']/2, 1]
+        mesh = Object3d(matrix=m, children=[mesh])
     return mesh
 
 def json_group(t):
