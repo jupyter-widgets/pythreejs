@@ -517,10 +517,8 @@ lights = {
 
 def create_from_plot(plot):
     tree = plot.scenetree_json()
-    view_tree = plot.viewpoint().scenetree_json()
     obj = sage_handlers[tree['type']](tree)
-    viewpoint = list(sage_handlers[view_tree['type']](view_tree)) 
-    cam = PerspectiveCamera(position=viewpoint, fov=40, up=[0,0,1],
+    cam = PerspectiveCamera(position=[10,10,10], fov=40, up=[0,0,1],
            children=[DirectionalLight(color=0xffffff, position=[3,5,1], intensity=0.5)])
     scene = Scene(children=[obj, AmbientLight(color=0x777777)])
     renderer = Renderer(camera=cam, scene=scene, controls=OrbitControls(controlling=cam))
@@ -600,9 +598,6 @@ def json_text(t):
     tt = TextTexture(string=tree_geometry['string'], color='white')
     sm = SpriteMaterial(map=tt, opacity=tree_texture['opacity'], transparent = tree_texture['opacity'] < 1 )
     return Sprite(material=sm, scaleToTexture=True)
-
-def json_viewpoint(t):
-    return t['position']
 
 def json_point(t):
     g = SphereGeometry(radius=t['geometry']['size'])
