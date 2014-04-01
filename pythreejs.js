@@ -32,7 +32,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             var render_loop = {register_update: function(fn, context) {that.on('animate:update', fn, context);},
                                render_frame: function () {that._render = true; that.schedule_update()},}
             if ( Detector.webgl )
-                this.renderer = new THREE.WebGLRenderer( {antialias:true} );
+                this.renderer = new THREE.WebGLRenderer( {antialias:true, alpha: true} );
             else
                 this.renderer = new THREE.CanvasRenderer();
             this.$el.empty().append( this.renderer.domElement );
@@ -81,6 +81,9 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             console.log(this.effect, this.model);
             this.effectrenderer.setSize(this.model.get('width'),
                                         this.model.get('height'));
+            if (this.model.get('color')) {
+                this.effectrenderer.setClearColor(this.model.get('color'))
+            }
             return IPython.DOMWidgetView.prototype.update.call(this);
         },
     });
