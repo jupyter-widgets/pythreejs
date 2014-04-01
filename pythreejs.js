@@ -166,7 +166,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
 
     var AnaglyphEffectView = ThreeView.extend({
         new_obj: function() {
-	    return new THREE.AnaglyphEffect( this.options.renderer );
+        return new THREE.AnaglyphEffect( this.options.renderer );
         }
     })
     IPython.WidgetManager.register_widget_view('AnaglyphEffectView', AnaglyphEffectView);
@@ -691,8 +691,6 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     });
     IPython.WidgetManager.register_widget_view('DataTextureView', DataTextureView);
 
-//*************************************************************************************************************//
-//                                        Sprites and text - in progress                                       //
     var SpriteMaterialView = MaterialView.extend({
         new_properties: function() {
             MaterialView.prototype.new_properties.call(this);
@@ -706,7 +704,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     IPython.WidgetManager.register_widget_view('SpriteMaterialView', SpriteMaterialView);
 
     var SpriteView = Object3dView.extend({
-         render: function() {
+        render: function() {
             this.materialview = this.create_child_view(this.model.get('material'));
             this.materialview.on('replace_obj', this.update, this);
             this.materialview.on('rerender', this.needs_update, this);
@@ -716,6 +714,15 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         update: function() {
             this.replace_obj(new THREE.Sprite(this.materialview.obj));
             Object3dView.prototype.update.call(this);
+        },
+        needs_update: function() {
+            if (this.model.get('scaleToTexture')) {
+                if (this.materialview.map.aspect) {
+                    this.model.set('scale', [this.materialview.map.aspect,1,1]);
+                    this.touch();
+                }
+            }
+            Object3dView.prototype.needs_update.call(this);
         }
     });
     IPython.WidgetManager.register_widget_view('SpriteView', SpriteView);
@@ -730,14 +737,19 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             var canvas = document.createElement("canvas");
             var context = canvas.getContext("2d");
 
-            var textHeight = size;
-            var font = "Normal " + textHeight + "px " + fontFace;
+            canvas.height = size;
+            var font = "Normal " + size + "px " + fontFace;
             context.font = font;
 
             var metrics = context.measureText(string);
             var textWidth = metrics.width;
             canvas.width = textWidth;
-            canvas.height = canvas.width;
+
+            if (this.model.get('squareTexture')) {
+                canvas.height = canvas.width;
+            }
+            
+            this.aspect = canvas.width / canvas.height;
 
             context.textAlign = "center";
             context.textBaseline = "middle";
@@ -748,11 +760,9 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             
             this.replace_obj(new THREE.Texture(canvas));
             ThreeView.prototype.update.call(this);
-        },
+        }
     });
     IPython.WidgetManager.register_widget_view('TextTextureView', TextTextureView);
-
-//**************************************************************************************************************//
 
     var Basic3dObject = Object3dView.extend({
         render: function() {
