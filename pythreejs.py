@@ -361,6 +361,7 @@ class TextTexture(Texture):
     size = CInt(12, sync=True)
     color = Color('black', sync=True)
     string = Unicode('', sync=True)
+    squareTexture = Bool(True, sync=True)
 
 class Mesh(Object3d):
     _view_name = Unicode('MeshView', sync=True)
@@ -468,6 +469,7 @@ class Renderer(DOMWidget):
     camera = Instance(Camera, sync=True)
     controls = Instance(Controls, sync=True)
     effect = Instance(Effect, sync=True)
+    color = Color('black', sync=True)
 
 class Light(Object3d):
     color = Color('white', sync=True) # could be string or number or tuple
