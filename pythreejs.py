@@ -534,6 +534,8 @@ def json_object(t):
         mesh = sage_handlers['text'](t)
     elif (t['geometry']['type']=='point'):
         mesh = sage_handlers['point'](t)
+    elif (t['geometry']['type']=='line'):
+        mesh = sage_handlers['line'](t)
     else:
         m = sage_handlers['texture'](t['texture'])
         g = sage_handlers[t['geometry']['type']](t['geometry'])
@@ -590,6 +592,19 @@ def json_sphere(t):
     return SphereGeometry(radius=t['radius'])
 
 def json_line(t):
+    tree_geometry = t['geometry']
+    m = sage_handlers['texture'](t['texture'])
+    mesh = []
+    length = range(tree_geometry['points'])
+    rotate = [0,0,0]
+    midpoint = [0,0,0]
+    for p in length:
+        g = SphereGeometry(radius=tree_geometry['thickness'])
+        mesh.append(Mesh(geometry=g, material=m, position=list(tree_geometry['points'][p])))
+        if (p < length-1):
+            for i in range(3):
+                rotate[i] = tree_geometry['points'][p][i]-tree_geometry['points'][p][i+1]
+                midpoint[i] = (tree_geometry['points'][p][i]+tree_geometry['points'][p][i+1])/2
     return # TODO make line object type
 
 def json_text(t):
@@ -605,7 +620,7 @@ def json_viewpoint(t):
 def json_point(t):
     g = SphereGeometry(radius=t['geometry']['size'])
     m = sage_handlers['texture'](t['texture'])
-    myobject = Mesh(geometry=g, material=m, position=list(t['geometry']['position']), scale=[.05,.05,.05])
+    myobject = Mesh(geometry=g, material=m, position=list(t['geometry']['position']), scale=[.02,.02,.02])
     return ScaledObject(children=[myobject])
 
 sage_handlers = {'object' : json_object,
