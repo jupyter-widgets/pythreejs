@@ -603,16 +603,23 @@ def json_line(t):
     distance = 0
     for p in range(length):
         g = SphereGeometry(radius=tree_geometry['thickness'])
-        mesh.append(Mesh(geometry=g, material=m, position=list(tree_geometry['points'][p])))
+        mesh.append(Mesh(geometry=g, 
+                            material=m, 
+                            scale=[.02,.02,.02], 
+                            position=list(tree_geometry['points'][p])))
         if (p < length-1):
             for i in range(3):
                 rotate[i] = tree_geometry['points'][p][i]-tree_geometry['points'][p+1][i]
                 midpoint[i] = (tree_geometry['points'][p][i]+tree_geometry['points'][p+1][i])/2
             distance = (rotate[0]*rotate[0]+rotate[1]*rotate[1]+rotate[2]*rotate[2])**.5
-            CylinderGeometry(radiusTop=tree_geometry['thickness'],
-                             radiusBottom=tree_geometry['thickness'],
-                             height=distance)
-            mesh.append(Mesh(geometry=g, material=m, position=midpoint,rotation=rotate))
+            g = CylinderGeometry(radiusTop=tree_geometry['thickness'],
+                                 radiusBottom=tree_geometry['thickness'],
+                                 height=distance)
+            mesh.append(Mesh(geometry=g, 
+                                material=m, 
+                                position=midpoint,
+                                scale=[.02,.02,.02],
+                                rotation=rotate))
     return Object3d(children=mesh)
 
 def json_text(t):
