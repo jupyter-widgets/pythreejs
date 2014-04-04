@@ -609,8 +609,8 @@ def json_line(t):
                 rotate[i] = tree_geometry['points'][p][i]-tree_geometry['points'][p+1][i]
                 midpoint[i] = (tree_geometry['points'][p][i]+tree_geometry['points'][p+1][i])/2
             distance = (rotate[0]*rotate[0]+rotate[1]*rotate[1]+rotate[2]*rotate[2])**.5
-            CylinderGeometry(radiusTop=t['thickness'],
-                             radiusBottom=t['thickness'],
+            CylinderGeometry(radiusTop=tree_geometry['thickness'],
+                             radiusBottom=tree_geometry['thickness'],
                              height=distance)
             mesh.append(Mesh(geometry=g, material=m, position=midpoint,rotation=rotate))
     return Object3d(children=mesh)
