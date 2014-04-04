@@ -618,7 +618,7 @@ def json_line(t):
             mesh.append(Mesh(geometry=g, 
                                 material=m, 
                                 position=midpoint,
-                                scale=[.02,.02,.02],
+                                scale=[.02,1,.02],
                                 rotation=rotate))
     return Object3d(children=mesh)
 
@@ -632,7 +632,7 @@ def json_text(t):
 def json_point(t):
     g = SphereGeometry(radius=t['geometry']['size'])
     m = sage_handlers['texture'](t['texture'])
-    myobject = Mesh(geometry=g, material=m, scale=[.02,0,.02])
+    myobject = Mesh(geometry=g, material=m, scale=[.02,.02,.02])
     return ScaledObject(children=[myobject], position = list(t['geometry']['position']))
 
 sage_handlers = {'object' : json_object,
