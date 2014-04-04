@@ -208,6 +208,12 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                 this.update_children(this.model.previous('children'), this.model.get('children'));
             }
             ThreeView.prototype.update.call(this);
+            if (this.model.get('matrix').length==16) {
+                // tell three.js to not update the matrix based on position, rotation, etc.
+                this.obj.matrixAutoUpdate = false
+                // tell three.js to apply the matrix we just set
+                this.obj.matrixWorldNeedsUpdate = true
+            }
         },
 
         replace_child_obj: function(old_obj, new_obj) {

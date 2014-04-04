@@ -519,13 +519,11 @@ lights = {
 
 def create_from_plot(plot):
     tree = plot.scenetree_json()
-    view_tree = plot.viewpoint().scenetree_json()
     obj = sage_handlers[tree['type']](tree)
-    viewpoint = list(sage_handlers[view_tree['type']](view_tree)) 
-    cam = PerspectiveCamera(position=viewpoint, fov=40, up=[0,0,1],
+    cam = PerspectiveCamera(position=[10,10,10], fov=40, up=[0,0,1],
            children=[DirectionalLight(color=0xffffff, position=[3,5,1], intensity=0.5)])
     scene = Scene(children=[obj, AmbientLight(color=0x777777)])
-    renderer = Renderer(camera=cam, scene=scene, controls=OrbitControls(controlling=cam))
+    renderer = Renderer(camera=cam, scene=scene, controls=OrbitControls(controlling=cam), color='white')
     return renderer
 
 def json_object(t):
@@ -543,11 +541,15 @@ def json_object(t):
         if t.get('mesh',False) is True:
             wireframe_material = BasicMaterial(color=0x222222, transparent=True, opacity=0.2, wireframe=True)
             mesh = Object3d(children=[mesh, Mesh(geometry=g, material=wireframe_material)])
+    if t['geometry']['type'] in ('cone', 'cylinder'):
+        # Sage assumes the base is on the xy plane and the cylinder axis is parallel to the z-axis
+        m = [1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, t['geometry']['height']/2, 1]
+        mesh = Object3d(matrix=m, children=[mesh])
     return mesh
 
 def json_group(t):
     m = t.get('matrix', [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1])
-    # take the transpose of m -- is this working?
+    # three.js transformation matrices are the transpose of sage transformations
     m[1], m[2], m[3], m[4], m[6], m[7], m[8], m[9],m[11],m[12],m[13],m[14] = \
     m[4], m[8],m[12], m[1], m[9],m[13], m[2], m[6],m[14], m[3], m[7],m[11]
     children = [sage_handlers[c['type']](c) for c in t['children']]
@@ -598,6 +600,7 @@ def json_line(t):
     length = range(tree_geometry['points'])
     rotate = [0,0,0]
     midpoint = [0,0,0]
+    distance = 0
     for p in length:
         g = SphereGeometry(radius=tree_geometry['thickness'])
         mesh.append(Mesh(geometry=g, material=m, position=list(tree_geometry['points'][p])))
@@ -605,23 +608,25 @@ def json_line(t):
             for i in range(3):
                 rotate[i] = tree_geometry['points'][p][i]-tree_geometry['points'][p][i+1]
                 midpoint[i] = (tree_geometry['points'][p][i]+tree_geometry['points'][p][i+1])/2
-    return # TODO make line object type
+            distance = (rotate[0]*rotate[0]+rotate[1]*rotate[1]+rotate[2]*rotate[2])**.5
+            CylinderGeometry(radiusTop=t['thickness'],
+                             radiusBottom=t['thickness'],
+                             height=distance)
+            mesh.append(Mesh(geometry=g, material=m, position=midpoint,rotation=rotate))
+    return Object3d(children=mesh)
 
 def json_text(t):
     tree_geometry = t['geometry']
     tree_texture = t['texture']
-    tt = TextTexture(string=tree_geometry['string'], color='white')
+    tt = TextTexture(string=tree_geometry['string'])
     sm = SpriteMaterial(map=tt, opacity=tree_texture['opacity'], transparent = tree_texture['opacity'] < 1 )
     return Sprite(material=sm, scaleToTexture=True)
-
-def json_viewpoint(t):
-    return t['position']
 
 def json_point(t):
     g = SphereGeometry(radius=t['geometry']['size'])
     m = sage_handlers['texture'](t['texture'])
-    myobject = Mesh(geometry=g, material=m, position=list(t['geometry']['position']), scale=[.02,.02,.02])
-    return ScaledObject(children=[myobject])
+    myobject = Mesh(geometry=g, material=m, scale=[.02,.02,.02])
+    return ScaledObject(children=[myobject], position = list(t['geometry']['position']))
 
 sage_handlers = {'object' : json_object,
              'group' : json_group,
@@ -633,6 +638,5 @@ sage_handlers = {'object' : json_object,
              'texture' : json_texture,
              'line' : json_line,
              'text' : json_text,
-             'viewpoint' : json_viewpoint,
              'point' : json_point
             }
