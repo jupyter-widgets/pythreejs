@@ -597,11 +597,11 @@ def json_line(t):
     tree_geometry = t['geometry']
     m = sage_handlers['texture'](t['texture'])
     mesh = []
-    length = range(tree_geometry['points'])
+    length = len(tree_geometry['points'])
     rotate = [0,0,0]
     midpoint = [0,0,0]
     distance = 0
-    for p in length:
+    for p in range(length):
         g = SphereGeometry(radius=tree_geometry['thickness'])
         mesh.append(Mesh(geometry=g, material=m, position=list(tree_geometry['points'][p])))
         if (p < length-1):
