@@ -634,7 +634,7 @@ def json_line(t):
     #                             position=midpoint,
     #                             scale=[.02,1,.02],
     #                             rotation=rotate))
-    return Mesh(geometry=g, material=m, scale=[.02,.02,.02])
+    return Mesh(geometry=g, material=m, scale=[.2,.2,.2])
 
 def json_text(t):
     tree_geometry = t['geometry']
