@@ -140,7 +140,15 @@ class LatheGeometry(Geometry):
     segments = CInt(12, sync=True)
     phiStart = CFloat(0, sync=True)
     phiLength = CFloat(2*math.pi, sync=True)
-    
+
+class TubeGeometry(Geometry):
+    _view_name = Unicode('LatheGeometryView', sync=True)
+    path = List(vector3(), sync=True)
+    segments = CInt(64, sync=True)
+    radius = CFloat(1, sync=True)
+    radialSegments = CFloat(8, sync=True)
+    closed = Bool(False, sync=True)
+
 class IcosahedronGeometry(Geometry):
     _view_name = Unicode('IcosahedronGeometryView', sync=True)
     radius = CFloat(1, sync=True)

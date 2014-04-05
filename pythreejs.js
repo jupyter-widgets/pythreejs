@@ -420,6 +420,23 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     });
     IPython.WidgetManager.register_widget_view('LatheGeometryView', LatheGeometryView);
 
+    var TubeGeometryView = ThreeView.extend({
+        update: function() {
+            var path = this.model.get('path');
+            var pnt = [];
+            for (var p_index = 0, len = path.length; p_index < len; p_index++ ) {
+                var a = new THREE.Vector3().fromArray(path[p_index]);
+                pnt.push(a);
+            }
+            this.replace_obj(new THREE.TubeGeometry(pnt,
+                                                        this.model.get('segments'),
+                                                        this.model.get('radius'),
+                                                        this.model.get('radialSegments'),
+                                                        this.model.get('closed')));
+        }
+    });
+    IPython.WidgetManager.register_widget_view('TubeGeometryView', TubeGeometryView);
+
     var IcosahedronGeometryView = ThreeView.extend({
         update: function() {
             this.replace_obj(new THREE.IcosahedronGeometry(this.model.get('radius'),
