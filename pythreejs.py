@@ -604,7 +604,10 @@ def json_sphere(t):
 def json_line(t):
     tree_geometry = t['geometry']
     m = sage_handlers['texture'](t['texture'])
-    g = TubeGeometry(path=list(tree_geometry['points']), radius=tree_geometry['thickness'])
+    path = []
+    for p in tree_geometry['points']:
+        path.append(list(p))
+    g = TubeGeometry(path=path, radius=tree_geometry['thickness'])
     
     # old code
     # mesh = []
