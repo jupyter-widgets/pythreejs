@@ -422,13 +422,14 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
 
     var TubeGeometryView = ThreeView.extend({
         update: function() {
-            var path = this.model.get('path');
+            var points = this.model.get('path');
             var pnt = [];
-            for (var p_index = 0, len = path.length; p_index < len; p_index++ ) {
-                var a = new THREE.Vector3().fromArray(path[p_index]);
+            for (var p_index = 0, len = points.length; p_index < len; p_index++ ) {
+                var a = new THREE.Vector3().fromArray(points[p_index]);
                 pnt.push(a);
             }
-            this.replace_obj(new THREE.TubeGeometry(pnt,
+            var path = new THREE.PiecewiseLinearCurve3(pnt);
+            this.replace_obj(new THREE.TubeGeometry(path,
                                                         this.model.get('segments'),
                                                         this.model.get('radius'),
                                                         this.model.get('radialSegments'),
