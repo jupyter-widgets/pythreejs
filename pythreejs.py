@@ -142,7 +142,7 @@ class LatheGeometry(Geometry):
     phiLength = CFloat(2*math.pi, sync=True)
 
 class TubeGeometry(Geometry):
-    _view_name = Unicode('LatheGeometryView', sync=True)
+    _view_name = Unicode('TubeGeometryView', sync=True)
     path = List(vector3(), sync=True)
     segments = CInt(64, sync=True)
     radius = CFloat(1, sync=True)
