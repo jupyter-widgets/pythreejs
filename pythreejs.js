@@ -428,7 +428,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                 var a = new THREE.Vector3().fromArray(points[p_index]);
                 pnt.push(a);
             }
-            var path = new THREE.PiecewiseLinearCurve3(pnt);
+            var path = new THREE.SplineCurve3(pnt);
             this.replace_obj(new THREE.TubeGeometry(path,
                                                         this.model.get('segments'),
                                                         this.model.get('radius'),
