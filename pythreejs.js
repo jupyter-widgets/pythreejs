@@ -284,6 +284,25 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     });
     IPython.WidgetManager.register_widget_view('OrbitControlsView', OrbitControlsView);
 
+    var PickerView = ThreeView.extend({
+        render: function() {
+            // retrieve the first view of the controlled object -- this is a hack for a singleton view
+            this.controlled_view = this.model.get('controlling').views[0];
+            this.obj = new THREE.Raycaster(this.options.camera.position, vector.sub(this.options.camera.position).normalize());
+            
+            var objs = this.obj.intersectObjects(this.options.scene, true);
+            if (this.model.get('all')) {
+                this.model.set('picked', objs);
+            } else {
+                this.model.set('picked' [objs[0]]);
+            }
+
+            // if there is a three.js control change, call the animate function to animate at least one more time
+            delete this.options.renderer;
+        }
+    });
+    IPython.WidgetManager.register_widget_view('PickerView', PickerView);
+
 
     var SceneView = Object3dView.extend({
         new_obj: function() {return new THREE.Scene();},
