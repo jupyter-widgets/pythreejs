@@ -288,7 +288,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         render: function() {
             this.controlled_view = this.model.get('controlling').views[0];
 
-            this.options.dom.addEventListener(this.model.get('event'), function e{
+            this.options.dom.addEventListener(this.model.get('event'), function() {
 
                 var mouseX = (event.clientX / this.options.renderer.innerWidth) * 2 - 1;
                 var mouseY = -(event.clientY / this.options.renderer.innerHeight) * 2 - 1;
