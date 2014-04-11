@@ -301,7 +301,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                                                 vector.sub(that.options.renderer.camera.obj.position).normalize());
 
 
-                that.options.register_update(this.obj.update, this.obj);
+                that.options.register_update(that.obj.update, that.obj);
                 this.obj.addEventListener('change', this.options.render_frame);
                 this.obj.addEventListener('start', this.options.start_update_loop);
                 this.obj.addEventListener('end', this.options.end_update_loop);
