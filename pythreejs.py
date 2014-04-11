@@ -101,6 +101,12 @@ class Controls(Widget):
 
 class OrbitControls(Controls):
     _view_name = Unicode('OrbitControlsView', sync=True)
+
+class Picker(Controls):
+    _view_name  = Unicode('PickerView', sync=True)
+    event = Unicode('click', sync=True)
+    picked = List(Instance(Object3d), sync=True)
+    all = Bool(False, sync=True)
     
 class Geometry(Widget):
     _view_name = Unicode('GeometryView', sync=True)
