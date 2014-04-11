@@ -49,6 +49,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                               {dom: this.renderer.domElement,
                                start_update_loop: function() {that._update_loop = true; that.schedule_update();},
                                end_update_loop: function() {that._update_loop = false;}},
+                               renderer: this.renderer,
                               render_loop));
             this._render = true;
             this.schedule_update();
