@@ -298,7 +298,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                 var projector = new THREE.Projector();
                 projector.unprojectVector(vector, that.options.renderer.camera.obj);
 
-                this.obj = new THREE.Raycaster(that.options.renderer.camera.obj.position,
+                that.obj = new THREE.Raycaster(that.options.renderer.camera.obj.position,
                                                 vector.sub(that.options.renderer.camera.obj.position).normalize());
                 
                 var objs = that.obj.intersectObjects(that.options.renderer.scene.obj, true);
