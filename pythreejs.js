@@ -291,8 +291,8 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             var that = this;
             this.options.dom.addEventListener(this.model.get('event'), function() {
 
-                var mouseX = (event.clientX / that.options.renderer.innerWidth) * 2 - 1;
-                var mouseY = -(event.clientY / that.options.renderer.innerHeight) * 2 - 1;
+                var mouseX = (event.clientX / that.options.renderer.width) * 2 - 1;
+                var mouseY = -(event.clientY / that.options.renderer.height) * 2 - 1;
                 var vector = new THREE.vector3(mouseX, mouseY, that.options.renderer.camera.near);
 
                 var projector = new THREE.Projector();
