@@ -286,29 +286,29 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
 
     var PickerView = ThreeView.extend({
         render: function() {
-            // retrieve the first view of the controlled object -- this is a hack for a singleton view
-            this.obj = new THREE.Raycaster();
             this.controlled_view = this.model.get('controlling').views[0];
-            this.obj.addEventListener(this.model.get('event'), this.options.render_frame);
-            var mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-            var mouseY = -(event.clientY / window.innerHeight) * 2 - 1;
-            var vector = new THREE.vector3(mouseX, mouseY, this.options.renderer.camera.near);
 
-            var projector = new THREE.Projector();
-            projector.unprojectVector(vector, this.options.renderer.camera);
+            this.options.dom.addEventListener(this.model.get('event'), function e{
 
-            this.obj = new THREE.Raycaster(this.options.renderer.camera.position,
-                                            vector.sub(this.options.renderer.camera.position).normalize());
-            
-            var objs = this.obj.intersectObjects(this.options.renderer.scene, true);
-            if (this.model.get('all')) {
-                this.model.set('picked', objs);
-            } else {
-                this.model.set('picked' [objs[0]]);
-            }
+                var mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+                var mouseY = -(event.clientY / window.innerHeight) * 2 - 1;
+                var vector = new THREE.vector3(mouseX, mouseY, this.options.renderer.camera.near);
 
-            // if there is a three.js control change, call the animate function to animate at least one more time
-            delete this.options.renderer;
+                var projector = new THREE.Projector();
+                projector.unprojectVector(vector, this.options.renderer.camera);
+
+                this.obj = new THREE.Raycaster(this.options.renderer.camera.position,
+                                                vector.sub(this.options.renderer.camera.position).normalize());
+                
+                var objs = this.obj.intersectObjects(this.options.renderer.scene, true);
+                if (this.model.get('all')) {
+                    this.model.set('picked', objs);
+                } else {
+                    this.model.set('picked' [objs[0]]);
+                }
+
+                delete this.options.renderer;
+            })
         }
     });
     IPython.WidgetManager.register_widget_view('PickerView', PickerView);
