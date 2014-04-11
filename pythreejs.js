@@ -287,6 +287,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     var PickerView = ThreeView.extend({
         render: function() {
             // retrieve the first view of the controlled object -- this is a hack for a singleton view
+            this.obj = new THREE.Raycaster();
             this.controlled_view = this.model.get('controlling').views[0];
             this.obj.addEventListener(this.model.get('event'), this.options.render_frame);
             var mouseX = (event.clientX / window.innerWidth) * 2 - 1;
