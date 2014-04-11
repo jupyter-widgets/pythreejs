@@ -293,7 +293,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
 
                 var mouseX = (event.clientX / that.options.dom.width) * 2 - 1;
                 var mouseY = -(event.clientY / that.options.dom.height) * 2 - 1;
-                var vector = new THREE.vector3(mouseX, mouseY, that.options.renderer.camera.near);
+                var vector = new THREE.vector3(mouseX, mouseY, that.options.renderer.camera.obj.near);
 
                 var projector = new THREE.Projector();
                 projector.unprojectVector(vector, that.options.renderer.camera.obj);
