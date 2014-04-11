@@ -48,7 +48,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                      _.extend({},
                               {dom: this.renderer.domElement,
                                start_update_loop: function() {that._update_loop = true; that.schedule_update();},
-                               end_update_loop: function() {that._update_loop = false;},},
+                               end_update_loop: function() {that._update_loop = false;}},
                               render_loop));
             this._render = true;
             this.schedule_update();
@@ -288,17 +288,18 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         render: function() {
             // retrieve the first view of the controlled object -- this is a hack for a singleton view
             this.controlled_view = this.model.get('controlling').views[0];
+            this.obj.addEventListener(this.model.get('event'), this.options.render_frame);
             var mouseX = (event.clientX / window.innerWidth) * 2 - 1;
             var mouseY = -(event.clientY / window.innerHeight) * 2 - 1;
-            var vector = new THREE.vector3(mouseX, mouseY, this.options.camera.near);
+            var vector = new THREE.vector3(mouseX, mouseY, this.options.renderer.camera.near);
 
             var projector = new THREE.Projector();
-            projector.unprojectVector(vector, camera);
+            projector.unprojectVector(vector, this.options.renderer.camera);
 
-            this.obj = new THREE.Raycaster(this.options.camera.position,
-                                            vector.sub(this.options.camera.position).normalize());
+            this.obj = new THREE.Raycaster(this.options.renderer.camera.position,
+                                            vector.sub(this.options.renderer.camera.position).normalize());
             
-            var objs = this.obj.intersectObjects(this.options.scene, true);
+            var objs = this.obj.intersectObjects(this.options.renderer.scene, true);
             if (this.model.get('all')) {
                 this.model.set('picked', objs);
             } else {
