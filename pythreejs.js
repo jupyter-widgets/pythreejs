@@ -290,7 +290,6 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.controlled_view = this.model.get('controlling').views[0];
             var that = this;
             this.options.dom.addEventListener(this.model.get('event'), function() {
-                console.log('click')
                 var mouseX = (event.clientX / that.options.dom.width) * 2 - 1;
                 var mouseY = -(event.clientY / that.options.dom.height) * 2 - 1;
                 var vector = new THREE.Vector3(mouseX, mouseY, that.options.renderer.camera.obj.near);
@@ -300,6 +299,12 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
 
                 that.obj = new THREE.Raycaster(that.options.renderer.camera.obj.position,
                                                 vector.sub(that.options.renderer.camera.obj.position).normalize());
+
+
+                that.options.register_update(that.obj.update, that.obj);
+                that.obj.addEventListener('change', that.options.render_frame);
+                that.obj.addEventListener('start', that.options.start_update_loop);
+                that.obj.addEventListener('end', that.options.end_update_loop);
                 
                 var objs = that.obj.intersectObjects(that.options.renderer.scene.obj, true);
                 if (that.model.get('all')) {
