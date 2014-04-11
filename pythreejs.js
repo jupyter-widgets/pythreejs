@@ -287,28 +287,28 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     var PickerView = ThreeView.extend({
         render: function() {
             this.controlled_view = this.model.get('controlling').views[0];
-
+            var that = this;
             this.options.dom.addEventListener(this.model.get('event'), function() {
 
-                var mouseX = (event.clientX / this.options.renderer.innerWidth) * 2 - 1;
-                var mouseY = -(event.clientY / this.options.renderer.innerHeight) * 2 - 1;
-                var vector = new THREE.vector3(mouseX, mouseY, this.options.renderer.camera.near);
+                var mouseX = (event.clientX / that.options.renderer.innerWidth) * 2 - 1;
+                var mouseY = -(event.clientY / that.options.renderer.innerHeight) * 2 - 1;
+                var vector = new THREE.vector3(mouseX, mouseY, that.options.renderer.camera.near);
 
                 var projector = new THREE.Projector();
-                projector.unprojectVector(vector, this.options.renderer.camera);
+                projector.unprojectVector(vector, that.options.renderer.camera);
 
-                this.obj = new THREE.Raycaster(this.options.renderer.camera.position,
-                                                vector.sub(this.options.renderer.camera.position).normalize());
+                this.obj = new THREE.Raycaster(that.options.renderer.camera.position,
+                                                vector.sub(that.options.renderer.camera.position).normalize());
                 
-                var objs = this.obj.intersectObjects(this.options.renderer.scene, true);
-                if (this.model.get('all')) {
-                    this.model.set('picked', objs);
+                var objs = that.obj.intersectObjects(that.options.renderer.scene, true);
+                if (that.model.get('all')) {
+                    that.model.set('picked', objs);
                 } else {
-                    this.model.set('picked' [objs[0]]);
+                    that.model.set('picked' [objs[0]]);
                 }
 
-                delete this.options.renderer;
-            })
+                delete that.options.renderer;
+            });
         }
     });
     IPython.WidgetManager.register_widget_view('PickerView', PickerView);
