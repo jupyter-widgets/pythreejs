@@ -290,7 +290,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.controlled_view = this.model.get('controlling').views[0];
             var that = this;
             this.options.dom.addEventListener(this.model.get('event'), function() {
-
+                console.log('click')
                 var mouseX = (event.clientX / that.options.dom.width) * 2 - 1;
                 var mouseY = -(event.clientY / that.options.dom.height) * 2 - 1;
                 var vector = new THREE.Vector3(mouseX, mouseY, that.options.renderer.camera.obj.near);
@@ -307,8 +307,6 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
                 } else {
                     that.model.set('picked' [objs[0]]);
                 }
-
-                delete that.options.renderer;
             });
         }
     });
