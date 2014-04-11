@@ -299,12 +299,6 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
 
                 that.obj = new THREE.Raycaster(that.options.renderer.camera.obj.position,
                                                 vector.sub(that.options.renderer.camera.obj.position).normalize());
-
-
-                that.options.register_update(that.obj.update, that.obj);
-                that.obj.addEventListener('change', that.options.render_frame);
-                that.obj.addEventListener('start', that.options.start_update_loop);
-                that.obj.addEventListener('end', that.options.end_update_loop);
                 
                 var objs = that.obj.intersectObjects(that.options.renderer.scene.obj, true);
                 if (that.model.get('all')) {
