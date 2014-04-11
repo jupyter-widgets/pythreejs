@@ -288,8 +288,15 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         render: function() {
             // retrieve the first view of the controlled object -- this is a hack for a singleton view
             this.controlled_view = this.model.get('controlling').views[0];
+            var mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            var mouseY = -(event.clientY / window.innerHeight) * 2 - 1;
+            var vector = new THREE.vector3(mouseX, mouseY, camera.near);
+
+            var projector = new THREE.Projector();
+            projector.unprojectVector(vector, camera);
+            
             this.obj = new THREE.Raycaster(this.options.camera.position,
-                                            THREE.vector3.sub(this.options.camera.position).normalize());
+                                            vector.sub(this.options.camera.position).normalize());
             
             var objs = this.obj.intersectObjects(this.options.scene, true);
             if (this.model.get('all')) {
