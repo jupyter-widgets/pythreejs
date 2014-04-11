@@ -291,17 +291,17 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             var that = this;
             this.options.dom.addEventListener(this.model.get('event'), function() {
 
-                var mouseX = (event.clientX / that.options.renderer.width) * 2 - 1;
-                var mouseY = -(event.clientY / that.options.renderer.height) * 2 - 1;
-                var vector = new THREE.vector3(mouseX, mouseY, that.options.renderer.camera.near);
+                var mouseX = (event.clientX / that.options.renderer.obj.width) * 2 - 1;
+                var mouseY = -(event.clientY / that.options.renderer.obj.height) * 2 - 1;
+                var vector = new THREE.vector3(mouseX, mouseY, that.options.renderer.obj.camera.near);
 
                 var projector = new THREE.Projector();
-                projector.unprojectVector(vector, that.options.renderer.camera);
+                projector.unprojectVector(vector, that.options.renderer.obj.camera);
 
-                this.obj = new THREE.Raycaster(that.options.renderer.camera.position,
-                                                vector.sub(that.options.renderer.camera.position).normalize());
+                this.obj = new THREE.Raycaster(that.options.renderer.camera.obj.position,
+                                                vector.sub(that.options.renderer.obj.camera.position).normalize());
                 
-                var objs = that.obj.intersectObjects(that.options.renderer.scene, true);
+                var objs = that.obj.intersectObjects(that.options.renderer.obj.scene, true);
                 if (that.model.get('all')) {
                     that.model.set('picked', objs);
                 } else {
