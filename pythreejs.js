@@ -290,11 +290,11 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             this.controlled_view = this.model.get('controlling').views[0];
             var mouseX = (event.clientX / window.innerWidth) * 2 - 1;
             var mouseY = -(event.clientY / window.innerHeight) * 2 - 1;
-            var vector = new THREE.vector3(mouseX, mouseY, camera.near);
+            var vector = new THREE.vector3(mouseX, mouseY, this.options.camera.near);
 
             var projector = new THREE.Projector();
             projector.unprojectVector(vector, camera);
-            
+
             this.obj = new THREE.Raycaster(this.options.camera.position,
                                             vector.sub(this.options.camera.position).normalize());
             
