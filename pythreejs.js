@@ -165,7 +165,7 @@ require(["threejs-all"], function() {
                         }
                         t[p] = t.create_child_view(value, t.options[p]);
                         t[p].on('replace_obj', function() {t.obj[p] = t[p].obj; t.needs_update()}, t);
-                        t.obj[p] = value.obj;
+                        t.obj[p] = t[p].obj;
                     }
                 }});
 
