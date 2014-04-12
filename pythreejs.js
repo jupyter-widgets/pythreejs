@@ -160,7 +160,9 @@ require(["threejs-all"], function() {
             _.each(this.child_properties, function(p) {
                 updates[p] = function(t, value) {
                     if (value) {
-                        t[p].off('replace_obj', null, t);
+                        if (t[p]) {
+                            t[p].off('replace_obj', null, t);
+                        }
                         t[p] = t.create_child_view(value, t.options[p]);
                         t[p].on('replace_obj', function() {t.obj[p] = t[p].obj; t.needs_update()}, t);
                         t.obj[p] = value.obj;
