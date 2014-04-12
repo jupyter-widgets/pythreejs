@@ -132,54 +132,42 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
             var array_properties = this.array_properties;
             var updates = {}
             // first, we create update functions for each attribute
-            for (var p_index=0,len=array_properties.length; p_index<len; p_index++) {
-                var p = array_properties[p_index];
-                updates[p] = (function(p) {return function(t, value) {
+            _.each(this.array_properties, function(p) {
+                updates[p] = function(t, value) {
                     if (value.length !== 0) {
                         // the default is the empty list, 
-                        // so we don't act in that case
+                        // and we don't act in that case
                         t.obj[p].fromArray(value);
                     }
-                }})(p);
-            }
-            var scalar_properties = this.scalar_properties;
-            for (var p_index=0,len=scalar_properties.length; p_index<len; p_index++) {
-                var p = scalar_properties[p_index];
-                updates[p] = (function(p) {return function(t, value) {
+                }});
+
+            _.each(this.scalar_properties, function(p) {
+                updates[p] = function(t, value) {
                     t.obj[p] = value;
-                }})(p);
-            }
-            var enum_properties = this.enum_properties;
-            for (var p_index=0,len=enum_properties.length; p_index<len; p_index++) {
-                var p = enum_properties[p_index];
-                updates[p] = (function(p) {return function(t, value) {
+                }});
+
+            _.each(this.enum_properties, function(p) {
+                updates[p] = function(t, value) {
                     t.obj[p] = THREE[value];
-                }})(p);
-            }
-            var set_properties = this.set_properties;
-            for (var p_index=0,len=set_properties.length; p_index<len; p_index++) {
-                var p = set_properties[p_index];
-                updates[p] = (function(p) {return function(t, value) {
+                }});
+
+            _.each(this.set_properties, function(p) {
+                updates[p] = function(t, value) {
                     t.obj[p].set(value);
-                }})(p);
-            }
-            var child_properties = this.child_properties;
-            for (var p_index=0, len=child_properties.length; p_index<len; p_index++) {
-                var p = child_properties[p_index];
-                // tricky binding of p's value for this callback function
-                // see http://stackoverflow.com/questions/1451009/javascript-infamous-loop-issue, for example
-                updates[p] = function(p) {return function(t, value) {
+                }});
+
+            _.each(this.child_properties, function(p) {
+                updates[p] = function(t, value) {
                     if (value) {
                         t[p].off('replace_obj', null, t);
                         t[p] = t.create_child_view(value, t.options[p]);
                         t[p].on('replace_obj', function() {t.obj[p] = t[p].obj; t.needs_update()}, t);
                         t.obj[p] = value.obj;
                     }
-                }(p);
-            }
-            }
+                }});
+
             // next, we call and then register the update functions to changes
-            _.each(updates, function(update, p, list) {
+            _.each(updates, function(update, p) {
                 update(this, this.model.get(p));
                 this.model.on('change:'+p, function(model, value, options) {update(this, value)}, this);
             }, this);
