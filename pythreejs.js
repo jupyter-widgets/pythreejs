@@ -174,6 +174,19 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
     })
     IPython.WidgetManager.register_widget_view('AnaglyphEffectView', AnaglyphEffectView);
 
+    var Object3dModel = WidgetModel.extend({
+        initialize: function(parameters) {
+            this.on('msg:custom', this.lookAt, this);
+        },
+        lookAt: function(content) {
+            // gets whatever was sent.
+            // 1. check to make sure we are wanting a lookAt call
+            // 2. get the data, change the matrix (maybe construct a blank three.js object, call lookat, read back the new matrix, use this.set('matrix', ....) to set the model's matrix.
+            // 3. this.save_changes()
+        }
+    })
+    IPython.WidgetManager.register_widget_model('Object3dModel', Object3dModel);
+
     var Object3dView = ThreeView.extend({
         new_properties: function() {
             ThreeView.prototype.new_properties.call(this);
