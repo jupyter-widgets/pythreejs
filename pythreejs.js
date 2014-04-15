@@ -22,7 +22,8 @@ requirejs.config({
 });
 define("threejs-all", ["threejs-trackball", "threejs-orbit", "threejs-detector"], function() {console.log('three.js loaded')});
 
-require(["threejs-all", "notebook/js/widgets/widget"], function() {
+// assume widgets have been loaded
+require(["threejs-all"], function() {
     var RendererView = IPython.DOMWidgetView.extend({
         render : function(){
             console.log('created renderer');
