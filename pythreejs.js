@@ -289,7 +289,7 @@ require(["threejs-all", "notebook/js/widgets/widget"], function() {
         render: function() {
             this.controlled_view = this.model.get('controlling').views[0];
             var that = this;
-            this.options.dom.addEventListener(this.model.get('event'), function() {
+            this.options.dom.addEventListener(this.model.get('event'), function(event) {
                 var mouseX = (event.clientX / that.options.dom.width) * 2 - 1;
                 var mouseY = -(event.clientY / that.options.dom.height) * 2 - 1;
                 var vector = new THREE.Vector3(mouseX, mouseY, that.options.renderer.camera.obj.near);
