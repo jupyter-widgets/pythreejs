@@ -339,7 +339,6 @@ require(["threejs-all"], function() {
 
     var PickerView = ThreeView.extend({
         render: function() {
-            this.controlled_view = this.model.get('controlling').views[0];
             var that = this;
             this.options.dom.addEventListener(this.model.get('event'), function(event) {
                 var mouseX = (event.clientX / that.options.dom.width) * 2 - 1;
