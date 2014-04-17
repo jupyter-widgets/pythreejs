@@ -473,7 +473,7 @@ class Renderer(DOMWidget):
     renderer_type = Enum(['webgl', 'canvas', 'auto'], 'auto', sync=True)
     scene = Instance(Scene, sync=True)
     camera = Instance(Camera, sync=True)
-    controls = Instance(Controls, sync=True)
+    controls = List(Instance(Controls), sync=True)
     effect = Instance(Effect, sync=True)
     color = Color('black', sync=True)
 

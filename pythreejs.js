@@ -45,13 +45,14 @@ require(["threejs-all"], function() {
             console.log('renderer', this.model, this.scene.obj, this.camera.obj);
             this.update();
             this._animation_frame = false
-            this.controls = this.create_child_view(this.model.get('controls'),
+            this.controls = _.map(this.model.get('controls'), function(m) {return this.create_child_view(m,
                      _.extend({},
                               {dom: this.renderer.domElement,
                                start_update_loop: function() {that._update_loop = true; that.schedule_update();},
                                end_update_loop: function() {that._update_loop = false;},
                                renderer: this},
-                              render_loop));
+                              render_loop))}, this);
+;
             this._render = true;
             this.schedule_update();
             window.r = this;
