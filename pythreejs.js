@@ -342,7 +342,7 @@ require(["threejs-all"], function() {
             var that = this;
             this.options.dom.addEventListener(this.model.get('event'), function(event) {
                 var mouseX = (event.clientX / $(that.options.dom).width()) * 2 - 1;
-                var mouseY = -((event.clientY / $(that.options.dom).height()) * 2 + 1);
+                var mouseY = -(event.clientY / $(that.options.dom).height()) * 2 + 1;
                 var vector = new THREE.Vector3(mouseX, mouseY, that.options.renderer.camera.obj.near);
 
                 var projector = new THREE.Projector();
