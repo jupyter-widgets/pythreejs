@@ -347,10 +347,8 @@ require(["threejs-all"], function() {
 
                 var projector = new THREE.Projector();
                 projector.unprojectVector(vector, that.options.renderer.camera.obj);
-
-                that.obj = new THREE.Raycaster(that.options.renderer.camera.obj.position,
-                                                vector.sub(that.options.renderer.camera.obj.position).normalize());
-                
+                var ray = vector.sub(that.options.renderer.camera.obj.position).normalize();
+                that.obj = new THREE.Raycaster(that.options.renderer.camera.obj.position, ray);
                 var objs = that.obj.intersectObjects(that.options.renderer.scene.obj, true);
                 if (that.model.get('all')) {
                     that.model.set('picked', objs);
