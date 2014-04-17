@@ -343,7 +343,7 @@ require(["threejs-all"], function() {
             this.options.dom.addEventListener(this.model.get('event'), function(event) {
                 var mouseX = (event.clientX / $(that.options.dom).width()) * 2 - 1;
                 var mouseY = -((event.clientY / $(that.options.dom).height()) * 2 - 1);
-                var vector = new THREE.Vector3(mouseX, mouseY, 1);//that.options.renderer.camera.obj.near);
+                var vector = new THREE.Vector3(mouseX, mouseY, that.options.renderer.camera.obj.near);
 
                 var projector = new THREE.Projector();
                 projector.unprojectVector(vector, that.options.renderer.camera.obj);
@@ -820,9 +820,14 @@ require(["threejs-all"], function() {
             var metrics = context.measureText(string);
             var textWidth = metrics.width;
             canvas.width = textWidth;
+<<<<<<< HEAD
 
             if (this.model.get('squareTexture')) {
                 canvas.height = canvas.width;
+=======
+            if (this.model.get('squareTexture')) {
+               canvas.height = canvas.width
+>>>>>>> Add squareTexture attribute to TextTexture, square when true
             }
             
             this.aspect = canvas.width / canvas.height;
