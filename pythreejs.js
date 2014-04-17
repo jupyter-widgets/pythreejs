@@ -820,14 +820,9 @@ require(["threejs-all"], function() {
             var metrics = context.measureText(string);
             var textWidth = metrics.width;
             canvas.width = textWidth;
-<<<<<<< HEAD
 
             if (this.model.get('squareTexture')) {
                 canvas.height = canvas.width;
-=======
-            if (this.model.get('squareTexture')) {
-               canvas.height = canvas.width
->>>>>>> Add squareTexture attribute to TextTexture, square when true
             }
             
             this.aspect = canvas.width / canvas.height;
