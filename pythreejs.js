@@ -354,7 +354,7 @@ require(["threejs-all"], function() {
                 if (that.model.get('all')) {
                     that.model.set('picked', objs);
                 } else {
-                    that.model.set('picked' [objs[0]]);
+                    that.model.set('picked', [objs[0]]);
                 }
             });
         }
