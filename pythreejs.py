@@ -1,6 +1,6 @@
 # Import the base Widget class and the traitlets Unicode class.
 from IPython.html.widgets.widget import Widget, DOMWidget
-from IPython.utils.traitlets import (Unicode, Int, Instance, Enum, List, Float, 
+from IPython.utils.traitlets import (Unicode, Int, Instance, Enum, List, Dict, Float,
                                      Any, CFloat, Bool, This, CInt, TraitType)
 import numpy
 import math
@@ -105,7 +105,7 @@ class OrbitControls(Controls):
 class Picker(Controls):
     _view_name  = Unicode('PickerView', sync=True)
     event = Unicode('click', sync=True)
-    picked = List(Instance(Object3d), sync=True)
+    picked = List(Dict, sync=True)
     all = Bool(False, sync=True)
     
 class Geometry(Widget):
