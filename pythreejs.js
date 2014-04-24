@@ -125,6 +125,7 @@ require(["threejs-all"], function() {
             var old_obj = this.obj;
             this.obj = new_obj;
             this.obj.pythreejs_model = this.model;
+            this.update_object_parameters();
             this.trigger('replace_obj', old_obj, new_obj);
         },
         new_obj: function() {
@@ -136,7 +137,7 @@ require(["threejs-all"], function() {
         },
         register_object_parameters: function() {
             var array_properties = this.array_properties;
-            var updates = {}
+            var updates = this.updates = {};
             // first, we create update functions for each attribute
             _.each(this.array_properties, function(p) {
                 updates[p] = function(t, value) {
@@ -181,42 +182,9 @@ require(["threejs-all"], function() {
             }, this);
         },
         update_object_parameters: function() {
-            var array_properties = this.array_properties;
-            for (var p_index=0,len=array_properties.length; p_index<len; p_index++) {
-                var p = array_properties[p_index];
-                var prop = this.model.get(p);
-                if (prop.length !== 0) {
-                    // the default is the empty list
-                    this.obj[p].fromArray(prop);
-                }
-            }
-            var scalar_properties = this.scalar_properties;
-            for (var p_index=0,len=scalar_properties.length; p_index<len; p_index++) {
-                var p = scalar_properties[p_index];
-                this.obj[p] = this.model.get(p);
-            }
-            var enum_properties = this.enum_properties;
-            for (var p_index=0,len=enum_properties.length; p_index<len; p_index++) {
-                var p = enum_properties[p_index];
-                this.obj[p] = THREE[this.model.get(p)];
-            }
-            var set_properties = this.set_properties;
-            for (var p_index=0,len=set_properties.length; p_index<len; p_index++) {
-                var p = set_properties[p_index];
-                this.obj[p].set(this.model.get(p));
-            }
-            var child_properties = this.child_properties;
-            for (var p_index=0, len=child_properties.length; p_index<len; p_index++) {
-                var p = child_properties[p_index];
-                var prop = this.model.get(p);
-                if (prop) {
-                    this[p] = this.create_child_view(prop, this.options[p]);
-                    this.obj[p] = this[p].obj;
-                    // tricky binding of p's value for this callback function
-                    // see http://stackoverflow.com/questions/1451009/javascript-infamous-loop-issue, for example
-                    this[p].on('replace_obj', (function(p) {return function() {this.obj[p] = this[p].obj; this.needs_update()}})(p), this);
-                }
-            }
+            _.each(this.updates, function(update, p) {
+                update(this, this.model.get(p));
+            }, this);
         }
     });
 
@@ -715,7 +683,8 @@ require(["threejs-all"], function() {
             this.materialview.on('replace_obj', this.update, this);
             this.geometryview.on('rerender', this.needs_update, this);
             this.materialview.on('rerender', this.needs_update, this);
-            this.update();
+            Object3dView.prototype.render.call(this);
+            //this.update();
             return this.obj;
         },
         update: function() {
