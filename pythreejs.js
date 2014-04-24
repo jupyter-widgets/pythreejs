@@ -306,7 +306,7 @@ require(["threejs-all"], function() {
 
     var SceneView = Object3dView.extend({
         new_obj: function() {return new THREE.Scene();},
-        needs_update: function() {console.log('scene needs update');this.options.render_frame();}
+        needs_update: function() {this.options.render_frame();}
     });
     IPython.WidgetManager.register_widget_view('SceneView', SceneView);
 
