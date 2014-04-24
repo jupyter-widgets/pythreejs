@@ -30,8 +30,10 @@ require(["threejs-all"], function() {
             var width = this.model.get('width');
             var height = this.model.get('height');
             var that = this;
+            this.id = IPython.utils.uuid();
             var render_loop = {register_update: function(fn, context) {that.on('animate:update', fn, context);},
-                               render_frame: function () {that._render = true; that.schedule_update()},}
+                               render_frame: function () {that._render = true; that.schedule_update()},
+                               renderer_id: this.id}
             if ( Detector.webgl )
                 this.renderer = new THREE.WebGLRenderer( {antialias:true, alpha: true} );
             else
@@ -214,7 +216,7 @@ require(["threejs-all"], function() {
                             that.delete_child_view(deleted);
                          },
                          function(added) {
-                            var view = that.create_child_view(added, _.pick(that.options,'register_update'));
+                            var view = that.create_child_view(added, _.pick(that.options,'register_update', 'renderer_id'));
                             that.obj.add(view.obj);
                             view.on('replace_obj', that.replace_child_obj, that);
                             view.on('rerender', that.needs_update, that);
@@ -321,7 +323,14 @@ require(["threejs-all"], function() {
                 projector.unprojectVector(vector, that.options.renderer.camera.obj);
                 var ray = vector.sub(that.options.renderer.camera.obj.position).normalize();
                 that.obj = new THREE.Raycaster(that.options.renderer.camera.obj.position, ray);
-                var objs = that.obj.intersectObject(that.options.renderer.scene.obj, true);
+                var root = that.options.renderer.scene.obj;
+                if (that.model.get('root')) {
+                    var r = _.find(that.model.get('root').views, function(o) {
+                        return o.options.renderer_id === that.options.renderer_id;
+                    });
+                    root = r.obj;
+                }
+                var objs = that.obj.intersectObject(root, true);
                 var getinfo = function(o) {
                     var v = o.object.geometry.vertices;
                     var verts = [[v[o.face.a].x, v[o.face.a].y, v[o.face.a].z],

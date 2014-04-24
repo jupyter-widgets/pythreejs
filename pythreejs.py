@@ -105,6 +105,7 @@ class OrbitControls(Controls):
 class Picker(Controls):
     _view_name  = Unicode('PickerView', sync=True)
     event = Unicode('click', sync=True)
+    root = Instance(Object3d, sync=True)
     picked = List(Dict, sync=True)
     distance = CFloat(sync=True)
     point = vector3(CFloat, sync=True)
