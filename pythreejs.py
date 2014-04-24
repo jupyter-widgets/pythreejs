@@ -523,20 +523,31 @@ lights = {
     ],
 }
 
-def normalize(x):
-    tot = sum(x)
-    x[0] = x[0]/tot
-    x[1] = x[1]/tot
-    x[2] = x[2]/tot
+def vector_length(x):
+    return sqrt(x[0]*x[0]+x[1]*x[1]+x[2]*x[2])
+
+def vector_divide_scalar(scalar, x):
+    if (scalar!=0):
+        x[0] = x[0]/scalar
+        x[1] = x[1]/scalar
+        x[2] = x[2]/scalar
+    else: 
+        x[0] = 0
+        x[1] = 0
+        x[2] = 0
     return x
+
+def normalize(x):
+    return vector_divide_scalar(vector_length(x),x)
 
 def look_at(eye, target, up, m):
     z = [eye[0]-target[0], eye[1]-target[1], eye[2]-target[2]] # eye - target
+    z = normalize(z)
     x = [up[1]*z[2]-up[2]*z[1], up[2]*z[0]-up[0]*z[2], up[0]*z[1]-up[1]*z[0]] # up X z
     y = [z[1]*x[2]-z[2]*x[1], z[2]*x[0]-z[0]*x[2], z[0]*x[1]-z[1]*x[0]] # z X x
     x = normalize(x)
     y = normalize(y)
-    z = normalize(z)
+    
     # upper 3X3 part of matrix * [x,y,z]
     m[0], m[1], m[2], m[4], m[5], m[6], m[8], m[9], m[10] = \
     m[0]*x[0] + m[1]*x[1] + m[2]*x[2], m[0]*y[0] + m[1]*y[1] + m[2]*y[2], m[0]*z[0] + m[1]*z[1] + m[2]*z[2], \
