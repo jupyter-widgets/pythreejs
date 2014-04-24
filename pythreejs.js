@@ -103,7 +103,7 @@ require(["threejs-all"], function() {
             this.register_object_parameters();
             this.update();
             // pickers need access to the model from the three.js object
-            this.obj.pythreejs_model = this.model;
+            this.obj.pythreejs_view = this;
             return this.obj;
         },
         new_properties: function() {
@@ -124,7 +124,7 @@ require(["threejs-all"], function() {
         replace_obj: function(new_obj) {
             var old_obj = this.obj;
             this.obj = new_obj;
-            this.obj.pythreejs_model = this.model;
+            this.obj.pythreejs_view = this;
             this.update_object_parameters();
             this.trigger('replace_obj', old_obj, new_obj);
         },
@@ -333,7 +333,7 @@ require(["threejs-all"], function() {
                             faceVertices: verts,
                             faceNormal: [o.face.normal.x, o.face.normal.y, o.face.normal.z],
                             faceIndex: o.faceIndex,
-                            object: o.object.pythreejs_model
+                            object: o.object.pythreejs_view.model
                            }
                 }
                 if(objs.length > 0) {
