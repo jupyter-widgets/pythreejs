@@ -322,24 +322,36 @@ require(["threejs-all"], function() {
                 var ray = vector.sub(that.options.renderer.camera.obj.position).normalize();
                 that.obj = new THREE.Raycaster(that.options.renderer.camera.obj.position, ray);
                 var objs = that.obj.intersectObject(that.options.renderer.scene.obj, true);
-                if (!that.model.get('all')) {
-                    objs = objs.slice(0,1);
-                }
-                var picked = _.map(objs, function(o) {
+                var getinfo = function(o) {
                     var v = o.object.geometry.vertices;
                     var verts = [[v[o.face.a].x, v[o.face.a].y, v[o.face.a].z],
                                  [v[o.face.b].x, v[o.face.b].y, v[o.face.b].z],
                                  [v[o.face.c].x, v[o.face.c].y, v[o.face.c].z]]
-                    return {distance: o.distance,
+                    return {point: [o.point.x, o.point.y, o.point.z],
+                            distance: o.distance,
                             face: [o.face.a, o.face.b, o.face.c],
-                            faceIndex: o.faceIndex,
-                            point: [o.point.x, o.point.y, o.point.z],
                             faceVertices: verts,
                             faceNormal: [o.face.normal.x, o.face.normal.y, o.face.normal.z],
+                            faceIndex: o.faceIndex,
                             object: o.object.pythreejs_model
-                           }})
-                that.model.set('picked', picked);
-                that.touch();
+                           }
+                }
+                if(objs.length > 0) {
+                    // perhaps we should set all attributes to null if there are
+                    // no intersections?
+                    var o = getinfo(objs[0]);
+                    that.model.set('point', o.point);
+                    that.model.set('distance', o.distance);
+                    that.model.set('face', o.face);
+                    that.model.set('faceVertices', o.faceVertices);
+                    that.model.set('faceNormal', o.faceNormal);
+                    that.model.set('object', o.object);
+                    that.model.set('faceIndex', o.faceIndex);
+                    if (that.model.get('all')) {
+                        that.model.set('picked', _.map(objs, getinfo));
+                    }
+                    that.touch();
+                }
             });
         }
     });

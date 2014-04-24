@@ -106,6 +106,13 @@ class Picker(Controls):
     _view_name  = Unicode('PickerView', sync=True)
     event = Unicode('click', sync=True)
     picked = List(Dict, sync=True)
+    distance = CFloat(sync=True)
+    point = vector3(CFloat, sync=True)
+    object = Instance(Object3d, sync=True)
+    face = vector3(CInt, sync=True)
+    faceNormal = vector3(CFloat, sync=True)
+    faceVertices = List(vector3(), sync=True)
+    faceIndex = CInt(sync=True)
     all = Bool(False, sync=True)
     
 class Geometry(Widget):
