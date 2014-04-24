@@ -297,8 +297,10 @@ require(["threejs-all"], function() {
 
     var OrbitControlsView = ThreeView.extend({
         render: function() {
-            // retrieve the first view of the controlled object -- this is a hack for a singleton view
-            this.controlled_view = this.model.get('controlling').views[0];
+            // get the view that is tied to the same renderer
+            this.controlled_view = _.find(this.model.get('controlling').views, function(o) {
+                return o.options.renderer_id === this.options.renderer_id
+            }, this);
             this.obj = new THREE.OrbitControls(this.controlled_view.obj, this.options.dom);
             this.options.register_update(this.obj.update, this.obj);
             this.obj.addEventListener('change', this.options.render_frame);
