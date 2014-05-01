@@ -654,13 +654,13 @@ def json_line(t):
         path.append(list(p))
     mesh.append(TubeGeometry(path=path, radius=.01*tree_geometry['thickness']))
 
-    c = mesh(material=m,
+    c = Mesh(material=m,
              geometry=CircleGeometry(segments=50, radius=.01*tree_geometry['thickness']),
-             position=tree_geometry['points'][0])
+             position=list(tree_geometry['points'][0]))
     c.matrix = look_at(list(tree_geometry['points'][0]), list(tree_geometry['points'][1]), [0,1,0], c.matrix)
     mesh.append(c)
 
-    c = mesh(material=m,
+    c = Mesh(material=m,
              geometry=CircleGeometry(segments=50, radius=.01*tree_geometry['thickness']),
              position=list(tree_geometry['points'][-1]))
     c.matrix = look_at(list(tree_geometry['points'][-1]), list(tree_geometry['points'][-2]), [0,1,0], c.matrix)
@@ -690,7 +690,7 @@ def json_line(t):
     #                             position=midpoint,
     #                             scale=[.02,1,.02],
     #                             rotation=rotate))
-    return Mesh(geometry=g, material=m)
+    return mesh
 
 def json_text(t):
     tree_geometry = t['geometry']
