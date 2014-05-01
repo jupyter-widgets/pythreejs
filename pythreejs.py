@@ -561,9 +561,7 @@ def look_at(eye, target, up, m):
 
     # upper 3X3 part of matrix * [x,y,z]
     m[0], m[1], m[2], m[4], m[5], m[6], m[8], m[9], m[10] = \
-    m[0]*x[0] + m[1]*x[1] \
-    + m[2]*\
-    x[2],\
+    m[0]*x[0] + m[1]*x[1] + m[2]*x[2],\
     m[0]*y[0] + m[1]*y[1] + m[2]*y[2],\
     m[0]*z[0] + m[1]*z[1] + m[2]*z[2],\
     m[4]*x[0] + m[5]*x[1] + m[6]*x[2],\
@@ -663,13 +661,16 @@ def json_line(t):
     c = Mesh(material=m,
              geometry=CircleGeometry(segments=50, radius=.01*tree_geometry['thickness']),
              position=list(tree_geometry['points'][0]))
-    c.matrix = look_at(list(tree_geometry['points'][0]), list(tree_geometry['points'][1]), [0,1,0], c.matrix)
+    c.matrix = look_at(list(tree_geometry['points'][0]), 
+                        list(tree_geometry['points'][1]), 
+                        [0,1,0], 
+                        [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1])
     mesh.append(c)
 
     c = Mesh(material=m,
              geometry=CircleGeometry(segments=50, radius=.01*tree_geometry['thickness']),
              position=list(tree_geometry['points'][-1]))
-    c.matrix = look_at(list(tree_geometry['points'][-1]), list(tree_geometry['points'][-2]), [0,1,0], c.matrix)
+    c.matrix = look_at(list(tree_geometry['points'][-1]), list(tree_geometry['points'][-2]), [0,1,0], [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1])
     mesh.append(c)
     # old code
     # mesh = []
