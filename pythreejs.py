@@ -694,7 +694,7 @@ def json_line(t):
     #                             position=midpoint,
     #                             scale=[.02,1,.02],
     #                             rotation=rotate))
-    return mesh
+    return Object3d(children=mesh)
 
 def json_text(t):
     tree_geometry = t['geometry']
