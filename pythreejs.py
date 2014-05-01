@@ -540,14 +540,27 @@ def vector_divide_scalar(scalar, x):
 def normalize(x):
     return vector_divide_scalar(vector_length(x),x)
 
+def vector_cross(x, y): # x X y
+    return [x[1]*y[2]-x[2]*y[1], x[2]*y[0]-x[0]*y[2], x[0]*y[1]-x[1]*y[0]]
+
 def look_at(eye, target, up, m):
     z = [eye[0]-target[0], eye[1]-target[1], eye[2]-target[2]] # eye - target
     z = normalize(z)
-    x = [up[1]*z[2]-up[2]*z[1], up[2]*z[0]-up[0]*z[2], up[0]*z[1]-up[1]*z[0]] # up X z
-    y = [z[1]*x[2]-z[2]*x[1], z[2]*x[0]-z[0]*x[2], z[0]*x[1]-z[1]*x[0]] # z X x
+
+    if (vector_length(z)==0):
+        z[2]=1
+    x = vector_cross(up, z)
+    x = normalize(x)
+
+    if (vector_length(z)==0):
+        z[0]=0.0001
+        x = vector_cross(up, z)
+        x = normalize(x)
+
+    y = vector_cross(z, x)
     x = normalize(x)
     y = normalize(y)
-    
+
     # upper 3X3 part of matrix * [x,y,z]
     m[0], m[1], m[2], m[4], m[5], m[6], m[8], m[9], m[10] = \
     m[0]*x[0] + m[1]*x[1] + m[2]*x[2], m[0]*y[0] + m[1]*y[1] + m[2]*y[2], m[0]*z[0] + m[1]*z[1] + m[2]*z[2], \
@@ -636,10 +649,22 @@ def json_line(t):
     tree_geometry = t['geometry']
     m = sage_handlers['texture'](t['texture'])
     path = []
+    mesh = []
     for p in tree_geometry['points']:
         path.append(list(p))
-    g = TubeGeometry(path=path, radius=.01*tree_geometry['thickness'])
-    
+    mesh.append(TubeGeometry(path=path, radius=.01*tree_geometry['thickness']))
+
+    c = mesh(material=m,
+             geometry=CircleGeometry(segments=50, radius=.01*tree_geometry['thickness']),
+             position=list(tree_geometry['points'][0]))
+    c.matrix = look_at(list(tree_geometry['points'][0]), list(tree_geometry['points'][1]), [0,1,0], c.matrix)
+    mesh.append(c)
+
+    c = mesh(material=m,
+             geometry=CircleGeometry(segments=50, radius=.01*tree_geometry['thickness']),
+             position=list(tree_geometry['points'][-1]))
+    c.matrix = look_at(list(tree_geometry['points'][-1]), list(tree_geometry['points'][-2]), [0,1,0], c.matrix)
+    mesh.append(c)
     # old code
     # mesh = []
     # length = len(tree_geometry['points'])
