@@ -558,8 +558,6 @@ def look_at(eye, target, up, m):
         x = normalize(x)
 
     y = vector_cross(z, x)
-    x = normalize(x)
-    y = normalize(y)
 
     # upper 3X3 part of matrix * [x,y,z]
     m[0], m[1], m[2], m[4], m[5], m[6], m[8], m[9], m[10] = \
