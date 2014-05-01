@@ -660,17 +660,14 @@ def json_line(t):
 
     c = Mesh(material=m,
              geometry=CircleGeometry(segments=50, radius=.01*tree_geometry['thickness']),
-             position=list(tree_geometry['points'][0]))
-    c.matrix = look_at(list(tree_geometry['points'][0]), 
-                        list(tree_geometry['points'][1]), 
-                        [0,1,0], 
-                        [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1])
+             position=list(tree_geometry['points'][0]),
+             matrix=look_at(list(tree_geometry['points'][0]), list(tree_geometry['points'][1]), [0,1,0], [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]))
     mesh.append(c)
 
     c = Mesh(material=m,
              geometry=CircleGeometry(segments=50, radius=.01*tree_geometry['thickness']),
-             position=list(tree_geometry['points'][-1]))
-    c.matrix = look_at(list(tree_geometry['points'][-1]), list(tree_geometry['points'][-2]), [0,1,0], [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1])
+             position=list(tree_geometry['points'][-1]), 
+             matrix=look_at(list(tree_geometry['points'][-1]), list(tree_geometry['points'][-2]), [0,1,0], [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]))
     mesh.append(c)
     # old code
     # mesh = []
