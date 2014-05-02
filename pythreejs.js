@@ -30,8 +30,10 @@ require(["threejs-all"], function() {
             var width = this.model.get('width');
             var height = this.model.get('height');
             var that = this;
+            this.id = IPython.utils.uuid();
             var render_loop = {register_update: function(fn, context) {that.on('animate:update', fn, context);},
-                               render_frame: function () {that._render = true; that.schedule_update()},}
+                               render_frame: function () {that._render = true; that.schedule_update()},
+                               renderer_id: this.id}
             if ( Detector.webgl )
                 this.renderer = new THREE.WebGLRenderer( {antialias:true, alpha: true} );
             else
@@ -45,12 +47,14 @@ require(["threejs-all"], function() {
             console.log('renderer', this.model, this.scene.obj, this.camera.obj);
             this.update();
             this._animation_frame = false
-            this.controls = this.create_child_view(this.model.get('controls'),
+            this.controls = _.map(this.model.get('controls'), function(m) {return this.create_child_view(m,
                      _.extend({},
                               {dom: this.renderer.domElement,
                                start_update_loop: function() {that._update_loop = true; that.schedule_update();},
-                               end_update_loop: function() {that._update_loop = false;},},
-                              render_loop));
+                               end_update_loop: function() {that._update_loop = false;},
+                               renderer: this},
+                              render_loop))}, this);
+;
             this._render = true;
             this.schedule_update();
             window.r = this;
@@ -100,6 +104,8 @@ require(["threejs-all"], function() {
             this.obj = this.new_obj();
             this.register_object_parameters();
             this.update();
+            // pickers need access to the model from the three.js object
+            this.obj.pythreejs_view = this;
             return this.obj;
         },
         new_properties: function() {
@@ -120,6 +126,7 @@ require(["threejs-all"], function() {
         replace_obj: function(new_obj) {
             var old_obj = this.obj;
             this.obj = new_obj;
+            this.obj.pythreejs_view = this;
             this.update_object_parameters();
             this.trigger('replace_obj', old_obj, new_obj);
         },
@@ -209,7 +216,7 @@ require(["threejs-all"], function() {
                             that.delete_child_view(deleted);
                          },
                          function(added) {
-                            var view = that.create_child_view(added, _.pick(that.options,'register_update'));
+                            var view = that.create_child_view(added, _.pick(that.options,'register_update', 'renderer_id'));
                             that.obj.add(view.obj);
                             view.on('replace_obj', that.replace_child_obj, that);
                             view.on('rerender', that.needs_update, that);
@@ -290,8 +297,10 @@ require(["threejs-all"], function() {
 
     var OrbitControlsView = ThreeView.extend({
         render: function() {
-            // retrieve the first view of the controlled object -- this is a hack for a singleton view
-            this.controlled_view = this.model.get('controlling').views[0];
+            // get the view that is tied to the same renderer
+            this.controlled_view = _.find(this.model.get('controlling').views, function(o) {
+                return o.options.renderer_id === this.options.renderer_id
+            }, this);
             this.obj = new THREE.OrbitControls(this.controlled_view.obj, this.options.dom);
             this.options.register_update(this.obj.update, this.obj);
             this.obj.addEventListener('change', this.options.render_frame);
@@ -302,6 +311,62 @@ require(["threejs-all"], function() {
         }
     });
     IPython.WidgetManager.register_widget_view('OrbitControlsView', OrbitControlsView);
+
+    var PickerView = ThreeView.extend({
+        render: function() {
+            var that = this;
+            this.options.dom.addEventListener(this.model.get('event'), function(event) {
+                var offset = $(this).offset();
+                var mouseX = ((event.pageX - offset.left) / $(that.options.dom).width()) * 2 - 1;
+                var mouseY = -((event.pageY - offset.top) / $(that.options.dom).height()) * 2 + 1;
+                var vector = new THREE.Vector3(mouseX, mouseY, that.options.renderer.camera.obj.near);
+
+                var projector = new THREE.Projector();
+                projector.unprojectVector(vector, that.options.renderer.camera.obj);
+                var ray = vector.sub(that.options.renderer.camera.obj.position).normalize();
+                that.obj = new THREE.Raycaster(that.options.renderer.camera.obj.position, ray);
+                var root = that.options.renderer.scene.obj;
+                if (that.model.get('root')) {
+                    var r = _.find(that.model.get('root').views, function(o) {
+                        return o.options.renderer_id === that.options.renderer_id;
+                    });
+                    root = r.obj;
+                }
+                var objs = that.obj.intersectObject(root, true);
+                var getinfo = function(o) {
+                    var v = o.object.geometry.vertices;
+                    var verts = [[v[o.face.a].x, v[o.face.a].y, v[o.face.a].z],
+                                 [v[o.face.b].x, v[o.face.b].y, v[o.face.b].z],
+                                 [v[o.face.c].x, v[o.face.c].y, v[o.face.c].z]]
+                    return {point: [o.point.x, o.point.y, o.point.z],
+                            distance: o.distance,
+                            face: [o.face.a, o.face.b, o.face.c],
+                            faceVertices: verts,
+                            faceNormal: [o.face.normal.x, o.face.normal.y, o.face.normal.z],
+                            faceIndex: o.faceIndex,
+                            object: o.object.pythreejs_view.model
+                           }
+                }
+                if(objs.length > 0) {
+                    // perhaps we should set all attributes to null if there are
+                    // no intersections?
+                    var o = getinfo(objs[0]);
+                    that.model.set('point', o.point);
+                    that.model.set('distance', o.distance);
+                    that.model.set('face', o.face);
+                    that.model.set('faceVertices', o.faceVertices);
+                    that.model.set('faceNormal', o.faceNormal);
+                    that.model.set('object', o.object);
+                    that.model.set('faceIndex', o.faceIndex);
+                    if (that.model.get('all')) {
+                        that.model.set('picked', _.map(objs, getinfo));
+                    }
+                    that.touch();
+                }
+            });
+        }
+    });
+    IPython.WidgetManager.register_widget_view('PickerView', PickerView);
 
 
     var SceneView = Object3dView.extend({

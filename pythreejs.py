@@ -1,6 +1,6 @@
 # Import the base Widget class and the traitlets Unicode class.
 from IPython.html.widgets.widget import Widget, DOMWidget
-from IPython.utils.traitlets import (Unicode, Int, Instance, Enum, List, Float, 
+from IPython.utils.traitlets import (Unicode, Int, Instance, Enum, List, Dict, Float,
                                      Any, CFloat, Bool, This, CInt, TraitType)
 import numpy
 import math
@@ -101,6 +101,20 @@ class Controls(Widget):
 
 class OrbitControls(Controls):
     _view_name = Unicode('OrbitControlsView', sync=True)
+
+class Picker(Controls):
+    _view_name  = Unicode('PickerView', sync=True)
+    event = Unicode('click', sync=True)
+    root = Instance(Object3d, sync=True)
+    picked = List(Dict, sync=True)
+    distance = CFloat(sync=True)
+    point = vector3(CFloat, sync=True)
+    object = Instance(Object3d, sync=True)
+    face = vector3(CInt, sync=True)
+    faceNormal = vector3(CFloat, sync=True)
+    faceVertices = List(vector3(), sync=True)
+    faceIndex = CInt(sync=True)
+    all = Bool(False, sync=True)
     
 class Geometry(Widget):
     _view_name = Unicode('GeometryView', sync=True)
@@ -467,7 +481,7 @@ class Renderer(DOMWidget):
     renderer_type = Enum(['webgl', 'canvas', 'auto'], 'auto', sync=True)
     scene = Instance(Scene, sync=True)
     camera = Instance(Camera, sync=True)
-    controls = Instance(Controls, sync=True)
+    controls = List(Instance(Controls), sync=True)
     effect = Instance(Effect, sync=True)
     color = Color('black', sync=True)
 
