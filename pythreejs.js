@@ -197,6 +197,19 @@ require(["threejs-all"], function() {
     })
     IPython.WidgetManager.register_widget_view('AnaglyphEffectView', AnaglyphEffectView);
 
+    // var Object3dModel = WidgetModel.extend({
+    //     initialize: function(parameters) {
+    //         this.on('msg:custom', this.lookAt, this);
+    //     },
+    //     lookAt: function(content) {
+    //         // gets whatever was sent.
+    //         // 1. check to make sure we are wanting a lookAt call
+    //         // 2. get the data, change the matrix (maybe construct a blank three.js object, call lookat, read back the new matrix, use this.set('matrix', ....) to set the model's matrix.
+    //         // 3. this.save_changes()
+    //     }
+    // })
+    // IPython.WidgetManager.register_widget_model('Object3dModel', Object3dModel);
+
     var Object3dView = ThreeView.extend({
         new_properties: function() {
             ThreeView.prototype.new_properties.call(this);
@@ -231,6 +244,12 @@ require(["threejs-all"], function() {
                 this.update_children(this.model.previous('children'), this.model.get('children'));
             }
             ThreeView.prototype.update.call(this);
+            if (this.model.get('matrix').length==16) {
+                // tell three.js to not update the matrix based on position, rotation, etc.
+                this.obj.matrixAutoUpdate = false
+                // tell three.js to apply the matrix we just set
+                this.obj.matrixWorldNeedsUpdate = true
+            }
         },
 
         replace_child_obj: function(old_obj, new_obj) {
@@ -424,7 +443,7 @@ require(["threejs-all"], function() {
             for(i=0, len=facen.length; i<len; i++) {
                 face = facen[i];
                 f0 = face[0];
-                for(f=1, lenf=f.length-1; f<lenf; f++) {
+                for(f=1, lenf=face.length-1; f<lenf; f++) {
                     geometry.faces.push(new THREE.Face3(f0, face[f], face[f+1]));
                 }
             }
@@ -494,6 +513,24 @@ require(["threejs-all"], function() {
         }
     });
     IPython.WidgetManager.register_widget_view('LatheGeometryView', LatheGeometryView);
+
+    var TubeGeometryView = ThreeView.extend({
+        update: function() {
+            var points = this.model.get('path');
+            var pnt = [];
+            for (var p_index = 0, len = points.length; p_index < len; p_index++ ) {
+                var a = new THREE.Vector3().fromArray(points[p_index]);
+                pnt.push(a);
+            }
+            var path = new THREE.SplineCurve3(pnt);
+            this.replace_obj(new THREE.TubeGeometry(path,
+                                                        this.model.get('segments'),
+                                                        this.model.get('radius'),
+                                                        this.model.get('radialSegments'),
+                                                        this.model.get('closed')));
+        }
+    });
+    IPython.WidgetManager.register_widget_view('TubeGeometryView', TubeGeometryView);
 
     var IcosahedronGeometryView = ThreeView.extend({
         update: function() {

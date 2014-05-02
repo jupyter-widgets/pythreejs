@@ -72,6 +72,7 @@ class Object3d(Widget):
     """
     If matrix is not None, it overrides the position, rotation, scale, and up variables.
     """
+    #_model_name = Unicode('Object3dModel', sync=True)
     _view_name = Unicode('Object3dView', sync=True)
     position = vector3(CFloat, sync=True)
     rotation = vector3(CFloat, sync=True)
@@ -128,7 +129,7 @@ class CylinderGeometry(Geometry):
     radiusTop = CFloat(1, sync=True)
     radiusBottom = CFloat(1, sync=True)
     height = CFloat(1, sync=True)
-    radiusSegments = CFloat(12, sync=True)
+    radiusSegments = CFloat(20, sync=True)
     heightSegments = CFloat(1, sync=True)
     openEnded = Bool(False, sync=True)
     
@@ -154,7 +155,15 @@ class LatheGeometry(Geometry):
     segments = CInt(12, sync=True)
     phiStart = CFloat(0, sync=True)
     phiLength = CFloat(2*math.pi, sync=True)
-    
+
+class TubeGeometry(Geometry):
+    _view_name = Unicode('TubeGeometryView', sync=True)
+    path = List(vector3(), sync=True)
+    segments = CInt(64, sync=True)
+    radius = CFloat(1, sync=True)
+    radialSegments = CFloat(8, sync=True)
+    closed = Bool(False, sync=True)
+
 class IcosahedronGeometry(Geometry):
     _view_name = Unicode('IcosahedronGeometryView', sync=True)
     radius = CFloat(1, sync=True)
@@ -528,30 +537,89 @@ lights = {
     ],
 }
 
+def vector_length(x):
+    return sqrt(x[0]*x[0]+x[1]*x[1]+x[2]*x[2])
 
+def vector_divide_scalar(scalar, x):
+    if (scalar!=0):
+        x[0] = x[0]/scalar
+        x[1] = x[1]/scalar
+        x[2] = x[2]/scalar
+    else: 
+        x[0] = 0
+        x[1] = 0
+        x[2] = 0
+    return x
+
+def normalize(x):
+    return vector_divide_scalar(vector_length(x),x)
+
+def vector_cross(x, y): # x X y
+    return [x[1]*y[2]-x[2]*y[1], x[2]*y[0]-x[0]*y[2], x[0]*y[1]-x[1]*y[0]]
+
+def look_at(eye, target, up, m):
+    z = [eye[0]-target[0], eye[1]-target[1], eye[2]-target[2]] # eye - target
+    z = normalize(z)
+
+    if (vector_length(z)==0):
+        z[2]=1
+    x = vector_cross(up, z)
+    x = normalize(x)
+
+    if (vector_length(z)==0):
+        z[0]=0.0001
+        x = vector_cross(up, z)
+        x = normalize(x)
+
+    y = vector_cross(z, x)
+
+    # upper 3X3 part of matrix * [x,y,z]
+    m[0], m[1], m[2], m[4], m[5], m[6], m[8], m[9], m[10] = \
+    m[0]*x[0] + m[1]*x[1] + m[2]*x[2],\
+    m[0]*y[0] + m[1]*y[1] + m[2]*y[2],\
+    m[0]*z[0] + m[1]*z[1] + m[2]*z[2],\
+    m[4]*x[0] + m[5]*x[1] + m[6]*x[2],\
+    m[4]*y[0] + m[5]*y[1] + m[6]*y[2],\
+    m[4]*z[0] + m[5]*z[1] + m[6]*z[2],\
+    m[8]*x[0] + m[9]*x[1] + m[10]*x[2],\
+    m[8]*y[0] + m[9]*y[1] + m[10]*y[2],\
+    m[8]*z[0] + m[9]*z[1] + m[10]*z[2]
+    return m
 # TODO material type option
 
 def create_from_plot(plot):
     tree = plot.scenetree_json()
     obj = sage_handlers[tree['type']](tree)
-    cam = PerspectiveCamera(position=[5,5,5], fov=40, up=[0,0,1],
+    cam = PerspectiveCamera(position=[10,10,10], fov=40, up=[0,0,1],
            children=[DirectionalLight(color=0xffffff, position=[3,5,1], intensity=0.5)])
     scene = Scene(children=[obj, AmbientLight(color=0x777777)])
-    renderer = Renderer(camera=cam, scene=scene, controls=OrbitControls(controlling=cam))
+    renderer = Renderer(camera=cam, scene=scene, controls=OrbitControls(controlling=cam), color='white')
     return renderer
 
 def json_object(t):
-    m = sage_handlers['texture'](t['texture'])
-    g = sage_handlers[t['geometry']['type']](t['geometry'])
-    mesh = Mesh(geometry=g, material=m)
-    if t.get('mesh',False) is True:
-        wireframe_material = BasicMaterial(color=0x222222, transparent=True, opacity=0.2, wireframe=True)
-        mesh = Object3d(children=[mesh, Mesh(geometry=g, material=wireframe_material)])
+    # TODO make material depend on object type
+    if (t['geometry']['type']=='text'):
+        mesh = sage_handlers['text'](t)
+    elif (t['geometry']['type']=='point'):
+        mesh = sage_handlers['point'](t)
+    elif (t['geometry']['type']=='line'):
+        mesh = sage_handlers['line'](t)
+    else:
+        m = sage_handlers['texture'](t['texture'])
+        g = sage_handlers[t['geometry']['type']](t['geometry'])
+        mesh = Mesh(geometry=g, material=m)
+        if t.get('mesh',False) is True:
+            wireframe_material = BasicMaterial(color=0x222222, transparent=True, opacity=0.2, wireframe=True)
+            mesh = Object3d(children=[mesh, Mesh(geometry=g, material=wireframe_material)])
+    if t['geometry']['type'] in ('cone', 'cylinder'):
+        # Sage assumes the base is on the xy plane and the cylinder axis is parallel to the z-axis
+        m = [1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, t['geometry']['height']/2, 1]
+        mesh = Object3d(matrix=m, children=[mesh])
     return mesh
 
 def json_group(t):
     m = t.get('matrix', [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1])
-    # take the transpose of m -- is this working?
+    # three.js transformation matrices are the transpose of sage transformations
     m[1], m[2], m[3], m[4], m[6], m[7], m[8], m[9],m[11],m[12],m[13],m[14] = \
     m[4], m[8],m[12], m[1], m[9],m[13], m[2], m[6],m[14], m[3], m[7],m[11]
     children = [sage_handlers[c['type']](c) for c in t['children']]
@@ -562,7 +630,7 @@ def json_texture(t):
                          color = t['color'],
                          opacity = t['opacity'],
                          transparent = t['opacity'] < 1,
-                         overdraw=True,
+                         overdraw=1,
                          polygonOffset=True,
                          polygonOffsetFactor=1,
                          polygonOffsetUnits=1)
@@ -581,11 +649,11 @@ def json_index_face_set(t):
                          face4 = flatten(t['face4']),
                          facen = t['facen'])
 
-
 def json_cone(t):
     return CylinderGeometry(radiusTop=0,
                              radiusBottom=t['bottomradius'],
-                             height=t['height'])
+                             height=t['height'],
+                             radiusSegments=50)
 
 def json_cylinder(t):
     return CylinderGeometry(radiusTop=t['radius'],
@@ -595,7 +663,67 @@ def json_cylinder(t):
 def json_sphere(t):
     return SphereGeometry(radius=t['radius'])
 
-# TODO text, point, line, viewpoint?
+def json_line(t):
+    tree_geometry = t['geometry']
+    m = sage_handlers['texture'](t['texture'])
+    path = []
+    mesh = []
+    for p in tree_geometry['points']:
+        path.append(list(p))
+    mesh.append(Mesh(material=m,
+                    geometry=TubeGeometry(path=path, radius=.01*tree_geometry['thickness'])))
+
+    c = Mesh(material=m,
+             geometry=CircleGeometry(segments=50, radius=.01*tree_geometry['thickness']),
+             position=list(tree_geometry['points'][0]),
+             matrix=look_at(list(tree_geometry['points'][0]), list(tree_geometry['points'][1]), [0,1,0], [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]))
+    mesh.append(c)
+
+    c = Mesh(material=m,
+             geometry=CircleGeometry(segments=50, radius=.01*tree_geometry['thickness']),
+             position=list(tree_geometry['points'][-1]), 
+             matrix=look_at(list(tree_geometry['points'][-1]), list(tree_geometry['points'][-2]), [0,1,0], [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]))
+    mesh.append(c)
+    # old code
+    # mesh = []
+    # length = len(tree_geometry['points'])
+    # rotate = [0,0,0]
+    # midpoint = [0,0,0]
+    # distance = 0
+    # for p in range(length):
+    #     g = SphereGeometry(radius=tree_geometry['thickness'])
+    #     mesh.append(Mesh(geometry=g, 
+    #                         material=m, 
+    #                         scale=[.02,.02,.02], 
+    #                         position=list(tree_geometry['points'][p])))
+    #     if (p < length-1):
+    #         for i in range(3):
+    #             rotate[i] = tree_geometry['points'][p][i]-tree_geometry['points'][p+1][i]
+    #             midpoint[i] = (tree_geometry['points'][p][i]+tree_geometry['points'][p+1][i])/2
+    #         distance = (rotate[0]*rotate[0]+rotate[1]*rotate[1]+rotate[2]*rotate[2])**.5
+    #         g = CylinderGeometry(radiusTop=tree_geometry['thickness'],
+    #                              radiusBottom=tree_geometry['thickness'],
+    #                              height=distance)
+    #         mesh.append(Mesh(geometry=g, 
+    #                             material=m, 
+    #                             position=midpoint,
+    #                             scale=[.02,1,.02],
+    #                             rotation=rotate))
+    return Object3d(children=mesh)
+
+def json_text(t):
+    tree_geometry = t['geometry']
+    tree_texture = t['texture']
+    tt = TextTexture(string=tree_geometry['string'])
+    sm = SpriteMaterial(map=tt, opacity=tree_texture['opacity'], transparent = tree_texture['opacity'] < 1 )
+    return Sprite(material=sm, scaleToTexture=True)
+
+def json_point(t):
+    g = SphereGeometry(radius=t['geometry']['size'])
+    m = sage_handlers['texture'](t['texture'])
+    myobject = Mesh(geometry=g, material=m, scale=[.02,.02,.02])
+    return ScaledObject(children=[myobject], position = list(t['geometry']['position']))
+
 sage_handlers = {'object' : json_object,
              'group' : json_group,
              'box' : json_box,
@@ -603,5 +731,8 @@ sage_handlers = {'object' : json_object,
              'index_face_set' : json_index_face_set,
              'cone' : json_cone,
              'cylinder' : json_cylinder,
-             'texture' : json_texture
+             'texture' : json_texture,
+             'line' : json_line,
+             'text' : json_text,
+             'point' : json_point
             }
