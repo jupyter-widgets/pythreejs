@@ -693,7 +693,7 @@ def json_line(t):
     for p in tree_geometry['points']:
         path.append(list(p))
     mesh.append(Mesh(material=m,
-                    geometry=TubeGeometry(path=path, radius=.01*tree_geometry['thickness'])))
+                    geometry=TubeGeometry(path=path, radialSegments=50, radius=.01*tree_geometry['thickness'])))
 
     c = Mesh(material=m, 
                 geometry=CircleGeometry(segments=50, radius=.01*tree_geometry['thickness']))
