@@ -88,9 +88,9 @@ class Object3d(Widget):
 
     def set_matrix(self, m):
         self.position = [m[12], m[13], m[14]]
-        x = [m[0], m[1], m[2]]
-        y = [m[4], m[5], m[6]]
-        z = [m[8], m[9], m[10]]
+        x = m[0:2]
+        y = m[4:6]
+        z = m[8:10]
         self.scale = [self.vector_length(x),
                         self.vector_length(y),
                         self.vector_length(z)]
@@ -101,9 +101,9 @@ class Object3d(Widget):
         self.quaternion_from_rotation(m)
 
     def quaternion_from_rotation(self, m): #takes a 3x3 matix as list
-        x = self.normalize([m[0], m[1], m[2]])
-        y = self.normalize([m[3], m[4], m[5]])
-        z = self.normalize([m[6], m[7], m[8]])
+        x = self.normalize(m[0:2])
+        y = self.normalize(m[3:5])
+        z = self.normalize(m[6:8])
         trace = x[0]+y[1]+z[2]
         if (trace>0):
             s = 0.5/sqrt(trace+1)
@@ -703,7 +703,7 @@ def json_line(t):
                     geometry=CylinderGeometry(radiusTop=0,
                                                  radiusBottom=.01*tree_geometry['thickness'],
                                                  height=0.1,
-                                                 radiusSegments=50))#.set_matrix(matrix)
+                                                 radiusSegments=50)).set_matrix(matrix)
     else:
         c = Mesh(material=m, geometry=CircleGeometry(segments=50, radius=.01*tree_geometry['thickness']))
     c.look_at(list(tree_geometry['points'][-1]), list(tree_geometry['points'][-2]))
