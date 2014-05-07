@@ -702,7 +702,7 @@ def json_line(t):
     c = Mesh(material=m,
              geometry=CircleGeometry(segments=50, radius=.01*tree_geometry['thickness']),
              position=list(tree_geometry['points'][-1]))
-    c.look_at(list(tree_geometry['points'][-1]), list(tree_geometry['points'][-2]), [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]))
+    c.look_at(list(tree_geometry['points'][-1]), list(tree_geometry['points'][-2]), [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1])
     mesh.append(c)
     return Object3d(children=mesh)
 
