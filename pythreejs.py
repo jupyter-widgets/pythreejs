@@ -694,15 +694,15 @@ def json_line(t):
                     geometry=TubeGeometry(path=path, radius=.01*tree_geometry['thickness'])))
 
     c = Mesh(material=m, 
-                geometry=CircleGeometry(segments=50, radius=.01*tree_geometry['thickness']),
-                position = list(tree_geometry['points'][0]))
+                geometry=CircleGeometry(segments=50, radius=.01*tree_geometry['thickness']))
     c.look_at(list(tree_geometry['points'][0]), list(tree_geometry['points'][1]), [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1])
+    c.position = list(tree_geometry['points'][0])
     mesh.append(c)
 
     c = Mesh(material=m,
-             geometry=CircleGeometry(segments=50, radius=.01*tree_geometry['thickness']),
-             position=list(tree_geometry['points'][-1]))
+             geometry=CircleGeometry(segments=50, radius=.01*tree_geometry['thickness']))
     c.look_at(list(tree_geometry['points'][-1]), list(tree_geometry['points'][-2]), [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1])
+    c.position = list(tree_geometry['points'][-1])
     mesh.append(c)
     return Object3d(children=mesh)
 
