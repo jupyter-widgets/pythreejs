@@ -93,7 +93,7 @@ class Object3d(Widget):
                         self.vector_length([m[8], m[9], m[10]])]
         x = self.vector_divide_scalar(self.scale[0], [m[0], m[1], m[2]])
         y = self.vector_divide_scalar(self.scale[1], [m[4], m[5], m[6]])
-        y = self.vector_divide_scalar(self.scale[2], [m[8], m[9], m[10]])
+        z = self.vector_divide_scalar(self.scale[2], [m[8], m[9], m[10]])
         trace = x[0]+y[1]+z[2]
         if (trace>0):
             s = 0.5/sqrt(trace+1)
