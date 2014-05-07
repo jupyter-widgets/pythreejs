@@ -99,6 +99,7 @@ class Object3d(Widget):
         m.extend(y)
         m.extend(z)
         self.quaternion_from_rotation(m)
+        return self
 
     def quaternion_from_rotation(self, m): #takes a 3x3 matix as list
         x = self.normalize(m[0:3])
