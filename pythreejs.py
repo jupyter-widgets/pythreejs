@@ -87,10 +87,10 @@ class Object3d(Widget):
     children = List(trait=None, default_value=[], allow_none=False, sync=True)
 
     def set_matrix(self, m):
-        self.position = [m[12], m[13], m[14]]
-        x = m[0:2]
-        y = m[4:6]
-        z = m[8:10]
+        self.position = m[12:15]
+        x = m[0:3]
+        y = m[4:7]
+        z = m[8:11]
         self.scale = [self.vector_length(x),
                         self.vector_length(y),
                         self.vector_length(z)]
@@ -101,9 +101,9 @@ class Object3d(Widget):
         self.quaternion_from_rotation(m)
 
     def quaternion_from_rotation(self, m): #takes a 3x3 matix as list
-        x = self.normalize(m[0:2])
-        y = self.normalize(m[3:5])
-        z = self.normalize(m[6:8])
+        x = self.normalize(m[0:3])
+        y = self.normalize(m[3:6])
+        z = self.normalize(m[6:9])
         trace = x[0]+y[1]+z[2]
         if (trace>0):
             s = 0.5/sqrt(trace+1)
