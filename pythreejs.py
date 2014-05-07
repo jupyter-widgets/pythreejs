@@ -75,7 +75,7 @@ class Object3d(Widget):
     #_model_name = Unicode('Object3dModel', sync=True)
     _view_name = Unicode('Object3dView', sync=True)
     position = vector3(CFloat, sync=True)
-    rotation = vector3(CFloat, sync=True)
+    quaternion = List(CFloat, sync=True) # [x,y,z,w]
     scale = vector3(CFloat, [1,1,1], sync=True)
     up = vector3(CFloat, [0,1,0], sync=True)
     visible = Bool(True, sync=True)
@@ -83,9 +83,30 @@ class Object3d(Widget):
     receiveShadow = Bool(False, sync=True)
     # FYI, this matrix has the translation in the 4th row, which is is the
     # transpose of Sage's transformation matrices
-    matrix = List(CFloat, sync=True)
     # TODO: figure out how to get a list of instances of Object3d
     children = List(trait=None, default_value=[], allow_none=False, sync=True)
+
+    def set_matrix(self, matrix):
+        self.position = [matrix[12], matrix[13], matrix[14]]
+        self.scale = [math.sqrt(matrix[0]*matrix[0]+matrix[1]*matrix[1]+matrix[2]*matrix[2]),
+                        math.sqrt(matrix[4]*matrix[4]+matrix[5]*matrix[5]+matrix[6]*matrix[6]),
+                        math.sqrt(matrix[8]*matrix[8]+matrix[9]*matrix[9]+matrix[10]*matrix[10])]
+        x = [matrix[0]/self.scale[0],matrix[1]/self.scale[0],matrix[2]/self.scale[0]]
+        y = [matrix[4]/self.scale[1],matrix[5]/self.scale[1],matrix[6]/self.scale[1]]
+        y = [matrix[8]/self.scale[2],matrix[9]/self.scale[2],matrix[10]/self.scale[2]]
+        trace = x[0]+y[5]+z[3]
+        if (trace>0):
+            s = 0.5/math.sqrt(trace+1)
+            self.quaternion = [(y[2]-z[1])*s, (z[0]-x[2])*s, (x[1]-y[0])*s, 0.25/s]
+        elif (x[0]<y[1] and x[0]<z[2]):
+            s = 2.0*math.sqrt(1.0+x[0]-y[1]-z[2])
+            self.quaternion = [0.25*s, (y[0]+x[1])/s, (z[0]+x[2])/s, (y[2]-z[1])/s]
+        elif (y[1]<z[2]):
+            s = 2.0*math.sqrt(1.0+y[1]-x[0]-z[2])
+            self.quaternion = [(y[0]+x[1])/s, 0.25*s, (z[1]+y[2])/s, (z[0]-x[2])/s]
+        else:
+            s = 2.0*math.sqrt(1.0+z[2]-x[0]-y[1])
+            self.quaternion = [(z[0]+x[2])/s, (z[1]+y[2])/s, 0.25*s, (x[1]-y[0])/s]
 
 class ScaledObject(Object3d):
     """
@@ -684,31 +705,6 @@ def json_line(t):
              position=list(tree_geometry['points'][-1]), 
              matrix=look_at(list(tree_geometry['points'][-1]), list(tree_geometry['points'][-2]), [0,1,0], [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]))
     mesh.append(c)
-    # old code
-    # mesh = []
-    # length = len(tree_geometry['points'])
-    # rotate = [0,0,0]
-    # midpoint = [0,0,0]
-    # distance = 0
-    # for p in range(length):
-    #     g = SphereGeometry(radius=tree_geometry['thickness'])
-    #     mesh.append(Mesh(geometry=g, 
-    #                         material=m, 
-    #                         scale=[.02,.02,.02], 
-    #                         position=list(tree_geometry['points'][p])))
-    #     if (p < length-1):
-    #         for i in range(3):
-    #             rotate[i] = tree_geometry['points'][p][i]-tree_geometry['points'][p+1][i]
-    #             midpoint[i] = (tree_geometry['points'][p][i]+tree_geometry['points'][p+1][i])/2
-    #         distance = (rotate[0]*rotate[0]+rotate[1]*rotate[1]+rotate[2]*rotate[2])**.5
-    #         g = CylinderGeometry(radiusTop=tree_geometry['thickness'],
-    #                              radiusBottom=tree_geometry['thickness'],
-    #                              height=distance)
-    #         mesh.append(Mesh(geometry=g, 
-    #                             material=m, 
-    #                             position=midpoint,
-    #                             scale=[.02,1,.02],
-    #                             rotation=rotate))
     return Object3d(children=mesh)
 
 def json_text(t):
