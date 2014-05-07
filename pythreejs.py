@@ -94,9 +94,12 @@ class Object3d(Widget):
         self.scale = [self.vector_length(x),
                         self.vector_length(y),
                         self.vector_length(z)]
-        x = self.vector_divide_scalar(self.scale[0], x)
-        y = self.vector_divide_scalar(self.scale[1], y)
-        z = self.vector_divide_scalar(self.scale[2], z)
+        self.quaternion_from_rotation(x.extend(y.extend(z)))
+
+    def quaternion_from_rotation(self, m): #takes a 3x3 matix as list
+        x = self.normalize([m[0], m[1], m[2]])
+        y = self.normalize([m[3], m[4], m[5]])
+        z = self.normalize([m[6], m[7], m[8]])
         trace = x[0]+y[1]+z[2]
         if (trace>0):
             s = 0.5/sqrt(trace+1)
@@ -143,20 +146,8 @@ class Object3d(Widget):
             x = self.normalize(self.vector_cross(self.up, z))
 
         y = self.vector_cross(z, x)
-
-        # upper 3X3 part of matrix * [x,y,z]
-        m[0], m[1], m[2], m[4], m[5], m[6], m[8], m[9], m[10] = \
-        m[0]*x[0] + m[1]*x[1] + m[2]*x[2],\
-        m[0]*y[0] + m[1]*y[1] + m[2]*y[2],\
-        m[0]*z[0] + m[1]*z[1] + m[2]*z[2],\
-        m[4]*x[0] + m[5]*x[1] + m[6]*x[2],\
-        m[4]*y[0] + m[5]*y[1] + m[6]*y[2],\
-        m[4]*z[0] + m[5]*z[1] + m[6]*z[2],\
-        m[8]*x[0] + m[9]*x[1] + m[10]*x[2],\
-        m[8]*y[0] + m[9]*y[1] + m[10]*y[2],\
-        m[8]*z[0] + m[9]*z[1] + m[10]*z[2]
-
-        self.set_matrix(m)
+        self.quaternion_from_rotation(x.extend(y.extend(z)))
+        
 
 class ScaledObject(Object3d):
     """
