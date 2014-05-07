@@ -699,12 +699,13 @@ def json_line(t):
     c.position = list(tree_geometry['points'][0])
     mesh.append(c)
     if (tree_geometry['arrowhead']):
-        matrix = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]
+        #matrix = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]
         c = Mesh(material=m, 
                     geometry=CylinderGeometry(radiusTop=0,
                                                  radiusBottom=.01*tree_geometry['thickness'],
                                                  height=0.1,
-                                                 radiusSegments=50)).set_matrix(matrix)
+                                                 up=[0,0,1],
+                                                 radiusSegments=50))#.set_matrix(matrix)
     else:
         c = Mesh(material=m, geometry=CircleGeometry(segments=50, radius=.01*tree_geometry['thickness']))
     c.look_at(list(tree_geometry['points'][-1]), list(tree_geometry['points'][-2]))
