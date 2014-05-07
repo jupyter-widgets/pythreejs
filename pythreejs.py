@@ -86,27 +86,74 @@ class Object3d(Widget):
     # TODO: figure out how to get a list of instances of Object3d
     children = List(trait=None, default_value=[], allow_none=False, sync=True)
 
-    def set_matrix(self, matrix):
-        self.position = [matrix[12], matrix[13], matrix[14]]
-        self.scale = [math.sqrt(matrix[0]*matrix[0]+matrix[1]*matrix[1]+matrix[2]*matrix[2]),
-                        math.sqrt(matrix[4]*matrix[4]+matrix[5]*matrix[5]+matrix[6]*matrix[6]),
-                        math.sqrt(matrix[8]*matrix[8]+matrix[9]*matrix[9]+matrix[10]*matrix[10])]
-        x = [matrix[0]/self.scale[0],matrix[1]/self.scale[0],matrix[2]/self.scale[0]]
-        y = [matrix[4]/self.scale[1],matrix[5]/self.scale[1],matrix[6]/self.scale[1]]
-        y = [matrix[8]/self.scale[2],matrix[9]/self.scale[2],matrix[10]/self.scale[2]]
-        trace = x[0]+y[5]+z[3]
+    def set_matrix(self, m):
+        self.position = [m[12], m[13], m[14]]
+        self.scale = [self.vector_length([m[0], m[1], m[2]]),
+                        self.vector_length([m[4], m[5], m[6]]),
+                        self.vector_length([m[8], m[9], m[10]])]
+        x = self.vector_divide_scalar(self.scale[0], [m[0], m[1], m[2]])
+        y = self.vector_divide_scalar(self.scale[1], [m[4], m[5], m[6]])
+        y = self.vector_divide_scalar(self.scale[2], [m[8], m[9], m[10]])
+        trace = x[0]+y[1]+z[2]
         if (trace>0):
-            s = 0.5/math.sqrt(trace+1)
+            s = 0.5/sqrt(trace+1)
             self.quaternion = [(y[2]-z[1])*s, (z[0]-x[2])*s, (x[1]-y[0])*s, 0.25/s]
         elif (x[0]<y[1] and x[0]<z[2]):
-            s = 2.0*math.sqrt(1.0+x[0]-y[1]-z[2])
+            s = 2.0*sqrt(1.0+x[0]-y[1]-z[2])
             self.quaternion = [0.25*s, (y[0]+x[1])/s, (z[0]+x[2])/s, (y[2]-z[1])/s]
         elif (y[1]<z[2]):
-            s = 2.0*math.sqrt(1.0+y[1]-x[0]-z[2])
+            s = 2.0*sqrt(1.0+y[1]-x[0]-z[2])
             self.quaternion = [(y[0]+x[1])/s, 0.25*s, (z[1]+y[2])/s, (z[0]-x[2])/s]
         else:
-            s = 2.0*math.sqrt(1.0+z[2]-x[0]-y[1])
+            s = 2.0*sqrt(1.0+z[2]-x[0]-y[1])
             self.quaternion = [(z[0]+x[2])/s, (z[1]+y[2])/s, 0.25*s, (x[1]-y[0])/s]
+
+    def vector_length(self, x):
+        return sqrt(x[0]*x[0]+x[1]*x[1]+x[2]*x[2])
+
+    def vector_divide_scalar(self, scalar, x):
+        if (scalar!=0):
+            x[0] = x[0]/scalar
+            x[1] = x[1]/scalar
+            x[2] = x[2]/scalar
+        else: 
+            x[0] = 0
+            x[1] = 0
+            x[2] = 0
+        return x
+
+    def normalize(self, x):
+        return self.vector_divide_scalar(self.vector_length(x),x)
+
+    def vector_cross(self, x, y): # x X y
+        return [x[1]*y[2]-x[2]*y[1], x[2]*y[0]-x[0]*y[2], x[0]*y[1]-x[1]*y[0]]
+
+    def look_at(self, eye, target, m):
+        z = self.normalize([eye[0]-target[0], eye[1]-target[1], eye[2]-target[2]]) # eye - target
+
+        if (self.vector_length(z)==0):
+            z[2]=1
+        x = self.normalize(self.vector_cross(self.up, z))
+
+        if (self.vector_length(x)==0):
+            z[0]=0.0001
+            x = self.normalize(self.vector_cross(self.up, z))
+
+        y = self.vector_cross(z, x)
+
+        # upper 3X3 part of matrix * [x,y,z]
+        m[0], m[1], m[2], m[4], m[5], m[6], m[8], m[9], m[10] = \
+        m[0]*x[0] + m[1]*x[1] + m[2]*x[2],\
+        m[0]*y[0] + m[1]*y[1] + m[2]*y[2],\
+        m[0]*z[0] + m[1]*z[1] + m[2]*z[2],\
+        m[4]*x[0] + m[5]*x[1] + m[6]*x[2],\
+        m[4]*y[0] + m[5]*y[1] + m[6]*y[2],\
+        m[4]*z[0] + m[5]*z[1] + m[6]*z[2],\
+        m[8]*x[0] + m[9]*x[1] + m[10]*x[2],\
+        m[8]*y[0] + m[9]*y[1] + m[10]*y[2],\
+        m[8]*z[0] + m[9]*z[1] + m[10]*z[2]
+
+        self.set_matrix(m)
 
 class ScaledObject(Object3d):
     """
@@ -558,54 +605,6 @@ lights = {
     ],
 }
 
-def vector_length(x):
-    return sqrt(x[0]*x[0]+x[1]*x[1]+x[2]*x[2])
-
-def vector_divide_scalar(scalar, x):
-    if (scalar!=0):
-        x[0] = x[0]/scalar
-        x[1] = x[1]/scalar
-        x[2] = x[2]/scalar
-    else: 
-        x[0] = 0
-        x[1] = 0
-        x[2] = 0
-    return x
-
-def normalize(x):
-    return vector_divide_scalar(vector_length(x),x)
-
-def vector_cross(x, y): # x X y
-    return [x[1]*y[2]-x[2]*y[1], x[2]*y[0]-x[0]*y[2], x[0]*y[1]-x[1]*y[0]]
-
-def look_at(eye, target, up, m):
-    z = [eye[0]-target[0], eye[1]-target[1], eye[2]-target[2]] # eye - target
-    z = normalize(z)
-
-    if (vector_length(z)==0):
-        z[2]=1
-    x = vector_cross(up, z)
-    x = normalize(x)
-
-    if (vector_length(z)==0):
-        z[0]=0.0001
-        x = vector_cross(up, z)
-        x = normalize(x)
-
-    y = vector_cross(z, x)
-
-    # upper 3X3 part of matrix * [x,y,z]
-    m[0], m[1], m[2], m[4], m[5], m[6], m[8], m[9], m[10] = \
-    m[0]*x[0] + m[1]*x[1] + m[2]*x[2],\
-    m[0]*y[0] + m[1]*y[1] + m[2]*y[2],\
-    m[0]*z[0] + m[1]*z[1] + m[2]*z[2],\
-    m[4]*x[0] + m[5]*x[1] + m[6]*x[2],\
-    m[4]*y[0] + m[5]*y[1] + m[6]*y[2],\
-    m[4]*z[0] + m[5]*z[1] + m[6]*z[2],\
-    m[8]*x[0] + m[9]*x[1] + m[10]*x[2],\
-    m[8]*y[0] + m[9]*y[1] + m[10]*y[2],\
-    m[8]*z[0] + m[9]*z[1] + m[10]*z[2]
-    return m
 # TODO material type option
 
 def create_from_plot(plot):
@@ -635,7 +634,7 @@ def json_object(t):
     if t['geometry']['type'] in ('cone', 'cylinder'):
         # Sage assumes the base is on the xy plane and the cylinder axis is parallel to the z-axis
         m = [1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, t['geometry']['height']/2, 1]
-        mesh = Object3d(matrix=m, children=[mesh])
+        mesh = Object3d(children=[mesh]).set_matrix(m)
     return mesh
 
 def json_group(t):
@@ -644,7 +643,7 @@ def json_group(t):
     m[1], m[2], m[3], m[4], m[6], m[7], m[8], m[9],m[11],m[12],m[13],m[14] = \
     m[4], m[8],m[12], m[1], m[9],m[13], m[2], m[6],m[14], m[3], m[7],m[11]
     children = [sage_handlers[c['type']](c) for c in t['children']]
-    return Object3d(matrix=m, children=children)
+    return Object3d(children=children).set_matrix(m)
 
 def json_texture(t):
     return PhongMaterial(side='DoubleSide',
@@ -694,16 +693,16 @@ def json_line(t):
     mesh.append(Mesh(material=m,
                     geometry=TubeGeometry(path=path, radius=.01*tree_geometry['thickness'])))
 
-    c = Mesh(material=m,
-             geometry=CircleGeometry(segments=50, radius=.01*tree_geometry['thickness']),
-             position=list(tree_geometry['points'][0]),
-             matrix=look_at(list(tree_geometry['points'][0]), list(tree_geometry['points'][1]), [0,1,0], [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]))
+    c = Mesh(material=m, 
+                geometry=CircleGeometry(segments=50, radius=.01*tree_geometry['thickness']),
+                position = list(tree_geometry['points'][0]))
+    c.look_at(list(tree_geometry['points'][0]), list(tree_geometry['points'][1]), [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1])
     mesh.append(c)
 
     c = Mesh(material=m,
              geometry=CircleGeometry(segments=50, radius=.01*tree_geometry['thickness']),
-             position=list(tree_geometry['points'][-1]), 
-             matrix=look_at(list(tree_geometry['points'][-1]), list(tree_geometry['points'][-2]), [0,1,0], [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]))
+             position=list(tree_geometry['points'][-1]))
+    c.look_at(list(tree_geometry['points'][-1]), list(tree_geometry['points'][-2]), [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]))
     mesh.append(c)
     return Object3d(children=mesh)
 
