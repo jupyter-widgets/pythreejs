@@ -149,6 +149,7 @@ class Object3d(Widget):
             z[0]=0.0001
             x = self.normalize(self.vector_cross(self.up, z))
 
+        y = self.vector_cross(z, x)
         m=[]
         m.extend(x)
         m.extend(y)
