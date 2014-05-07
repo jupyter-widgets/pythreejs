@@ -94,7 +94,9 @@ class Object3d(Widget):
         self.scale = [self.vector_length(x),
                         self.vector_length(y),
                         self.vector_length(z)]
-        m = x.extend(y)
+        m=[]
+        m.extend(x)
+        m.extend(y)
         m.extend(z)
         self.quaternion_from_rotation(m)
 
@@ -147,8 +149,9 @@ class Object3d(Widget):
             z[0]=0.0001
             x = self.normalize(self.vector_cross(self.up, z))
 
-        y = self.vector_cross(z, x)
-        m = x.extend(y)
+        m=[]
+        m.extend(x)
+        m.extend(y)
         m.extend(z)
         self.quaternion_from_rotation(m)
         
