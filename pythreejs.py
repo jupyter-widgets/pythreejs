@@ -88,12 +88,15 @@ class Object3d(Widget):
 
     def set_matrix(self, m):
         self.position = [m[12], m[13], m[14]]
-        self.scale = [self.vector_length([m[0], m[1], m[2]]),
-                        self.vector_length([m[4], m[5], m[6]]),
-                        self.vector_length([m[8], m[9], m[10]])]
-        x = self.vector_divide_scalar(self.scale[0], [m[0], m[1], m[2]])
-        y = self.vector_divide_scalar(self.scale[1], [m[4], m[5], m[6]])
-        z = self.vector_divide_scalar(self.scale[2], [m[8], m[9], m[10]])
+        x = [m[0], m[1], m[2]]
+        y = [m[4], m[5], m[6]]
+        z = [m[8], m[9], m[10]]
+        self.scale = [self.vector_length(x),
+                        self.vector_length(y),
+                        self.vector_length(z)]
+        x = self.vector_divide_scalar(self.scale[0], x)
+        y = self.vector_divide_scalar(self.scale[1], y)
+        z = self.vector_divide_scalar(self.scale[2], z)
         trace = x[0]+y[1]+z[2]
         if (trace>0):
             s = 0.5/sqrt(trace+1)
