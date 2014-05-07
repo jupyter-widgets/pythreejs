@@ -94,7 +94,9 @@ class Object3d(Widget):
         self.scale = [self.vector_length(x),
                         self.vector_length(y),
                         self.vector_length(z)]
-        self.quaternion_from_rotation(x.extend(y.extend(z)))
+        m = x.extend(y)
+        m.extend(z)
+        self.quaternion_from_rotation(m)
 
     def quaternion_from_rotation(self, m): #takes a 3x3 matix as list
         x = self.normalize([m[0], m[1], m[2]])
@@ -134,7 +136,7 @@ class Object3d(Widget):
     def vector_cross(self, x, y): # x X y
         return [x[1]*y[2]-x[2]*y[1], x[2]*y[0]-x[0]*y[2], x[0]*y[1]-x[1]*y[0]]
 
-    def look_at(self, eye, target, m):
+    def look_at(self, eye, target):
         z = self.normalize([eye[0]-target[0], eye[1]-target[1], eye[2]-target[2]]) # eye - target
 
         if (self.vector_length(z)==0):
@@ -146,7 +148,9 @@ class Object3d(Widget):
             x = self.normalize(self.vector_cross(self.up, z))
 
         y = self.vector_cross(z, x)
-        self.quaternion_from_rotation(x.extend(y.extend(z)))
+        m = x.extend(y)
+        m.extend(z)
+        self.quaternion_from_rotation(m)
         
 
 class ScaledObject(Object3d):
@@ -689,13 +693,13 @@ def json_line(t):
 
     c = Mesh(material=m, 
                 geometry=CircleGeometry(segments=50, radius=.01*tree_geometry['thickness']))
-    c.look_at(list(tree_geometry['points'][0]), list(tree_geometry['points'][1]), [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1])
+    c.look_at(list(tree_geometry['points'][0]), list(tree_geometry['points'][1]))
     c.position = list(tree_geometry['points'][0])
     mesh.append(c)
 
     c = Mesh(material=m,
              geometry=CircleGeometry(segments=50, radius=.01*tree_geometry['thickness']))
-    c.look_at(list(tree_geometry['points'][-1]), list(tree_geometry['points'][-2]), [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1])
+    c.look_at(list(tree_geometry['points'][-1]), list(tree_geometry['points'][-2]))
     c.position = list(tree_geometry['points'][-1])
     mesh.append(c)
     return Object3d(children=mesh)
