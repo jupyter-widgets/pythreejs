@@ -709,7 +709,7 @@ def json_line(t):
         c = Mesh(material=m, 
                     geometry=CylinderGeometry(radiusTop=0,
                                                  radiusBottom=.01*tree_geometry['thickness'],
-                                                 height=0.1,
+                                                 height=.04*tree_geometry['thickness'],
                                                  up=[1,0,0],
                                                  radiusSegments=50))
         c.look_at(list(tree_geometry['points'][-1]), list(tree_geometry['points'][-2]))
