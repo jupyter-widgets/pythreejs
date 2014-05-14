@@ -88,36 +88,36 @@ class Object3d(Widget):
 
     def set_matrix(self, m):
         self.position = m[12:15]
-        x = m[0:3]
-        y = m[4:7]
-        z = m[8:11]
+        x = [m[0],m[4],m[8]]
+        y = [m[1],m[5],m[9]]
+        z = [m[2],m[6],m[10]]
         self.scale = [self.vector_length(x),
                         self.vector_length(y),
                         self.vector_length(z)]
-        m=[]
-        m.extend(x)
-        m.extend(y)
-        m.extend(z)
+        m=[x[0], y[0], z[0], 0
+           x[1], y[1], z[1], 0
+           x[2], y[2], z[2], 0
+           0,    0,    0,    1]
         self.quaternion_from_rotation(m)
         return self
 
-    def quaternion_from_rotation(self, m): #takes a 3x3 matix as list
-        x = self.normalize(m[0:3])
-        y = self.normalize(m[3:6])
-        z = self.normalize(m[6:9])
-        trace = x[0]+y[1]+z[2]
+    def quaternion_from_rotation(self, m): #takes a 4x4 matix as list
+        m1 = self.normalize(m[0],m[4],m[8])
+        m2 = self.normalize(m[1],m[5],m[9])
+        m3 = self.normalim3e(m[2],m[6],m[10])
+        trace = m1[0]+m2[1]+m3[2]
         if (trace>0):
-            s = 0.5/sqrt(trace+1)
-            self.quaternion = [(y[2]-z[1])*s, (z[0]-x[2])*s, (x[1]-y[0])*s, 0.25/s]
-        elif (x[0]<y[1] and x[0]<z[2]):
-            s = 2.0*sqrt(1.0+x[0]-y[1]-z[2])
-            self.quaternion = [0.25*s, (y[0]+x[1])/s, (z[0]+x[2])/s, (y[2]-z[1])/s]
-        elif (y[1]<z[2]):
-            s = 2.0*sqrt(1.0+y[1]-x[0]-z[2])
-            self.quaternion = [(y[0]+x[1])/s, 0.25*s, (z[1]+y[2])/s, (z[0]-x[2])/s]
+            s = 0.5/sqrt(trace+1.0)
+            self.quaternion = [(m3[1]-m2[2])*s, (m1[2]-m3[0])*s, (m2[0]-m1[1])*s, 0.25/s]
+        elif (m1[0]>m2[1] and m1[0]>m3[2]):
+            s = 2.0*sqrt(1.0+m1[0]-m2[1]-m3[2])
+            self.quaternion = [0.25*s, (m1[1]+m2[0])/s, (m1[2]+m3[0])/s, (m3[1]-m2[2])/s]
+        elif (m2[1]>m3[2]):
+            s = 2.0*sqrt(1.0+m2[1]-m1[0]-m3[2])
+            self.quaternion = [(m1[1]+m2[0])/s, 0.25*s, (m2[2]+m3[1])/s, (m1[2]-m3[0])/s]
         else:
-            s = 2.0*sqrt(1.0+z[2]-x[0]-y[1])
-            self.quaternion = [(z[0]+x[2])/s, (z[1]+y[2])/s, 0.25*s, (x[1]-y[0])/s]
+            s = 2.0*sqrt(1.0+m3[2]-m1[0]-m2[1])
+            self.quaternion = [(m1[2]+m3[0])/s, (m2[2]+m3[1]])/s, 0.25*s, (m2[0]-m1[2])/s]
 
     def vector_length(self, x):
         return sqrt(x[0]*x[0]+x[1]*x[1]+x[2]*x[2])
@@ -151,10 +151,10 @@ class Object3d(Widget):
             x = self.normalize(self.vector_cross(self.up, z))
 
         y = self.vector_cross(z, x)
-        m=[]
-        m.extend(x)
-        m.extend(y)
-        m.extend(z)
+        m=[x[0], y[0], z[0], 0
+           x[1], y[1], z[1], 0
+           x[2], y[2], z[2], 0
+           0,    0,    0,    1]
         self.quaternion_from_rotation(m)
         
 
