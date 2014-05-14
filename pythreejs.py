@@ -709,7 +709,7 @@ def json_line(t):
         c = Mesh(material=m, 
                     geometry=CylinderGeometry(radiusTop=0,
                                                  radiusBottom=.01*tree_geometry['thickness'],
-                                                 height=.04*tree_geometry['thickness'],
+                                                 height=.02*tree_geometry['thickness'],
                                                  up=[1,0,0],
                                                  radiusSegments=50))
         c.look_at(list(tree_geometry['points'][-1]), list(tree_geometry['points'][-2]))
@@ -723,7 +723,7 @@ def json_line(t):
         p1 = tree_geometry['points'][-1]
         p2 = tree_geometry['points'][-2]
         d = [p1[0]-p2[0], p1[1]-p2[1], p1[2]-p2[2]]
-        length = sqrt(d[0]*d[0]+d[1]*d[1]+d[2]*d[2])/.05
+        length = sqrt(d[0]*d[0]+d[1]*d[1]+d[2]*d[2])/(.01*tree_geometry['thickness'])
         d = [d[0]/length, d[1]/length, d[2]/length]
         c.position = [p1[0]+d[0], p1[1]+d[1], p1[2]+d[2]]
     else:
