@@ -101,18 +101,25 @@ class Object3d(Widget):
         self.quaternion_from_rotation(m)
         return self
 
-    def quaternion_from_rotation(self, m): #takes a 3x3 matix as list
-        x = self.normalize(m[0:3])
-        y = self.normalize(m[3:6])
-        z = self.normalize(m[6:9])
+    def quaternion_from_rotation(self, m):
+        """
+        m is a 3 by 3 matrix, as a list of rows.  The columns of this matrix are
+        the vectors x, y, and z
+        """
+        #x = self.normalize(m[0:3])
+        #y = self.normalize(m[3:6])
+        #z = self.normalize(m[6:9])
+        x = m[0:3]
+        y = m[3:6]
+        z = m[6:9]
         trace = x[0]+y[1]+z[2]
         if (trace>0):
             s = 0.5/sqrt(trace+1)
             self.quaternion = [(y[2]-z[1])*s, (z[0]-x[2])*s, (x[1]-y[0])*s, 0.25/s]
-        elif (x[0]<y[1] and x[0]<z[2]):
+        elif (x[0]>y[1] and x[0]>z[2]):
             s = 2.0*sqrt(1.0+x[0]-y[1]-z[2])
             self.quaternion = [0.25*s, (y[0]+x[1])/s, (z[0]+x[2])/s, (y[2]-z[1])/s]
-        elif (y[1]<z[2]):
+        elif (y[1]>z[2]):
             s = 2.0*sqrt(1.0+y[1]-x[0]-z[2])
             self.quaternion = [(y[0]+x[1])/s, 0.25*s, (z[1]+y[2])/s, (z[0]-x[2])/s]
         else:
@@ -147,7 +154,7 @@ class Object3d(Widget):
         x = self.normalize(self.vector_cross(self.up, z))
 
         if (self.vector_length(x)==0):
-            z[0]=0.0001
+            z[0] += 0.0001
             x = self.normalize(self.vector_cross(self.up, z))
 
         y = self.vector_cross(z, x)
