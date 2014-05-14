@@ -102,9 +102,9 @@ class Object3d(Widget):
         return self
 
     def quaternion_from_rotation(self, m): #takes a 4x4 matix as list
-        m1 = self.normalize(m[0],m[4],m[8])
-        m2 = self.normalize(m[1],m[5],m[9])
-        m3 = self.normalim3e(m[2],m[6],m[10])
+        m1 = self.normalize([m[0],m[4],m[8]])
+        m2 = self.normalize([m[1],m[5],m[9]])
+        m3 = self.normalim3e([m[2],m[6],m[10]])
         trace = m1[0]+m2[1]+m3[2]
         if (trace>0):
             s = 0.5/sqrt(trace+1.0)
