@@ -706,17 +706,26 @@ def json_line(t):
     c.position = list(tree_geometry['points'][0])
     mesh.append(c)
     if (tree_geometry['arrowhead']):
-        #matrix = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]
         c = Mesh(material=m, 
                     geometry=CylinderGeometry(radiusTop=0,
                                                  radiusBottom=.01*tree_geometry['thickness'],
                                                  height=0.1,
                                                  up=[1,0,0],
-                                                 radiusSegments=50))#.set_matrix(matrix)
+                                                 radiusSegments=50))
+        c.look_at(list(tree_geometry['points'][-1]), list(tree_geometry['points'][-2]))
+        q1 = c.quaternion
+        q2 = [0.7071067811865475, 0.0, 0.0, 0.7071067811865476]
+
+        # http://www.mathworks.com/help/aeroblks/quaternionmultiplication.html
+        c.quaternion = [q2[3]*q1[0]+q2[0]*q1[3]-q2[1]*q1[2]+q2[2]*q1[1],
+                        q2[3]*q1[1]+q2[0]*q1[2]+q2[1]*q1[3]-q2[2]*q1[0],
+                        q2[3]*q1[2]-q2[0]*q1[1]+q2[1]*q1[0]+q2[2]*q1[3],
+                        q2[3]*q1[3]-q2[0]*q1[0]-q2[1]*q1[1]-q2[2]*q1[2]]
+        c.position = list(tree_geometry['points'][-1])
     else:
         c = Mesh(material=m, geometry=CircleGeometry(segments=50, radius=.01*tree_geometry['thickness']))
-    c.look_at(list(tree_geometry['points'][-1]), list(tree_geometry['points'][-2]))
-    c.position = list(tree_geometry['points'][-1])
+        c.look_at(list(tree_geometry['points'][-1]), list(tree_geometry['points'][-2]))
+        c.position = list(tree_geometry['points'][-1])
     mesh.append(c)
     return Object3d(children=mesh)
 
