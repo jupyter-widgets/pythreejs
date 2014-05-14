@@ -117,7 +117,7 @@ class Object3d(Widget):
             self.quaternion = [(m1[1]+m2[0])/s, 0.25*s, (m2[2]+m3[1])/s, (m1[2]-m3[0])/s]
         else:
             s = 2.0*sqrt(1.0+m3[2]-m1[0]-m2[1])
-            self.quaternion = [(m1[2]+m3[0])/s, (m2[2]+m3[1]])/s, 0.25*s, (m2[0]-m1[2])/s]
+            self.quaternion = [(m1[2]+m3[0])/s, (m2[2]+m3[1])/s, 0.25*s, (m2[0]-m1[2])/s]
 
     def vector_length(self, x):
         return sqrt(x[0]*x[0]+x[1]*x[1]+x[2]*x[2])
