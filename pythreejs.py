@@ -715,13 +715,17 @@ def json_line(t):
         c.look_at(list(tree_geometry['points'][-1]), list(tree_geometry['points'][-2]))
         q1 = c.quaternion
         q2 = [0.7071067811865475, 0.0, 0.0, 0.7071067811865476]
-
         # http://www.mathworks.com/help/aeroblks/quaternionmultiplication.html
         c.quaternion = [q2[3]*q1[0]+q2[0]*q1[3]-q2[1]*q1[2]+q2[2]*q1[1],
                         q2[3]*q1[1]+q2[0]*q1[2]+q2[1]*q1[3]-q2[2]*q1[0],
                         q2[3]*q1[2]-q2[0]*q1[1]+q2[1]*q1[0]+q2[2]*q1[3],
                         q2[3]*q1[3]-q2[0]*q1[0]-q2[1]*q1[1]-q2[2]*q1[2]]
-        c.position = list(tree_geometry['points'][-1])
+        p1 = tree_geometry['points'][-1]
+        p2 = tree_geometry['points'][-2]
+        d = [p1[0]-p2[0], p1[1]-p2[1], p1[2]-p2[2]]
+        length = sqrt(d[0]*d[0]+d[1]*d[1]+d[2]*d[2])/.05
+        d = [d[0]/length, d[1]/length, d[2]/length]
+        c.position = [p1[0]+d[0], p1[1]+d[1], p1[2]+d[2]]
     else:
         c = Mesh(material=m, geometry=CircleGeometry(segments=50, radius=.01*tree_geometry['thickness']))
         c.look_at(list(tree_geometry['points'][-1]), list(tree_geometry['points'][-2]))
