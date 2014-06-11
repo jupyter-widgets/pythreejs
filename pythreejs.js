@@ -197,23 +197,10 @@ require(["threejs-all"], function() {
     })
     IPython.WidgetManager.register_widget_view('AnaglyphEffectView', AnaglyphEffectView);
 
-    // var Object3dModel = WidgetModel.extend({
-    //     initialize: function(parameters) {
-    //         this.on('msg:custom', this.lookAt, this);
-    //     },
-    //     lookAt: function(content) {
-    //         // gets whatever was sent.
-    //         // 1. check to make sure we are wanting a lookAt call
-    //         // 2. get the data, change the matrix (maybe construct a blank three.js object, call lookat, read back the new matrix, use this.set('matrix', ....) to set the model's matrix.
-    //         // 3. this.save_changes()
-    //     }
-    // })
-    // IPython.WidgetManager.register_widget_model('Object3dModel', Object3dModel);
-
     var Object3dView = ThreeView.extend({
         new_properties: function() {
             ThreeView.prototype.new_properties.call(this);
-            this.array_properties.push('position', 'rotation', 'up', 'scale', 'matrix');
+            this.array_properties.push('position', 'quaternion', 'up', 'scale');
             this.scalar_properties.push('visible', 'castShadow', 'receiveShadow');
         },
         render: function() {
@@ -244,12 +231,6 @@ require(["threejs-all"], function() {
                 this.update_children(this.model.previous('children'), this.model.get('children'));
             }
             ThreeView.prototype.update.call(this);
-            if (this.model.get('matrix').length==16) {
-                // tell three.js to not update the matrix based on position, rotation, etc.
-                this.obj.matrixAutoUpdate = false
-                // tell three.js to apply the matrix we just set
-                this.obj.matrixWorldNeedsUpdate = true
-            }
         },
 
         replace_child_obj: function(old_obj, new_obj) {
