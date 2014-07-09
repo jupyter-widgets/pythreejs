@@ -5,10 +5,10 @@ var define = define || sagecell.define;
 
 requirejs.config({
   paths: {
-        'threejs': 'https://raw2.github.com/jasongrout/three.js/sagecell/build/three.min',
-        'threejs-trackball': 'https://raw2.github.com/jasongrout/three.js/sagecell/examples/js/controls/TrackballControls',
-        'threejs-orbit': 'https://raw2.github.com/jasongrout/three.js/sagecell/examples/js/controls/OrbitControls',
-        'threejs-detector': 'https://raw2.github.com/jasongrout/three.js/sagecell/examples/js/Detector',
+        'threejs': 'https://rawgit.com/jasongrout/three.js/sagecell/build/three.min',
+        'threejs-trackball': 'https://rawgit.com/jasongrout/three.js/sagecell/examples/js/controls/TrackballControls',
+        'threejs-orbit': 'https://rawgit.com/jasongrout/three.js/sagecell/examples/js/controls/OrbitControls',
+        'threejs-detector': 'https://rawgit.com/jasongrout/three.js/sagecell/examples/js/Detector',
   },
   shim: {
     'threejs': {exports: 'THREE'},
