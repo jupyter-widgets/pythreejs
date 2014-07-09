@@ -75,7 +75,7 @@ class Object3d(Widget):
     #_model_name = Unicode('Object3dModel', sync=True)
     _view_name = Unicode('Object3dView', sync=True)
     position = vector3(CFloat, sync=True)
-    rotation = vector3(CFloat, sync=True)
+    quaternion = List(CFloat, sync=True) # [x,y,z,w]
     scale = vector3(CFloat, [1,1,1], sync=True)
     up = vector3(CFloat, [0,1,0], sync=True)
     visible = Bool(True, sync=True)
@@ -83,9 +83,87 @@ class Object3d(Widget):
     receiveShadow = Bool(False, sync=True)
     # FYI, this matrix has the translation in the 4th row, which is is the
     # transpose of Sage's transformation matrices
-    matrix = List(CFloat, sync=True)
     # TODO: figure out how to get a list of instances of Object3d
     children = List(trait=None, default_value=[], allow_none=False, sync=True)
+
+    def set_matrix(self, m):
+        self.position = m[12:15]
+        x = m[0:3]
+        y = m[4:7]
+        z = m[8:11]
+        self.scale = [self.vector_length(x),
+                        self.vector_length(y),
+                        self.vector_length(z)]
+        m=[]
+        m.extend(x)
+        m.extend(y)
+        m.extend(z)
+        self.quaternion_from_rotation(m)
+        return self
+
+    def quaternion_from_rotation(self, m):
+        """
+        m is a 3 by 3 matrix, as a list of rows.  The columns of this matrix are
+        the vectors x, y, and z
+        """
+        #x = self.normalize(m[0:3])
+        #y = self.normalize(m[3:6])
+        #z = self.normalize(m[6:9])
+        x = m[0:3]
+        y = m[3:6]
+        z = m[6:9]
+        trace = x[0]+y[1]+z[2]
+        if (trace>0):
+            s = 0.5/sqrt(trace+1)
+            self.quaternion = [(y[2]-z[1])*s, (z[0]-x[2])*s, (x[1]-y[0])*s, 0.25/s]
+        elif (x[0]>y[1] and x[0]>z[2]):
+            s = 2.0*sqrt(1.0+x[0]-y[1]-z[2])
+            self.quaternion = [0.25*s, (y[0]+x[1])/s, (z[0]+x[2])/s, (y[2]-z[1])/s]
+        elif (y[1]>z[2]):
+            s = 2.0*sqrt(1.0+y[1]-x[0]-z[2])
+            self.quaternion = [(y[0]+x[1])/s, 0.25*s, (z[1]+y[2])/s, (z[0]-x[2])/s]
+        else:
+            s = 2.0*sqrt(1.0+z[2]-x[0]-y[1])
+            self.quaternion = [(z[0]+x[2])/s, (z[1]+y[2])/s, 0.25*s, (x[1]-y[0])/s]
+
+    def vector_length(self, x):
+        return sqrt(x[0]*x[0]+x[1]*x[1]+x[2]*x[2])
+
+    def vector_divide_scalar(self, scalar, x):
+        if (scalar!=0):
+            x[0] = x[0]/scalar
+            x[1] = x[1]/scalar
+            x[2] = x[2]/scalar
+        else: 
+            x[0] = 0
+            x[1] = 0
+            x[2] = 0
+        return x
+
+    def normalize(self, x):
+        return self.vector_divide_scalar(self.vector_length(x),x)
+
+    def vector_cross(self, x, y): # x X y
+        return [x[1]*y[2]-x[2]*y[1], x[2]*y[0]-x[0]*y[2], x[0]*y[1]-x[1]*y[0]]
+
+    def look_at(self, eye, target):
+        z = self.normalize([eye[0]-target[0], eye[1]-target[1], eye[2]-target[2]]) # eye - target
+
+        if (self.vector_length(z)==0):
+            z[2]=1
+        x = self.normalize(self.vector_cross(self.up, z))
+
+        if (self.vector_length(x)==0):
+            z[0] += 0.0001
+            x = self.normalize(self.vector_cross(self.up, z))
+
+        y = self.vector_cross(z, x)
+        m=[]
+        m.extend(x)
+        m.extend(y)
+        m.extend(z)
+        self.quaternion_from_rotation(m)
+        
 
 class ScaledObject(Object3d):
     """
@@ -537,54 +615,6 @@ lights = {
     ],
 }
 
-def vector_length(x):
-    return sqrt(x[0]*x[0]+x[1]*x[1]+x[2]*x[2])
-
-def vector_divide_scalar(scalar, x):
-    if (scalar!=0):
-        x[0] = x[0]/scalar
-        x[1] = x[1]/scalar
-        x[2] = x[2]/scalar
-    else: 
-        x[0] = 0
-        x[1] = 0
-        x[2] = 0
-    return x
-
-def normalize(x):
-    return vector_divide_scalar(vector_length(x),x)
-
-def vector_cross(x, y): # x X y
-    return [x[1]*y[2]-x[2]*y[1], x[2]*y[0]-x[0]*y[2], x[0]*y[1]-x[1]*y[0]]
-
-def look_at(eye, target, up, m):
-    z = [eye[0]-target[0], eye[1]-target[1], eye[2]-target[2]] # eye - target
-    z = normalize(z)
-
-    if (vector_length(z)==0):
-        z[2]=1
-    x = vector_cross(up, z)
-    x = normalize(x)
-
-    if (vector_length(z)==0):
-        z[0]=0.0001
-        x = vector_cross(up, z)
-        x = normalize(x)
-
-    y = vector_cross(z, x)
-
-    # upper 3X3 part of matrix * [x,y,z]
-    m[0], m[1], m[2], m[4], m[5], m[6], m[8], m[9], m[10] = \
-    m[0]*x[0] + m[1]*x[1] + m[2]*x[2],\
-    m[0]*y[0] + m[1]*y[1] + m[2]*y[2],\
-    m[0]*z[0] + m[1]*z[1] + m[2]*z[2],\
-    m[4]*x[0] + m[5]*x[1] + m[6]*x[2],\
-    m[4]*y[0] + m[5]*y[1] + m[6]*y[2],\
-    m[4]*z[0] + m[5]*z[1] + m[6]*z[2],\
-    m[8]*x[0] + m[9]*x[1] + m[10]*x[2],\
-    m[8]*y[0] + m[9]*y[1] + m[10]*y[2],\
-    m[8]*z[0] + m[9]*z[1] + m[10]*z[2]
-    return m
 # TODO material type option
 
 def create_from_plot(plot):
@@ -614,7 +644,7 @@ def json_object(t):
     if t['geometry']['type'] in ('cone', 'cylinder'):
         # Sage assumes the base is on the xy plane and the cylinder axis is parallel to the z-axis
         m = [1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, t['geometry']['height']/2, 1]
-        mesh = Object3d(matrix=m, children=[mesh])
+        mesh = Object3d(children=[mesh]).set_matrix(m)
     return mesh
 
 def json_group(t):
@@ -623,7 +653,7 @@ def json_group(t):
     m[1], m[2], m[3], m[4], m[6], m[7], m[8], m[9],m[11],m[12],m[13],m[14] = \
     m[4], m[8],m[12], m[1], m[9],m[13], m[2], m[6],m[14], m[3], m[7],m[11]
     children = [sage_handlers[c['type']](c) for c in t['children']]
-    return Object3d(matrix=m, children=children)
+    return Object3d(children=children).set_matrix(m)
 
 def json_texture(t):
     return PhongMaterial(side='DoubleSide',
@@ -666,49 +696,50 @@ def json_sphere(t):
 def json_line(t):
     tree_geometry = t['geometry']
     m = sage_handlers['texture'](t['texture'])
-    path = []
     mesh = []
-    for p in tree_geometry['points']:
-        path.append(list(p))
-    mesh.append(Mesh(material=m,
-                    geometry=TubeGeometry(path=path, radius=.01*tree_geometry['thickness'])))
-
-    c = Mesh(material=m,
-             geometry=CircleGeometry(segments=50, radius=.01*tree_geometry['thickness']),
-             position=list(tree_geometry['points'][0]),
-             matrix=look_at(list(tree_geometry['points'][0]), list(tree_geometry['points'][1]), [0,1,0], [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]))
+    path = [list(p) for p in tree_geometry['points']]
+    mesh.append(Mesh(material=m, geometry=TubeGeometry(path=path, radialSegments=50, radius=.01*tree_geometry['thickness'])))
+    c = Mesh(material=m, geometry=CircleGeometry(segments=50, radius=.01*tree_geometry['thickness']))
+    c.look_at(path[0], path[1])
+    c.position = path[0]
     mesh.append(c)
-
-    c = Mesh(material=m,
-             geometry=CircleGeometry(segments=50, radius=.01*tree_geometry['thickness']),
-             position=list(tree_geometry['points'][-1]), 
-             matrix=look_at(list(tree_geometry['points'][-1]), list(tree_geometry['points'][-2]), [0,1,0], [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]))
+    if (tree_geometry['arrowhead']):
+        height = .03*tree_geometry['thickness']
+        c = Mesh(material=m, 
+                    geometry=CylinderGeometry(radiusTop=0,
+                                                 radiusBottom=.02*tree_geometry['thickness'],
+                                                 height=height,
+                                                 up=[1,0,0],
+                                                 radiusSegments=50))
+        c.look_at(path[-1], path[-2])
+        q1 = c.quaternion
+        q2 = [0.7071067811865475, 0.0, 0.0, 0.7071067811865476]
+        # http://www.mathworks.com/help/aeroblks/quaternionmultiplication.html
+        c.quaternion = [q2[3]*q1[0]+q2[0]*q1[3]-q2[1]*q1[2]+q2[2]*q1[1],
+                        q2[3]*q1[1]+q2[0]*q1[2]+q2[1]*q1[3]-q2[2]*q1[0],
+                        q2[3]*q1[2]-q2[0]*q1[1]+q2[1]*q1[0]+q2[2]*q1[3],
+                        q2[3]*q1[3]-q2[0]*q1[0]-q2[1]*q1[1]-q2[2]*q1[2]]
+        p1 = path[-1]
+        p2 = path[-2]
+        d = [p1[0]-p2[0], p1[1]-p2[1], p1[2]-p2[2]]
+        last_seg = sqrt(d[0]*d[0]+d[1]*d[1]+d[2]*d[2])
+        adjust_cone = last_seg/(height/2)
+        d = [i/adjust_cone for i in d]
+        c.position = [p1[0]-d[0], p1[1]-d[1], p1[2]-d[2]]
+        d2 = [i*2 for i in d]
+        if last_seg>adjust_cone*2:
+            # shorten last segment
+            mesh[0].geometry.path[-1] = [p1[0]-d2[0], p1[1]-d2[1], p1[2]-d2[2]]
+        else:
+            # remove last segment
+            mesh[0].geometry.path.pop()
+            # TODO: keep removing points until we have removed enough that the arrow fits on without
+            # seeing the line sticking through the arrow
+    else:
+        c = Mesh(material=m, geometry=CircleGeometry(segments=50, radius=.01*tree_geometry['thickness']))
+        c.look_at(path[-1], path[-2])
+        c.position = path[-1]
     mesh.append(c)
-    # old code
-    # mesh = []
-    # length = len(tree_geometry['points'])
-    # rotate = [0,0,0]
-    # midpoint = [0,0,0]
-    # distance = 0
-    # for p in range(length):
-    #     g = SphereGeometry(radius=tree_geometry['thickness'])
-    #     mesh.append(Mesh(geometry=g, 
-    #                         material=m, 
-    #                         scale=[.02,.02,.02], 
-    #                         position=list(tree_geometry['points'][p])))
-    #     if (p < length-1):
-    #         for i in range(3):
-    #             rotate[i] = tree_geometry['points'][p][i]-tree_geometry['points'][p+1][i]
-    #             midpoint[i] = (tree_geometry['points'][p][i]+tree_geometry['points'][p+1][i])/2
-    #         distance = (rotate[0]*rotate[0]+rotate[1]*rotate[1]+rotate[2]*rotate[2])**.5
-    #         g = CylinderGeometry(radiusTop=tree_geometry['thickness'],
-    #                              radiusBottom=tree_geometry['thickness'],
-    #                              height=distance)
-    #         mesh.append(Mesh(geometry=g, 
-    #                             material=m, 
-    #                             position=midpoint,
-    #                             scale=[.02,1,.02],
-    #                             rotation=rotate))
     return Object3d(children=mesh)
 
 def json_text(t):
