@@ -1,29 +1,6 @@
-// we do this so it works in IPython or the sage cell server
-var require = require || sagecell.require;
-var requirejs = requirejs || sagecell.requirejs;
-var define = define || sagecell.define;
+// You must define the threejs, threejs-trackball, threejs-orbit, and threejs-detector require.js modules
 
-requirejs.config({
-  paths: {
-        'threejs': 'https://rawgit.com/jasongrout/three.js/sagecell/build/three.min',
-        'threejs-trackball': 'https://rawgit.com/jasongrout/three.js/sagecell/examples/js/controls/TrackballControls',
-        'threejs-orbit': 'https://rawgit.com/jasongrout/three.js/sagecell/examples/js/controls/OrbitControls',
-        'threejs-detector': 'https://rawgit.com/jasongrout/three.js/sagecell/examples/js/Detector',
-  },
-  shim: {
-    'threejs': {exports: 'THREE'},
-    'threejs-trackball': {exports: 'THREE.TrackballControls',
-                          deps: ['threejs']},
-    'threejs-orbit': {exports: 'THREE.OrbitControls',
-                      deps: ['threejs']},
-    'threejs-detector': {exports: 'Detector'},
-  },
-    waitSeconds: 20,
-});
-define("threejs-all", ["threejs-trackball", "threejs-orbit", "threejs-detector"], function() {console.log('three.js loaded')});
-
-// also really need to require the widgets, but we'll assume they are loaded for now.
-require(["threejs-all"], function() {
+define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "threejs-detector"], function(IPython, THREE) {
     var RendererView = IPython.DOMWidgetView.extend({
         render : function(){
             console.log('created renderer');
@@ -916,5 +893,4 @@ require(["threejs-all"], function() {
         }
     });
     IPython.WidgetManager.register_widget_view('HemisphereLight', HemisphereLight);
-
 });
