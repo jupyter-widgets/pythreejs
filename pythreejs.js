@@ -395,6 +395,41 @@ require(["threejs-all"], function() {
     });
     IPython.WidgetManager.register_widget_view('SurfaceGeometryView', SurfaceGeometryView);
 
+    var PlainGeometryView = ThreeView.extend({
+        update: function() {
+            var geometry = new THREE.Geometry();
+            var vertices = this.model.get('vertices');
+            var faces = this.model.get('faces');
+            var colors = this.model.get('colors');
+            var faceVertexUvs = this.model.get('faceVertexUvs')
+
+            var i, len;
+            var v0, v1, v2;
+            var f0,f1,f2;
+            for(i = 0, len=vertices.length; i<len; i+=3) {
+                v0=vertices[i]; v1=vertices[i+1]; v2=vertices[i+2];
+                geometry.vertices.push(new THREE.Vector3(v0, v1, v2));
+            }
+            for(i=0, len=faces.length; i<len; i+=3) {
+                f0 = faces[i]; f1 = faces[i+1]; f2=faces[i+2];
+                geometry.faces.push(new THREE.Face3(f0, f1, f2));
+            }
+            for(i=0, len=colors.length; i<len; i+=1) {
+                geometry.colors.push(new THREE.Color(colors[i]));
+            }
+            // TODO: faceVertexUvs
+	    geometry.verticesNeedUpdate = true;
+	    geometry.elementsNeedUpdate = true;
+	    geometry.uvsNeedUpdate = true;
+	    geometry.normalsNeedUpdate = true;
+	    geometry.tangentsNeedUpdate = true;
+	    geometry.colorsNeedUpdate = true;
+	    geometry.lineDistancesNeedUpdate = true;
+            this.replace_obj(geometry);
+        },
+    });
+    IPython.WidgetManager.register_widget_view('PlainGeometryView', PlainGeometryView);
+
     var FaceGeometryView = ThreeView.extend({
 
         update: function() {

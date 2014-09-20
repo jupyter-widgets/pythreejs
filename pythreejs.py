@@ -11,6 +11,13 @@ def vector3(trait_type=CFloat, default=None, **kwargs):
     return List(trait_type, default_value=default, 
                 minlen=3, maxlen=3, allow_none=False, **kwargs)
 
+def vector2(trait_type=CFloat, default=None, **kwargs):
+    if default is None: 
+        default=[0,0]
+    return List(trait_type, default_value=default, 
+                minlen=2, maxlen=2, allow_none=False, **kwargs)
+
+
 class Texture(Widget):
     _view_name = Unicode('TextureView', sync=True)
 
@@ -198,6 +205,13 @@ class Picker(Controls):
 class Geometry(Widget):
     _view_name = Unicode('GeometryView', sync=True)
 
+class PlainGeometry(Geometry):
+    _view_name = Unicode('PlainGeometry', sync=True)
+    vertices = List(vector3(), sync=True)
+    colors = List(Color, sync=True)
+    faces = List(List(CFloat), sync=True)
+    faceVertexUvs = List(vector3(vector2(CFloat)), sync=True)
+    
 class SphereGeometry(Geometry):
     _view_name = Unicode('SphereGeometryView', sync=True)
     radius = CFloat(1, sync=True)
