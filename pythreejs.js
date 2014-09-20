@@ -773,6 +773,14 @@ require(["threejs-all"], function() {
     });
     IPython.WidgetManager.register_widget_view('MeshView', MeshView);
 
+    var LineView = MeshView.extend({
+        update: function() {
+            this.replace_obj(new THREE.Line(this.geometryview.obj, this.materialview.obj, this.model.get("type")));
+            Object3dView.prototype.update.call(this);
+        }
+    });
+    IPython.WidgetManager.register_widget_view('LineView', LineView);
+
     var ImageTextureView = ThreeView.extend({
         update: function() {
             var img = new Image();

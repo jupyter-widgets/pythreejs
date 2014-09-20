@@ -483,6 +483,10 @@ class Mesh(Object3d):
     geometry = Instance(Geometry, sync=True)
     material = Instance(Material, sync=True)
 
+class Line(Mesh):
+    _view_name = Unicode('LineView', sync=True)
+    type = Enum(['LineStrip', 'LinePieces'], 'LineStrip', sync=True)
+    
 class PlotMesh(Mesh):
     plot = Instance('sage.plot.plot3d.base.Graphics3d')
 
