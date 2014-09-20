@@ -773,7 +773,7 @@ require(["threejs-all"], function() {
 
     var LineView = MeshView.extend({
         update: function() {
-            this.replace_obj(new THREE.Line(this.geometryview.obj, this.materialview.obj, this.model.get("type")));
+            this.replace_obj(new THREE.Line(this.geometryview.obj, this.materialview.obj, THREE[this.model.get("type")]));
             Object3dView.prototype.update.call(this);
         }
     });
