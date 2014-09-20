@@ -3,7 +3,7 @@ from IPython.html.widgets.widget import Widget, DOMWidget
 from IPython.utils.traitlets import (Unicode, Int, Instance, Enum, List, Dict, Float,
                                      Any, CFloat, Bool, This, CInt, TraitType)
 import numpy
-import math
+from math import pi, sqrt
 
 def vector3(trait_type=CFloat, default=None, **kwargs):
     if default is None: 
@@ -225,14 +225,14 @@ class CircleGeometry(Geometry):
     radius = CFloat(1, sync=True)
     segments = CFloat(8, sync=True)
     thetaStart = CFloat(0, sync=True)
-    thetaLength = CFloat(2*math.pi, sync=True)
+    thetaLength = CFloat(2*pi, sync=True)
     
 class LatheGeometry(Geometry):
     _view_name = Unicode('LatheGeometryView', sync=True)
     points = List(vector3(), sync=True)
     segments = CInt(12, sync=True)
     phiStart = CFloat(0, sync=True)
-    phiLength = CFloat(2*math.pi, sync=True)
+    phiLength = CFloat(2*pi, sync=True)
 
 class TubeGeometry(Geometry):
     _view_name = Unicode('TubeGeometryView', sync=True)
@@ -270,7 +270,7 @@ class TorusGeometry(Geometry):
     tube = CFloat(1, sync=True)
     radialSegments = CFloat(1, sync=True)
     tubularSegments = CFloat(1, sync=True)
-    arc = CFloat(math.pi*2, sync=True)
+    arc = CFloat(pi*2, sync=True)
     
 class TorusKnotGeometry(Geometry):
     _view_name = Unicode('TorusKnotGeometryView', sync=True)
@@ -296,7 +296,7 @@ class RingGeometry(Geometry):
     thetaSegments = CInt(8, sync=True)
     phiSegments = CInt(8, sync=True)
     thetaStart = CFloat(0, sync=True)
-    thetaLength = CFloat(math.pi*2, sync=True)
+    thetaLength = CFloat(pi*2, sync=True)
 
 class SurfaceGeometry(Geometry):
     """
