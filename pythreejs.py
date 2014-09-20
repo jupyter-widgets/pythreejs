@@ -206,7 +206,7 @@ class Geometry(Widget):
     _view_name = Unicode('GeometryView', sync=True)
 
 class PlainGeometry(Geometry):
-    _view_name = Unicode('PlainGeometry', sync=True)
+    _view_name = Unicode('PlainGeometryView', sync=True)
     vertices = List(vector3(), sync=True)
     colors = List(Color, sync=True)
     faces = List(List(CFloat), sync=True)

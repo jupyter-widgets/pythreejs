@@ -406,7 +406,7 @@ require(["threejs-all"], function() {
             var i, len;
             var f;
             for(i = 0, len=vertices.length; i<len; i+=1) {
-                geometry.vertices.push(new THREE.Vector3.fromArray(vertices[i]);
+                geometry.vertices.push((new THREE.Vector3()).fromArray(vertices[i]));
             }
             for(i=0, len=faces.length; i<len; i+=1) {
                 f = faces[i];
