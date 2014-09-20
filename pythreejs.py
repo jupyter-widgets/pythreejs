@@ -3,13 +3,20 @@ from IPython.html.widgets.widget import Widget, DOMWidget
 from IPython.utils.traitlets import (Unicode, Int, Instance, Enum, List, Dict, Float,
                                      Any, CFloat, Bool, This, CInt, TraitType)
 import numpy
-import math
+from math import pi, sqrt
 
 def vector3(trait_type=CFloat, default=None, **kwargs):
     if default is None: 
         default=[0,0,0]
     return List(trait_type, default_value=default, 
                 minlen=3, maxlen=3, allow_none=False, **kwargs)
+
+def vector2(trait_type=CFloat, default=None, **kwargs):
+    if default is None: 
+        default=[0,0]
+    return List(trait_type, default_value=default, 
+                minlen=2, maxlen=2, allow_none=False, **kwargs)
+
 
 class Texture(Widget):
     _view_name = Unicode('TextureView', sync=True)
@@ -198,6 +205,13 @@ class Picker(Controls):
 class Geometry(Widget):
     _view_name = Unicode('GeometryView', sync=True)
 
+class PlainGeometry(Geometry):
+    _view_name = Unicode('PlainGeometryView', sync=True)
+    vertices = List(vector3(), sync=True)
+    colors = List(Color, sync=True)
+    faces = List(List(CFloat), sync=True)
+    faceVertexUvs = List(vector3(vector2(CFloat)), sync=True)
+    
 class SphereGeometry(Geometry):
     _view_name = Unicode('SphereGeometryView', sync=True)
     radius = CFloat(1, sync=True)
@@ -225,14 +239,14 @@ class CircleGeometry(Geometry):
     radius = CFloat(1, sync=True)
     segments = CFloat(8, sync=True)
     thetaStart = CFloat(0, sync=True)
-    thetaLength = CFloat(2*math.pi, sync=True)
+    thetaLength = CFloat(2*pi, sync=True)
     
 class LatheGeometry(Geometry):
     _view_name = Unicode('LatheGeometryView', sync=True)
     points = List(vector3(), sync=True)
     segments = CInt(12, sync=True)
     phiStart = CFloat(0, sync=True)
-    phiLength = CFloat(2*math.pi, sync=True)
+    phiLength = CFloat(2*pi, sync=True)
 
 class TubeGeometry(Geometry):
     _view_name = Unicode('TubeGeometryView', sync=True)
@@ -270,7 +284,7 @@ class TorusGeometry(Geometry):
     tube = CFloat(1, sync=True)
     radialSegments = CFloat(1, sync=True)
     tubularSegments = CFloat(1, sync=True)
-    arc = CFloat(math.pi*2, sync=True)
+    arc = CFloat(pi*2, sync=True)
     
 class TorusKnotGeometry(Geometry):
     _view_name = Unicode('TorusKnotGeometryView', sync=True)
@@ -296,7 +310,7 @@ class RingGeometry(Geometry):
     thetaSegments = CInt(8, sync=True)
     phiSegments = CInt(8, sync=True)
     thetaStart = CFloat(0, sync=True)
-    thetaLength = CFloat(math.pi*2, sync=True)
+    thetaLength = CFloat(pi*2, sync=True)
 
 class SurfaceGeometry(Geometry):
     """
@@ -469,6 +483,10 @@ class Mesh(Object3d):
     geometry = Instance(Geometry, sync=True)
     material = Instance(Material, sync=True)
 
+class Line(Mesh):
+    _view_name = Unicode('LineView', sync=True)
+    type = Enum(['LineStrip', 'LinePieces'], 'LineStrip', sync=True)
+    
 class PlotMesh(Mesh):
     plot = Instance('sage.plot.plot3d.base.Graphics3d')
 

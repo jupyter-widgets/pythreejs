@@ -395,6 +395,39 @@ require(["threejs-all"], function() {
     });
     IPython.WidgetManager.register_widget_view('SurfaceGeometryView', SurfaceGeometryView);
 
+    var PlainGeometryView = ThreeView.extend({
+        update: function() {
+            var geometry = new THREE.Geometry();
+            var vertices = this.model.get('vertices');
+            var faces = this.model.get('faces');
+            var colors = this.model.get('colors');
+            var faceVertexUvs = this.model.get('faceVertexUvs')
+
+            var i, len;
+            var f;
+            for(i = 0, len=vertices.length; i<len; i+=1) {
+                geometry.vertices.push((new THREE.Vector3()).fromArray(vertices[i]));
+            }
+            for(i=0, len=faces.length; i<len; i+=1) {
+                f = faces[i];
+                geometry.faces.push(new THREE.Face3(f[0], f[1], f[2]));
+            }
+            for(i=0, len=colors.length; i<len; i+=1) {
+                geometry.colors.push(new THREE.Color(colors[i]));
+            }
+            // TODO: faceVertexUvs
+	    geometry.verticesNeedUpdate = true;
+	    geometry.elementsNeedUpdate = true;
+	    geometry.uvsNeedUpdate = true;
+	    geometry.normalsNeedUpdate = true;
+	    geometry.tangentsNeedUpdate = true;
+	    geometry.colorsNeedUpdate = true;
+	    geometry.lineDistancesNeedUpdate = true;
+            this.replace_obj(geometry);
+        },
+    });
+    IPython.WidgetManager.register_widget_view('PlainGeometryView', PlainGeometryView);
+
     var FaceGeometryView = ThreeView.extend({
 
         update: function() {
@@ -737,6 +770,14 @@ require(["threejs-all"], function() {
         }
     });
     IPython.WidgetManager.register_widget_view('MeshView', MeshView);
+
+    var LineView = MeshView.extend({
+        update: function() {
+            this.replace_obj(new THREE.Line(this.geometryview.obj, this.materialview.obj, this.model.get("type")));
+            Object3dView.prototype.update.call(this);
+        }
+    });
+    IPython.WidgetManager.register_widget_view('LineView', LineView);
 
     var ImageTextureView = ThreeView.extend({
         update: function() {
