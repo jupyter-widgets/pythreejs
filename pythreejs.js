@@ -205,11 +205,10 @@ require(["threejs-all"], function() {
         },
         render: function() {
             ThreeView.prototype.render.call(this);
-            this.update_children([], this.model.get('children'));
         },
         update_children: function(oldchildren, newchildren) {
             var that = this;
-            this.do_diff(oldchildren, newchildren, function(deleted) {
+            this.do_diff(oldchildren || [], newchildren, function(deleted) {
                             var view = that.child_views[deleted.id];
                             that.obj.remove(view.obj);
                             view.off('replace_obj', null, that);
