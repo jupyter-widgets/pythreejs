@@ -180,13 +180,9 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
             this.array_properties.push('position', 'quaternion', 'up', 'scale');
             this.scalar_properties.push('visible', 'castShadow', 'receiveShadow');
         },
-        render: function() {
-            ThreeView.prototype.render.call(this);
-            this.update_children([], this.model.get('children'));
-        },
         update_children: function(oldchildren, newchildren) {
             var that = this;
-            this.do_diff(oldchildren, newchildren, function(deleted) {
+            this.do_diff(oldchildren || [], newchildren, function(deleted) {
                             var view = that.child_views[deleted.id];
                             that.obj.remove(view.obj);
                             view.off('replace_obj', null, that);
@@ -371,6 +367,39 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
         },
     });
     IPython.WidgetManager.register_widget_view('SurfaceGeometryView', SurfaceGeometryView);
+
+    var PlainGeometryView = ThreeView.extend({
+        update: function() {
+            var geometry = new THREE.Geometry();
+            var vertices = this.model.get('vertices');
+            var faces = this.model.get('faces');
+            var colors = this.model.get('colors');
+            var faceVertexUvs = this.model.get('faceVertexUvs')
+
+            var i, len;
+            var f;
+            for(i = 0, len=vertices.length; i<len; i+=1) {
+                geometry.vertices.push((new THREE.Vector3()).fromArray(vertices[i]));
+            }
+            for(i=0, len=faces.length; i<len; i+=1) {
+                f = faces[i];
+                geometry.faces.push(new THREE.Face3(f[0], f[1], f[2]));
+            }
+            for(i=0, len=colors.length; i<len; i+=1) {
+                geometry.colors.push(new THREE.Color(colors[i]));
+            }
+            // TODO: faceVertexUvs
+	    geometry.verticesNeedUpdate = true;
+	    geometry.elementsNeedUpdate = true;
+	    geometry.uvsNeedUpdate = true;
+	    geometry.normalsNeedUpdate = true;
+	    geometry.tangentsNeedUpdate = true;
+	    geometry.colorsNeedUpdate = true;
+	    geometry.lineDistancesNeedUpdate = true;
+            this.replace_obj(geometry);
+        },
+    });
+    IPython.WidgetManager.register_widget_view('PlainGeometryView', PlainGeometryView);
 
     var FaceGeometryView = ThreeView.extend({
 
@@ -714,6 +743,14 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
         }
     });
     IPython.WidgetManager.register_widget_view('MeshView', MeshView);
+
+    var LineView = MeshView.extend({
+        update: function() {
+            this.replace_obj(new THREE.Line(this.geometryview.obj, this.materialview.obj, THREE[this.model.get("type")]));
+            Object3dView.prototype.update.call(this);
+        }
+    });
+    IPython.WidgetManager.register_widget_view('LineView', LineView);
 
     var ImageTextureView = ThreeView.extend({
         update: function() {

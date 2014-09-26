@@ -1,9 +1,18 @@
+r"""
+Python widgets for three.js plotting
+
+In this wrapping of three.js, we try to stay close to the three.js API.  Often, the three.js documentation at http://threejs.org/docs/ helps in understanding these classes and the various constants.  This is meant to be a low-level wrapper around three.js.  We hope that others will use this foundation to build higher-level interfaces to build 3d plots.
+
+Another resource to understanding three.js decisions is the Udacity course on 3d graphics using three.js: https://www.udacity.com/course/cs291
+"""
+
+
 # Import the base Widget class and the traitlets Unicode class.
 from IPython.html.widgets.widget import Widget, DOMWidget
 from IPython.utils.traitlets import (Unicode, Int, Instance, Enum, List, Dict, Float,
                                      Any, CFloat, Bool, This, CInt, TraitType)
 import numpy
-import math
+from math import pi, sqrt
 
 def vector3(trait_type=CFloat, default=None, **kwargs):
     if default is None: 
@@ -11,14 +20,29 @@ def vector3(trait_type=CFloat, default=None, **kwargs):
     return List(trait_type, default_value=default, 
                 minlen=3, maxlen=3, allow_none=False, **kwargs)
 
+def vector2(trait_type=CFloat, default=None, **kwargs):
+    if default is None: 
+        default=[0,0]
+    return List(trait_type, default_value=default, 
+                minlen=2, maxlen=2, allow_none=False, **kwargs)
+
+
 class Texture(Widget):
     _view_name = Unicode('TextureView', sync=True)
 
 class ImageTexture(Texture):
+    """An image texture.
+
+    The imageuri can be a data url or a web url.
+    """
     _view_name = Unicode('ImageTextureView', sync=True)
     imageuri = Unicode('',sync=True)
 
 class DataTexture(Texture):
+    """A data-based texture.
+
+    See http://threejs.org/docs/#Reference/Textures/DataTexture.  
+    """
     _view_name = Unicode('DataTextureView', sync=True)
     data = List(CInt, sync=True)
     format = Enum(['RGBAFormat', 'AlphaFormat', 'RGBFormat', 'LuminanceFormat', 'LuminanceAlphaFormat'],
@@ -49,6 +73,14 @@ except NameError:
     basestring = unicode = str
 
 class Color(TraitType):
+    """A color trait.
+
+    This takes a color represented as:
+
+    * a string of the form ``'rgb(255, 0, 0)'``, ``'rgb(100%, 0%, 0%)'``, ``'#ff0000'``, ``'#f00'``, or a color name (see the THREE.ColorKeywords listing at https://github.com/mrdoob/three.js/blob/master/src/math/Color.js)
+    * an rgb tuple/list of numbers, each between 0 and 1
+    * an integer (or hex value)
+    """
     default_value = 'black'
     info_text = 'a color as an rgb tuple, an integer, or a string'
 
@@ -198,6 +230,13 @@ class Picker(Controls):
 class Geometry(Widget):
     _view_name = Unicode('GeometryView', sync=True)
 
+class PlainGeometry(Geometry):
+    _view_name = Unicode('PlainGeometryView', sync=True)
+    vertices = List(vector3(), sync=True)
+    colors = List(Color, sync=True)
+    faces = List(List(CFloat), sync=True)
+    faceVertexUvs = List(vector3(vector2(CFloat)), sync=True)
+    
 class SphereGeometry(Geometry):
     _view_name = Unicode('SphereGeometryView', sync=True)
     radius = CFloat(1, sync=True)
@@ -225,14 +264,14 @@ class CircleGeometry(Geometry):
     radius = CFloat(1, sync=True)
     segments = CFloat(8, sync=True)
     thetaStart = CFloat(0, sync=True)
-    thetaLength = CFloat(2*math.pi, sync=True)
+    thetaLength = CFloat(2*pi, sync=True)
     
 class LatheGeometry(Geometry):
     _view_name = Unicode('LatheGeometryView', sync=True)
     points = List(vector3(), sync=True)
     segments = CInt(12, sync=True)
     phiStart = CFloat(0, sync=True)
-    phiLength = CFloat(2*math.pi, sync=True)
+    phiLength = CFloat(2*pi, sync=True)
 
 class TubeGeometry(Geometry):
     _view_name = Unicode('TubeGeometryView', sync=True)
@@ -270,7 +309,7 @@ class TorusGeometry(Geometry):
     tube = CFloat(1, sync=True)
     radialSegments = CFloat(1, sync=True)
     tubularSegments = CFloat(1, sync=True)
-    arc = CFloat(math.pi*2, sync=True)
+    arc = CFloat(pi*2, sync=True)
     
 class TorusKnotGeometry(Geometry):
     _view_name = Unicode('TorusKnotGeometryView', sync=True)
@@ -296,7 +335,7 @@ class RingGeometry(Geometry):
     thetaSegments = CInt(8, sync=True)
     phiSegments = CInt(8, sync=True)
     thetaStart = CFloat(0, sync=True)
-    thetaLength = CFloat(math.pi*2, sync=True)
+    thetaLength = CFloat(pi*2, sync=True)
 
 class SurfaceGeometry(Geometry):
     """
@@ -469,6 +508,10 @@ class Mesh(Object3d):
     geometry = Instance(Geometry, sync=True)
     material = Instance(Material, sync=True)
 
+class Line(Mesh):
+    _view_name = Unicode('LineView', sync=True)
+    type = Enum(['LineStrip', 'LinePieces'], 'LineStrip', sync=True)
+    
 class PlotMesh(Mesh):
     plot = Instance('sage.plot.plot3d.base.Graphics3d')
 
