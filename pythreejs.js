@@ -203,9 +203,6 @@ require(["threejs-all"], function() {
             this.array_properties.push('position', 'quaternion', 'up', 'scale');
             this.scalar_properties.push('visible', 'castShadow', 'receiveShadow');
         },
-        render: function() {
-            ThreeView.prototype.render.call(this);
-        },
         update_children: function(oldchildren, newchildren) {
             var that = this;
             this.do_diff(oldchildren || [], newchildren, function(deleted) {
