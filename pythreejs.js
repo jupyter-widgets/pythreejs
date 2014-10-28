@@ -825,7 +825,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
             this.materialview = this.create_child_view(this.model.get('material'));
             this.materialview.on('replace_obj', this.update, this);
             this.materialview.on('rerender', this.needs_update, this);
-            this.update();
+            Object3dView.prototype.render.call(this);
             return this.obj;
         },
         update: function() {
