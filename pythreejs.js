@@ -835,7 +835,9 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
         needs_update: function() {
             if (this.model.get('scaleToTexture')) {
                 if (this.materialview.map.aspect) {
-                    this.model.set('scale', [this.materialview.map.aspect,1,1]);
+                    var scale = this.model.get('scale');
+                    var y = (scale && scale[1]) || 1.0;
+                    this.model.set('scale', [y*this.materialview.map.aspect,y,1]);
                     this.touch();
                 }
             }
