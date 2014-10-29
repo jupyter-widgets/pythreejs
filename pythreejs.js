@@ -1,13 +1,31 @@
+/*
 // You must define the threejs, threejs-trackball, threejs-orbit, and threejs-detector require.js modules
+require.config({
+    paths: {
+        "threejs": "/nbextensions/three.js/build/three",
+        "threejs-orbit": "/nbextensions/three.js/examples/js/controls/OrbitControls",
+        "threejs-trackball": "/nbextensions/three.js/examples/js/controls/TrackballControls",
+        "threejs-detector": "/nbextensions/three.js/examples/js/Detector",
+    },
+    shim: {
+        "threejs-orbit": {deps: ["threejs"]},
+        "threejs-trackball": {deps: ["threejs"]},
+        "threejs-detector": {deps: ["threejs"]},
+        "threejs": {exports: "THREE"}
+    },
+});
+*/
 
-define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "threejs-detector"], function(IPython, THREE) {
-    var RendererView = IPython.DOMWidgetView.extend({
+
+define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "threejs-trackball", "threejs-orbit", "threejs-detector"], function(widget, manager, utils, THREE) {
+    console.log("loading pythreejs");
+    var RendererView = widget.DOMWidgetView.extend({
         render : function(){
             console.log('created renderer');
             var width = this.model.get('width');
             var height = this.model.get('height');
             var that = this;
-            this.id = IPython.utils.uuid();
+            this.id = utils.uuid();
             var render_loop = {register_update: function(fn, context) {that.on('animate:update', fn, context);},
                                render_frame: function () {that._render = true; that.schedule_update()},
                                renderer_id: this.id}
@@ -66,14 +84,14 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
             if (this.model.get('color')) {
                 this.effectrenderer.setClearColor(this.model.get('color'))
             }
-            return IPython.DOMWidgetView.prototype.update.call(this);
+            return widget.DOMWidgetView.prototype.update.call(this);
         },
     });
-    IPython.WidgetManager.register_widget_view('RendererView', RendererView);
+    manager.WidgetManager.register_widget_view('RendererView', RendererView);
 
-    var ThreeView = IPython.WidgetView.extend({
+    var ThreeView = widget.WidgetView.extend({
         initialize: function () {
-            IPython.WidgetView.prototype.initialize.apply(this, arguments);
+            widget.WidgetView.prototype.initialize.apply(this, arguments);
             this.new_properties();
         },
 
@@ -172,7 +190,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
         return new THREE.AnaglyphEffect( this.options.renderer );
         }
     })
-    IPython.WidgetManager.register_widget_view('AnaglyphEffectView', AnaglyphEffectView);
+    manager.WidgetManager.register_widget_view('AnaglyphEffectView', AnaglyphEffectView);
 
     var Object3dView = ThreeView.extend({
         new_properties: function() {
@@ -212,7 +230,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
             this.needs_update()
         },
     });
-    IPython.WidgetManager.register_widget_view('Object3dView', Object3dView);
+    manager.WidgetManager.register_widget_view('Object3dView', Object3dView);
 
     var ScaledObjectView = Object3dView.extend({
         render: function() {
@@ -225,7 +243,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
             this.obj.scale.set(s,s,s);
         }
     });
-    IPython.WidgetManager.register_widget_view('ScaledObjectView', ScaledObjectView);
+    manager.WidgetManager.register_widget_view('ScaledObjectView', ScaledObjectView);
 
     var CameraView = Object3dView.extend({
         new_obj: function() {
@@ -236,7 +254,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
             this.options.render_frame();
         }
     });
-    IPython.WidgetManager.register_widget_view('CameraView', CameraView);
+    manager.WidgetManager.register_widget_view('CameraView', CameraView);
 
     var PerspectiveCameraView = CameraView.extend({
         new_properties: function() {
@@ -250,7 +268,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
                                                 this.model.get('far'));
         }
     });
-    IPython.WidgetManager.register_widget_view('PerspectiveCameraView', PerspectiveCameraView);
+    manager.WidgetManager.register_widget_view('PerspectiveCameraView', PerspectiveCameraView);
 
     var OrthographicCameraView = CameraView.extend({
         new_properties: function() {
@@ -266,7 +284,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
                                                 this.model.get('far'));
         }
     });
-    IPython.WidgetManager.register_widget_view('OrthographicCameraView', OrthographicCameraView);
+    manager.WidgetManager.register_widget_view('OrthographicCameraView', OrthographicCameraView);
 
     var OrbitControlsView = ThreeView.extend({
         render: function() {
@@ -283,7 +301,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
             delete this.options.renderer;
         }
     });
-    IPython.WidgetManager.register_widget_view('OrbitControlsView', OrbitControlsView);
+    manager.WidgetManager.register_widget_view('OrbitControlsView', OrbitControlsView);
 
     var PickerView = ThreeView.extend({
         render: function() {
@@ -339,14 +357,14 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
             });
         }
     });
-    IPython.WidgetManager.register_widget_view('PickerView', PickerView);
+    manager.WidgetManager.register_widget_view('PickerView', PickerView);
 
 
     var SceneView = Object3dView.extend({
         new_obj: function() {return new THREE.Scene();},
         needs_update: function() {this.options.render_frame();}
     });
-    IPython.WidgetManager.register_widget_view('SceneView', SceneView);
+    manager.WidgetManager.register_widget_view('SceneView', SceneView);
 
 
 
@@ -366,7 +384,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
             this.replace_obj(obj);
         },
     });
-    IPython.WidgetManager.register_widget_view('SurfaceGeometryView', SurfaceGeometryView);
+    manager.WidgetManager.register_widget_view('SurfaceGeometryView', SurfaceGeometryView);
 
     var PlainGeometryView = ThreeView.extend({
         update: function() {
@@ -399,7 +417,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
             this.replace_obj(geometry);
         },
     });
-    IPython.WidgetManager.register_widget_view('PlainGeometryView', PlainGeometryView);
+    manager.WidgetManager.register_widget_view('PlainGeometryView', PlainGeometryView);
 
     var FaceGeometryView = ThreeView.extend({
 
@@ -441,7 +459,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
             this.replace_obj(geometry);
         }
     });
-    IPython.WidgetManager.register_widget_view('FaceGeometryView', FaceGeometryView);
+    manager.WidgetManager.register_widget_view('FaceGeometryView', FaceGeometryView);
 
 
     var SphereGeometryView = ThreeView.extend({
@@ -449,7 +467,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
             this.replace_obj(new THREE.SphereGeometry(this.model.get('radius'), 32,16));
         }
     });
-    IPython.WidgetManager.register_widget_view('SphereGeometryView', SphereGeometryView);
+    manager.WidgetManager.register_widget_view('SphereGeometryView', SphereGeometryView);
 
     var CylinderGeometryView = ThreeView.extend({
         update: function() {
@@ -461,7 +479,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
                                                         this.model.get('openEnded')));
         }
     });
-    IPython.WidgetManager.register_widget_view('CylinderGeometryView', CylinderGeometryView);
+    manager.WidgetManager.register_widget_view('CylinderGeometryView', CylinderGeometryView);
 
     var BoxGeometryView = ThreeView.extend({
         update: function() {
@@ -473,7 +491,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
                                                         this.model.get('depthSegments')));
         }
     });
-    IPython.WidgetManager.register_widget_view('BoxGeometryView', BoxGeometryView);
+    manager.WidgetManager.register_widget_view('BoxGeometryView', BoxGeometryView);
 
     var CircleGeometryView = ThreeView.extend({
         update: function() {
@@ -483,7 +501,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
                                                         this.model.get('thetaLength')));
         }
     });
-    IPython.WidgetManager.register_widget_view('CircleGeometryView', CircleGeometryView);
+    manager.WidgetManager.register_widget_view('CircleGeometryView', CircleGeometryView);
 
     var LatheGeometryView = ThreeView.extend({
         update: function() {
@@ -499,7 +517,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
                                                         this.model.get('phiLength')));
         }
     });
-    IPython.WidgetManager.register_widget_view('LatheGeometryView', LatheGeometryView);
+    manager.WidgetManager.register_widget_view('LatheGeometryView', LatheGeometryView);
 
     var TubeGeometryView = ThreeView.extend({
         update: function() {
@@ -517,7 +535,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
                                                         this.model.get('closed')));
         }
     });
-    IPython.WidgetManager.register_widget_view('TubeGeometryView', TubeGeometryView);
+    manager.WidgetManager.register_widget_view('TubeGeometryView', TubeGeometryView);
 
     var IcosahedronGeometryView = ThreeView.extend({
         update: function() {
@@ -525,7 +543,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
                                                         this.model.get('detail')));
         }
     });
-    IPython.WidgetManager.register_widget_view('IcosahedronGeometryView', IcosahedronGeometryView);
+    manager.WidgetManager.register_widget_view('IcosahedronGeometryView', IcosahedronGeometryView);
 
     var OctahedronGeometryView = ThreeView.extend({
         update: function() {
@@ -533,7 +551,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
                                                         this.model.get('detail')));
         }
     });
-    IPython.WidgetManager.register_widget_view('OctahedronGeometryView', OctahedronGeometryView);
+    manager.WidgetManager.register_widget_view('OctahedronGeometryView', OctahedronGeometryView);
 
     var PlaneGeometryView = ThreeView.extend({
         update: function() {
@@ -543,7 +561,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
                                                         this.model.get('heightSegments')));
         }
     });
-    IPython.WidgetManager.register_widget_view('PlaneGeometryView', PlaneGeometryView);
+    manager.WidgetManager.register_widget_view('PlaneGeometryView', PlaneGeometryView);
 
     var TetrahedronGeometryView = ThreeView.extend({
         update: function() {
@@ -551,7 +569,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
                                                         this.model.get('detail')));
         }
     });
-    IPython.WidgetManager.register_widget_view('TetrahedronGeometryView', TetrahedronGeometryView);
+    manager.WidgetManager.register_widget_view('TetrahedronGeometryView', TetrahedronGeometryView);
 
     var TorusGeometryView = ThreeView.extend({
         update: function() {
@@ -562,7 +580,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
                                                         this.model.get('arc')));
         }
     });
-    IPython.WidgetManager.register_widget_view('TorusGeometryView', TorusGeometryView);
+    manager.WidgetManager.register_widget_view('TorusGeometryView', TorusGeometryView);
 
     var TorusKnotGeometryView = ThreeView.extend({
         update: function() {
@@ -575,7 +593,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
                                                         this.model.get('heightScale')));
         }
     });
-    IPython.WidgetManager.register_widget_view('TorusKnotGeometryView', TorusKnotGeometryView);
+    manager.WidgetManager.register_widget_view('TorusKnotGeometryView', TorusKnotGeometryView);
 
     var PolyhedronGeometryView = ThreeView.extend({
         update: function() {
@@ -585,7 +603,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
                                                           this.model.get('detail')));
         }
     });
-    IPython.WidgetManager.register_widget_view('PolyhedronGeometryView', PolyhedronGeometryView);
+    manager.WidgetManager.register_widget_view('PolyhedronGeometryView', PolyhedronGeometryView);
 
     var RingGeometryView = ThreeView.extend({
         update: function() {
@@ -597,7 +615,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
                                                     this.model.get('thetaLength')));
         }
     });
-    IPython.WidgetManager.register_widget_view('RingGeometryView', RingGeometryView);
+    manager.WidgetManager.register_widget_view('RingGeometryView', RingGeometryView);
 
     var ParametricGeometryView = ThreeView.extend({
         update: function() {
@@ -607,7 +625,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
                                                     this.model.get('stacks')));
         }
     });
-    IPython.WidgetManager.register_widget_view('ParametricGeometryView', ParametricGeometryView);
+    manager.WidgetManager.register_widget_view('ParametricGeometryView', ParametricGeometryView);
     
     var MaterialView = ThreeView.extend({
         new_properties: function() {
@@ -618,7 +636,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
         },
         new_obj: function() {return new THREE.Material();},
     });
-    IPython.WidgetManager.register_widget_view('MaterialView', MaterialView);
+    manager.WidgetManager.register_widget_view('MaterialView', MaterialView);
 
     var BasicMaterialView = MaterialView.extend({
         new_properties: function() {
@@ -631,7 +649,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
         },
         new_obj: function() {return new THREE.MeshBasicMaterial();}
     });
-    IPython.WidgetManager.register_widget_view('BasicMaterialView', BasicMaterialView);
+    manager.WidgetManager.register_widget_view('BasicMaterialView', BasicMaterialView);
 
     var LambertMaterialView = BasicMaterialView.extend({
         new_properties: function() {
@@ -642,7 +660,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
         },
         new_obj: function() {return new THREE.MeshLambertMaterial();}
     });
-    IPython.WidgetManager.register_widget_view('LambertMaterialView', LambertMaterialView);
+    manager.WidgetManager.register_widget_view('LambertMaterialView', LambertMaterialView);
 
     var PhongMaterialView = BasicMaterialView.extend({
         new_properties: function() {
@@ -653,7 +671,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
         },
         new_obj: function() {return new THREE.MeshPhongMaterial();}
     });
-    IPython.WidgetManager.register_widget_view('PhongMaterialView', PhongMaterialView);
+    manager.WidgetManager.register_widget_view('PhongMaterialView', PhongMaterialView);
 
     var DepthMaterialView = MaterialView.extend({
         new_properties: function() {
@@ -662,7 +680,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
         },
         new_obj: function() {return new THREE.MeshDepthMaterial();}
     });
-    IPython.WidgetManager.register_widget_view('DepthMaterialView', DepthMaterialView);
+    manager.WidgetManager.register_widget_view('DepthMaterialView', DepthMaterialView);
 
     var LineBasicMaterialView = MaterialView.extend({
         new_properties: function() {
@@ -673,7 +691,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
         },
         new_obj: function() {return new THREE.LineBasicMaterial();}
     });
-    IPython.WidgetManager.register_widget_view('LineBasicMaterialView', LineBasicMaterialView);
+    manager.WidgetManager.register_widget_view('LineBasicMaterialView', LineBasicMaterialView);
 
     var LineDashedMaterialView = MaterialView.extend({
         new_properties: function() {
@@ -684,7 +702,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
         },
         new_obj: function() {return new THREE.LineDashedMaterial();}
     });
-    IPython.WidgetManager.register_widget_view('LineDashedMaterialView', LineDashedMaterialView);
+    manager.WidgetManager.register_widget_view('LineDashedMaterialView', LineDashedMaterialView);
 
     var NormalMaterialView = MaterialView.extend({
         new_properties: function() {
@@ -694,7 +712,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
         },
         new_obj: function() {return new THREE.MeshNormalMaterial();}
     });
-    IPython.WidgetManager.register_widget_view('NormalMaterialView', NormalMaterialView);
+    manager.WidgetManager.register_widget_view('NormalMaterialView', NormalMaterialView);
 
     var ParticleSystemMaterialView = MaterialView.extend({
         new_properties: function() {
@@ -705,7 +723,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
         },
         new_obj: function() {return new THREE.ParticleSystemMaterial();}
     });
-    IPython.WidgetManager.register_widget_view('ParticleSystemMaterialView', ParticleSystemMaterialView);
+    manager.WidgetManager.register_widget_view('ParticleSystemMaterialView', ParticleSystemMaterialView);
 
     var ShaderMaterialView = MaterialView.extend({
         new_properties: function() {
@@ -716,7 +734,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
         },
         new_obj: function() {return new THREE.ShaderMaterial();}
     });
-    IPython.WidgetManager.register_widget_view('ShaderMaterialView', ShaderMaterialView);
+    manager.WidgetManager.register_widget_view('ShaderMaterialView', ShaderMaterialView);
 
     var MeshView = Object3dView.extend({
         // if we replace the geometry or material, do a full re-render
@@ -742,7 +760,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
             Object3dView.prototype.update.call(this);
         }
     });
-    IPython.WidgetManager.register_widget_view('MeshView', MeshView);
+    manager.WidgetManager.register_widget_view('MeshView', MeshView);
 
     var LineView = MeshView.extend({
         update: function() {
@@ -750,7 +768,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
             Object3dView.prototype.update.call(this);
         }
     });
-    IPython.WidgetManager.register_widget_view('LineView', LineView);
+    manager.WidgetManager.register_widget_view('LineView', LineView);
 
     var ImageTextureView = ThreeView.extend({
         update: function() {
@@ -762,7 +780,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
             ThreeView.prototype.update.call(this);
         },
     });
-    IPython.WidgetManager.register_widget_view('ImageTextureView', ImageTextureView);
+    manager.WidgetManager.register_widget_view('ImageTextureView', ImageTextureView);
 
     var DataTextureView = ThreeView.extend({
         update: function() {
@@ -806,7 +824,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
             ThreeView.prototype.update.call(this);
         },
     });
-    IPython.WidgetManager.register_widget_view('DataTextureView', DataTextureView);
+    manager.WidgetManager.register_widget_view('DataTextureView', DataTextureView);
 
     var SpriteMaterialView = MaterialView.extend({
         new_properties: function() {
@@ -818,7 +836,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
         },
         new_obj: function() {return new THREE.SpriteMaterial();}
     });
-    IPython.WidgetManager.register_widget_view('SpriteMaterialView', SpriteMaterialView);
+    manager.WidgetManager.register_widget_view('SpriteMaterialView', SpriteMaterialView);
 
     var SpriteView = Object3dView.extend({
         render: function() {
@@ -844,7 +862,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
             Object3dView.prototype.needs_update.call(this);
         }
     });
-    IPython.WidgetManager.register_widget_view('SpriteView', SpriteView);
+    manager.WidgetManager.register_widget_view('SpriteView', SpriteView);
 
     var TextTextureView = ThreeView.extend({
         update: function() {
@@ -881,7 +899,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
             ThreeView.prototype.update.call(this);
         }
     });
-    IPython.WidgetManager.register_widget_view('TextTextureView', TextTextureView);
+    manager.WidgetManager.register_widget_view('TextTextureView', TextTextureView);
 
     var Basic3dObject = Object3dView.extend({
         render: function() {
@@ -896,7 +914,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
     var AmbientLight = Basic3dObject.extend({
         new_obj: function() {return new THREE.AmbientLight(this.model.get('color'));}
     });
-    IPython.WidgetManager.register_widget_view('AmbientLight', AmbientLight);
+    manager.WidgetManager.register_widget_view('AmbientLight', AmbientLight);
 
     var DirectionalLight = Basic3dObject.extend({
         new_obj: function() {
@@ -904,7 +922,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
                                               this.model.get('intensity'));
         }
     });
-    IPython.WidgetManager.register_widget_view('DirectionalLight', DirectionalLight);
+    manager.WidgetManager.register_widget_view('DirectionalLight', DirectionalLight);
 
     var PointLight = Basic3dObject.extend({
         new_obj: function() {
@@ -913,7 +931,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
                                         this.model.get('distance'));
         }
     });
-    IPython.WidgetManager.register_widget_view('PointLight', PointLight);
+    manager.WidgetManager.register_widget_view('PointLight', PointLight);
 
     var SpotLight = Basic3dObject.extend({
         new_obj: function() {
@@ -922,7 +940,7 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
                                        this.model.get('distance'));
         }
     });
-    IPython.WidgetManager.register_widget_view('SpotLight', SpotLight);
+    manager.WidgetManager.register_widget_view('SpotLight', SpotLight);
 
     var HemisphereLight = Basic3dObject.extend({
         new_obj: function() {
@@ -931,5 +949,5 @@ define(["base/js/namespace", "threejs", "threejs-trackball", "threejs-orbit", "t
                                              this.model.get('intensity'));
         }
     });
-    IPython.WidgetManager.register_widget_view('HemisphereLight', HemisphereLight);
+    manager.WidgetManager.register_widget_view('HemisphereLight', HemisphereLight);
 });
