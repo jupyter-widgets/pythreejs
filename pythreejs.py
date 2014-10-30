@@ -390,7 +390,7 @@ class Material(Widget):
     
 class BasicMaterial(Material):
     _view_name = Unicode('BasicMaterialView', sync=True)
-    color = Color('yellow', sync=True)
+    color = Color('white', sync=True)
     wireframe = Bool(False, sync=True)
     wireframeLinewidth = CFloat(1.0, sync=True)
     wireframeLinecap = Unicode('round', sync=True)
@@ -434,7 +434,7 @@ class _LineMaterial(Material):
     
 class LineBasicMaterial(_LineMaterial):
     _view_name = Unicode('LineBasicMaterialView', sync=True)
-    color = Color('yellow', sync=True)
+    color = Color('black', sync=True)
     linewidth = CFloat(1.0, sync=True)
     linecap = Unicode('round', sync=True)
     linejoin = Unicode('round', sync=True)
@@ -443,7 +443,7 @@ class LineBasicMaterial(_LineMaterial):
 
 class LineDashedMaterial(_LineMaterial):
     _view_name = Unicode('LineDashedMaterialView', sync=True)
-    color = Color('yellow', sync=True)
+    color = Color('black', sync=True)
     linewidth = CFloat(1.0, sync=True)
     scale = CFloat(1.0, sync=True)
     dashSize = CFloat(3.0, sync=True)
