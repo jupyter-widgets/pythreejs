@@ -380,7 +380,7 @@ class Material(Widget):
     blendEquation = Enum(['AddEquation', 'SubtractEquation', 'ReverseSubtractEquation'], 'AddEquation', sync=True)
     depthTest = Bool(True, sync=True) 
     depthWrite = Bool(True, sync=True) 
-    polygonOffset = Bool(False, sync=True) 
+    polygonOffset = Bool(True, sync=True) 
     polygonOffsetFactor = CFloat(1.0, sync=True) 
     polygonOffsetUnits = CFloat(1.0, sync=True) 
     alphaTest = CFloat(1.0, sync=True) 
