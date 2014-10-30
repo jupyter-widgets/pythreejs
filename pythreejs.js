@@ -200,20 +200,20 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
         },
         update_children: function(oldchildren, newchildren) {
             var that = this;
-            this.do_diff(oldchildren || [], newchildren, function(deleted) {
-                            var view = that.child_views[deleted.id];
-                            that.obj.remove(view.obj);
-                            view.off('replace_obj', null, that);
-                            that.delete_child_view(deleted);
+            this.do_diff(oldchildren || [], newchildren, 
+                         function(deleted) {
+                             var view = that.pop_child_view(deleted);
+                             that.obj.remove(view.obj);
+                             that.stopListening(view);
+                             view.remove();
                          },
                          function(added) {
-                            var view = that.create_child_view(added, _.pick(that.options,'register_update', 'renderer_id'));
-                            that.obj.add(view.obj);
-                            view.on('replace_obj', that.replace_child_obj, that);
-                            view.on('rerender', that.needs_update, that);
+                             var view = that.create_child_view(added, _.pick(that.options,'register_update', 'renderer_id'));
+                             that.obj.add(view.obj);
+                             that.listenTo(view, 'replace_obj', that.replace_child_obj);
+                             that.listenTo(view, 'rerender', that.needs_update);
                          });
         },
-
         new_obj: function() {
             return new THREE.Object3D();
         },
