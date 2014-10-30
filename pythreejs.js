@@ -950,4 +950,41 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
         }
     });
     manager.WidgetManager.register_widget_view('HemisphereLight', HemisphereLight);
+
+
+    /* Extra helpers */
+    var SurfaceGridView = MeshView.extend({
+        update: function() {
+            // Construct the grid lines from this.geometryview.obj
+            var vertices = this.geometryview.obj.vertices;
+            var xpoints = this.geometryview.obj.parameters.widthSegments+1;
+            var ypoints = this.geometryview.obj.parameters.heightSegments+1;
+            var g, xi, yi;
+            var lines = [];
+            var obj = new THREE.Object3D();
+
+            for (xi = 0; xi<xpoints; xi++) {
+                g = new THREE.Geometry();
+                for (yi = 0; yi<ypoints; yi++) {
+                    g.vertices.push(vertices[xi*xpoints+yi].clone());
+                }
+                obj.add(new THREE.Line(g, this.materialview.obj));
+            }
+
+            for (yi = 0; yi<ypoints; yi++) {
+                g = new THREE.Geometry();
+                for (xi = 0; xi<xpoints; xi++) {
+                    g.vertices.push(vertices[xi*xpoints+yi].clone());
+                }
+                obj.add(new THREE.Line(g, this.materialview.obj));
+            }
+
+            this.replace_obj(obj);
+            Object3dView.prototype.update.call(this);
+        }
+    });
+    manager.WidgetManager.register_widget_view('SurfaceGridView', SurfaceGridView);
+
+
+
 });

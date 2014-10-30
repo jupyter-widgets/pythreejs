@@ -428,7 +428,11 @@ class DepthMaterial(Material):
     wireframe = Bool(False, sync=True)
     wireframeLinewidth = CFloat(1.0, sync=True)
 
-class LineBasicMaterial(Material):
+class _LineMaterial(Material):
+    """Abstract base class for line materials"""
+    _view_name = None
+    
+class LineBasicMaterial(_LineMaterial):
     _view_name = Unicode('LineBasicMaterialView', sync=True)
     color = Color('yellow', sync=True)
     linewidth = CFloat(1.0, sync=True)
@@ -437,7 +441,7 @@ class LineBasicMaterial(Material):
     fog = Bool(False, sync=True) 
     vertexColors = Enum(['NoColors', 'FaceColors', 'VertexColors'], 'NoColors', sync=True)
 
-class LineDashedMaterial(Material):
+class LineDashedMaterial(_LineMaterial):
     _view_name = Unicode('LineDashedMaterialView', sync=True)
     color = Color('yellow', sync=True)
     linewidth = CFloat(1.0, sync=True)
@@ -511,6 +515,7 @@ class Mesh(Object3d):
 class Line(Mesh):
     _view_name = Unicode('LineView', sync=True)
     type = Enum(['LineStrip', 'LinePieces'], 'LineStrip', sync=True)
+    material = Instance(_LineMaterial, sync=True)
     
 class PlotMesh(Mesh):
     plot = Instance('sage.plot.plot3d.base.Graphics3d')
@@ -810,3 +815,15 @@ sage_handlers = {'object' : json_object,
              'text' : json_text,
              'point' : json_point
             }
+
+
+# Some helper classes
+
+class SurfaceGrid(Mesh):
+    """A grid covering a surface.
+
+    This will draw a line mesh overlaying the SurfaceGeometry.
+    """
+    _view_name = Unicode('SurfaceGridView', sync=True)
+    geometry = Instance(SurfaceGeometry, sync=True)
+    material = Instance(_LineMaterial, sync=True)
