@@ -1,11 +1,9 @@
-/*
-// You must define the threejs, threejs-trackball, threejs-orbit, and threejs-detector require.js modules
 require.config({
     paths: {
-        "threejs": "/nbextensions/three.js/build/three",
-        "threejs-orbit": "/nbextensions/three.js/examples/js/controls/OrbitControls",
-        "threejs-trackball": "/nbextensions/three.js/examples/js/controls/TrackballControls",
-        "threejs-detector": "/nbextensions/three.js/examples/js/Detector",
+        "threejs": "/nbextensions/pythreejs/three.js/build/three",
+        "threejs-orbit": "/nbextensions/pythreejs/three.js/examples/js/controls/OrbitControls",
+        "threejs-trackball": "/nbextensions/pythreejs/three.js/examples/js/controls/TrackballControls",
+        "threejs-detector": "/nbextensions/pythreejs/three.js/examples/js/Detector",
     },
     shim: {
         "threejs-orbit": {deps: ["threejs"]},
@@ -14,8 +12,6 @@ require.config({
         "threejs": {exports: "THREE"}
     },
 });
-*/
-
 
 define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "threejs-trackball", "threejs-orbit", "threejs-detector"], function(widget, manager, utils, THREE) {
     console.log("loading pythreejs");
