@@ -5,6 +5,6 @@ def install_nbextension(**kwargs):
     """
     import os.path
     from IPython.html import nbextensions
+    #kwargs.setdefault('symlink', True)
     pkgdir = os.path.dirname(__file__)
-    kwargs.setdefault('symlink', True)
-    nbextensions.install_nbextension([os.path.join(pkgdir, 'pythreejs')], **kwargs)
+    nbextensions.install_nbextension([os.path.join(pkgdir, 'nbextensions', 'pythreejs')], **kwargs)

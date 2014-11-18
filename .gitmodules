@@ -1,3 +1,3 @@
-[submodule "pythreejs/pythreejs/three.js"]
-	path = pythreejs/pythreejs/three.js
+[submodule "pythreejs/nbextensions/pythreejs/three.js"]
+	path = pythreejs/nbextensions/pythreejs/three.js
 	url = https://github.com/jasongrout/three.js.git
