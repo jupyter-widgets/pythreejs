@@ -646,23 +646,6 @@ class SpotLight(PointLight):
     angle = CFloat(10, sync=True)
     exponent = CFloat(0.5, sync=True)
 
-lights = {
-'colors': [
-    AmbientLight(color=(0.312,0.188,0.4)),
-    DirectionalLight(position=[1,0,1], color=[0.8, 0, 0]),
-    DirectionalLight(position=[1,1,1], color=[0, 0.8, 0]),
-    DirectionalLight(position=[0,1,1], color=[0, 0, 0.8]),
-    DirectionalLight(position=[-1,-1,-1], color=[.9,.7,.9]),
-    ],
-'shades': [
-    AmbientLight(color=[.6, .6, .6]),
-    DirectionalLight(position=[0,1,1], color=[.5, .5, .5]),
-    DirectionalLight(position=[0,0,1], color=[.5, .5, .5]),
-    DirectionalLight(position=[1,1,1], color=[.5, .5, .5]),
-    DirectionalLight(position=[-1,-1,-1], color=[.7,.7,.7]),
-    ],
-}
-
 # Some helper classes and functions
 def lights_color():
     return [
