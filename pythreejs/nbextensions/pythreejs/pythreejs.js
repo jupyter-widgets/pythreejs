@@ -15,11 +15,10 @@ require.config({
 
 define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "threejs-trackball", "threejs-orbit", "threejs-detector"], function(widget, manager, utils, THREE) {
     console.log("loading pythreejs");
-    var RendererView = widget.DOMWidgetView.extend({
+    var RendererView = widget.WidgetView.extend({
         render : function(){
             console.log('created renderer');
-            var width = this.model.get('width');
-            var height = this.model.get('height');
+            this.on('displayed', this.show, this);
             var that = this;
             this.id = utils.uuid();
             var render_loop = {register_update: function(fn, context) {that.on('animate:update', fn, context);},
@@ -53,10 +52,10 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                 });
             }
             view_promises.push(effect_promise.then(function() {
-                that.effectrenderer.setSize(that.model.get('cwidth'),
-                                            that.model.get('cheight'));
-                if (that.model.get('rcolor')) {
-                    that.effectrenderer.setClearColor(that.model.get('rcolor'))
+                that.effectrenderer.setSize(that.model.get('width'),
+                                            that.model.get('height'));
+                if (that.model.get('background')) {
+                    that.effectrenderer.setClearColor(that.model.get('background'))
                 }
             }));
             this.view_promises = Promise.all(view_promises).then(function(objs) {
@@ -107,10 +106,10 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
         update : function(){
             var that = this;
             this.view_promises.then(function() {
-                that.effectrenderer.setSize(that.model.get('cwidth'),
-                                            that.model.get('cheight'));
-                if (that.model.get('rcolor')) {
-                    that.effectrenderer.setClearColor(that.model.get('rcolor'))
+                that.effectrenderer.setSize(that.model.get('width'),
+                                            that.model.get('height'));
+                if (that.model.get('background')) {
+                    that.effectrenderer.setClearColor(that.model.get('background'))
                 }
             });
 
