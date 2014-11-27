@@ -885,16 +885,19 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
 
     var SpriteView = Object3dView.extend({
         render: function() {
-            // TODO: promisify this create_child_view
-            this.material = this.create_child_view(this.model.get('material'));
-            this.material.on('replace_obj', this.update, this);
-            this.material.on('rerender', this.needs_update, this);
+            
+            this.promise = this.create_child_view(this.model.get('material')).then(function(view) {
+                this.material = view;
+                this.material.on('replace_obj', this.update, this);
+                this.material.on('rerender', this.needs_update, this);
+            });
             Object3dView.prototype.render.call(this);
-            return this.obj;
         },
         update: function() {
-            this.replace_obj(new THREE.Sprite(this.material.obj));
-            Object3dView.prototype.update.call(this);
+            this.promise.then(function() {
+                this.replace_obj(new THREE.Sprite(this.material.obj))
+                Object3dView.prototype.update.call(this);
+            });
         },
         needs_update: function() {
             if (this.model.get('scaleToTexture')) {
