@@ -23,7 +23,9 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
             var that = this;
             this.id = utils.uuid();
             var render_loop = {register_update: function(fn, context) {that.on('animate:update', fn, context);},
-                               render_frame: function () {that._render = true; that.schedule_update()},
+                               render_frame: function () {
+                                   that._render = true; that.schedule_update()
+                               },
                                renderer_id: this.id}
             if ( Detector.webgl )
                 this.renderer = new THREE.WebGLRenderer( {antialias:true, alpha: true} );
@@ -40,25 +42,50 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                 function(view) {
                     that.scene = view;
                 }));
+            var effect_promise;
+            if (this.model.get('effect')) {
+                effect_promise = this.create_child_view(this.model.get('effect'), {renderer: this.renderer}).then(function(view) {
+                    that.effectrenderer = view.obj;
+                })
+            } else {
+                effect_promise = Promise.resolve(this.renderer).then(function(r) {
+                    that.effectrenderer = r;
+                });
+            }
+            view_promises.push(effect_promise.then(function() {
+                that.effectrenderer.setSize(that.model.get('cwidth'),
+                                            that.model.get('cheight'));
+                if (that.model.get('rcolor')) {
+                    that.effectrenderer.setClearColor(that.model.get('rcolor'))
+                }
+            }));
             this.view_promises = Promise.all(view_promises).then(function(objs) {
                 that.scene.obj.add(that.camera.obj);
                 console.log('renderer', that.model, that.scene.obj, that.camera.obj);
                 that.update();
                 that._animation_frame = false;
-                return Promise.all(_.map(this.model.get('controls'), 
-                                         function(m) {
-                                             return this.create_child_view(m,_.extend({},
-                                                                                      {dom: this.renderer.domElement,
-                                                                                       start_update_loop: function() {that._update_loop = true; that.schedule_update();},
-                                                                                       end_update_loop: function() {that._update_loop = false;},
-                                                                                       renderer: this},
-                                                                                      render_loop))}, this)).then(function(controls) {
-                                                                                          that.controls = controls;
-                                                                                      }).then(function() {
-                                                                                          this._render = true;
-                                                                                          this.schedule_update();
-                                                                                          window.r = this;
-                                                                                      });
+                var controls = _.map(that.model.get('controls'), 
+                                     function(m) {
+                                         return that.create_child_view(m,_.extend({},
+                                                                                  {dom: that.renderer.domElement,
+                                                                                   start_update_loop: function() {
+                                                                                       that._update_loop = true; 
+                                                                                       that.schedule_update();
+                                                                                   },
+                                                                                   end_update_loop: function() {
+                                                                                       that._update_loop = false;
+                                                                                   },
+                                                                                   renderer: that},
+                                                                                  render_loop))}, that);
+                return Promise.all(controls)
+                    .then(function(c) {
+                        that.controls = c;
+                    })
+                    .then(function() {
+                        that._render = true;
+                        that.schedule_update();
+                        window.r = that;
+                    });
             });
         },
         schedule_update: function() {
@@ -73,36 +100,20 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
             }
             this.trigger('animate:update', this);
             if (this._render) {
-                if (this.effectrenderer) {
-                    this.effectrenderer.render(this.scene.obj, this.camera.obj)
-                    this._render = false;
-                } else {
-                    this.effect_promise.then(function() {
-                        this.effectrenderer.render(this.scene.obj, this.camera.obj)
-                        this._render = false;
-                    });
-                }
+                this.effectrenderer.render(this.scene.obj, this.camera.obj)
+                this._render = false;
             }
         },
         update : function(){
-            console.log('update renderer', this.scene.obj, this.camera.obj);
             var that = this;
-            if (this.model.get('effect')) {
-                this.effect_promise = this.create_child_view(this.model.get('effect'), {renderer: this.renderer}).then(function(view) {
-                    that.effectrenderer = view.obj;
-                })
-            } else {
-                this.effect_promise = Promise.resolve(this.renderer).then(function(r) {
-                    that.effectrenderer = r;
-                });
-            }
-            this.effect_promise.then(function() {
-                that.effectrenderer.setSize(that.model.get('width'),
-                                            that.model.get('height'));
-                if (that.model.get('color')) {
-                    that.effectrenderer.setClearColor(that.model.get('color'))
+            this.view_promises.then(function() {
+                that.effectrenderer.setSize(that.model.get('cwidth'),
+                                            that.model.get('cheight'));
+                if (that.model.get('rcolor')) {
+                    that.effectrenderer.setClearColor(that.model.get('rcolor'))
                 }
             });
+
             widget.DOMWidgetView.prototype.update.call(that);
 
         },
@@ -222,7 +233,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
 
     var Object3dView = ThreeView.extend({
         initialize: function() {
-            widget.WidgetView.prototype.initialize.apply(this, arguments);
+            ThreeView.prototype.initialize.apply(this, arguments);
             var that = this;
             this.children = new widget.ViewList(
                 function add(model) {
@@ -232,6 +243,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                             that.obj.add(view.obj);
                             that.listenTo(view, 'replace_obj', that.replace_child_obj);
                             that.listenTo(view, 'rerender', that.needs_update);
+                            return view;
                         });
                 },
                 function remove(view) {
@@ -772,22 +784,24 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
         render: function() {
             // geometry and material are not child_properties because either child's
             // replace_obj event should trigger a remake of the MeshView obj
+            var that = this;
             this.promise = Promise.all([this.create_child_view(this.model.get('geometry')),
                                         this.create_child_view(this.model.get('material'))]).then(
                                             function(v) {
-                                                this.geometry = v[0];
-                                                this.material = v[1];
-                                                this.geometry.on('replace_obj', this.update, this);
-                                                this.material.on('replace_obj', this.update, this);
-                                                this.geometry.on('rerender', this.needs_update, this);
-                                                this.material.on('rerender', this.needs_update, this);
+                                                that.geometry = v[0];
+                                                that.material = v[1];
+                                                that.geometry.on('replace_obj', that.update, that);
+                                                that.material.on('replace_obj', that.update, that);
+                                                that.geometry.on('rerender', that.needs_update, that);
+                                                that.material.on('rerender', that.needs_update, that);
                                             });
             Object3dView.prototype.render.call(this);
         },
         update: function() {
+            var that = this;
             this.promise.then(function() {
-                this.replace_obj(new THREE.Mesh( this.geometryview.obj, this.materialview.obj ));
-                Object3dView.prototype.update.call(this);
+                that.replace_obj(new THREE.Mesh( that.geometry.obj, that.material.obj ));
+                Object3dView.prototype.update.call(that);
             });
         }
     });
@@ -795,7 +809,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
 
     var LineView = MeshView.extend({
         update: function() {
-            this.replace_obj(new THREE.Line(this.geometryview.obj, this.materialview.obj, THREE[this.model.get("type")]));
+            this.replace_obj(new THREE.Line(this.geometry.obj, this.material.obj, THREE[this.model.get("type")]));
             Object3dView.prototype.update.call(this);
         }
     });
@@ -871,22 +885,23 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
 
     var SpriteView = Object3dView.extend({
         render: function() {
-            this.materialview = this.create_child_view(this.model.get('material'));
-            this.materialview.on('replace_obj', this.update, this);
-            this.materialview.on('rerender', this.needs_update, this);
+            // TODO: promisify this create_child_view
+            this.material = this.create_child_view(this.model.get('material'));
+            this.material.on('replace_obj', this.update, this);
+            this.material.on('rerender', this.needs_update, this);
             Object3dView.prototype.render.call(this);
             return this.obj;
         },
         update: function() {
-            this.replace_obj(new THREE.Sprite(this.materialview.obj));
+            this.replace_obj(new THREE.Sprite(this.material.obj));
             Object3dView.prototype.update.call(this);
         },
         needs_update: function() {
             if (this.model.get('scaleToTexture')) {
-                if (this.materialview.map.aspect) {
+                if (this.material.map.aspect) {
                     var scale = this.model.get('scale');
                     var y = (scale && scale[1]) || 1.0;
-                    this.model.set('scale', [y*this.materialview.map.aspect,y,1]);
+                    this.model.set('scale', [y*this.material.map.aspect,y,1]);
                     this.touch();
                 }
             }
@@ -986,32 +1001,35 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
     /* Extra helpers */
     var SurfaceGridView = MeshView.extend({
         update: function() {
-            // Construct the grid lines from this.geometryview.obj
-            var vertices = this.geometryview.obj.vertices;
-            var xpoints = this.geometryview.obj.parameters.widthSegments+1;
-            var ypoints = this.geometryview.obj.parameters.heightSegments+1;
-            var g, xi, yi;
-            var lines = [];
-            var obj = new THREE.Object3D();
+            var that = this;
+            this.promise.then(function() {
+                // Construct the grid lines from that.geometry.obj
+                var vertices = that.geometry.obj.vertices;
+                var xpoints = that.geometry.obj.parameters.widthSegments+1;
+                var ypoints = that.geometry.obj.parameters.heightSegments+1;
+                var g, xi, yi;
+                var lines = [];
+                var obj = new THREE.Object3D();
 
-            for (xi = 0; xi<xpoints; xi++) {
-                g = new THREE.Geometry();
-                for (yi = 0; yi<ypoints; yi++) {
-                    g.vertices.push(vertices[xi*xpoints+yi].clone());
-                }
-                obj.add(new THREE.Line(g, this.materialview.obj));
-            }
-
-            for (yi = 0; yi<ypoints; yi++) {
-                g = new THREE.Geometry();
                 for (xi = 0; xi<xpoints; xi++) {
-                    g.vertices.push(vertices[xi*xpoints+yi].clone());
+                    g = new THREE.Geometry();
+                    for (yi = 0; yi<ypoints; yi++) {
+                        g.vertices.push(vertices[xi*xpoints+yi].clone());
+                    }
+                    obj.add(new THREE.Line(g, that.material.obj));
                 }
-                obj.add(new THREE.Line(g, this.materialview.obj));
-            }
 
-            this.replace_obj(obj);
-            Object3dView.prototype.update.call(this);
+                for (yi = 0; yi<ypoints; yi++) {
+                    g = new THREE.Geometry();
+                    for (xi = 0; xi<xpoints; xi++) {
+                        g.vertices.push(vertices[xi*xpoints+yi].clone());
+                    }
+                    obj.add(new THREE.Line(g, that.material.obj));
+                }
+
+                that.replace_obj(obj);
+                Object3dView.prototype.update.call(that);
+            })
         }
     });
     manager.WidgetManager.register_widget_view('SurfaceGridView', SurfaceGridView);

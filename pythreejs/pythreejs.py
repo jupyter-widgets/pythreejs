@@ -611,14 +611,14 @@ class AnaglyphEffect(Effect):
 
 class Renderer(DOMWidget):
     _view_name = Unicode('RendererView', sync=True)
-    width = CInt(600, sync=True)
-    height = CInt(400, sync=True)
+    cwidth = CInt(600, sync=True)
+    cheight = CInt(400, sync=True)
     renderer_type = Enum(['webgl', 'canvas', 'auto'], 'auto', sync=True)
     scene = Instance(Scene, sync=True)
     camera = Instance(Camera, sync=True)
     controls = List(Instance(Controls), sync=True)
     effect = Instance(Effect, sync=True)
-    color = Color('black', sync=True, allow_none=True)
+    rcolor = Color('black', sync=True, allow_none=True)
 
 class Light(Object3d):
     color = Color('white', sync=True) # could be string or number or tuple
