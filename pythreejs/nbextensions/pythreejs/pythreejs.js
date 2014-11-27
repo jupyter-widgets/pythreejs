@@ -30,25 +30,36 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
             else
                 this.renderer = new THREE.CanvasRenderer();
             this.$el.empty().append( this.renderer.domElement );
-            this.camera = this.create_child_view(this.model.get('camera'),
-                                                render_loop);
-            this.scene = this.create_child_view(this.model.get('scene'),
-                                               render_loop);
-            this.scene.obj.add(this.camera.obj);
-            console.log('renderer', this.model, this.scene.obj, this.camera.obj);
-            this.update();
-            this._animation_frame = false
-            this.controls = _.map(this.model.get('controls'), function(m) {return this.create_child_view(m,
-                     _.extend({},
-                              {dom: this.renderer.domElement,
-                               start_update_loop: function() {that._update_loop = true; that.schedule_update();},
-                               end_update_loop: function() {that._update_loop = false;},
-                               renderer: this},
-                              render_loop))}, this);
-;
-            this._render = true;
-            this.schedule_update();
-            window.r = this;
+            var that = this;
+            var view_promises = [];
+            view_promises.push(this.create_child_view(this.model.get('camera'), render_loop).then(
+                function(view) {
+                    that.camera = view;
+                }));
+            view_promises.push(this.create_child_view(this.model.get('scene'), render_loop).then(
+                function(view) {
+                    that.scene = view;
+                }));
+            this.view_promises = Promise.all(view_promises).then(function(objs) {
+                that.scene.obj.add(that.camera.obj);
+                console.log('renderer', that.model, that.scene.obj, that.camera.obj);
+                that.update();
+                that._animation_frame = false;
+                return Promise.all(_.map(this.model.get('controls'), 
+                                         function(m) {
+                                             return this.create_child_view(m,_.extend({},
+                                                                                      {dom: this.renderer.domElement,
+                                                                                       start_update_loop: function() {that._update_loop = true; that.schedule_update();},
+                                                                                       end_update_loop: function() {that._update_loop = false;},
+                                                                                       renderer: this},
+                                                                                      render_loop))}, this)).then(function(controls) {
+                                                                                          that.controls = controls;
+                                                                                      }).then(function() {
+                                                                                          this._render = true;
+                                                                                          this.schedule_update();
+                                                                                          window.r = this;
+                                                                                      });
+            });
         },
         schedule_update: function() {
             if (!this._animation_frame) {
@@ -62,25 +73,38 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
             }
             this.trigger('animate:update', this);
             if (this._render) {
-                this.effectrenderer.render(this.scene.obj, this.camera.obj)
-                this._render = false;
+                if (this.effectrenderer) {
+                    this.effectrenderer.render(this.scene.obj, this.camera.obj)
+                    this._render = false;
+                } else {
+                    this.effect_promise.then(function() {
+                        this.effectrenderer.render(this.scene.obj, this.camera.obj)
+                        this._render = false;
+                    });
+                }
             }
         },
         update : function(){
             console.log('update renderer', this.scene.obj, this.camera.obj);
+            var that = this;
             if (this.model.get('effect')) {
-                this.effect = this.create_child_view(this.model.get('effect'), {renderer: this.renderer});
-                this.effectrenderer = this.effect.obj;
+                this.effect_promise = this.create_child_view(this.model.get('effect'), {renderer: this.renderer}).then(function(view) {
+                    that.effectrenderer = view.obj;
+                })
             } else {
-                this.effectrenderer = this.renderer;
+                this.effect_promise = Promise.resolve(this.renderer).then(function(r) {
+                    that.effectrenderer = r;
+                });
             }
-            console.log(this.effect, this.model);
-            this.effectrenderer.setSize(this.model.get('width'),
-                                        this.model.get('height'));
-            if (this.model.get('color')) {
-                this.effectrenderer.setClearColor(this.model.get('color'))
-            }
-            return widget.DOMWidgetView.prototype.update.call(this);
+            this.effect_promise.then(function() {
+                that.effectrenderer.setSize(that.model.get('width'),
+                                            that.model.get('height'));
+                if (that.model.get('color')) {
+                    that.effectrenderer.setClearColor(that.model.get('color'))
+                }
+            });
+            widget.DOMWidgetView.prototype.update.call(that);
+
         },
     });
     manager.WidgetManager.register_widget_view('RendererView', RendererView);
@@ -129,6 +153,9 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
             this.trigger('rerender');
         },
         register_object_parameters: function() {
+            // create an array of update handlers for each declared property
+            // the update handlers depend on the type of property
+
             var array_properties = this.array_properties;
             var updates = this.updates = {};
             // first, we create update functions for each attribute
@@ -160,11 +187,16 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                 updates[p] = function(t, value) {
                     if (value) {
                         if (t[p]) {
-                            t[p].off('replace_obj', null, t);
+                            t.stopListening(t[p]);
                         }
-                        t[p] = t.create_child_view(value, t.options[p]);
-                        t[p].on('replace_obj', function() {t.obj[p] = t[p].obj; t.needs_update()}, t);
-                        t.obj[p] = t[p].obj;
+                        t.create_child_view(value, t.options[p]).then(function(view) {
+                            t[p] = view;
+                            t.listenTo(t[p], 'replace_obj', function() {
+                                t.obj[p] = t[p].obj; 
+                                t.needs_update()
+                            });
+                            t.obj[p] = t[p].obj;
+                        });
                     }
                 }});
 
@@ -189,37 +221,37 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
     manager.WidgetManager.register_widget_view('AnaglyphEffectView', AnaglyphEffectView);
 
     var Object3dView = ThreeView.extend({
+        initialize: function() {
+            widget.WidgetView.prototype.initialize.apply(this, arguments);
+            var that = this;
+            this.children = new widget.ViewList(
+                function add(model) {
+                    return that.create_child_view(model, 
+                                                  _.pick(that.options, 'register_update', 'renderer_id'))
+                        .then(function(view) {
+                            that.obj.add(view.obj);
+                            that.listenTo(view, 'replace_obj', that.replace_child_obj);
+                            that.listenTo(view, 'rerender', that.needs_update);
+                        });
+                },
+                function remove(view) {
+                    that.obj.remove(view.obj);
+                    that.stopListening(view);
+                    view.remove();
+                });
+            this.children.update(this.model.get('children'));
+            this.listenTo(this.model, 'change:children', function(model, value) {
+                this.children.update(value);
+            });
+        },
         new_properties: function() {
             ThreeView.prototype.new_properties.call(this);
             this.array_properties.push('position', 'quaternion', 'up', 'scale');
             this.scalar_properties.push('visible', 'castShadow', 'receiveShadow');
         },
-        update_children: function(oldchildren, newchildren) {
-            var that = this;
-            this.do_diff(oldchildren || [], newchildren, 
-                         function(deleted) {
-                             var view = that.pop_child_view(deleted);
-                             that.obj.remove(view.obj);
-                             that.stopListening(view);
-                             view.remove();
-                         },
-                         function(added) {
-                             var view = that.create_child_view(added, _.pick(that.options,'register_update', 'renderer_id'));
-                             that.obj.add(view.obj);
-                             that.listenTo(view, 'replace_obj', that.replace_child_obj);
-                             that.listenTo(view, 'rerender', that.needs_update);
-                         });
-        },
         new_obj: function() {
             return new THREE.Object3D();
         },
-        update: function() {
-            if (this.model.hasChanged('children')) {
-                this.update_children(this.model.previous('children'), this.model.get('children'));
-            }
-            ThreeView.prototype.update.call(this);
-        },
-
         replace_child_obj: function(old_obj, new_obj) {
             this.obj.remove(old_obj);
             this.obj.add(new_obj);
@@ -738,22 +770,25 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
         //this.model.on('change:geometry', this.render, this);
         //this.model.on('change:material', this.render, this);
         render: function() {
-            this.geometryview = this.create_child_view(this.model.get('geometry'));
-            this.materialview = this.create_child_view(this.model.get('material'));
-            this.geometryview.on('replace_obj', this.update, this);
-            this.materialview.on('replace_obj', this.update, this);
-            this.geometryview.on('rerender', this.needs_update, this);
-            this.materialview.on('rerender', this.needs_update, this);
+            // geometry and material are not child_properties because either child's
+            // replace_obj event should trigger a remake of the MeshView obj
+            this.promise = Promise.all([this.create_child_view(this.model.get('geometry')),
+                                        this.create_child_view(this.model.get('material'))]).then(
+                                            function(v) {
+                                                this.geometry = v[0];
+                                                this.material = v[1];
+                                                this.geometry.on('replace_obj', this.update, this);
+                                                this.material.on('replace_obj', this.update, this);
+                                                this.geometry.on('rerender', this.needs_update, this);
+                                                this.material.on('rerender', this.needs_update, this);
+                                            });
             Object3dView.prototype.render.call(this);
-            //this.update();
-            return this.obj;
         },
         update: function() {
-            this.replace_obj(new THREE.Mesh( this.geometryview.obj, this.materialview.obj ));
-            //this.obj.geometry = this.geometryview.obj;
-            //this.obj.material = this.materialview.obj;
-            //this.obj.material.needsUpdate=true;
-            Object3dView.prototype.update.call(this);
+            this.promise.then(function() {
+                this.replace_obj(new THREE.Mesh( this.geometryview.obj, this.materialview.obj ));
+                Object3dView.prototype.update.call(this);
+            });
         }
     });
     manager.WidgetManager.register_widget_view('MeshView', MeshView);
