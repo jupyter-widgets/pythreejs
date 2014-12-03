@@ -822,8 +822,11 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
 
     var LineView = MeshView.extend({
         update: function() {
-            this.replace_obj(new THREE.Line(this.geometry.obj, this.material.obj, THREE[this.model.get("type")]));
-            Object3dView.prototype.update.call(this);
+            var that = this;
+            this.promise.then(function() {
+                that.replace_obj(new THREE.Line(that.geometry.obj, that.material.obj, THREE[that.model.get("type")]));
+                Object3dView.prototype.update.call(that);
+            });
         }
     });
     register['LineView'] = LineView;
