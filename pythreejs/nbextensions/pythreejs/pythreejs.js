@@ -329,17 +329,21 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
 
     var OrbitControlsView = ThreeView.extend({
         render: function() {
-            // get the view that is tied to the same renderer
-            this.controlled_view = _.find(this.model.get('controlling').views, function(o) {
-                return o.options.renderer_id === this.options.renderer_id
-            }, this);
-            this.obj = new THREE.OrbitControls(this.controlled_view.obj, this.options.dom);
-            this.options.register_update(this.obj.update, this.obj);
-            this.obj.addEventListener('change', this.options.render_frame);
-            this.obj.addEventListener('start', this.options.start_update_loop);
-            this.obj.addEventListener('end', this.options.end_update_loop);
-            // if there is a three.js control change, call the animate function to animate at least one more time
-            delete this.options.renderer;
+            
+            var that = this;
+            return utils.resolve_promises_dict(this.model.get('controlling').views).then(function(views) {
+                // get the view that is tied to the same renderer
+                that.controlled_view = _.find(views, function(o) {
+                    return o.options.renderer_id === that.options.renderer_id
+                }, that);
+                that.obj = new THREE.OrbitControls(that.controlled_view.obj, that.options.dom);
+                that.options.register_update(that.obj.update, that.obj);
+                that.obj.addEventListener('change', that.options.render_frame);
+                that.obj.addEventListener('start', that.options.start_update_loop);
+                that.obj.addEventListener('end', that.options.end_update_loop);
+                // if there is a three.js control change, call the animate function to animate at least one more time
+                delete that.options.renderer;
+            });
         }
     });
     register['OrbitControlsView'] = OrbitControlsView;
