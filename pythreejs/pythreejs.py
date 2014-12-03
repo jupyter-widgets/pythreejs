@@ -236,10 +236,10 @@ class Geometry(Widget):
 
 class PlainGeometry(Geometry):
     _view_name = Unicode('PlainGeometryView', sync=True)
-    vertices = List(vector3(), sync=True)
+    vertices = List(vector3(CFloat), sync=True)
     colors = List(Color, sync=True)
     faces = List(List(CFloat), sync=True)
-    faceVertexUvs = List(vector3(vector2(CFloat)), sync=True)
+    # todo: faceVertexUvs = List(vector3(vector2(CFloat)), sync=True)
     
 class SphereGeometry(Geometry):
     _view_name = Unicode('SphereGeometryView', sync=True)
