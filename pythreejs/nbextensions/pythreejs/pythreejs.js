@@ -901,18 +901,19 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
 
     var SpriteView = Object3dView.extend({
         render: function() {
-            
+            var that = this;
             this.promise = this.create_child_view(this.model.get('material')).then(function(view) {
-                this.material = view;
-                this.material.on('replace_obj', this.update, this);
-                this.material.on('rerender', this.needs_update, this);
+                that.material = view;
+                that.material.on('replace_obj', that.update, that);
+                that.material.on('rerender', that.needs_update, that);
             });
             Object3dView.prototype.render.call(this);
         },
         update: function() {
+            var that = this;
             this.promise.then(function() {
-                this.replace_obj(new THREE.Sprite(this.material.obj))
-                Object3dView.prototype.update.call(this);
+                that.replace_obj(new THREE.Sprite(that.material.obj))
+                Object3dView.prototype.update.call(that);
             });
         },
         needs_update: function() {
