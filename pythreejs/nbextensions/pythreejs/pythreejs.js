@@ -815,10 +815,13 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                                                 that.material.on('rerender', that.needs_update, that);
                                             });
             Object3dView.prototype.render.call(this);
+            // we return the promise returned from update so that the view is considered "created"
+            // when we actually have a mesh created.
+            return this.update();
         },
         update: function() {
             var that = this;
-            this.promise.then(function() {
+            return this.promise.then(function() {
                 that.replace_obj(new THREE.Mesh( that.geometry.obj, that.material.obj ));
                 Object3dView.prototype.update.call(that);
             });
