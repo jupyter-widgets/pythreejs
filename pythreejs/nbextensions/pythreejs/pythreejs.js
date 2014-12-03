@@ -203,11 +203,12 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                         }
                         t.create_child_view(value, t.options[p]).then(function(view) {
                             t[p] = view;
-                            t.listenTo(t[p], 'replace_obj', function() {
+                            var update = function() {
                                 t.obj[p] = t[p].obj; 
                                 t.needs_update()
-                            });
-                            t.obj[p] = t[p].obj;
+                            };
+                            update();
+                            t.listenTo(t[p], 'replace_obj', update)
                         });
                     }
                 }});
