@@ -679,3 +679,11 @@ class SurfaceGrid(Mesh):
     _view_name = Unicode('SurfaceGridView', sync=True)
     geometry = Instance(SurfaceGeometry, sync=True)
     material = Instance(_LineMaterial, sync=True)
+
+
+def make_text(text, position=(0,0,0), height=1):
+    """
+    Return a text object at the specified location with a given height
+    """
+    sm = SpriteMaterial(map=TextTexture(string=text, color='white', size=100, squareTexture=False))
+    return Sprite(material=sm, position = position, scaleToTexture=True, scale=[1,height,1])
