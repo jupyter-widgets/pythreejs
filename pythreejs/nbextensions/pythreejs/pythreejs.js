@@ -15,6 +15,7 @@ require.config({
 
 define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "threejs-trackball", "threejs-orbit", "threejs-detector"], function(widget, manager, utils, THREE) {
     console.log("loading pythreejs");
+    var register = {};
     var RendererView = widget.WidgetView.extend({
         render : function(){
             console.log('created renderer');
@@ -117,7 +118,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
 
         },
     });
-    manager.WidgetManager.register_widget_view('RendererView', RendererView);
+    register['RendererView'] = RendererView;
 
     var ThreeView = widget.WidgetView.extend({
         initialize: function () {
@@ -228,7 +229,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
         return new THREE.AnaglyphEffect( this.options.renderer );
         }
     })
-    manager.WidgetManager.register_widget_view('AnaglyphEffectView', AnaglyphEffectView);
+    register['AnaglyphEffectView'] = AnaglyphEffectView;
 
     var Object3dView = ThreeView.extend({
         initialize: function() {
@@ -269,7 +270,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
             this.needs_update()
         },
     });
-    manager.WidgetManager.register_widget_view('Object3dView', Object3dView);
+    register['Object3dView'] = Object3dView;
 
     var ScaledObjectView = Object3dView.extend({
         render: function() {
@@ -282,7 +283,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
             this.obj.scale.set(s,s,s);
         }
     });
-    manager.WidgetManager.register_widget_view('ScaledObjectView', ScaledObjectView);
+    register['ScaledObjectView'] = ScaledObjectView;
 
     var CameraView = Object3dView.extend({
         new_obj: function() {
@@ -293,7 +294,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
             this.options.render_frame();
         }
     });
-    manager.WidgetManager.register_widget_view('CameraView', CameraView);
+    register['CameraView'] = CameraView;
 
     var PerspectiveCameraView = CameraView.extend({
         new_properties: function() {
@@ -307,7 +308,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                                                 this.model.get('far'));
         }
     });
-    manager.WidgetManager.register_widget_view('PerspectiveCameraView', PerspectiveCameraView);
+    register['PerspectiveCameraView'] = PerspectiveCameraView;
 
     var OrthographicCameraView = CameraView.extend({
         new_properties: function() {
@@ -323,7 +324,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                                                 this.model.get('far'));
         }
     });
-    manager.WidgetManager.register_widget_view('OrthographicCameraView', OrthographicCameraView);
+    register['OrthographicCameraView'] = OrthographicCameraView;
 
     var OrbitControlsView = ThreeView.extend({
         render: function() {
@@ -340,7 +341,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
             delete this.options.renderer;
         }
     });
-    manager.WidgetManager.register_widget_view('OrbitControlsView', OrbitControlsView);
+    register['OrbitControlsView'] = OrbitControlsView;
 
     var PickerView = ThreeView.extend({
         render: function() {
@@ -396,14 +397,14 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
             });
         }
     });
-    manager.WidgetManager.register_widget_view('PickerView', PickerView);
+    register['PickerView'] = PickerView;
 
 
     var SceneView = Object3dView.extend({
         new_obj: function() {return new THREE.Scene();},
         needs_update: function() {this.options.render_frame();}
     });
-    manager.WidgetManager.register_widget_view('SceneView', SceneView);
+    register['SceneView'] = SceneView;
 
 
 
@@ -423,7 +424,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
             this.replace_obj(obj);
         },
     });
-    manager.WidgetManager.register_widget_view('SurfaceGeometryView', SurfaceGeometryView);
+    register['SurfaceGeometryView'] = SurfaceGeometryView;
 
     var PlainGeometryView = ThreeView.extend({
         update: function() {
@@ -456,7 +457,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
             this.replace_obj(geometry);
         },
     });
-    manager.WidgetManager.register_widget_view('PlainGeometryView', PlainGeometryView);
+    register['PlainGeometryView'] = PlainGeometryView;
 
     var FaceGeometryView = ThreeView.extend({
 
@@ -498,7 +499,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
             this.replace_obj(geometry);
         }
     });
-    manager.WidgetManager.register_widget_view('FaceGeometryView', FaceGeometryView);
+    register['FaceGeometryView'] = FaceGeometryView;
 
 
     var SphereGeometryView = ThreeView.extend({
@@ -506,7 +507,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
             this.replace_obj(new THREE.SphereGeometry(this.model.get('radius'), 32,16));
         }
     });
-    manager.WidgetManager.register_widget_view('SphereGeometryView', SphereGeometryView);
+    register['SphereGeometryView'] = SphereGeometryView;
 
     var CylinderGeometryView = ThreeView.extend({
         update: function() {
@@ -518,7 +519,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                                                         this.model.get('openEnded')));
         }
     });
-    manager.WidgetManager.register_widget_view('CylinderGeometryView', CylinderGeometryView);
+    register['CylinderGeometryView'] = CylinderGeometryView;
 
     var BoxGeometryView = ThreeView.extend({
         update: function() {
@@ -530,7 +531,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                                                         this.model.get('depthSegments')));
         }
     });
-    manager.WidgetManager.register_widget_view('BoxGeometryView', BoxGeometryView);
+    register['BoxGeometryView'] = BoxGeometryView;
 
     var CircleGeometryView = ThreeView.extend({
         update: function() {
@@ -540,7 +541,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                                                         this.model.get('thetaLength')));
         }
     });
-    manager.WidgetManager.register_widget_view('CircleGeometryView', CircleGeometryView);
+    register['CircleGeometryView'] = CircleGeometryView;
 
     var LatheGeometryView = ThreeView.extend({
         update: function() {
@@ -556,7 +557,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                                                         this.model.get('phiLength')));
         }
     });
-    manager.WidgetManager.register_widget_view('LatheGeometryView', LatheGeometryView);
+    register['LatheGeometryView'] = LatheGeometryView;
 
     var TubeGeometryView = ThreeView.extend({
         update: function() {
@@ -574,7 +575,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                                                         this.model.get('closed')));
         }
     });
-    manager.WidgetManager.register_widget_view('TubeGeometryView', TubeGeometryView);
+    register['TubeGeometryView'] = TubeGeometryView;
 
     var IcosahedronGeometryView = ThreeView.extend({
         update: function() {
@@ -582,7 +583,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                                                         this.model.get('detail')));
         }
     });
-    manager.WidgetManager.register_widget_view('IcosahedronGeometryView', IcosahedronGeometryView);
+    register['IcosahedronGeometryView'] = IcosahedronGeometryView;
 
     var OctahedronGeometryView = ThreeView.extend({
         update: function() {
@@ -590,7 +591,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                                                         this.model.get('detail')));
         }
     });
-    manager.WidgetManager.register_widget_view('OctahedronGeometryView', OctahedronGeometryView);
+    register['OctahedronGeometryView'] = OctahedronGeometryView;
 
     var PlaneGeometryView = ThreeView.extend({
         update: function() {
@@ -600,7 +601,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                                                         this.model.get('heightSegments')));
         }
     });
-    manager.WidgetManager.register_widget_view('PlaneGeometryView', PlaneGeometryView);
+    register['PlaneGeometryView'] = PlaneGeometryView;
 
     var TetrahedronGeometryView = ThreeView.extend({
         update: function() {
@@ -608,7 +609,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                                                         this.model.get('detail')));
         }
     });
-    manager.WidgetManager.register_widget_view('TetrahedronGeometryView', TetrahedronGeometryView);
+    register['TetrahedronGeometryView'] = TetrahedronGeometryView;
 
     var TorusGeometryView = ThreeView.extend({
         update: function() {
@@ -619,7 +620,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                                                         this.model.get('arc')));
         }
     });
-    manager.WidgetManager.register_widget_view('TorusGeometryView', TorusGeometryView);
+    register['TorusGeometryView'] = TorusGeometryView;
 
     var TorusKnotGeometryView = ThreeView.extend({
         update: function() {
@@ -632,7 +633,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                                                         this.model.get('heightScale')));
         }
     });
-    manager.WidgetManager.register_widget_view('TorusKnotGeometryView', TorusKnotGeometryView);
+    register['TorusKnotGeometryView'] = TorusKnotGeometryView;
 
     var PolyhedronGeometryView = ThreeView.extend({
         update: function() {
@@ -642,7 +643,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                                                           this.model.get('detail')));
         }
     });
-    manager.WidgetManager.register_widget_view('PolyhedronGeometryView', PolyhedronGeometryView);
+    register['PolyhedronGeometryView'] = PolyhedronGeometryView;
 
     var RingGeometryView = ThreeView.extend({
         update: function() {
@@ -654,7 +655,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                                                     this.model.get('thetaLength')));
         }
     });
-    manager.WidgetManager.register_widget_view('RingGeometryView', RingGeometryView);
+    register['RingGeometryView'] = RingGeometryView;
 
     var ParametricGeometryView = ThreeView.extend({
         update: function() {
@@ -664,7 +665,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                                                     this.model.get('stacks')));
         }
     });
-    manager.WidgetManager.register_widget_view('ParametricGeometryView', ParametricGeometryView);
+    register['ParametricGeometryView'] = ParametricGeometryView;
     
     var MaterialView = ThreeView.extend({
         new_properties: function() {
@@ -675,7 +676,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
         },
         new_obj: function() {return new THREE.Material();},
     });
-    manager.WidgetManager.register_widget_view('MaterialView', MaterialView);
+    register['MaterialView'] = MaterialView;
 
     var BasicMaterialView = MaterialView.extend({
         new_properties: function() {
@@ -688,7 +689,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
         },
         new_obj: function() {return new THREE.MeshBasicMaterial();}
     });
-    manager.WidgetManager.register_widget_view('BasicMaterialView', BasicMaterialView);
+    register['BasicMaterialView'] = BasicMaterialView;
 
     var LambertMaterialView = BasicMaterialView.extend({
         new_properties: function() {
@@ -699,7 +700,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
         },
         new_obj: function() {return new THREE.MeshLambertMaterial();}
     });
-    manager.WidgetManager.register_widget_view('LambertMaterialView', LambertMaterialView);
+    register['LambertMaterialView'] = LambertMaterialView;
 
     var PhongMaterialView = BasicMaterialView.extend({
         new_properties: function() {
@@ -710,7 +711,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
         },
         new_obj: function() {return new THREE.MeshPhongMaterial();}
     });
-    manager.WidgetManager.register_widget_view('PhongMaterialView', PhongMaterialView);
+    register['PhongMaterialView'] = PhongMaterialView;
 
     var DepthMaterialView = MaterialView.extend({
         new_properties: function() {
@@ -719,7 +720,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
         },
         new_obj: function() {return new THREE.MeshDepthMaterial();}
     });
-    manager.WidgetManager.register_widget_view('DepthMaterialView', DepthMaterialView);
+    register['DepthMaterialView'] = DepthMaterialView;
 
     var LineBasicMaterialView = MaterialView.extend({
         new_properties: function() {
@@ -730,7 +731,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
         },
         new_obj: function() {return new THREE.LineBasicMaterial();}
     });
-    manager.WidgetManager.register_widget_view('LineBasicMaterialView', LineBasicMaterialView);
+    register['LineBasicMaterialView'] = LineBasicMaterialView;
 
     var LineDashedMaterialView = MaterialView.extend({
         new_properties: function() {
@@ -741,7 +742,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
         },
         new_obj: function() {return new THREE.LineDashedMaterial();}
     });
-    manager.WidgetManager.register_widget_view('LineDashedMaterialView', LineDashedMaterialView);
+    register['LineDashedMaterialView'] = LineDashedMaterialView;
 
     var NormalMaterialView = MaterialView.extend({
         new_properties: function() {
@@ -751,7 +752,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
         },
         new_obj: function() {return new THREE.MeshNormalMaterial();}
     });
-    manager.WidgetManager.register_widget_view('NormalMaterialView', NormalMaterialView);
+    register['NormalMaterialView'] = NormalMaterialView;
 
     var ParticleSystemMaterialView = MaterialView.extend({
         new_properties: function() {
@@ -762,7 +763,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
         },
         new_obj: function() {return new THREE.ParticleSystemMaterial();}
     });
-    manager.WidgetManager.register_widget_view('ParticleSystemMaterialView', ParticleSystemMaterialView);
+    register['ParticleSystemMaterialView'] = ParticleSystemMaterialView;
 
     var ShaderMaterialView = MaterialView.extend({
         new_properties: function() {
@@ -773,7 +774,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
         },
         new_obj: function() {return new THREE.ShaderMaterial();}
     });
-    manager.WidgetManager.register_widget_view('ShaderMaterialView', ShaderMaterialView);
+    register['ShaderMaterialView'] = ShaderMaterialView;
 
     var MeshView = Object3dView.extend({
         // if we replace the geometry or material, do a full re-render
@@ -804,7 +805,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
             });
         }
     });
-    manager.WidgetManager.register_widget_view('MeshView', MeshView);
+    register['MeshView'] = MeshView;
 
     var LineView = MeshView.extend({
         update: function() {
@@ -812,7 +813,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
             Object3dView.prototype.update.call(this);
         }
     });
-    manager.WidgetManager.register_widget_view('LineView', LineView);
+    register['LineView'] = LineView;
 
     var ImageTextureView = ThreeView.extend({
         update: function() {
@@ -824,7 +825,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
             ThreeView.prototype.update.call(this);
         },
     });
-    manager.WidgetManager.register_widget_view('ImageTextureView', ImageTextureView);
+    register['ImageTextureView'] = ImageTextureView;
 
     var DataTextureView = ThreeView.extend({
         update: function() {
@@ -868,7 +869,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
             ThreeView.prototype.update.call(this);
         },
     });
-    manager.WidgetManager.register_widget_view('DataTextureView', DataTextureView);
+    register['DataTextureView'] = DataTextureView;
 
     var SpriteMaterialView = MaterialView.extend({
         new_properties: function() {
@@ -880,7 +881,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
         },
         new_obj: function() {return new THREE.SpriteMaterial();}
     });
-    manager.WidgetManager.register_widget_view('SpriteMaterialView', SpriteMaterialView);
+    register['SpriteMaterialView'] = SpriteMaterialView;
 
     var SpriteView = Object3dView.extend({
         render: function() {
@@ -910,7 +911,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
             Object3dView.prototype.needs_update.call(this);
         }
     });
-    manager.WidgetManager.register_widget_view('SpriteView', SpriteView);
+    register['SpriteView'] = SpriteView;
 
     var TextTextureView = ThreeView.extend({
         update: function() {
@@ -947,7 +948,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
             ThreeView.prototype.update.call(this);
         }
     });
-    manager.WidgetManager.register_widget_view('TextTextureView', TextTextureView);
+    register['TextTextureView'] = TextTextureView;
 
     var Basic3dObject = Object3dView.extend({
         render: function() {
@@ -962,7 +963,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
     var AmbientLight = Basic3dObject.extend({
         new_obj: function() {return new THREE.AmbientLight(this.model.get('color'));}
     });
-    manager.WidgetManager.register_widget_view('AmbientLight', AmbientLight);
+    register['AmbientLight'] = AmbientLight;
 
     var DirectionalLight = Basic3dObject.extend({
         new_obj: function() {
@@ -970,7 +971,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                                               this.model.get('intensity'));
         }
     });
-    manager.WidgetManager.register_widget_view('DirectionalLight', DirectionalLight);
+    register['DirectionalLight'] = DirectionalLight;
 
     var PointLight = Basic3dObject.extend({
         new_obj: function() {
@@ -979,7 +980,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                                         this.model.get('distance'));
         }
     });
-    manager.WidgetManager.register_widget_view('PointLight', PointLight);
+    register['PointLight'] = PointLight;
 
     var SpotLight = Basic3dObject.extend({
         new_obj: function() {
@@ -988,7 +989,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                                        this.model.get('distance'));
         }
     });
-    manager.WidgetManager.register_widget_view('SpotLight', SpotLight);
+    register['SpotLight'] = SpotLight;
 
     var HemisphereLight = Basic3dObject.extend({
         new_obj: function() {
@@ -997,7 +998,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                                              this.model.get('intensity'));
         }
     });
-    manager.WidgetManager.register_widget_view('HemisphereLight', HemisphereLight);
+    register['HemisphereLight'] = HemisphereLight;
 
 
     /* Extra helpers */
@@ -1034,8 +1035,14 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
             })
         }
     });
-    manager.WidgetManager.register_widget_view('SurfaceGridView', SurfaceGridView);
+    register['SurfaceGridView'] = SurfaceGridView;
 
-
+    /* We keep these lines in here for backwards compatibility, to be removed when IPython 3.0 is released */
+    for (var key in register) {
+        if (register.hasOwnProperty(key)) {
+            manager.WidgetManager.register_widget_view(key, register[key]);
+        }
+    }
+    return register;
 
 });

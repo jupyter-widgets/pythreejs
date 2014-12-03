@@ -28,6 +28,7 @@ def vector2(trait_type=CFloat, default=None, **kwargs):
 
 
 class Texture(Widget):
+    _view_module = Unicode('nbextensions/pythreejs/pythreejs', sync=True)
     _view_name = Unicode('TextureView', sync=True)
 
 class ImageTexture(Texture):
@@ -105,6 +106,7 @@ class Object3d(Widget):
     If matrix is not None, it overrides the position, rotation, scale, and up variables.
     """
     #_model_name = Unicode('Object3dModel', sync=True)
+    _view_module = Unicode('nbextensions/pythreejs/pythreejs', sync=True)
     _view_name = Unicode('Object3dView', sync=True)
     position = vector3(CFloat, sync=True)
     quaternion = List(CFloat, sync=True) # [x,y,z,w]
@@ -207,6 +209,7 @@ class ScaledObject(Object3d):
     _view_name = Unicode('ScaledObjectView', sync=True)
 
 class Controls(Widget):
+    _view_module = Unicode('nbextensions/pythreejs/pythreejs', sync=True)
     _view_name = Unicode('ControlsView', sync=True)
     controlling = Instance(Object3d, sync=True)
 
@@ -228,6 +231,7 @@ class Picker(Controls):
     all = Bool(False, sync=True)
     
 class Geometry(Widget):
+    _view_module = Unicode('nbextensions/pythreejs/pythreejs', sync=True)    
     _view_name = Unicode('GeometryView', sync=True)
 
 class PlainGeometry(Geometry):
@@ -365,6 +369,7 @@ class ParametricGeometry(Geometry):
     stacks = CInt(105,sync=True)
     
 class Material(Widget):
+    _view_module = Unicode('nbextensions/pythreejs/pythreejs', sync=True)
     _view_name = Unicode('MaterialView', sync=True)
     # id = TODO
     name = Unicode('', sync=True) 
@@ -604,12 +609,13 @@ class Scene(Object3d):
     _view_name = Unicode('SceneView', sync=True)
     
 class Effect(Widget):
-    pass
+    _view_module = Unicode('nbextensions/pythreejs/pythreejs', sync=True)
 
 class AnaglyphEffect(Effect):
     _view_name = Unicode('AnaglyphEffectView', sync=True)
 
 class Renderer(Widget):
+    _view_module = Unicode('nbextensions/pythreejs/pythreejs', sync=True)
     _view_name = Unicode('RendererView', sync=True)
     width = CInt(600, sync=True)
     height = CInt(400, sync=True)
