@@ -399,12 +399,12 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                 // we need to get the three.js object for the root object in our scene
                 // so find a view of the model that exists in our scene
                 var that = this;
-                utils.resolve_promise_dict(root.views, function(views) {
+                utils.resolve_promises_dict(root.views).then(function(views) {
                     var r = _.find(views, function(o) {
                         return o.options.renderer_id === that.options.renderer_id;
                     });
                     that.root = r.obj;
-                });
+                }).catch(utils.reject("Could not set up Picker", true));
             } else {
                 this.root = this.options.renderer.scene.obj;
             }
