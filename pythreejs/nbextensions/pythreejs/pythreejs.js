@@ -87,6 +87,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                         window.r = that;
                     });
             });
+            return this.view_promises;
         },
         schedule_update: function() {
             if (!this._animation_frame) {
