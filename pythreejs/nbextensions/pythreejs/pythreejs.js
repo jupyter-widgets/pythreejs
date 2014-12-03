@@ -346,6 +346,8 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
     var PickerView = ThreeView.extend({
         render: function() {
             var that = this;
+            this.model.on('change:root', this.change_root, this);
+            this.change_root(this.model, this.model.get('root'));
             this.options.dom.addEventListener(this.model.get('event'), function(event) {
                 var offset = $(this).offset();
                 var mouseX = ((event.pageX - offset.left) / $(that.options.dom).width()) * 2 - 1;
@@ -356,13 +358,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                 projector.unprojectVector(vector, that.options.renderer.camera.obj);
                 var ray = vector.sub(that.options.renderer.camera.obj.position).normalize();
                 that.obj = new THREE.Raycaster(that.options.renderer.camera.obj.position, ray);
-                var root = that.options.renderer.scene.obj;
-                if (that.model.get('root')) {
-                    var r = _.find(that.model.get('root').views, function(o) {
-                        return o.options.renderer_id === that.options.renderer_id;
-                    });
-                    root = r.obj;
-                }
+                var root = that.root;
                 var objs = that.obj.intersectObject(root, true);
                 var getinfo = function(o) {
                     var v = o.object.geometry.vertices;
@@ -395,7 +391,24 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                     that.touch();
                 }
             });
+        },
+
+        change_root: function(model, root) {
+            if (root) {
+                // we need to get the three.js object for the root object in our scene
+                // so find a view of the model that exists in our scene
+                var that = this;
+                utils.resolve_promise_dict(root.views, function(views) {
+                    var r = _.find(views, function(o) {
+                        return o.options.renderer_id === that.options.renderer_id;
+                    });
+                    that.root = r.obj;
+                });
+            } else {
+                this.root = this.options.renderer.scene.obj;
+            }
         }
+
     });
     register['PickerView'] = PickerView;
 
