@@ -70,7 +70,9 @@ from .pythreejs import (
     SpotLight, 
     SurfaceGrid,
     lights_color,
-    lights_gray)
+    lights_gray, 
+    make_text,
+)
 
 
 # don't include install_nbextension and the lights functions when we import *
@@ -133,4 +135,5 @@ __all__ = ["Texture",
            "PointLight", 
            "SpotLight", 
            "SurfaceGrid",
+           "make_text",
        ]
