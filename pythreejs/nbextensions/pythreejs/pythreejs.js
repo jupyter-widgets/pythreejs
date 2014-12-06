@@ -1,13 +1,12 @@
+# included version of three.js is from commit da1a7a1e92a4410cf0901fee3ea69a36cd2b0025 from my fork at https://github.com/jasongrout/three.js/
 require.config({
     paths: {
         "threejs": "/nbextensions/pythreejs/three.js/build/three",
         "threejs-orbit": "/nbextensions/pythreejs/three.js/examples/js/controls/OrbitControls",
-        "threejs-trackball": "/nbextensions/pythreejs/three.js/examples/js/controls/TrackballControls",
         "threejs-detector": "/nbextensions/pythreejs/three.js/examples/js/Detector",
     },
     shim: {
         "threejs-orbit": {deps: ["threejs"]},
-        "threejs-trackball": {deps: ["threejs"]},
         "threejs-detector": {deps: ["threejs"]},
         "threejs": {exports: "THREE"}
     },
