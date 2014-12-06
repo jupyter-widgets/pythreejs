@@ -64,6 +64,13 @@ class DataTexture(Texture):
                         'LinearFilter', 'LinearMipMapNearestFilter'], 'NearestFilter', sync=True)
     anisotropy = CInt(1, sync=True)
 
+class TextTexture(Texture):
+    _view_name = Unicode('TextTextureView', sync=True)
+    fontFace = Unicode('Arial', sync=True)
+    size = CInt(12, sync=True)
+    color = Color('black', sync=True)
+    string = Unicode('', sync=True)
+    squareTexture = Bool(True, sync=True)
 
 # python 3 compatibility stuff
 # http://www.voidspace.org.uk/python/articles/porting-mock-to-python-3.shtml
@@ -504,13 +511,6 @@ class Sprite(Object3d):
     material = Instance(Material, sync=True)
     scaleToTexture = Bool(False, sync=True)
 
-class TextTexture(Texture):
-    _view_name = Unicode('TextTextureView', sync=True)
-    fontFace = Unicode('Arial', sync=True)
-    size = CInt(12, sync=True)
-    color = Color('black', sync=True)
-    string = Unicode('', sync=True)
-    squareTexture = Bool(True, sync=True)
 
 class Mesh(Object3d):
     _view_name = Unicode('MeshView', sync=True)
