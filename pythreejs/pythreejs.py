@@ -27,6 +27,43 @@ def vector2(trait_type=CFloat, default=None, **kwargs):
                 minlen=2, maxlen=2, allow_none=False, **kwargs)
 
 
+
+# python 3 compatibility stuff
+# http://www.voidspace.org.uk/python/articles/porting-mock-to-python-3.shtml
+try:
+    unicode
+except NameError:
+    # Python 3
+    basestring = unicode = str
+
+class Color(TraitType):
+    """A color trait.
+
+    This takes a color represented as:
+
+    * a string of the form ``'rgb(255, 0, 0)'``, ``'rgb(100%, 0%, 0%)'``, ``'#ff0000'``, ``'#f00'``, or a color name (see the THREE.ColorKeywords listing at https://github.com/mrdoob/three.js/blob/master/src/math/Color.js)
+    * an rgb tuple/list of numbers, each between 0 and 1
+    * an integer (or hex value)
+    """
+    default_value = 'black'
+    info_text = 'a color as an rgb tuple, an integer, or a string'
+
+    def validate(self, obj, value):
+        if isinstance(value, (tuple, list)) and len(value)==3:
+            return 'rgb(%d,%d,%d)'%(int(value[0]), int(value[1]), int(value[2]))
+        elif isinstance(value, basestring):
+            # from https://github.com/mrdoob/three.js/blob/master/src/math/Color.js
+            # there are lots of color names, as well as things like
+            # rgb(?,?,?), rgb(?%,?%,?%), #XXXXXX, #XXX
+            # TODO: validate one of those patterns, or just pass the buck to three.js
+            return value
+        else:
+            try:
+                return int(value)
+            except:
+                pass
+        self.error(obj, value)
+
 class Texture(Widget):
     _view_module = Unicode('nbextensions/pythreejs/pythreejs', sync=True)
     _view_name = Unicode('TextureView', sync=True)
@@ -71,42 +108,6 @@ class TextTexture(Texture):
     color = Color('black', sync=True)
     string = Unicode('', sync=True)
     squareTexture = Bool(True, sync=True)
-
-# python 3 compatibility stuff
-# http://www.voidspace.org.uk/python/articles/porting-mock-to-python-3.shtml
-try:
-    unicode
-except NameError:
-    # Python 3
-    basestring = unicode = str
-
-class Color(TraitType):
-    """A color trait.
-
-    This takes a color represented as:
-
-    * a string of the form ``'rgb(255, 0, 0)'``, ``'rgb(100%, 0%, 0%)'``, ``'#ff0000'``, ``'#f00'``, or a color name (see the THREE.ColorKeywords listing at https://github.com/mrdoob/three.js/blob/master/src/math/Color.js)
-    * an rgb tuple/list of numbers, each between 0 and 1
-    * an integer (or hex value)
-    """
-    default_value = 'black'
-    info_text = 'a color as an rgb tuple, an integer, or a string'
-
-    def validate(self, obj, value):
-        if isinstance(value, (tuple, list)) and len(value)==3:
-            return 'rgb(%d,%d,%d)'%(int(value[0]), int(value[1]), int(value[2]))
-        elif isinstance(value, basestring):
-            # from https://github.com/mrdoob/three.js/blob/master/src/math/Color.js
-            # there are lots of color names, as well as things like
-            # rgb(?,?,?), rgb(?%,?%,?%), #XXXXXX, #XXX
-            # TODO: validate one of those patterns, or just pass the buck to three.js
-            return value
-        else:
-            try:
-                return int(value)
-            except:
-                pass
-        self.error(obj, value)
 
 class Object3d(Widget):
     """
@@ -446,7 +447,7 @@ class _LineMaterial(Material):
     
 class LineBasicMaterial(_LineMaterial):
     _view_name = Unicode('LineBasicMaterialView', sync=True)
-    color = Color('black', sync=True)
+    color = Color('white', sync=True)
     linewidth = CFloat(1.0, sync=True)
     linecap = Unicode('round', sync=True)
     linejoin = Unicode('round', sync=True)
@@ -455,7 +456,7 @@ class LineBasicMaterial(_LineMaterial):
 
 class LineDashedMaterial(_LineMaterial):
     _view_name = Unicode('LineDashedMaterialView', sync=True)
-    color = Color('black', sync=True)
+    color = Color('white', sync=True)
     linewidth = CFloat(1.0, sync=True)
     scale = CFloat(1.0, sync=True)
     dashSize = CFloat(3.0, sync=True)
