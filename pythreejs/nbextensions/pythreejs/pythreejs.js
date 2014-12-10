@@ -12,7 +12,7 @@ require.config({
     },
 });
 
-define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "threejs-trackball", "threejs-orbit", "threejs-detector"], function(widget, manager, utils, THREE) {
+define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "threejs-orbit", "threejs-detector"], function(widget, manager, utils, THREE) {
     console.log("loading pythreejs");
     var register = {};
     var RendererView = widget.WidgetView.extend({
