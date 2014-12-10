@@ -1,4 +1,4 @@
-# included version of three.js is from commit da1a7a1e92a4410cf0901fee3ea69a36cd2b0025 from my fork at https://github.com/jasongrout/three.js/
+// included version of three.js is from commit da1a7a1e92a4410cf0901fee3ea69a36cd2b0025 from my fork at https://github.com/jasongrout/three.js/
 require.config({
     paths: {
         "threejs": "/nbextensions/pythreejs/three.js/build/three",
