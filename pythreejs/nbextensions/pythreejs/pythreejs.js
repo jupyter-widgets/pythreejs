@@ -363,8 +363,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                 projector.unprojectVector(vector, that.options.renderer.camera.obj);
                 var ray = vector.sub(that.options.renderer.camera.obj.position).normalize();
                 that.obj = new THREE.Raycaster(that.options.renderer.camera.obj.position, ray);
-                var root = that.root;
-                var objs = that.obj.intersectObject(root, true);
+                var objs = that.obj.intersectObject(that.root.obj, true);
                 var getinfo = function(o) {
                     var v = o.object.geometry.vertices;
                     var verts = [[v[o.face.a].x, v[o.face.a].y, v[o.face.a].z],
@@ -407,10 +406,10 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                     var r = _.find(views, function(o) {
                         return o.options.renderer_id === that.options.renderer_id;
                     });
-                    that.root = r.obj;
+                    that.root = r;
                 }).catch(utils.reject("Could not set up Picker", true));
             } else {
-                this.root = this.options.renderer.scene.obj;
+                this.root = this.options.renderer.scene;
             }
         }
 
