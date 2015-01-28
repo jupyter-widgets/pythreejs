@@ -5,9 +5,9 @@ def install_nbextension(**kwargs):
     """
     import os.path
     from IPython.html import nbextensions
-    #kwargs.setdefault('symlink', True)
     pkgdir = os.path.dirname(__file__)
-    nbextensions.install_nbextension([os.path.join(pkgdir, 'nbextensions', 'pythreejs')], **kwargs)
+    kwargs['destination'] = 'pythreejs'
+    nbextensions.install_nbextension(os.path.join(pkgdir, 'nbextension'), **kwargs)
 
 from .pythreejs import (
     Texture, 
