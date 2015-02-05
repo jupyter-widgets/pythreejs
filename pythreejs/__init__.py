@@ -72,6 +72,7 @@ from .pythreejs import (
     lights_color,
     lights_gray, 
     make_text,
+    height_texture,
 )
 
 
@@ -136,4 +137,5 @@ __all__ = ["Texture",
            "SpotLight", 
            "SurfaceGrid",
            "make_text",
+           "height_texture",
        ]

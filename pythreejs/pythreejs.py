@@ -688,3 +688,19 @@ def make_text(text, position=(0,0,0), height=1):
     """
     sm = SpriteMaterial(map=TextTexture(string=text, color='white', size=100, squareTexture=False))
     return Sprite(material=sm, position = position, scaleToTexture=True, scale=[1,height,1])
+
+def height_texture(z, colormap = 'YlGnBu_r'):
+    """Create a texture corresponding to the heights in z and the given colormap."""
+    from matplotlib import cm
+    from skimage import img_as_ubyte
+
+    colormap = cm.get_cmap(colormap)
+    im = z.copy()
+    # rescale to be in [0,1]
+    im -= im.min()
+    im /= im.max()
+    
+    rgba_im = img_as_ubyte(colormap(im)) # convert the values to rgba image using the colormap
+    rgba_list = list(rgba_im.flat) # make a flat list
+
+    return DataTexture(data=rgba_list, format='RGBAFormat', width=z.shape[0], height=z.shape[1])
