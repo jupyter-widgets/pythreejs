@@ -693,12 +693,14 @@ def height_texture(z, colormap = 'YlGnBu_r'):
     """Create a texture corresponding to the heights in z and the given colormap."""
     from matplotlib import cm
     from skimage import img_as_ubyte
+    import numpy as np
 
     colormap = cm.get_cmap(colormap)
     im = z.copy()
-    # rescale to be in [0,1]
-    im -= im.min()
-    im /= im.max()
+    # rescale to be in [0,1], nan maps to 0
+    im -= np.nanmin(im)
+    im /= np.nanmax(im)
+    im = np.nan_to_num(im)
     
     rgba_im = img_as_ubyte(colormap(im)) # convert the values to rgba image using the colormap
     rgba_list = list(rgba_im.flat) # make a flat list
