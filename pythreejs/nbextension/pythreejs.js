@@ -129,10 +129,15 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
         render: function() {
             this.obj = this.new_obj();
             this.register_object_parameters();
-            this.update();
+            // if the update function returns a promise or other non-zero value, return that
+            // otherwise, return the object we created
+            var update = this.update();
+
             // pickers need access to the model from the three.js object
+            // this.obj may not exist until after the update() call above
             this.obj.pythreejs_view = this;
-            return this.obj;
+
+            return update ? update : this.obj;
         },
         new_properties: function() {
             // initialize properties arrays
@@ -801,28 +806,34 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
         render: function() {
             // geometry and material are not child_properties because either child's
             // replace_obj event should trigger a remake of the MeshView obj
-            var that = this;
-            this.promise = Promise.all([this.create_child_view(this.model.get('geometry')),
-                                        this.create_child_view(this.model.get('material'))]).then(
-                                            function(v) {
-                                                that.geometry = v[0];
-                                                that.material = v[1];
-                                                that.geometry.on('replace_obj', that.update, that);
-                                                that.material.on('replace_obj', that.update, that);
-                                                that.geometry.on('rerender', that.needs_update, that);
-                                                that.material.on('rerender', that.needs_update, that);
-                                            });
-            Object3dView.prototype.render.call(this);
-            // we return the promise returned from update so that the view is considered "created"
-            // when we actually have a mesh created.
-            return this.update();
+            return Object3dView.prototype.render.call(this);
         },
         update: function() {
             var that = this;
-            return this.promise.then(function() {
-                that.replace_obj(new THREE.Mesh( that.geometry.obj, that.material.obj ));
-                Object3dView.prototype.update.call(that);
-            });
+
+            // we return the promise returned from update so that the view is considered "created"
+            // when we actually have a mesh created.
+            this.promise = Promise.all([this.create_child_view(this.model.get('geometry')),
+                                        this.create_child_view(this.model.get('material'))]).then(
+                                            function(v) {
+                                                if(that.geometry) {
+                                                    that.stopListening(that.geometry); 
+                                                    that.geometry.remove();
+                                                }
+                                                if(that.material) {
+                                                    that.stopListening(that.material);
+                                                    that.material.remove();
+                                                }
+                                                that.geometry = v[0];
+                                                that.material = v[1];
+                                                that.listenTo(that.geometry, 'replace_obj', that.update);
+                                                that.listenTo(that.material, 'replace_obj', that.update);
+                                                that.listenTo(that.geometry, 'rerender', that.needs_update);
+                                                that.listenTo(that.material, 'rerender', that.needs_update);
+                                                that.replace_obj(new THREE.Mesh( that.geometry.obj, that.material.obj ));
+                                                Object3dView.prototype.update.call(that);
+                                            });
+            return this.promise;
         }
     });
     register['MeshView'] = MeshView;
@@ -1029,7 +1040,9 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
     var SurfaceGridView = MeshView.extend({
         update: function() {
             var that = this;
-            this.promise.then(function() {
+            // we call this first so this.geometry and this.material are created
+            var promise = MeshView.prototype.update.call(this);
+            return promise.then(function() {
                 // Construct the grid lines from that.geometry.obj
                 var vertices = that.geometry.obj.vertices;
                 var xpoints = that.geometry.obj.parameters.widthSegments+1;
@@ -1054,7 +1067,10 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                     obj.add(new THREE.Line(g, that.material.obj));
                 }
 
+                obj.computeFaceNormals();
+                obj.computeVertexNormals();
                 that.replace_obj(obj);
+                // Skip the parent to call Object3dView's update, which registers the update
                 Object3dView.prototype.update.call(that);
             })
         }
