@@ -1067,8 +1067,6 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                     obj.add(new THREE.Line(g, that.material.obj));
                 }
 
-                obj.computeFaceNormals();
-                obj.computeVertexNormals();
                 that.replace_obj(obj);
                 // Skip the parent to call Object3dView's update, which registers the update
                 Object3dView.prototype.update.call(that);
