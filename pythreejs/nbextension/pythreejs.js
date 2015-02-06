@@ -936,7 +936,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
         },
         needs_update: function() {
             if (this.model.get('scaleToTexture')) {
-                if (this.material.map.aspect) {
+                if (this.material.map && this.material.map.aspect) {
                     var scale = this.model.get('scale');
                     var y = (scale && scale[1]) || 1.0;
                     this.model.set('scale', [y*this.material.map.aspect,y,1]);
