@@ -840,9 +840,12 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
 
     var LineView = MeshView.extend({
         update: function() {
+            // we call this first so this.geometry and this.material are created
             var that = this;
-            this.promise.then(function() {
-                that.replace_obj(new THREE.Line(that.geometry.obj, that.material.obj, THREE[that.model.get("type")]));
+            var promise = MeshView.prototype.update.call(this);
+            return promise.then(function() {
+                that.replace_obj(new THREE.Line(that.geometry.obj, that.material.obj, 
+                                                THREE[that.model.get("type")]));
                 Object3dView.prototype.update.call(that);
             });
         }
