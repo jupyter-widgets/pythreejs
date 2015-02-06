@@ -365,8 +365,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                 var mouseY = -((event.pageY - offset.top) / $(that.options.dom).height()) * 2 + 1;
                 var vector = new THREE.Vector3(mouseX, mouseY, that.options.renderer.camera.obj.near);
 
-                var projector = new THREE.Projector();
-                projector.unprojectVector(vector, that.options.renderer.camera.obj);
+                vector.unproject(that.options.renderer.camera.obj);
                 var ray = vector.sub(that.options.renderer.camera.obj.position).normalize();
                 that.obj = new THREE.Raycaster(that.options.renderer.camera.obj.position, ray);
                 var objs = that.obj.intersectObject(that.root.obj, true);
