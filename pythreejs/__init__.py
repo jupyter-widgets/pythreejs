@@ -4,7 +4,10 @@ def install_nbextension(**kwargs):
     Keyword arguments will be passed on to the IPython install_nbextension function.
     """
     import os.path
-    from IPython.html import nbextensions
+    try:
+        from jupyter_notebook import nbextensions
+    except ImportError: # IPython 3.x
+        from IPython.html import nbextensions
     pkgdir = os.path.dirname(__file__)
     kwargs['destination'] = 'pythreejs'
     nbextensions.install_nbextension(os.path.join(pkgdir, 'nbextension'), **kwargs)
