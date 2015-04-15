@@ -9,13 +9,13 @@ Another resource to understanding three.js decisions is the Udacity course on 3d
 
 # Import the base Widget class and the traitlets Unicode class.
 try:
-    from jupyter_notebook.widgets.widget import Widget, DOMWidget
+    from jupyter_notebook.widgets.widget import Widget, DOMWidget, widget_serialization
     from traitlets import (Unicode, Int, Instance, Enum, List, Dict, Float,
-                                     Any, CFloat, Bool, This, CInt, TraitType)
+                           Any, CFloat, Bool, This, CInt, TraitType)
 except ImportError: # IPython 3.x
-    from IPython.html.widgets.widget import Widget, DOMWidget
+    from IPython.html.widgets.widget import Widget, DOMWidget, widget_serialization
     from IPython.utils.traitlets import (Unicode, Int, Instance, Enum, List, Dict, Float,
-                                     Any, CFloat, Bool, This, CInt, TraitType)
+                                         Any, CFloat, Bool, This, CInt, TraitType)
 import numpy as np
 from math import pi, sqrt
 
@@ -118,9 +118,10 @@ class Object3d(Widget):
     """
     If matrix is not None, it overrides the position, rotation, scale, and up variables.
     """
-    #_model_name = Unicode('Object3dModel', sync=True)
     _view_module = Unicode('nbextensions/pythreejs/pythreejs', sync=True)
     _view_name = Unicode('Object3dView', sync=True)
+    _model_module = Unicode('nbextensions/pythreejs/pythreejs', sync=True)
+    _model_name = Unicode('Object3dModel', sync=True)
     position = vector3(CFloat, sync=True)
     quaternion = List(CFloat, sync=True) # [x,y,z,w]
     scale = vector3(CFloat, [1,1,1], sync=True)
@@ -131,7 +132,7 @@ class Object3d(Widget):
     # FYI, this matrix has the translation in the 4th row, which is is the
     # transpose of Sage's transformation matrices
     # TODO: figure out how to get a list of instances of Object3d
-    children = List(trait=None, default_value=[], allow_none=False, sync=True)
+    children = List(trait=None, default_value=[], allow_none=False, sync=True, **widget_serialization)
 
     def set_matrix(self, m):
         self.position = m[12:15]
@@ -224,19 +225,22 @@ class ScaledObject(Object3d):
 class Controls(Widget):
     _view_module = Unicode('nbextensions/pythreejs/pythreejs', sync=True)
     _view_name = Unicode('ControlsView', sync=True)
-    controlling = Instance(Object3d, sync=True)
+    _model_module = Unicode('nbextensions/pythreejs/pythreejs', sync=True)
+    _model_name = Unicode('ControlsModel', sync=True)
+    controlling = Instance(Object3d, sync=True, allow_none=True, **widget_serialization)
 
 class OrbitControls(Controls):
     _view_name = Unicode('OrbitControlsView', sync=True)
 
 class Picker(Controls):
     _view_name  = Unicode('PickerView', sync=True)
+    _model_name  = Unicode('PickerModel', sync=True)
     event = Unicode('click', sync=True)
-    root = Instance(Object3d, sync=True)
+    root = Instance(Object3d, sync=True, allow_none=True, **widget_serialization)
     picked = List(Dict, sync=True)
     distance = CFloat(sync=True)
     point = vector3(CFloat, sync=True)
-    object = Instance(Object3d, sync=True)
+    object = Instance(Object3d, sync=True, allow_none=True, **widget_serialization)
     face = vector3(CInt, sync=True)
     faceNormal = vector3(CFloat, sync=True)
     faceVertices = List(vector3(), sync=True)
@@ -408,6 +412,8 @@ class Material(Widget):
     
 class BasicMaterial(Material):
     _view_name = Unicode('BasicMaterialView', sync=True)
+    _model_module = Unicode('nbextensions/pythreejs/pythreejs', sync=True)
+    _model_name = Unicode('BasicMaterialModel', sync=True)
     color = Color('white', sync=True)
     wireframe = Bool(False, sync=True)
     wireframeLinewidth = CFloat(1.0, sync=True)
@@ -416,10 +422,10 @@ class BasicMaterial(Material):
     shading = Enum(['SmoothShading', 'FlatShading', 'NoShading'], 'SmoothShading', sync=True)
     vertexColors = Enum(['NoColors', 'FaceColors', 'VertexColors'], 'NoColors', sync=True)
     fog = Bool(False, sync=True)
-    map = Instance(Texture, sync=True)
-    lightMap = Instance(Texture, sync=True)
-    specularMap = Instance(Texture, sync=True)
-    envMap = Instance(Texture, sync=True)
+    map = Instance(Texture, sync=True, allow_none=True, **widget_serialization)
+    lightMap = Instance(Texture, sync=True, allow_none=True, **widget_serialization)
+    specularMap = Instance(Texture, sync=True, allow_none=True, **widget_serialization)
+    envMap = Instance(Texture, sync=True, allow_none=True, **widget_serialization)
     skinning = Bool(False, sync=True)
     morphTargets = Bool(False, sync=True)
 
@@ -478,8 +484,10 @@ class NormalMaterial(Material):
 
 class ParticleSystemMaterial(Material):
     _view_name = Unicode('ParticleSystemMaterialView', sync=True)
+    _model_module = Unicode('nbextensions/pythreejs/pythreejs', sync=True)
+    _model_name = Unicode('ParticleSystemMaterialModel', sync=True)
     color = Color('yellow', sync=True)
-    map = Instance(Texture, sync=True)
+    map = Instance(Texture, sync=True, allow_none=True, **widget_serialization)
     size = CFloat(1.0, sync=True)
     sizeAttenuation = Bool(False, sync=True)
     vertexColors = Bool(False, sync=True)
@@ -502,7 +510,9 @@ class ShaderMaterial(Material):
 
 class SpriteMaterial(Material):
     _view_name = Unicode('SpriteMaterialView', sync=True)
-    map = Instance(Texture, sync=True)
+    _model_module = Unicode('nbextensions/pythreejs/pythreejs', sync=True)
+    _model_name = Unicode('SpriteMaterialModel', sync=True)
+    map = Instance(Texture, sync=True, allow_none=True, **widget_serialization)
     uvScale = List(CFloat, sync=True)
     sizeAttenuation = Bool(False, sync=True)
     color = Color('white', sync=True)
@@ -514,19 +524,25 @@ class SpriteMaterial(Material):
 
 class Sprite(Object3d):
     _view_name = Unicode('SpriteView', sync=True)
-    material = Instance(Material, sync=True)
+    _model_module = Unicode('nbextensions/pythreejs/pythreejs', sync=True)
+    _model_name = Unicode('SpriteModel', sync=True)
+    material = Instance(Material, sync=True, allow_none=True, **widget_serialization)
     scaleToTexture = Bool(False, sync=True)
 
 
 class Mesh(Object3d):
     _view_name = Unicode('MeshView', sync=True)
-    geometry = Instance(Geometry, sync=True)
-    material = Instance(Material, sync=True)
+    _model_module = Unicode('nbextensions/pythreejs/pythreejs', sync=True)
+    _model_name = Unicode('MeshModel', sync=True)
+    geometry = Instance(Geometry, sync=True, **widget_serialization)
+    material = Instance(Material, sync=True, **widget_serialization)
 
 class Line(Mesh):
+    # don't need a custom model since we aren't introducing new custom serialized properties,
+    # just making the material property a more specific instance
     _view_name = Unicode('LineView', sync=True)
     type = Enum(['LineStrip', 'LinePieces'], 'LineStrip', sync=True)
-    material = Instance(_LineMaterial, sync=True)
+    material = Instance(_LineMaterial, sync=True, **widget_serialization)
     
 class PlotMesh(Mesh):
     plot = Instance('sage.plot.plot3d.base.Graphics3d')
@@ -623,13 +639,15 @@ class AnaglyphEffect(Effect):
 class Renderer(Widget):
     _view_module = Unicode('nbextensions/pythreejs/pythreejs', sync=True)
     _view_name = Unicode('RendererView', sync=True)
+    _model_module = Unicode('nbextensions/pythreejs/pythreejs', sync=True)
+    _model_name = Unicode('RendererModel', sync=True)
     width = CInt(600, sync=True)
     height = CInt(400, sync=True)
     renderer_type = Enum(['webgl', 'canvas', 'auto'], 'auto', sync=True)
-    scene = Instance(Scene, sync=True)
-    camera = Instance(Camera, sync=True)
-    controls = List(Instance(Controls), sync=True)
-    effect = Instance(Effect, sync=True)
+    scene = Instance(Scene, sync=True, **widget_serialization)
+    camera = Instance(Camera, sync=True, **widget_serialization)
+    controls = List(Instance(Controls), sync=True, **widget_serialization)
+    effect = Instance(Effect, sync=True, allow_none=True, **widget_serialization)
     background = Color('black', sync=True, allow_none=True)
 
 class Light(Object3d):
@@ -682,9 +700,11 @@ class SurfaceGrid(Mesh):
 
     This will draw a line mesh overlaying the SurfaceGeometry.
     """
+    # don't need a custom model since we aren't introducing new custom serialized properties,
+    # just making some properties more specific instances
     _view_name = Unicode('SurfaceGridView', sync=True)
-    geometry = Instance(SurfaceGeometry, sync=True)
-    material = Instance(_LineMaterial, sync=True)
+    geometry = Instance(SurfaceGeometry, sync=True, **widget_serialization)
+    material = Instance(_LineMaterial, sync=True, **widget_serialization)
 
 
 def make_text(text, position=(0,0,0), height=1):

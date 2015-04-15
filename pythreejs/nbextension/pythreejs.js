@@ -1078,12 +1078,85 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
     });
     register['SurfaceGridView'] = SurfaceGridView;
 
-    /* We keep these lines in here for backwards compatibility, to be removed when IPython 3.0 is released */
+    /* Custom models, which we need for serializing object references */
+
+    register.Object3dModel = widget.WidgetModel.extend({}, {
+        serializers: _.extend({
+            children: {deserialize: widget.unpack_models}
+        }, widget.WidgetModel.serializers)
+    });
+
+    register.ControlsModel = widget.WidgetModel.extend({}, {
+        serializers: _.extend({
+            controlling: {deserialize: widget.unpack_models}
+        }, widget.WidgetModel.serializers)
+    });
+
+    register.PickerModel = register.ControlsModel.extend({}, {
+        serializers: _.extend({
+            root: {deserialize: widget.unpack_models},
+            object: {deserialize: widget.unpack_models},
+        }, register.ControlsModel.serializers)
+    });
+
+    register.BasicMaterialModel = widget.WidgetModel.extend({}, {
+        serializers: _.extend({
+            map: {deserialize: widget.unpack_models},
+            lightMap: {deserialize: widget.unpack_models},
+            specularMap: {deserialize: widget.unpack_models},
+            envMap: {deserialize: widget.unpack_models},
+        }, widget.WidgetModel.serializers)
+    });
+
+    register.ParticleSystemMaterialModel = widget.WidgetModel.extend({}, {
+        serializers: _.extend({
+            map: {deserialize: widget.unpack_models}
+        }, widget.WidgetModel.serializers)
+    });
+
+    register.SpriteMaterialModel = widget.WidgetModel.extend({}, {
+        serializers: _.extend({
+            map: {deserialize: widget.unpack_models}
+        }, widget.WidgetModel.serializers)
+    });
+
+    register.SpriteModel = widget.WidgetModel.extend({}, {
+        serializers: _.extend({
+            material: {deserialize: widget.unpack_models}
+        }, widget.WidgetModel.serializers)
+    });
+
+    register.MeshModel = widget.WidgetModel.extend({}, {
+        serializers: _.extend({
+            geometry: {deserialize: widget.unpack_models},
+            material: {deserialize: widget.unpack_models},
+        }, widget.WidgetModel.serializers)
+    });
+
+    register.RendererModel = widget.WidgetModel.extend({}, {
+        serializers: _.extend({
+            scene: {deserialize: widget.unpack_models},
+            camera: {deserialize: widget.unpack_models},
+            controls: {deserialize: widget.unpack_models},
+            effect: {deserialize: widget.unpack_models},
+        }, widget.WidgetModel.serializers)
+    });
+
+
+/*    // Modified from jupyter_notebook/static/widgets/js/init.js
+    // we probably don't need this anymore, but we should check performance
+    // before removing it
     for (var key in register) {
         if (register.hasOwnProperty(key)) {
-            manager.WidgetManager.register_widget_view(key, register[key]);
+            var target = module[target_name];
+            if (target.prototype instanceof widget.WidgetModel) {
+                manager.WidgetManager.register_widget_model(key, target);
+            } else if (target.prototype instanceof widget.WidgetView) {
+                manager.WidgetManager.register_widget_view(key, target);
+            }
         }
     }
+*/
     return register;
 
 });
