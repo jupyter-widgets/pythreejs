@@ -228,6 +228,7 @@ class Controls(Widget):
 
 class OrbitControls(Controls):
     _view_name = Unicode('OrbitControlsView', sync=True)
+    target = vector3(CFloat, sync=True)
 
 class Picker(Controls):
     _view_name  = Unicode('PickerView', sync=True)

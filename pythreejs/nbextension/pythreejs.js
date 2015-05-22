@@ -333,6 +333,11 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
     register['OrthographicCameraView'] = OrthographicCameraView;
 
     var OrbitControlsView = ThreeView.extend({
+        new_properties: function() {
+            ThreeView.prototype.new_properties.call(this);
+            this.array_properties.push('target');
+        },
+
         render: function() {
             
             var that = this;
@@ -342,6 +347,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                     return o.options.renderer_id === that.options.renderer_id
                 }, that);
                 that.obj = new THREE.OrbitControls(that.controlled_view.obj, that.options.dom);
+                that.register_object_parameters();
                 that.obj.noKeys = true; // turn off keyboard navigation
                 that.options.register_update(that.obj.update, that.obj);
                 that.obj.addEventListener('change', that.options.render_frame);
