@@ -352,10 +352,20 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                 that.obj.addEventListener('change', that.options.render_frame);
                 that.obj.addEventListener('start', that.options.start_update_loop);
                 that.obj.addEventListener('end', that.options.end_update_loop);
+                that.obj.addEventListener('end', function() {that.update_controlled()});
                 // if there is a three.js control change, call the animate function to animate at least one more time
                 delete that.options.renderer;
             });
-        }
+        },
+        
+        update_controlled: function() {
+            // Since OrbitControlsView changes the position of the object, we update the position when we've stopped moving the object
+            // it's probably prohibitive to update it in real-time
+            // TODO: it also changes the quaternion/rotation/lookAt of the object; we should probably update that as well
+            var pos = this.controlled_view.obj.position;
+            this.controlled_view.model.set('position', [pos.x, pos.y, pos.z]);
+            this.controlled_view.touch();
+        },
     });
     register['OrbitControlsView'] = OrbitControlsView;
 
