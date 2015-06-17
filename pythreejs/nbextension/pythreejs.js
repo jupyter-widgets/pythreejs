@@ -276,6 +276,15 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "underscore"
             this.obj.add(new_obj);
             this.needs_update()
         },
+        replace_obj: function(new_obj) {
+            // add three.js children objects to new three.js object
+            Promise.all(this.children.views).then(function(views) {
+                for (var i=0; i<views.length; i++) {
+                    new_obj.add(views[i].obj)
+                }
+            });
+            ThreeView.prototype.replace_obj.apply(this, arguments);
+        },
     });
     register['Object3dView'] = Object3dView;
 
