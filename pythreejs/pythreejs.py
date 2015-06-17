@@ -9,7 +9,7 @@ Another resource to understanding three.js decisions is the Udacity course on 3d
 
 # Import the base Widget class and the traitlets Unicode class.
 try:
-    from ipython_widgets import Widget, DOMWidget, widget_serialization
+    from ipywidgets import Widget, DOMWidget, widget_serialization
     from traitlets import (Unicode, Int, Instance, Enum, List, Dict, Float,
                            Any, CFloat, Bool, This, CInt, TraitType)
 except ImportError:  # IPython 3.x
