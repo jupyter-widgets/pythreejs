@@ -12,7 +12,8 @@ require.config({
     },
 });
 
-define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "threejs-orbit", "threejs-detector"], function(widget, manager, utils, THREE) {
+define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "underscore", "threejs", "threejs-orbit", "threejs-detector"],
+       function(widget, manager, utils, _, THREE) {
     console.log("loading pythreejs");
     var register = {};
     var RendererView = widget.WidgetView.extend({
@@ -274,6 +275,15 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
             this.obj.remove(old_obj);
             this.obj.add(new_obj);
             this.needs_update()
+        },
+        replace_obj: function(new_obj) {
+            // add three.js children objects to new three.js object
+            Promise.all(this.children.views).then(function(views) {
+                for (var i=0; i<views.length; i++) {
+                    new_obj.add(views[i].obj)
+                }
+            });
+            ThreeView.prototype.replace_obj.apply(this, arguments);
         },
     });
     register['Object3dView'] = Object3dView;
@@ -1138,14 +1148,14 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
     register.SpriteModel = widget.WidgetModel.extend({}, {
         serializers: _.extend({
             material: {deserialize: widget.unpack_models}
-        }, widget.WidgetModel.serializers)
+        }, register.Object3dModel.serializers)
     });
 
     register.MeshModel = widget.WidgetModel.extend({}, {
         serializers: _.extend({
             geometry: {deserialize: widget.unpack_models},
             material: {deserialize: widget.unpack_models},
-        }, widget.WidgetModel.serializers)
+        }, register.Object3dModel.serializers)
     });
 
     register.RendererModel = widget.WidgetModel.extend({}, {
