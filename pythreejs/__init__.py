@@ -5,7 +5,7 @@ def install_nbextension(**kwargs):
     """
     import os.path
     try:
-        from jupyter_notebook import nbextensions
+        from notebook import nbextensions
     except ImportError: # IPython 3.x
         from IPython.html import nbextensions
     pkgdir = os.path.dirname(__file__)
