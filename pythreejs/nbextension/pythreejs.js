@@ -250,6 +250,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "underscore"
                             that.obj.add(view.obj);
                             that.listenTo(view, 'replace_obj', that.replace_child_obj);
                             that.listenTo(view, 'rerender', that.needs_update);
+                            that.needs_update(); // initial rendering
                             return view;
                         });
                 },
