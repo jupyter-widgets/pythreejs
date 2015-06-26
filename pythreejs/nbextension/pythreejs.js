@@ -12,7 +12,8 @@ require.config({
     },
 });
 
-define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "threejs-orbit", "threejs-detector"], function(widget, manager, utils, THREE) {
+define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "underscore", "threejs", "threejs-orbit", "threejs-detector"],
+       function(widget, manager, utils, _, THREE) {
     console.log("loading pythreejs");
     var register = {};
     var RendererView = widget.WidgetView.extend({
@@ -129,10 +130,15 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
         render: function() {
             this.obj = this.new_obj();
             this.register_object_parameters();
-            this.update();
+            // if the update function returns a promise or other non-zero value, return that
+            // otherwise, return the object we created
+            var update = this.update();
+
             // pickers need access to the model from the three.js object
+            // this.obj may not exist until after the update() call above
             this.obj.pythreejs_view = this;
-            return this.obj;
+
+            return update ? update : this.obj;
         },
         new_properties: function() {
             // initialize properties arrays
@@ -244,6 +250,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                             that.obj.add(view.obj);
                             that.listenTo(view, 'replace_obj', that.replace_child_obj);
                             that.listenTo(view, 'rerender', that.needs_update);
+                            that.needs_update(); // initial rendering
                             return view;
                         });
                 },
@@ -269,6 +276,15 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
             this.obj.remove(old_obj);
             this.obj.add(new_obj);
             this.needs_update()
+        },
+        replace_obj: function(new_obj) {
+            // add three.js children objects to new three.js object
+            Promise.all(this.children.views).then(function(views) {
+                for (var i=0; i<views.length; i++) {
+                    new_obj.add(views[i].obj)
+                }
+            });
+            ThreeView.prototype.replace_obj.apply(this, arguments);
         },
     });
     register['Object3dView'] = Object3dView;
@@ -328,8 +344,12 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
     register['OrthographicCameraView'] = OrthographicCameraView;
 
     var OrbitControlsView = ThreeView.extend({
+        new_properties: function() {
+            ThreeView.prototype.new_properties.call(this);
+            this.array_properties.push('target');
+        },
+
         render: function() {
-            
             var that = this;
             return utils.resolve_promises_dict(this.model.get('controlling').views).then(function(views) {
                 // get the view that is tied to the same renderer
@@ -337,14 +357,26 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                     return o.options.renderer_id === that.options.renderer_id
                 }, that);
                 that.obj = new THREE.OrbitControls(that.controlled_view.obj, that.options.dom);
+                that.register_object_parameters();
+                that.obj.noKeys = true; // turn off keyboard navigation
                 that.options.register_update(that.obj.update, that.obj);
                 that.obj.addEventListener('change', that.options.render_frame);
                 that.obj.addEventListener('start', that.options.start_update_loop);
                 that.obj.addEventListener('end', that.options.end_update_loop);
+                that.obj.addEventListener('end', function() {that.update_controlled()});
                 // if there is a three.js control change, call the animate function to animate at least one more time
                 delete that.options.renderer;
             });
-        }
+        },
+        
+        update_controlled: function() {
+            // Since OrbitControlsView changes the position of the object, we update the position when we've stopped moving the object
+            // it's probably prohibitive to update it in real-time
+            // TODO: it also changes the quaternion/rotation/lookAt of the object; we should probably update that as well
+            var pos = this.controlled_view.obj.position;
+            this.controlled_view.model.set('position', [pos.x, pos.y, pos.z]);
+            this.controlled_view.touch();
+        },
     });
     register['OrbitControlsView'] = OrbitControlsView;
 
@@ -359,12 +391,10 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                 var mouseY = -((event.pageY - offset.top) / $(that.options.dom).height()) * 2 + 1;
                 var vector = new THREE.Vector3(mouseX, mouseY, that.options.renderer.camera.obj.near);
 
-                var projector = new THREE.Projector();
-                projector.unprojectVector(vector, that.options.renderer.camera.obj);
+                vector.unproject(that.options.renderer.camera.obj);
                 var ray = vector.sub(that.options.renderer.camera.obj.position).normalize();
                 that.obj = new THREE.Raycaster(that.options.renderer.camera.obj.position, ray);
-                var root = that.root;
-                var objs = that.obj.intersectObject(root, true);
+                var objs = that.obj.intersectObject(that.root.obj, true);
                 var getinfo = function(o) {
                     var v = o.object.geometry.vertices;
                     var verts = [[v[o.face.a].x, v[o.face.a].y, v[o.face.a].z],
@@ -407,10 +437,10 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                     var r = _.find(views, function(o) {
                         return o.options.renderer_id === that.options.renderer_id;
                     });
-                    that.root = r.obj;
+                    that.root = r;
                 }).catch(utils.reject("Could not set up Picker", true));
             } else {
-                this.root = this.options.renderer.scene.obj;
+                this.root = this.options.renderer.scene;
             }
         }
 
@@ -802,37 +832,46 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
         render: function() {
             // geometry and material are not child_properties because either child's
             // replace_obj event should trigger a remake of the MeshView obj
-            var that = this;
-            this.promise = Promise.all([this.create_child_view(this.model.get('geometry')),
-                                        this.create_child_view(this.model.get('material'))]).then(
-                                            function(v) {
-                                                that.geometry = v[0];
-                                                that.material = v[1];
-                                                that.geometry.on('replace_obj', that.update, that);
-                                                that.material.on('replace_obj', that.update, that);
-                                                that.geometry.on('rerender', that.needs_update, that);
-                                                that.material.on('rerender', that.needs_update, that);
-                                            });
-            Object3dView.prototype.render.call(this);
-            // we return the promise returned from update so that the view is considered "created"
-            // when we actually have a mesh created.
-            return this.update();
+            return Object3dView.prototype.render.call(this);
         },
         update: function() {
             var that = this;
-            return this.promise.then(function() {
-                that.replace_obj(new THREE.Mesh( that.geometry.obj, that.material.obj ));
-                Object3dView.prototype.update.call(that);
-            });
+
+            // we return the promise returned from update so that the view is considered "created"
+            // when we actually have a mesh created.
+            this.promise = Promise.all([this.create_child_view(this.model.get('geometry')),
+                                        this.create_child_view(this.model.get('material'))]).then(
+                                            function(v) {
+                                                if(that.geometry) {
+                                                    that.stopListening(that.geometry); 
+                                                    that.geometry.remove();
+                                                }
+                                                if(that.material) {
+                                                    that.stopListening(that.material);
+                                                    that.material.remove();
+                                                }
+                                                that.geometry = v[0];
+                                                that.material = v[1];
+                                                that.listenTo(that.geometry, 'replace_obj', that.update);
+                                                that.listenTo(that.material, 'replace_obj', that.update);
+                                                that.listenTo(that.geometry, 'rerender', that.needs_update);
+                                                that.listenTo(that.material, 'rerender', that.needs_update);
+                                                that.replace_obj(new THREE.Mesh( that.geometry.obj, that.material.obj ));
+                                                Object3dView.prototype.update.call(that);
+                                            });
+            return this.promise;
         }
     });
     register['MeshView'] = MeshView;
 
     var LineView = MeshView.extend({
         update: function() {
+            // we call this first so this.geometry and this.material are created
             var that = this;
-            this.promise.then(function() {
-                that.replace_obj(new THREE.Line(that.geometry.obj, that.material.obj, THREE[that.model.get("type")]));
+            var promise = MeshView.prototype.update.call(this);
+            return promise.then(function() {
+                that.replace_obj(new THREE.Line(that.geometry.obj, that.material.obj, 
+                                                THREE[that.model.get("type")]));
                 Object3dView.prototype.update.call(that);
             });
         }
@@ -926,7 +965,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
         },
         needs_update: function() {
             if (this.model.get('scaleToTexture')) {
-                if (this.material.map.aspect) {
+                if (this.material.map && this.material.map.aspect) {
                     var scale = this.model.get('scale');
                     var y = (scale && scale[1]) || 1.0;
                     this.model.set('scale', [y*this.material.map.aspect,y,1]);
@@ -1030,7 +1069,9 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
     var SurfaceGridView = MeshView.extend({
         update: function() {
             var that = this;
-            this.promise.then(function() {
+            // we call this first so this.geometry and this.material are created
+            var promise = MeshView.prototype.update.call(this);
+            return promise.then(function() {
                 // Construct the grid lines from that.geometry.obj
                 var vertices = that.geometry.obj.vertices;
                 var xpoints = that.geometry.obj.parameters.widthSegments+1;
@@ -1056,18 +1097,92 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "threejs", "
                 }
 
                 that.replace_obj(obj);
+                // Skip the parent to call Object3dView's update, which registers the update
                 Object3dView.prototype.update.call(that);
             })
         }
     });
     register['SurfaceGridView'] = SurfaceGridView;
 
-    /* We keep these lines in here for backwards compatibility, to be removed when IPython 3.0 is released */
+    /* Custom models, which we need for serializing object references */
+
+    register.Object3dModel = widget.WidgetModel.extend({}, {
+        serializers: _.extend({
+            children: {deserialize: widget.unpack_models}
+        }, widget.WidgetModel.serializers)
+    });
+
+    register.ControlsModel = widget.WidgetModel.extend({}, {
+        serializers: _.extend({
+            controlling: {deserialize: widget.unpack_models}
+        }, widget.WidgetModel.serializers)
+    });
+
+    register.PickerModel = register.ControlsModel.extend({}, {
+        serializers: _.extend({
+            root: {deserialize: widget.unpack_models},
+            object: {deserialize: widget.unpack_models},
+        }, register.ControlsModel.serializers)
+    });
+
+    register.BasicMaterialModel = widget.WidgetModel.extend({}, {
+        serializers: _.extend({
+            map: {deserialize: widget.unpack_models},
+            lightMap: {deserialize: widget.unpack_models},
+            specularMap: {deserialize: widget.unpack_models},
+            envMap: {deserialize: widget.unpack_models},
+        }, widget.WidgetModel.serializers)
+    });
+
+    register.ParticleSystemMaterialModel = widget.WidgetModel.extend({}, {
+        serializers: _.extend({
+            map: {deserialize: widget.unpack_models}
+        }, widget.WidgetModel.serializers)
+    });
+
+    register.SpriteMaterialModel = widget.WidgetModel.extend({}, {
+        serializers: _.extend({
+            map: {deserialize: widget.unpack_models}
+        }, widget.WidgetModel.serializers)
+    });
+
+    register.SpriteModel = widget.WidgetModel.extend({}, {
+        serializers: _.extend({
+            material: {deserialize: widget.unpack_models}
+        }, register.Object3dModel.serializers)
+    });
+
+    register.MeshModel = widget.WidgetModel.extend({}, {
+        serializers: _.extend({
+            geometry: {deserialize: widget.unpack_models},
+            material: {deserialize: widget.unpack_models},
+        }, register.Object3dModel.serializers)
+    });
+
+    register.RendererModel = widget.WidgetModel.extend({}, {
+        serializers: _.extend({
+            scene: {deserialize: widget.unpack_models},
+            camera: {deserialize: widget.unpack_models},
+            controls: {deserialize: widget.unpack_models},
+            effect: {deserialize: widget.unpack_models},
+        }, widget.WidgetModel.serializers)
+    });
+
+
+/*    // Modified from jupyter_notebook/static/widgets/js/init.js
+    // we probably don't need this anymore, but we should check performance
+    // before removing it
     for (var key in register) {
         if (register.hasOwnProperty(key)) {
-            manager.WidgetManager.register_widget_view(key, register[key]);
+            var target = module[target_name];
+            if (target.prototype instanceof widget.WidgetModel) {
+                manager.WidgetManager.register_widget_model(key, target);
+            } else if (target.prototype instanceof widget.WidgetView) {
+                manager.WidgetManager.register_widget_view(key, target);
+            }
         }
     }
+*/
     return register;
 
 });

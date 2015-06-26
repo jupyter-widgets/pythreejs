@@ -4,10 +4,13 @@ def install_nbextension(**kwargs):
     Keyword arguments will be passed on to the IPython install_nbextension function.
     """
     import os.path
-    from IPython.html import nbextensions
-    #kwargs.setdefault('symlink', True)
+    try:
+        from notebook import nbextensions
+    except ImportError: # IPython 3.x
+        from IPython.html import nbextensions
     pkgdir = os.path.dirname(__file__)
-    nbextensions.install_nbextension([os.path.join(pkgdir, 'nbextensions', 'pythreejs')], **kwargs)
+    kwargs['destination'] = 'pythreejs'
+    nbextensions.install_nbextension(os.path.join(pkgdir, 'nbextension'), **kwargs)
 
 from .pythreejs import (
     Texture, 
@@ -72,6 +75,7 @@ from .pythreejs import (
     lights_color,
     lights_gray, 
     make_text,
+    height_texture,
 )
 
 
@@ -136,4 +140,5 @@ __all__ = ["Texture",
            "SpotLight", 
            "SurfaceGrid",
            "make_text",
+           "height_texture",
        ]
