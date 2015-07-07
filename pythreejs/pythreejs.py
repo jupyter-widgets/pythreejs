@@ -740,4 +740,4 @@ def height_texture(z, colormap = 'YlGnBu_r'):
 
     rgba_list = list(rgba_im.flat) # make a flat list
 
-    return DataTexture(data=rgba_list, format='RGBAFormat', width=z.shape[0], height=z.shape[1])
+    return DataTexture(data=rgba_list, format='RGBAFormat', width=z.shape[1], height=z.shape[0])
