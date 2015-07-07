@@ -19,8 +19,8 @@ def install(user=False, symlink=False, **kwargs):
     **kwargs: keyword arguments
         Other keyword arguments passed to the install_nbextension command
     """
-    dir = join(dirname(abspath(__file__)), 'nbextension')
-    install_nbextension(gamepad, destination='pythreejs',
+    directory = join(dirname(abspath(__file__)), 'nbextension')
+    install_nbextension(directory, destination='pythreejs',
                         symlink=symlink, user=user, **kwargs)
 
     
