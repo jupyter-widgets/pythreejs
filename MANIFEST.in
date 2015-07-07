@@ -1,2 +1,2 @@
-include pythreejs/nbextension/pythree.js
+include pythreejs/nbextension/pythreejs.js
 graft pythreejs/nbextension/three.js

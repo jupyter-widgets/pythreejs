@@ -1,18 +1,26 @@
 # -*- coding: utf-8 -*-
 
-from setuptools import setup
+from distutils.core import setup
 
 setup(name = 'pythreejs',
       version = '0.1.0',
       description='Interactive 3d graphics for the Jupyter notebook, using Three.js from IPython widgets.',
+      long_description='A Python/ThreeJS bridge utilizing the IPython widget infrastructure.',
       author='PyThreejs Development Team',
       author_email='jason@jasongrout.org',
       license='BSD',
       url='https://github.com/jasongrout/pythreejs',
-      install_requires = ['ipython'],
+      requires = ['ipython'],
       packages=['pythreejs'],
-      include_package_data=True,
+      package_data={'pythreejs': [
+      'nbextension/pythreejs.js', 
+      'nbextension/three.js/*.md',
+      'nbextension/three.js/LICENSE',
+      'nbextension/three.js/build/three.js',
+      'nbextension/three.js/examples/js/*.js',
+      'nbextension/three.js/examples/js/controls/*.js'
+      ]},
       keywords=['ipython', 'jupyter', 'widgets', 'webgl', 'graphics', '3d'],
       classifiers=['Development Status :: 4 - Beta',
-                   'Programming Language :: Python'],
-      zip_safe=False)
+                   'Programming Language :: Python']
+      )
