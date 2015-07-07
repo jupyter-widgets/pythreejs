@@ -1083,7 +1083,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "underscore"
                 for (xi = 0; xi<xpoints; xi++) {
                     g = new THREE.Geometry();
                     for (yi = 0; yi<ypoints; yi++) {
-                        g.vertices.push(vertices[xi*xpoints+yi].clone());
+                        g.vertices.push(vertices[yi*xpoints+xi].clone());
                     }
                     obj.add(new THREE.Line(g, that.material.obj));
                 }
@@ -1091,7 +1091,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "underscore"
                 for (yi = 0; yi<ypoints; yi++) {
                     g = new THREE.Geometry();
                     for (xi = 0; xi<xpoints; xi++) {
-                        g.vertices.push(vertices[xi*xpoints+yi].clone());
+                        g.vertices.push(vertices[yi*xpoints+xi].clone());
                     }
                     obj.add(new THREE.Line(g, that.material.obj));
                 }
