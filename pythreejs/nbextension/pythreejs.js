@@ -365,7 +365,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "underscore"
                 that.obj.addEventListener('change', that.options.render_frame);
                 that.obj.addEventListener('start', that.options.start_update_loop);
                 that.obj.addEventListener('end', that.options.end_update_loop);
-                that.obj.addEventListener('end', function() {that.update_controlled()});
+                that.obj.addEventListener('end', function() { that.update_controlled(); });
                 // if there is a three.js control change, call the animate function to animate at least one more time
                 delete that.options.renderer;
             });
@@ -382,6 +382,8 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "underscore"
     });
     register['OrbitControlsView'] = OrbitControlsView;
 
+    var clock = new THREE.Clock();
+
     var FlyControlsView = ThreeView.extend({
         new_properties: function() {
             ThreeView.prototype.new_properties.call(this);
@@ -397,22 +399,29 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "underscore"
                 that.obj = new THREE.FlyControls(that.controlled_view.obj, that.options.dom);
                 that.register_object_parameters();
                 that.obj.noKeys = true; // turn off keyboard navigation
-                that.options.register_update(that.obj.update, that.obj);
-                //that.obj.addEventListener('change', that.options.render_frame);
-                //that.obj.addEventListener('start', that.options.start_update_loop);
-                //that.obj.addEventListener('end', that.options.end_update_loop);
-                //that.obj.addEventListener('end', function() {that.update_controlled()});
+                that.options.register_update(that._update, that);
+                that.obj.addEventListener('change', that.options.render_frame);
+                that.obj.addEventListener('start', that.options.start_update_loop);
+                that.obj.addEventListener('end', that.options.end_update_loop);
+                that.obj.addEventListener('end', function() { that.update_controlled(); });
                 // if there is a three.js control change, call the animate function to animate at least one more time
                 delete that.options.renderer;
             });
         },
-        
+       
+        _update: function() {
+            this.obj.movementSpeed = 0.33;
+            this.obj.update(clock.getDelta());
+        },
+ 
         update_controlled: function() {
             // Since FlyControlsView changes the position of the object, we update the position when we've stopped moving the object
             // it's probably prohibitive to update it in real-time
             // TODO: it also changes the quaternion/rotation/lookAt of the object; we should probably update that as well
             var pos = this.controlled_view.obj.position;
+            var qat = this.controlled_view.obj.quaternion;
             this.controlled_view.model.set('position', [pos.x, pos.y, pos.z]);
+            this.controlled_view.model.set('quaternion', [qat._x, qat._y, qat._z, qat._w]);
             this.controlled_view.touch();
         },
     });

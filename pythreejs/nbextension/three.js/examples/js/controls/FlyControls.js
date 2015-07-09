@@ -12,7 +12,7 @@ THREE.FlyControls = function ( object, domElement ) {
 	// API
 
 	this.movementSpeed = 1.0;
-	this.rollSpeed = 0.005;
+	this.rollSpeed = 0.05;
 
 	this.dragToLook = false;
 	this.autoForward = false;
@@ -22,6 +22,10 @@ THREE.FlyControls = function ( object, domElement ) {
 	// internals
 
 	this.tmpQuaternion = new THREE.Quaternion();
+	var lastPosition = new THREE.Vector3();
+	var lastQuaternion = new THREE.Quaternion();
+        var scope = this;
+	var EPS = 0.000001;
 
 	this.mouseStatus = 0;
 
@@ -75,6 +79,7 @@ THREE.FlyControls = function ( object, domElement ) {
 
 		this.updateMovementVector();
 		this.updateRotationVector();
+		scope.dispatchEvent( startEvent );
 
 	};
 
@@ -106,7 +111,7 @@ THREE.FlyControls = function ( object, domElement ) {
 
 		this.updateMovementVector();
 		this.updateRotationVector();
-
+		scope.dispatchEvent( endEvent );
 	};
 
 	this.mousedown = function( event ) {
@@ -136,6 +141,7 @@ THREE.FlyControls = function ( object, domElement ) {
 			this.updateMovementVector();
 
 		}
+		scope.dispatchEvent( startEvent );
 
 	};
 
@@ -148,7 +154,7 @@ THREE.FlyControls = function ( object, domElement ) {
 			var halfHeight = container.size[ 1 ] / 2;
 
 			this.moveState.yawLeft   = - ( ( event.pageX - container.offset[ 0 ] ) - halfWidth  ) / halfWidth;
-			this.moveState.pitchDown =   ( ( event.pageY - container.offset[ 1 ] ) - halfHeight ) / halfHeight;
+			this.moveState.pitchDown =   ( ( event.layerY ) - halfHeight ) / halfHeight;
 
 			this.updateRotationVector();
 
@@ -181,6 +187,7 @@ THREE.FlyControls = function ( object, domElement ) {
 		}
 
 		this.updateRotationVector();
+		scope.dispatchEvent( endEvent );
 
 	};
 
@@ -200,6 +207,19 @@ THREE.FlyControls = function ( object, domElement ) {
 		this.object.rotation.setFromQuaternion( this.object.quaternion, this.object.rotation.order );
 
 
+		// update condition is:
+		// min(camera displacement, camera rotation in radians)^2 > EPS
+		// using small-angle approximation cos(x/2) = 1 - x^2 / 8
+
+		if ( lastPosition.distanceToSquared( this.object.position ) > EPS
+		    || 8 * (1 - lastQuaternion.dot(this.object.quaternion)) > EPS ) {
+
+			this.dispatchEvent( changeEvent );
+
+			lastPosition.copy( this.object.position );
+			lastQuaternion.copy( this.object.position );
+
+		}
 	};
 
 	this.updateMovementVector = function() {
@@ -254,6 +274,13 @@ THREE.FlyControls = function ( object, domElement ) {
 
 	};
 
+	// events
+
+	var changeEvent = { type: 'change' };
+	var startEvent = { type: 'start'};
+	var endEvent = { type: 'end'};
+
+
 	this.domElement.addEventListener( 'contextmenu', function ( event ) { event.preventDefault(); }, false );
 
 	this.domElement.addEventListener( 'mousemove', bind( this, this.mousemove ), false );
@@ -268,3 +295,5 @@ THREE.FlyControls = function ( object, domElement ) {
 
 };
 
+THREE.FlyControls.prototype = Object.create( THREE.EventDispatcher.prototype );
+THREE.FlyControls.prototype.constructor = THREE.FlyControls;
