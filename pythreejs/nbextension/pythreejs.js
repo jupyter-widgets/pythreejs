@@ -401,14 +401,28 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "underscore"
                 that.obj.noKeys = true; // turn off keyboard navigation
                 that.options.register_update(that._update, that);
                 that.obj.addEventListener('change', that.options.render_frame);
-                that.obj.addEventListener('start', that.options.start_update_loop);
-                that.obj.addEventListener('end', that.options.end_update_loop);
-                that.obj.addEventListener('end', function() { that.update_controlled(); });
+                //that.obj.addEventListener('start', that.options.start_update_loop);
+                //that.obj.addEventListener('end', that.options.end_update_loop);
+                //that.obj.addEventListener('end', function() { that.update_controlled(); });
+                that.options.start_update_loop();
+                that.model.on_some_change(['forward_speed', 'upward_speed', 'lateral_speed',
+                                           'roll', 'yaw', 'pitch'], that.update_plane, that);
                 // if there is a three.js control change, call the animate function to animate at least one more time
                 delete that.options.renderer;
             });
         },
-       
+
+        update_plane: function() {
+            this.obj.moveState.back = this.model.get('forward_speed');
+            this.obj.moveState.up = this.model.get('upward_speed');
+            this.obj.moveState.left = this.model.get('lateral_speed');
+            this.obj.moveState.pitchUp = this.model.get('pitch');
+            this.obj.moveState.yawRight = this.model.get('yaw');
+            this.obj.moveState.rollLeft = this.model.get('roll');
+            this.obj.updateRotationVector();
+            this.obj.updateMovementVector();
+        },
+
         _update: function() {
             this.obj.movementSpeed = 0.33;
             this.obj.update(clock.getDelta());
