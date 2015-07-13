@@ -382,8 +382,6 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "underscore"
     });
     register['OrbitControlsView'] = OrbitControlsView;
 
-    var clock = new THREE.Clock();
-
     var FlyControlsView = ThreeView.extend({
         new_properties: function() {
             ThreeView.prototype.new_properties.call(this);
@@ -391,6 +389,8 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "underscore"
 
         render: function() {
             var that = this;
+            this.clock = new THREE.Clock();
+
             return utils.resolve_promises_dict(this.model.get('controlling').views).then(function(views) {
                 // get the view that is tied to the same renderer
                 that.controlled_view = _.find(views, function(o) {
@@ -425,7 +425,7 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "underscore"
 
         _update: function() {
             this.obj.movementSpeed = 0.33;
-            this.obj.update(clock.getDelta());
+            this.obj.update(this.clock.getDelta());
         },
  
         update_controlled: function() {
