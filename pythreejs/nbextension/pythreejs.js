@@ -374,9 +374,10 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "underscore"
         update_controlled: function() {
             // Since OrbitControlsView changes the position of the object, we update the position when we've stopped moving the object
             // it's probably prohibitive to update it in real-time
-            // TODO: it also changes the quaternion/rotation/lookAt of the object; we should probably update that as well
             var pos = this.controlled_view.obj.position;
+            var qat = this.controlled_view.obj.quaternion;
             this.controlled_view.model.set('position', [pos.x, pos.y, pos.z]);
+            this.controlled_view.model.set('quaternion', [qat._x, qat._y, qat._z, qat._w]);
             this.controlled_view.touch();
         },
     });
@@ -398,12 +399,9 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "underscore"
                 }, that);
                 that.obj = new THREE.FlyControls(that.controlled_view.obj, that.options.dom);
                 that.register_object_parameters();
-                that.obj.noKeys = true; // turn off keyboard navigation
                 that.options.register_update(that._update, that);
                 that.obj.addEventListener('change', that.options.render_frame);
-                //that.obj.addEventListener('start', that.options.start_update_loop);
-                //that.obj.addEventListener('end', that.options.end_update_loop);
-                //that.obj.addEventListener('end', function() { that.update_controlled(); });
+                that.obj.addEventListener('change', function() { that.update_controlled(); });
                 that.options.start_update_loop();
                 that.model.on_some_change(['forward_speed', 'upward_speed', 'lateral_speed',
                                            'roll', 'yaw', 'pitch'], that.update_plane, that);
@@ -429,9 +427,6 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "underscore"
         },
  
         update_controlled: function() {
-            // Since FlyControlsView changes the position of the object, we update the position when we've stopped moving the object
-            // it's probably prohibitive to update it in real-time
-            // TODO: it also changes the quaternion/rotation/lookAt of the object; we should probably update that as well
             var pos = this.controlled_view.obj.position;
             var qat = this.controlled_view.obj.quaternion;
             this.controlled_view.model.set('position', [pos.x, pos.y, pos.z]);
