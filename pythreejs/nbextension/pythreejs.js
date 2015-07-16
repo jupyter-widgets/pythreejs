@@ -3,7 +3,7 @@ require.config({
     paths: {
         "threejs": "/nbextensions/pythreejs/three.js/build/three",
         "threejs-orbit": "/nbextensions/pythreejs/three.js/examples/js/controls/OrbitControls",
-        "threejs-fly": "/nbextensions/pythreejs/three.js/examples/js/controls/FlyControls",
+        "threejs-fly": "/nbextensions/pythreejs/three.js/examples/js/controls/MomentumCameraControls",
         "threejs-detector": "/nbextensions/pythreejs/three.js/examples/js/Detector",
     },
     shim: {
@@ -405,7 +405,6 @@ define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "underscore"
                 that.options.start_update_loop();
                 that.model.on_some_change(['forward_speed', 'upward_speed', 'lateral_speed',
                                            'roll', 'yaw', 'pitch'], that.update_plane, that);
-                // if there is a three.js control change, call the animate function to animate at least one more time
                 delete that.options.renderer;
             });
         },
