@@ -234,6 +234,16 @@ class OrbitControls(Controls):
     _view_name = Unicode('OrbitControlsView', sync=True)
     target = vector3(CFloat, sync=True)
 
+class FlyControls(Controls):
+    _view_name = Unicode('FlyControlsView', sync=True)
+
+    forward_speed = Float(sync=True)
+    lateral_speed = Float(sync=True)
+    upward_speed = Float(sync=True)
+    roll = Float(sync=True)
+    pitch = Float(sync=True)
+    yaw = Float(sync=True)
+
 class Picker(Controls):
     _view_name  = Unicode('PickerView', sync=True)
     _model_name  = Unicode('PickerModel', sync=True)
