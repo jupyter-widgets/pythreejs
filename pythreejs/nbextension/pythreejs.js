@@ -2,11 +2,15 @@
 require.config({
     paths: {
         "threejs": "/nbextensions/pythreejs/three.js/build/three",
+        "threejs-projector": "/nbextensions/pythreejs/three.js/examples/js/renderers/Projector",
+        "threejs-canvas": "/nbextensions/pythreejs/three.js/examples/js/renderers/CanvasRenderer",
         "threejs-orbit": "/nbextensions/pythreejs/three.js/examples/js/controls/OrbitControls",
         "threejs-fly": "/nbextensions/pythreejs/three.js/examples/js/controls/MomentumCameraControls",
         "threejs-detector": "/nbextensions/pythreejs/three.js/examples/js/Detector",
     },
     shim: {
+        "threejs-projector": {deps: ["threejs"]},
+        "threejs-canvas": {deps: ["threejs", "threejs-projector"]},
         "threejs-orbit": {deps: ["threejs"]},
         "threejs-fly": {deps: ["threejs"]},
         "threejs-detector": {deps: ["threejs"]},
@@ -14,7 +18,8 @@ require.config({
     },
 });
 
-define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "underscore", "threejs", "threejs-orbit", "threejs-fly", "threejs-detector"],
+define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "underscore",
+        "threejs", "threejs-canvas", "threejs-orbit", "threejs-fly", "threejs-detector", "threejs-projector"],
        function(widget, manager, utils, _, THREE) {
     console.log("loading pythreejs");
     var register = {};
