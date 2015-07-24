@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(name = 'pythreejs',
-      version = '0.1.6',
+      version = '0.1.7',
       description='Interactive 3d graphics for the Jupyter notebook, using Three.js from IPython widgets.',
       long_description='A Python/ThreeJS bridge utilizing the IPython widget infrastructure.',
       author='PyThreejs Development Team',
@@ -19,6 +19,7 @@ setup(name = 'pythreejs',
       'nbextension/three.js/build/three.js',
       'nbextension/three.js/examples/js/*.js',
       'nbextension/three.js/examples/js/controls/*.js'
+      'nbextension/three.js/examples/js/renderers/*.js'
       ]},
       keywords=['ipython', 'jupyter', 'widgets', 'webgl', 'graphics', '3d'],
       classifiers=['Development Status :: 4 - Beta',
