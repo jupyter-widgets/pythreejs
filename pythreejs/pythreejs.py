@@ -17,7 +17,6 @@ except ImportError:  # IPython 3.x
     from IPython.utils.traitlets import (Unicode, Int, Instance, Enum, List, Dict, Float,
                                          Any, CFloat, Bool, This, CInt, TraitType)
     widget_serialization = {}
-import numpy as np
 from math import pi, sqrt
 
 def vector3(trait_type=CFloat, default=None, **kwargs):
@@ -730,7 +729,8 @@ def height_texture(z, colormap = 'YlGnBu_r'):
     """Create a texture corresponding to the heights in z and the given colormap."""
     from matplotlib import cm
     from skimage import img_as_ubyte
-
+    import numpy as np
+    
     colormap = cm.get_cmap(colormap)
     im = z.copy()
     # rescale to be in [0,1], scale nan to be the smallest value
