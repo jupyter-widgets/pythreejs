@@ -16,7 +16,7 @@ requirements:
 
   run:
     - python
-    - ipython-notebook
+    - ipywidgets
 
 test:
   # Python imports
