@@ -21,7 +21,7 @@ requirements:
 test:
   # Python imports
   imports:
-    - pythreejs #[not win]
+    - pythreejs
 
 about:
   home: https://github.com/jovyan/pythreejs
