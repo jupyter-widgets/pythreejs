@@ -32,5 +32,8 @@ if __name__ == '__main__':
     parser.add_argument("-s", "--symlink",
                         help="Symlink instead of copying files",
                         action="store_true")
+    parser.add_argument("-f", "--force",
+                        help="Overwrite any previously-installed files for this extension",
+                        action="store_true")
     args = parser.parse_args()
-    install(user=args.user, symlink=args.symlink)
+    install(user=args.user, symlink=args.symlink, overwrite=args.force)
