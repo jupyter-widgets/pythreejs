@@ -744,8 +744,7 @@ def height_texture(z, colormap = 'YlGnBu_r'):
         warnings.filterwarnings("ignore",
                                 message="Possible precision loss when converting from",
                                 category=UserWarning,
-                                module="skimage.util.dtype",
-                                lineno=107)
+                                module="skimage.util.dtype")
         rgba_im = img_as_ubyte(colormap(im)) # convert the values to rgba image using the colormap
 
     rgba_list = list(rgba_im.flat) # make a flat list
