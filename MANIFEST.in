@@ -1,2 +1,0 @@
-include pythreejs/nbextension/pythreejs.js
-graft pythreejs/nbextension/three.js
