@@ -1,24 +1,26 @@
 // included version of three.js is from commit da1a7a1e92a4410cf0901fee3ea69a36cd2b0025 from my fork at https://github.com/jasongrout/three.js/
 require.config({
-    paths: {
-        "threejs": "/nbextensions/pythreejs/three.js/build/three",
-        "threejs-projector": "/nbextensions/pythreejs/three.js/examples/js/renderers/Projector",
-        "threejs-canvas": "/nbextensions/pythreejs/three.js/examples/js/renderers/CanvasRenderer",
-        "threejs-orbit": "/nbextensions/pythreejs/three.js/examples/js/controls/OrbitControls",
-        "threejs-fly": "/nbextensions/pythreejs/three.js/examples/js/controls/MomentumCameraControls",
-        "threejs-detector": "/nbextensions/pythreejs/three.js/examples/js/Detector",
+    map: {
+        "*": {
+            "threejs": "nbextensions/pythreejs/three.js/build/three",
+            "threejs-projector": "nbextensions/pythreejs/three.js/examples/js/renderers/Projector",
+            "threejs-canvas": "nbextensions/pythreejs/three.js/examples/js/renderers/CanvasRenderer",
+            "threejs-orbit": "nbextensions/pythreejs/three.js/examples/js/controls/OrbitControls",
+            "threejs-fly": "nbextensions/pythreejs/three.js/examples/js/controls/MomentumCameraControls",
+            "threejs-detector": "nbextensions/pythreejs/three.js/examples/js/Detector"
+        }
     },
     shim: {
-        "threejs-projector": {deps: ["threejs"]},
-        "threejs-canvas": {deps: ["threejs", "threejs-projector"]},
-        "threejs-orbit": {deps: ["threejs"]},
-        "threejs-fly": {deps: ["threejs"]},
-        "threejs-detector": {deps: ["threejs"]},
-        "threejs": {exports: "THREE"}
+        "nbextensions/pythreejs/three.js/examples/js/renderers/Projector": {deps: ["nbextensions/pythreejs/three.js/build/three"]},
+        "nbextensions/pythreejs/three.js/examples/js/renderers/CanvasRenderer": {deps: ["nbextensions/pythreejs/three.js/build/three", "nbextensions/pythreejs/three.js/examples/js/renderers/Projector"]},
+        "nbextensions/pythreejs/three.js/examples/js/controls/OrbitControls": {deps: ["nbextensions/pythreejs/three.js/build/three"]},
+        "nbextensions/pythreejs/three.js/examples/js/controls/MomentumCameraControls": {deps: ["nbextensions/pythreejs/three.js/build/three"]},
+        "nbextensions/pythreejs/three.js/examples/js/Detector": {deps: ["nbextensions/pythreejs/three.js/build/three"]},
+        "nbextensions/pythreejs/three.js/build/three": {exports: "THREE"}
     },
 });
 
-define(["widgets/js/widget", "widgets/js/manager", "base/js/utils", "underscore",
+define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/js/manager", "base/js/utils", "underscore",
         "threejs", "threejs-canvas", "threejs-orbit", "threejs-fly", "threejs-detector", "threejs-projector"],
        function(widget, manager, utils, _, THREE) {
     console.log("loading pythreejs");
