@@ -8,6 +8,7 @@ from .pythreejs import (
     Controls, 
     OrbitControls, 
     FlyControls, 
+    TrackballControls, 
     Picker, 
     Geometry, 
     PlainGeometry, 
