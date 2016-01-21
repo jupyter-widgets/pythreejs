@@ -7,6 +7,7 @@ require.config({
             "threejs-canvas": "nbextensions/pythreejs/three.js/examples/js/renderers/CanvasRenderer",
             "threejs-orbit": "nbextensions/pythreejs/three.js/examples/js/controls/OrbitControls",
             "threejs-fly": "nbextensions/pythreejs/three.js/examples/js/controls/MomentumCameraControls",
+            "threejs-trackball": "nbextensions/pythreejs/three.js/examples/js/controls/TrackballControls",
             "threejs-detector": "nbextensions/pythreejs/three.js/examples/js/Detector"
         }
     },
@@ -15,13 +16,14 @@ require.config({
         "nbextensions/pythreejs/three.js/examples/js/renderers/CanvasRenderer": {deps: ["nbextensions/pythreejs/three.js/build/three", "nbextensions/pythreejs/three.js/examples/js/renderers/Projector"]},
         "nbextensions/pythreejs/three.js/examples/js/controls/OrbitControls": {deps: ["nbextensions/pythreejs/three.js/build/three"]},
         "nbextensions/pythreejs/three.js/examples/js/controls/MomentumCameraControls": {deps: ["nbextensions/pythreejs/three.js/build/three"]},
+        "nbextensions/pythreejs/three.js/examples/js/controls/TrackballControls": {deps: ["nbextensions/pythreejs/three.js/build/three"]},
         "nbextensions/pythreejs/three.js/examples/js/Detector": {deps: ["nbextensions/pythreejs/three.js/build/three"]},
         "nbextensions/pythreejs/three.js/build/three": {exports: "THREE"}
     },
 });
 
 define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/js/manager", "base/js/utils", "underscore",
-        "threejs", "threejs-canvas", "threejs-orbit", "threejs-fly", "threejs-detector", "threejs-projector"],
+        "threejs", "threejs-canvas", "threejs-orbit", "threejs-fly", "threejs-trackball", "threejs-detector", "threejs-projector"],
        function(widget, manager, utils, _, THREE) {
     console.log("loading pythreejs");
     var register = {};
@@ -441,6 +443,52 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
         },
     });
     register['FlyControlsView'] = FlyControlsView;
+
+    var TrackballControlsView = ThreeView.extend({
+        new_properties: function() {
+            ThreeView.prototype.new_properties.call(this);
+            this.array_properties.push('target');
+        },
+
+        render: function() {
+            var that = this;
+            return utils.resolve_promises_dict(this.model.get('controlling').views).then(function(views) {
+                // get the view that is tied to the same renderer
+                that.controlled_view = _.find(views, function(o) {
+                    return o.options.renderer_id === that.options.renderer_id
+                }, that);
+                that.obj = new THREE.TrackballControls(that.controlled_view.obj, that.options.dom);
+                that.register_object_parameters();
+                that.obj.noKeys = true; // turn off keyboard navigation
+                that.options.register_update(that.obj.update, that.obj);
+                that.obj.addEventListener('change', that.options.render_frame);
+                that.obj.addEventListener('start', that.options.start_update_loop);
+                that.obj.addEventListener('end', that.options.end_update_loop);
+                that.obj.addEventListener('end', function() { that.update_controlled(); });
+                // resize again because domElement.getBoundingClientRect() returned all zeros when it's first called
+                var set_control_size = function () {
+                    that.obj.handleResize();
+                    that.options.dom.removeEventListener("mouseover", set_control_size);
+                    that.options.dom.removeEventListener("touchstart", set_control_size);
+                };
+                that.options.dom.addEventListener("mouseover", set_control_size);
+                that.options.dom.addEventListener("touchstart", set_control_size);
+                // if there is a three.js control change, call the animate function to animate at least one more time
+                delete that.options.renderer;
+            });
+        },
+
+        update_controlled: function() {
+            // Since TrackballControlsView changes the position of the object, we update the position when we've stopped moving the object
+            // it's probably prohibitive to update it in real-time
+            var pos = this.controlled_view.obj.position;
+            var qat = this.controlled_view.obj.quaternion;
+            this.controlled_view.model.set('position', [pos.x, pos.y, pos.z]);
+            this.controlled_view.model.set('quaternion', [qat._x, qat._y, qat._z, qat._w]);
+            this.controlled_view.touch();
+        },
+    });
+    register['TrackballControlsView'] = TrackballControlsView;
 
 
     var PickerView = ThreeView.extend({

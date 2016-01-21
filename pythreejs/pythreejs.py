@@ -233,6 +233,10 @@ class OrbitControls(Controls):
     _view_name = Unicode('OrbitControlsView', sync=True)
     target = vector3(CFloat, sync=True)
 
+class TrackballControls(Controls):
+    _view_name = Unicode('TrackballControlsView', sync=True)
+    target = vector3(CFloat, sync=True)
+
 class FlyControls(Controls):
     _view_name = Unicode('FlyControlsView', sync=True)
 
