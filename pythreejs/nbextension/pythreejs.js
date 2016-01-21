@@ -469,8 +469,10 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
                 var set_control_size = function () {
                     that.obj.handleResize();
                     that.options.dom.removeEventListener("mouseover", set_control_size);
+                    that.options.dom.removeEventListener("touchstart", set_control_size);
                 };
                 that.options.dom.addEventListener("mouseover", set_control_size);
+                that.options.dom.addEventListener("touchstart", set_control_size);
                 // if there is a three.js control change, call the animate function to animate at least one more time
                 delete that.options.renderer;
             });
