@@ -6,7 +6,7 @@ In this wrapping of three.js, we try to stay close to the three.js API.  Often, 
 Another resource to understanding three.js decisions is the Udacity course on 3d graphics using three.js: https://www.udacity.com/course/cs291
 """
 
-from ipywidgets import Widget, DOMWidget, widget_serialization
+from ipywidgets import Widget, DOMWidget, widget_serialization, Color
 from traitlets import (Unicode, Int, Instance, Enum, List, Dict, Float,
                        Any, CFloat, Bool, This, CInt, TraitType)
 from math import pi, sqrt
@@ -20,44 +20,6 @@ def vector2(trait_type=CFloat, default=None, **kwargs):
     if default is None:
         default=[0, 0]
     return List(trait_type, default_value=default, minlen=2, maxlen=2, **kwargs)
-
-
-# python 3 compatibility stuff
-# http://www.voidspace.org.uk/python/articles/porting-mock-to-python-3.shtml
-try:
-    unicode
-except NameError:
-    # Python 3
-    basestring = unicode = str
-
-
-class Color(TraitType):
-    """A color trait.
-
-    This takes a color represented as:
-
-    * a string of the form ``'rgb(255, 0, 0)'``, ``'rgb(100%, 0%, 0%)'``, ``'#ff0000'``, ``'#f00'``, or a color name (see the THREE.ColorKeywords listing at https://github.com/mrdoob/three.js/blob/master/src/math/Color.js)
-    * an rgb tuple/list of numbers, each between 0 and 1
-    * an integer (or hex value)
-    """
-    default_value = 'black'
-    info_text = 'a color as an rgb tuple, an integer, or a string'
-
-    def validate(self, obj, value):
-        if isinstance(value, (tuple, list)) and len(value)==3:
-            return 'rgb(%d,%d,%d)'%(int(value[0]), int(value[1]), int(value[2]))
-        elif isinstance(value, basestring):
-            # from https://github.com/mrdoob/three.js/blob/master/src/math/Color.js
-            # there are lots of color names, as well as things like
-            # rgb(?,?,?), rgb(?%,?%,?%), #XXXXXX, #XXX
-            # TODO: validate one of those patterns, or just pass the buck to three.js
-            return value
-        else:
-            try:
-                return int(value)
-            except:
-                pass
-        self.error(obj, value)
 
 
 class Texture(Widget):
@@ -133,8 +95,8 @@ class Object3d(Widget):
         y = m[4:7]
         z = m[8:11]
         self.scale = [self.vector_length(x),
-                        self.vector_length(y),
-                        self.vector_length(z)]
+                      self.vector_length(y),
+                      self.vector_length(z)]
         m=[]
         m.extend(x)
         m.extend(y)
@@ -153,7 +115,7 @@ class Object3d(Widget):
         x = m[0:3]
         y = m[3:6]
         z = m[6:9]
-        trace = x[0]+y[1]+z[2]
+        trace = x[0] + y[1] + z[2]
         if (trace>0):
             s = 0.5/sqrt(trace+1)
             self.quaternion = [(y[2]-z[1])*s, (z[0]-x[2])*s, (x[1]-y[0])*s, 0.25/s]
@@ -188,7 +150,9 @@ class Object3d(Widget):
         return [x[1]*y[2]-x[2]*y[1], x[2]*y[0]-x[0]*y[2], x[0]*y[1]-x[1]*y[0]]
 
     def look_at(self, eye, target):
-        z = self.normalize([eye[0]-target[0], eye[1]-target[1], eye[2]-target[2]]) # eye - target
+        z = self.normalize([eye[0] - target[0],
+                            eye[1] - target[1],
+                            eye[2] - target[2]])  # eye - target
 
         if (self.vector_length(z)==0):
             z[2]=1
@@ -688,7 +652,7 @@ class AnaglyphEffect(Effect):
     _view_name = Unicode('AnaglyphEffectView').tag(sync=True)
 
 
-class Renderer(Widget):
+class Renderer(DOMWidget):
     _view_module = Unicode('nbextensions/pythreejs/pythreejs').tag(sync=True)
     _view_name = Unicode('RendererView').tag(sync=True)
     _model_module = Unicode('nbextensions/pythreejs/pythreejs').tag(sync=True)
