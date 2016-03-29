@@ -1,9 +1,16 @@
 # -*- coding: utf-8 -*-
 
 from distutils.core import setup
+import os
+
+here = os.path.abspath(os.path.dirname(__file__))
+
+version_ns = {}
+with open(os.path.join(here, 'pythreejs', '_version.py')) as f:
+    exec(f.read(), {}, version_ns)
 
 setup(name='pythreejs',
-      version='0.2.0',
+      version=version_ns['__version__'],
       description='Interactive 3d graphics for the Jupyter notebook, using Three.js from Jupyter interactive widgets.',
       long_description='A Python/ThreeJS bridge utilizing the Jupyter widget infrastructure.',
       author='PyThreejs Development Team',
