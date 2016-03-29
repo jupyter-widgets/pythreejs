@@ -759,8 +759,8 @@ class Renderer(DOMWidget):
     _view_name = Unicode('RendererView').tag(sync=True)
     _model_name = Unicode('RendererModel').tag(sync=True)
 
-    width = CInt(600).tag(sync=True)
-    height = CInt(400).tag(sync=True)
+    width = Unicode('600').tag(sync=True)  # TODO: stop relying on deprecated DOMWidget attribute
+    height = Unicode('400').tag(sync=True) 
     renderer_type = Enum(['webgl', 'canvas', 'auto'], 'auto').tag(sync=True)
     scene = Instance(Scene).tag(sync=True, **widget_serialization)
     camera = Instance(Camera).tag(sync=True, **widget_serialization)
