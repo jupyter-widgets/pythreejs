@@ -1853,7 +1853,7 @@ define(["jupyter-js-widgets", "underscore",
 
     var ParametricGeometryModel = GeometryModel.extend({
         defaults: _.extend({}, GeometryModel.prototype.defaults, {
-            _view_name: 'PrametricGeometryView',
+            _view_name: 'ParametricGeometryView',
             _model_name: 'ParametricGeometryModel',
 
            func: '',

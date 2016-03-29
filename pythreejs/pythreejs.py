@@ -540,6 +540,7 @@ class DepthMaterial(Material):
 
 class _LineMaterial(Material):
     """Abstract base class for line materials"""
+    pass
 
 
 class LineBasicMaterial(_LineMaterial):
