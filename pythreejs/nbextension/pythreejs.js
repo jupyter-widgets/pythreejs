@@ -22,27 +22,35 @@ require.config({
     },
 });
 
-define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/js/manager", "base/js/utils", "underscore",
-        "threejs", "threejs-canvas", "threejs-orbit", "threejs-fly", "threejs-trackball", "threejs-detector", "threejs-projector"],
-       function(widget, manager, utils, _, THREE) {
-    console.log("loading pythreejs");
-    var register = {};
-    var RendererView = widget.WidgetView.extend({
+define(["jupyter-js-widgets", "underscore",
+        "threejs", "threejs-canvas", "threejs-orbit", "threejs-fly",
+        "threejs-trackball", "threejs-detector", "threejs-projector"],
+       function(widgets, _, THREE) {
+
+    var RendererView = widgets.DOMWidgetView.extend({
         render : function(){
             console.log('created renderer');
             this.on('displayed', this.show, this);
             var that = this;
-            this.id = utils.uuid();
-            var render_loop = {register_update: function(fn, context) {that.on('animate:update', fn, context);},
-                               render_frame: function () {
-                                   that._render = true; that.schedule_update()
-                               },
-                               renderer_id: this.id}
-            if ( Detector.webgl )
-                this.renderer = new THREE.WebGLRenderer( {antialias:true, alpha: true} );
-            else
+            this.id = widgets.uuid();
+            var render_loop = {
+                register_update: function(fn, context) {
+                    that.on('animate:update', fn, context);
+                },
+                render_frame: function () {
+                    that._render = true;
+                    that.schedule_update();
+                },
+                renderer_id: this.id}
+            if (Detector.webgl) {
+                this.renderer = new THREE.WebGLRenderer({
+                    antialias: true,
+                    alpha: true
+                });
+            } else {
                 this.renderer = new THREE.CanvasRenderer();
-            this.$el.empty().append( this.renderer.domElement );
+            }
+            this.$el.empty().append(this.renderer.domElement);
             var that = this;
             var view_promises = [];
             view_promises.push(this.create_child_view(this.model.get('camera'), render_loop).then(
@@ -55,7 +63,9 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
                 }));
             var effect_promise;
             if (this.model.get('effect')) {
-                effect_promise = this.create_child_view(this.model.get('effect'), {renderer: this.renderer}).then(function(view) {
+                effect_promise = this.create_child_view(this.model.get('effect'), {
+                    renderer: this.renderer
+                }).then(function(view) {
                     that.effectrenderer = view.obj;
                 })
             } else {
@@ -75,19 +85,19 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
                 console.log('renderer', that.model, that.scene.obj, that.camera.obj);
                 that.update();
                 that._animation_frame = false;
-                var controls = _.map(that.model.get('controls'), 
-                                     function(m) {
-                                         return that.create_child_view(m,_.extend({},
-                                                                                  {dom: that.renderer.domElement,
-                                                                                   start_update_loop: function() {
-                                                                                       that._update_loop = true; 
-                                                                                       that.schedule_update();
-                                                                                   },
-                                                                                   end_update_loop: function() {
-                                                                                       that._update_loop = false;
-                                                                                   },
-                                                                                   renderer: that},
-                                                                                  render_loop))}, that);
+                var controls = _.map(that.model.get('controls'), function(m) {
+                    return that.create_child_view(m, _.extend({}, {
+                        dom: that.renderer.domElement,
+                        start_update_loop: function() {
+                            that._update_loop = true;
+                            that.schedule_update();
+                        },
+                        end_update_loop: function() {
+                            that._update_loop = false;
+                        },
+                        renderer: that
+                    }, render_loop))
+                }, that);
                 return Promise.all(controls)
                     .then(function(c) {
                         that.controls = c;
@@ -100,11 +110,13 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             });
             return this.view_promises;
         },
+
         schedule_update: function() {
             if (!this._animation_frame) {
                 this._animation_frame = requestAnimationFrame(_.bind(this.animate, this))
             }
         },
+
         animate: function() {
             this._animation_frame = false;
             if (this._update_loop) {
@@ -116,6 +128,7 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
                 this._render = false;
             }
         },
+
         update : function(){
             var that = this;
             this.view_promises.then(function() {
@@ -126,15 +139,13 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
                 }
             });
 
-            widget.DOMWidgetView.prototype.update.call(that);
-
+            widgets.DOMWidgetView.prototype.update.call(that);
         },
     });
-    register['RendererView'] = RendererView;
 
-    var ThreeView = widget.WidgetView.extend({
+    var ThreeView = widgets.WidgetView.extend({
         initialize: function () {
-            widget.WidgetView.prototype.initialize.apply(this, arguments);
+            widgets.WidgetView.prototype.initialize.apply(this, arguments);
             this.new_properties();
         },
 
@@ -151,6 +162,7 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
 
             return update ? update : this.obj;
         },
+
         new_properties: function() {
             // initialize properties arrays
             this.array_properties = [];
@@ -160,6 +172,7 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             this.child_properties = [];
             // TODO: handle submodel properties?
         },
+
         update: function() {
             //this.replace_obj(this.new_obj());
             //this.update_object_parameters();
@@ -173,6 +186,7 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             this.update_object_parameters();
             this.trigger('replace_obj', old_obj, new_obj);
         },
+
         new_obj: function() {
         },
 
@@ -180,6 +194,7 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             this.obj.needsUpdate = true;
             this.trigger('rerender');
         },
+
         register_object_parameters: function() {
             // create an array of update handlers for each declared property
             // the update handlers depend on the type of property
@@ -190,7 +205,7 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             _.each(this.array_properties, function(p) {
                 updates[p] = function(t, value) {
                     if (value.length !== 0) {
-                        // the default is the empty list, 
+                        // the default is the empty list,
                         // and we don't act in that case
                         t.obj[p].fromArray(value);
                     }
@@ -220,7 +235,7 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
                         t.create_child_view(value, t.options[p]).then(function(view) {
                             t[p] = view;
                             var update = function() {
-                                t.obj[p] = t[p].obj; 
+                                t.obj[p] = t[p].obj;
                                 t.needs_update()
                             };
                             update();
@@ -232,9 +247,12 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             // next, we call and then register the update functions to changes
             _.each(updates, function(update, p) {
                 update(this, this.model.get(p));
-                this.model.on('change:'+p, function(model, value, options) {update(this, value)}, this);
+                this.model.on('change:'+p, function(model, value, options) {
+                    update(this, value);
+                }, this);
             }, this);
         },
+
         update_object_parameters: function() {
             _.each(this.updates, function(update, p) {
                 update(this, this.model.get(p));
@@ -244,18 +262,17 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
 
     var AnaglyphEffectView = ThreeView.extend({
         new_obj: function() {
-        return new THREE.AnaglyphEffect( this.options.renderer );
+            return new THREE.AnaglyphEffect(this.options.renderer);
         }
     })
-    register['AnaglyphEffectView'] = AnaglyphEffectView;
 
     var Object3dView = ThreeView.extend({
         initialize: function() {
             ThreeView.prototype.initialize.apply(this, arguments);
             var that = this;
-            this.children = new widget.ViewList(
+            this.children = new widgets.ViewList(
                 function add(model) {
-                    return that.create_child_view(model, 
+                    return that.create_child_view(model,
                                                   _.pick(that.options, 'register_update', 'renderer_id'))
                         .then(function(view) {
                             that.obj.add(view.obj);
@@ -275,19 +292,23 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
                 this.children.update(value);
             });
         },
+
         new_properties: function() {
             ThreeView.prototype.new_properties.call(this);
             this.array_properties.push('position', 'quaternion', 'up', 'scale');
             this.scalar_properties.push('visible', 'castShadow', 'receiveShadow');
         },
+
         new_obj: function() {
             return new THREE.Object3D();
         },
+
         replace_child_obj: function(old_obj, new_obj) {
             this.obj.remove(old_obj);
             this.obj.add(new_obj);
             this.needs_update()
         },
+
         replace_obj: function(new_obj) {
             // add three.js children objects to new three.js object
             Promise.all(this.children.views).then(function(views) {
@@ -298,51 +319,51 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             ThreeView.prototype.replace_obj.apply(this, arguments);
         },
     });
-    register['Object3dView'] = Object3dView;
 
     var ScaledObjectView = Object3dView.extend({
         render: function() {
             this.options.register_update(this.update_scale, this);
             Object3dView.prototype.render.call(this);
         },
+
         update_scale: function(renderer) {
-            var s = renderer.camera.obj.position.length()/10;
+            var s = renderer.camera.obj.position.length() / 10;
             // one unit is about 1/10 the size of the window
             this.obj.scale.set(s,s,s);
         }
     });
-    register['ScaledObjectView'] = ScaledObjectView;
 
     var CameraView = Object3dView.extend({
         new_obj: function() {
             return new THREE.Camera();
         },
+
         needs_update: function() {
             this.obj.updateProjectionMatrix();
             this.options.render_frame();
         }
     });
-    register['CameraView'] = CameraView;
 
     var PerspectiveCameraView = CameraView.extend({
         new_properties: function() {
             CameraView.prototype.new_properties.call(this);
             this.scalar_properties.push('fov', 'aspect', 'near', 'far');
         },
+
         new_obj: function() {
             return new THREE.PerspectiveCamera(this.model.get('fov'),
-                                                this.model.get('aspect'),
-                                                this.model.get('near'),
-                                                this.model.get('far'));
+                                               this.model.get('aspect'),
+                                               this.model.get('near'),
+                                               this.model.get('far'));
         }
     });
-    register['PerspectiveCameraView'] = PerspectiveCameraView;
 
     var OrthographicCameraView = CameraView.extend({
         new_properties: function() {
             CameraView.prototype.new_properties.call(this);
             this.scalar_properties.push('left', 'right', 'top', 'bottom', 'near', 'far');
         },
+
         new_obj: function() {
             return new THREE.OrthographicCamera(this.model.get('left'),
                                                 this.model.get('right'),
@@ -352,7 +373,6 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
                                                 this.model.get('far'));
         }
     });
-    register['OrthographicCameraView'] = OrthographicCameraView;
 
     var OrbitControlsView = ThreeView.extend({
         new_properties: function() {
@@ -362,7 +382,7 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
 
         render: function() {
             var that = this;
-            return utils.resolve_promises_dict(this.model.get('controlling').views).then(function(views) {
+            return widgets.resolvePromisesDict(this.model.get('controlling').views).then(function(views) {
                 // get the view that is tied to the same renderer
                 that.controlled_view = _.find(views, function(o) {
                     return o.options.renderer_id === that.options.renderer_id
@@ -374,14 +394,17 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
                 that.obj.addEventListener('change', that.options.render_frame);
                 that.obj.addEventListener('start', that.options.start_update_loop);
                 that.obj.addEventListener('end', that.options.end_update_loop);
-                that.obj.addEventListener('end', function() { that.update_controlled(); });
+                that.obj.addEventListener('end', function() {
+                    that.update_controlled();
+                });
                 // if there is a three.js control change, call the animate function to animate at least one more time
                 delete that.options.renderer;
             });
         },
-        
+
         update_controlled: function() {
-            // Since OrbitControlsView changes the position of the object, we update the position when we've stopped moving the object
+            // Since OrbitControlsView changes the position of the object, we
+            // update the position when we've stopped moving the object
             // it's probably prohibitive to update it in real-time
             var pos = this.controlled_view.obj.position;
             var qat = this.controlled_view.obj.quaternion;
@@ -390,7 +413,6 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             this.controlled_view.touch();
         },
     });
-    register['OrbitControlsView'] = OrbitControlsView;
 
     var FlyControlsView = ThreeView.extend({
         new_properties: function() {
@@ -401,7 +423,7 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             var that = this;
             this.clock = new THREE.Clock();
 
-            return utils.resolve_promises_dict(this.model.get('controlling').views).then(function(views) {
+            return widgets.resolvePromisesDict(this.model.get('controlling').views).then(function(views) {
                 // get the view that is tied to the same renderer
                 that.controlled_view = _.find(views, function(o) {
                     return o.options.renderer_id === that.options.renderer_id
@@ -433,7 +455,7 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             this.obj.movementSpeed = 0.33;
             this.obj.update(this.clock.getDelta());
         },
- 
+
         update_controlled: function() {
             var pos = this.controlled_view.obj.position;
             var qat = this.controlled_view.obj.quaternion;
@@ -442,7 +464,6 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             this.controlled_view.touch();
         },
     });
-    register['FlyControlsView'] = FlyControlsView;
 
     var TrackballControlsView = ThreeView.extend({
         new_properties: function() {
@@ -452,7 +473,7 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
 
         render: function() {
             var that = this;
-            return utils.resolve_promises_dict(this.model.get('controlling').views).then(function(views) {
+            return widgets.resolvePromisesDict(this.model.get('controlling').views).then(function(views) {
                 // get the view that is tied to the same renderer
                 that.controlled_view = _.find(views, function(o) {
                     return o.options.renderer_id === that.options.renderer_id
@@ -468,11 +489,11 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
                 // resize again because domElement.getBoundingClientRect() returned all zeros when it's first called
                 var set_control_size = function () {
                     that.obj.handleResize();
-                    that.options.dom.removeEventListener("mouseover", set_control_size);
-                    that.options.dom.removeEventListener("touchstart", set_control_size);
+                    that.options.dom.removeEventListener('mouseover', set_control_size);
+                    that.options.dom.removeEventListener('touchstart', set_control_size);
                 };
-                that.options.dom.addEventListener("mouseover", set_control_size);
-                that.options.dom.addEventListener("touchstart", set_control_size);
+                that.options.dom.addEventListener('mouseover', set_control_size);
+                that.options.dom.addEventListener('touchstart', set_control_size);
                 // if there is a three.js control change, call the animate function to animate at least one more time
                 delete that.options.renderer;
             });
@@ -488,7 +509,6 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             this.controlled_view.touch();
         },
     });
-    register['TrackballControlsView'] = TrackballControlsView;
 
 
     var PickerView = ThreeView.extend({
@@ -511,14 +531,15 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
                     var verts = [[v[o.face.a].x, v[o.face.a].y, v[o.face.a].z],
                                  [v[o.face.b].x, v[o.face.b].y, v[o.face.b].z],
                                  [v[o.face.c].x, v[o.face.c].y, v[o.face.c].z]]
-                    return {point: [o.point.x, o.point.y, o.point.z],
-                            distance: o.distance,
-                            face: [o.face.a, o.face.b, o.face.c],
-                            faceVertices: verts,
-                            faceNormal: [o.face.normal.x, o.face.normal.y, o.face.normal.z],
-                            faceIndex: o.faceIndex,
-                            object: o.object.pythreejs_view.model
-                           }
+                    return {
+                        point: [o.point.x, o.point.y, o.point.z],
+                        distance: o.distance,
+                        face: [o.face.a, o.face.b, o.face.c],
+                        faceVertices: verts,
+                        faceNormal: [o.face.normal.x, o.face.normal.y, o.face.normal.z],
+                        faceIndex: o.faceIndex,
+                        object: o.object.pythreejs_view.model
+                    }
                 }
                 if(objs.length > 0) {
                     // perhaps we should set all attributes to null if there are
@@ -544,27 +565,28 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
                 // we need to get the three.js object for the root object in our scene
                 // so find a view of the model that exists in our scene
                 var that = this;
-                utils.resolve_promises_dict(root.views).then(function(views) {
+                widgets.resolvePromisesDict(root.views).then(function(views) {
                     var r = _.find(views, function(o) {
                         return o.options.renderer_id === that.options.renderer_id;
                     });
                     that.root = r;
-                }).catch(utils.reject("Could not set up Picker", true));
+                }).catch(widgets.reject('Could not set up Picker', true));
             } else {
                 this.root = this.options.renderer.scene;
             }
         }
-
     });
-    register['PickerView'] = PickerView;
 
 
     var SceneView = Object3dView.extend({
-        new_obj: function() {return new THREE.Scene();},
-        needs_update: function() {this.options.render_frame();}
-    });
-    register['SceneView'] = SceneView;
+        new_obj: function() {
+            return new THREE.Scene();
+        },
 
+        needs_update: function() {
+            this.options.render_frame();
+        }
+    });
 
 
     var SurfaceGeometryView = ThreeView.extend({
@@ -573,7 +595,8 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
                                               this.model.get('height'),
                                               this.model.get('width_segments'),
                                               this.model.get('height_segments'));
-            // PlaneGeometry constructs its vertices by going across x coordinates, starting from the maximum y coordinate
+            // PlaneGeometry constructs its vertices by going across x
+            // coordinates, starting from the maximum y coordinate
             var z = this.model.get('z');
             for (var i = 0, len = obj.vertices.length; i<len; i++) {
                 obj.vertices[i].z = z[i];
@@ -583,7 +606,7 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             this.replace_obj(obj);
         },
     });
-    register['SurfaceGeometryView'] = SurfaceGeometryView;
+
 
     var PlainGeometryView = ThreeView.extend({
         update: function() {
@@ -606,20 +629,19 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
                 geometry.colors.push(new THREE.Color(colors[i]));
             }
             // TODO: faceVertexUvs
-	    geometry.verticesNeedUpdate = true;
-	    geometry.elementsNeedUpdate = true;
-	    geometry.uvsNeedUpdate = true;
-	    geometry.normalsNeedUpdate = true;
-	    geometry.tangentsNeedUpdate = true;
-	    geometry.colorsNeedUpdate = true;
-	    geometry.lineDistancesNeedUpdate = true;
+            geometry.verticesNeedUpdate = true;
+            geometry.elementsNeedUpdate = true;
+            geometry.uvsNeedUpdate = true;
+            geometry.normalsNeedUpdate = true;
+            geometry.tangentsNeedUpdate = true;
+            geometry.colorsNeedUpdate = true;
+            geometry.lineDistancesNeedUpdate = true;
             this.replace_obj(geometry);
         },
     });
-    register['PlainGeometryView'] = PlainGeometryView;
+
 
     var FaceGeometryView = ThreeView.extend({
-
         update: function() {
             // Construct triangles
             var geometry = new THREE.Geometry();
@@ -630,8 +652,8 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             var face;
             var i, f, len, lenf;
             var v0, v1, v2;
-            var f0,f1,f2,f3;
-            for(i = 0, len=vertices.length; i<len; i+=3) {
+            var f0, f1, f2, f3;
+            for(i=0, len=vertices.length; i<len; i+=3) {
                 v0=vertices[i]; v1=vertices[i+1]; v2=vertices[i+2];
                 geometry.vertices.push(new THREE.Vector3(v0, v1, v2));
             }
@@ -658,15 +680,12 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             this.replace_obj(geometry);
         }
     });
-    register['FaceGeometryView'] = FaceGeometryView;
-
 
     var SphereGeometryView = ThreeView.extend({
         update: function() {
             this.replace_obj(new THREE.SphereGeometry(this.model.get('radius'), 32,16));
         }
     });
-    register['SphereGeometryView'] = SphereGeometryView;
 
     var CylinderGeometryView = ThreeView.extend({
         update: function() {
@@ -678,29 +697,26 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
                                                         this.model.get('openEnded')));
         }
     });
-    register['CylinderGeometryView'] = CylinderGeometryView;
 
     var BoxGeometryView = ThreeView.extend({
         update: function() {
             this.replace_obj(new THREE.BoxGeometry(this.model.get('width'),
-                                                        this.model.get('height'),
-                                                        this.model.get('depth'),
-                                                        this.model.get('widthSegments'),
-                                                        this.model.get('heightSegments'),
-                                                        this.model.get('depthSegments')));
+                                                   this.model.get('height'),
+                                                   this.model.get('depth'),
+                                                   this.model.get('widthSegments'),
+                                                   this.model.get('heightSegments'),
+                                                   this.model.get('depthSegments')));
         }
     });
-    register['BoxGeometryView'] = BoxGeometryView;
 
     var CircleGeometryView = ThreeView.extend({
         update: function() {
             this.replace_obj(new THREE.CircleGeometry(this.model.get('radius'),
-                                                        this.model.get('segments'),
-                                                        this.model.get('thetaStart'),
-                                                        this.model.get('thetaLength')));
+                                                      this.model.get('segments'),
+                                                      this.model.get('thetaStart'),
+                                                      this.model.get('thetaLength')));
         }
     });
-    register['CircleGeometryView'] = CircleGeometryView;
 
     var LatheGeometryView = ThreeView.extend({
         update: function() {
@@ -711,12 +727,11 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
                 pnt.push(a);
             }
             this.replace_obj(new THREE.LatheGeometry(pnt,
-                                                        this.model.get('segments'),
-                                                        this.model.get('phiStart'),
-                                                        this.model.get('phiLength')));
+                                                     this.model.get('segments'),
+                                                     this.model.get('phiStart'),
+                                                     this.model.get('phiLength')));
         }
     });
-    register['LatheGeometryView'] = LatheGeometryView;
 
     var TubeGeometryView = ThreeView.extend({
         update: function() {
@@ -728,58 +743,52 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             }
             var path = new THREE.SplineCurve3(pnt);
             this.replace_obj(new THREE.TubeGeometry(path,
-                                                        this.model.get('segments'),
-                                                        this.model.get('radius'),
-                                                        this.model.get('radialSegments'),
-                                                        this.model.get('closed')));
+                                                    this.model.get('segments'),
+                                                    this.model.get('radius'),
+                                                    this.model.get('radialSegments'),
+                                                    this.model.get('closed')));
         }
     });
-    register['TubeGeometryView'] = TubeGeometryView;
 
     var IcosahedronGeometryView = ThreeView.extend({
         update: function() {
             this.replace_obj(new THREE.IcosahedronGeometry(this.model.get('radius'),
-                                                        this.model.get('detail')));
+                                                           this.model.get('detail')));
         }
     });
-    register['IcosahedronGeometryView'] = IcosahedronGeometryView;
 
     var OctahedronGeometryView = ThreeView.extend({
         update: function() {
             this.replace_obj(new THREE.OctahedronGeometry(this.model.get('radius'),
-                                                        this.model.get('detail')));
+                                                          this.model.get('detail')));
         }
     });
-    register['OctahedronGeometryView'] = OctahedronGeometryView;
 
     var PlaneGeometryView = ThreeView.extend({
         update: function() {
             this.replace_obj(new THREE.PlaneGeometry(this.model.get('width'),
-                                                        this.model.get('height'),
-                                                        this.model.get('widthSegments'),
-                                                        this.model.get('heightSegments')));
+                                                     this.model.get('height'),
+                                                     this.model.get('widthSegments'),
+                                                     this.model.get('heightSegments')));
         }
     });
-    register['PlaneGeometryView'] = PlaneGeometryView;
 
     var TetrahedronGeometryView = ThreeView.extend({
         update: function() {
             this.replace_obj(new THREE.TetrahedronGeometry(this.model.get('radius'),
-                                                        this.model.get('detail')));
+                                                           this.model.get('detail')));
         }
     });
-    register['TetrahedronGeometryView'] = TetrahedronGeometryView;
 
     var TorusGeometryView = ThreeView.extend({
         update: function() {
             this.replace_obj(new THREE.TorusGeometry(this.model.get('radius'),
-                                                        this.model.get('tube'),
-                                                        this.model.get('radialSegments'),
-                                                        this.model.get('tubularSegments'),
-                                                        this.model.get('arc')));
+                                                     this.model.get('tube'),
+                                                     this.model.get('radialSegments'),
+                                                     this.model.get('tubularSegments'),
+                                                     this.model.get('arc')));
         }
     });
-    register['TorusGeometryView'] = TorusGeometryView;
 
     var TorusKnotGeometryView = ThreeView.extend({
         update: function() {
@@ -792,7 +801,6 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
                                                         this.model.get('heightScale')));
         }
     });
-    register['TorusKnotGeometryView'] = TorusKnotGeometryView;
 
     var PolyhedronGeometryView = ThreeView.extend({
         update: function() {
@@ -802,7 +810,6 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
                                                           this.model.get('detail')));
         }
     });
-    register['PolyhedronGeometryView'] = PolyhedronGeometryView;
 
     var RingGeometryView = ThreeView.extend({
         update: function() {
@@ -814,18 +821,16 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
                                                     this.model.get('thetaLength')));
         }
     });
-    register['RingGeometryView'] = RingGeometryView;
 
     var ParametricGeometryView = ThreeView.extend({
         update: function() {
             eval('var s='.concat(this.model.get('func')));
             this.replace_obj(new THREE.ParametricGeometry(s,
-                                                    this.model.get('slices'),
-                                                    this.model.get('stacks')));
+                                                          this.model.get('slices'),
+                                                          this.model.get('stacks')));
         }
     });
-    register['ParametricGeometryView'] = ParametricGeometryView;
-    
+
     var MaterialView = ThreeView.extend({
         new_properties: function() {
             ThreeView.prototype.new_properties.call(this);
@@ -833,22 +838,27 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             this.scalar_properties.push('opacity', 'transparent', 'depthTest', 'depthWrite', 'polygonOffset',
                                         'polygonOffsetFactor', 'polygonOffsetUnits', 'overdraw', 'visible');
         },
-        new_obj: function() {return new THREE.Material();},
+
+        new_obj: function() {
+            return new THREE.Material();
+        }
     });
-    register['MaterialView'] = MaterialView;
 
     var BasicMaterialView = MaterialView.extend({
         new_properties: function() {
             MaterialView.prototype.new_properties.call(this);
             this.enum_properties.push('shading', 'vertexColors');
             this.set_properties.push('color');
-            this.scalar_properties.push('wireframe', 'wireframeLinewidth', 'wireframeLinecap', 'wireframeLinejoin',
+            this.scalar_properties.push('wireframe', 'wireframeLinewidth',
+                                        'wireframeLinecap', 'wireframeLinejoin',
                                         'fog', 'skinning', 'morphTargets');
             this.child_properties.push('map', 'lightMap', 'specularMap', 'envMap');
         },
-        new_obj: function() {return new THREE.MeshBasicMaterial();}
+
+        new_obj: function() {
+            return new THREE.MeshBasicMaterial();
+        }
     });
-    register['BasicMaterialView'] = BasicMaterialView;
 
     var LambertMaterialView = BasicMaterialView.extend({
         new_properties: function() {
@@ -857,9 +867,11 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             this.set_properties.push('ambient', 'emissive');
             this.scalar_properties.push('reflectivity', 'refractionRatio');
         },
-        new_obj: function() {return new THREE.MeshLambertMaterial();}
+
+        new_obj: function() {
+            return new THREE.MeshLambertMaterial();
+        }
     });
-    register['LambertMaterialView'] = LambertMaterialView;
 
     var PhongMaterialView = BasicMaterialView.extend({
         new_properties: function() {
@@ -868,18 +880,22 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             this.set_properties.push('ambient', 'emissive', 'specular');
             this.scalar_properties.push('shininess', 'reflectivity', 'refractionRatio');
         },
-        new_obj: function() {return new THREE.MeshPhongMaterial();}
+
+        new_obj: function() {
+            return new THREE.MeshPhongMaterial();
+        }
     });
-    register['PhongMaterialView'] = PhongMaterialView;
 
     var DepthMaterialView = MaterialView.extend({
         new_properties: function() {
             MaterialView.prototype.new_properties.call(this);
             this.scalar_properties.push('wireframe', 'wireframeLinewidth');
         },
-        new_obj: function() {return new THREE.MeshDepthMaterial();}
+
+        new_obj: function() {
+            return new THREE.MeshDepthMaterial();
+        }
     });
-    register['DepthMaterialView'] = DepthMaterialView;
 
     var LineBasicMaterialView = MaterialView.extend({
         new_properties: function() {
@@ -888,9 +904,11 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             this.set_properties.push('color');
             this.scalar_properties.push('linewidth', 'fog', 'linecap', 'linejoin');
         },
-        new_obj: function() {return new THREE.LineBasicMaterial();}
+
+        new_obj: function() {
+            return new THREE.LineBasicMaterial();
+        }
     });
-    register['LineBasicMaterialView'] = LineBasicMaterialView;
 
     var LineDashedMaterialView = MaterialView.extend({
         new_properties: function() {
@@ -899,9 +917,11 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             this.set_properties.push('color');
             this.scalar_properties.push('linewidth', 'scale', 'dashSize', 'gapSize', 'fog');
         },
-        new_obj: function() {return new THREE.LineDashedMaterial();}
+
+        new_obj: function() {
+            return new THREE.LineDashedMaterial();
+        }
     });
-    register['LineDashedMaterialView'] = LineDashedMaterialView;
 
     var NormalMaterialView = MaterialView.extend({
         new_properties: function() {
@@ -909,9 +929,11 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             this.enum_properties.push('shading');
             this.scalar_properties.push('wireframe', 'wireframeLinewidth', 'morphTargets');
         },
-        new_obj: function() {return new THREE.MeshNormalMaterial();}
+
+        new_obj: function() {
+            return new THREE.MeshNormalMaterial();
+        }
     });
-    register['NormalMaterialView'] = NormalMaterialView;
 
     var ParticleSystemMaterialView = MaterialView.extend({
         new_properties: function() {
@@ -920,20 +942,26 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             this.scalar_properties.push('size', 'sizeAttenuation', 'vertexColors', 'fog');
             this.child_properties.push('map');
         },
-        new_obj: function() {return new THREE.ParticleSystemMaterial();}
+
+        new_obj: function() {
+            return new THREE.ParticleSystemMaterial();
+        }
     });
-    register['ParticleSystemMaterialView'] = ParticleSystemMaterialView;
 
     var ShaderMaterialView = MaterialView.extend({
         new_properties: function() {
             MaterialView.prototype.new_properties.call(this);
             this.enum_properties.push('vertexColors', 'shading');
-            this.scalar_properties.push('morphTargets', 'lights', 'morphNormals', 'wireframe', 'skinning', 'fog',
-                                        'linewidth', 'wireframeLinewidth','fragmentShader', 'vertexShader');
+            this.scalar_properties.push('morphTargets', 'lights', 'morphNormals',
+                                        'wireframe', 'skinning', 'fog',
+                                        'linewidth', 'wireframeLinewidth',
+                                        'fragmentShader', 'vertexShader');
         },
-        new_obj: function() {return new THREE.ShaderMaterial();}
+
+        new_obj: function() {
+            return new THREE.ShaderMaterial();
+        }
     });
-    register['ShaderMaterialView'] = ShaderMaterialView;
 
     var MeshView = Object3dView.extend({
         // if we replace the geometry or material, do a full re-render
@@ -945,35 +973,34 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             // replace_obj event should trigger a remake of the MeshView obj
             return Object3dView.prototype.render.call(this);
         },
+
         update: function() {
             var that = this;
 
             // we return the promise returned from update so that the view is considered "created"
             // when we actually have a mesh created.
             this.promise = Promise.all([this.create_child_view(this.model.get('geometry')),
-                                        this.create_child_view(this.model.get('material'))]).then(
-                                            function(v) {
-                                                if(that.geometry) {
-                                                    that.stopListening(that.geometry); 
-                                                    that.geometry.remove();
-                                                }
-                                                if(that.material) {
-                                                    that.stopListening(that.material);
-                                                    that.material.remove();
-                                                }
-                                                that.geometry = v[0];
-                                                that.material = v[1];
-                                                that.listenTo(that.geometry, 'replace_obj', that.update);
-                                                that.listenTo(that.material, 'replace_obj', that.update);
-                                                that.listenTo(that.geometry, 'rerender', that.needs_update);
-                                                that.listenTo(that.material, 'rerender', that.needs_update);
-                                                that.replace_obj(new THREE.Mesh( that.geometry.obj, that.material.obj ));
-                                                Object3dView.prototype.update.call(that);
-                                            });
+                                        this.create_child_view(this.model.get('material'))]).then(function(v) {
+                if(that.geometry) {
+                    that.stopListening(that.geometry);
+                    that.geometry.remove();
+                }
+                if(that.material) {
+                    that.stopListening(that.material);
+                    that.material.remove();
+                }
+                that.geometry = v[0];
+                that.material = v[1];
+                that.listenTo(that.geometry, 'replace_obj', that.update);
+                that.listenTo(that.material, 'replace_obj', that.update);
+                that.listenTo(that.geometry, 'rerender', that.needs_update);
+                that.listenTo(that.material, 'rerender', that.needs_update);
+                that.replace_obj(new THREE.Mesh(that.geometry.obj, that.material.obj));
+                Object3dView.prototype.update.call(that);
+            });
             return this.promise;
         }
     });
-    register['MeshView'] = MeshView;
 
     var LineView = MeshView.extend({
         update: function() {
@@ -981,13 +1008,12 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             var that = this;
             var promise = MeshView.prototype.update.call(this);
             return promise.then(function() {
-                that.replace_obj(new THREE.Line(that.geometry.obj, that.material.obj, 
-                                                THREE[that.model.get("type")]));
+                that.replace_obj(new THREE.Line(that.geometry.obj, that.material.obj,
+                                                THREE[that.model.get('type')]));
                 Object3dView.prototype.update.call(that);
             });
         }
     });
-    register['LineView'] = LineView;
 
     var ImageTextureView = ThreeView.extend({
         update: function() {
@@ -999,7 +1025,6 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             ThreeView.prototype.update.call(this);
         },
     });
-    register['ImageTextureView'] = ImageTextureView;
 
     var DataTextureView = ThreeView.extend({
         update: function() {
@@ -1043,7 +1068,6 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             ThreeView.prototype.update.call(this);
         },
     });
-    register['DataTextureView'] = DataTextureView;
 
     var SpriteMaterialView = MaterialView.extend({
         new_properties: function() {
@@ -1053,9 +1077,11 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             this.set_properties.push('color');
             this.child_properties.push('map');
         },
-        new_obj: function() {return new THREE.SpriteMaterial();}
+
+        new_obj: function() {
+            return new THREE.SpriteMaterial();
+        }
     });
-    register['SpriteMaterialView'] = SpriteMaterialView;
 
     var SpriteView = Object3dView.extend({
         render: function() {
@@ -1067,6 +1093,7 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             });
             Object3dView.prototype.render.call(this);
         },
+
         update: function() {
             var that = this;
             this.promise.then(function() {
@@ -1074,6 +1101,7 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
                 Object3dView.prototype.update.call(that);
             });
         },
+
         needs_update: function() {
             if (this.model.get('scaleToTexture')) {
                 if (this.material.map && this.material.map.aspect) {
@@ -1086,7 +1114,6 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             Object3dView.prototype.needs_update.call(this);
         }
     });
-    register['SpriteView'] = SpriteView;
 
     var TextTextureView = ThreeView.extend({
         update: function() {
@@ -1095,11 +1122,11 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             var color = this.model.get('color');
             var string = this.model.get('string');
 
-            var canvas = document.createElement("canvas");
-            var context = canvas.getContext("2d");
+            var canvas = document.createElement('canvas');
+            var context = canvas.getContext('2d');
 
             canvas.height = size;
-            var font = "Normal " + size + "px " + fontFace;
+            var font = 'Normal ' + size + 'px ' + fontFace;
             context.font = font;
 
             var metrics = context.measureText(string);
@@ -1109,36 +1136,41 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             if (this.model.get('squareTexture')) {
                 canvas.height = canvas.width;
             }
-            
+
             this.aspect = canvas.width / canvas.height;
 
-            context.textAlign = "center";
-            context.textBaseline = "middle";
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
             context.fillStyle = color;
             // Must set the font again for the fillText call
             context.font = font;
             context.fillText(string, canvas.width / 2, canvas.height / 2);
-            
+
             this.replace_obj(new THREE.Texture(canvas));
             ThreeView.prototype.update.call(this);
         }
     });
-    register['TextTextureView'] = TextTextureView;
+
 
     var Basic3dObject = Object3dView.extend({
         render: function() {
             this.update();
             return this.obj;
         },
+
         update: function() {
             this.replace_obj(this.new_obj());
             Object3dView.prototype.update.call(this);
         }
     });
+
+
     var AmbientLight = Basic3dObject.extend({
-        new_obj: function() {return new THREE.AmbientLight(this.model.get('color'));}
+        new_obj: function() {
+            return new THREE.AmbientLight(this.model.get('color'));
+        }
     });
-    register['AmbientLight'] = AmbientLight;
+
 
     var DirectionalLight = Basic3dObject.extend({
         new_obj: function() {
@@ -1146,7 +1178,7 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
                                               this.model.get('intensity'));
         }
     });
-    register['DirectionalLight'] = DirectionalLight;
+
 
     var PointLight = Basic3dObject.extend({
         new_obj: function() {
@@ -1155,7 +1187,7 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
                                         this.model.get('distance'));
         }
     });
-    register['PointLight'] = PointLight;
+
 
     var SpotLight = Basic3dObject.extend({
         new_obj: function() {
@@ -1164,7 +1196,6 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
                                        this.model.get('distance'));
         }
     });
-    register['SpotLight'] = SpotLight;
 
     var HemisphereLight = Basic3dObject.extend({
         new_obj: function() {
@@ -1173,8 +1204,6 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
                                              this.model.get('intensity'));
         }
     });
-    register['HemisphereLight'] = HemisphereLight;
-
 
     /* Extra helpers */
     var SurfaceGridView = MeshView.extend({
@@ -1185,8 +1214,8 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             return promise.then(function() {
                 // Construct the grid lines from that.geometry.obj
                 var vertices = that.geometry.obj.vertices;
-                var xpoints = that.geometry.obj.parameters.widthSegments+1;
-                var ypoints = that.geometry.obj.parameters.heightSegments+1;
+                var xpoints = that.geometry.obj.parameters.widthSegments + 1;
+                var ypoints = that.geometry.obj.parameters.heightSegments + 1;
                 var g, xi, yi;
                 var lines = [];
                 var obj = new THREE.Object3D();
@@ -1194,7 +1223,7 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
                 for (xi = 0; xi<xpoints; xi++) {
                     g = new THREE.Geometry();
                     for (yi = 0; yi<ypoints; yi++) {
-                        g.vertices.push(vertices[yi*xpoints+xi].clone());
+                        g.vertices.push(vertices[yi * xpoints + xi].clone());
                     }
                     obj.add(new THREE.Line(g, that.material.obj));
                 }
@@ -1202,7 +1231,7 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
                 for (yi = 0; yi<ypoints; yi++) {
                     g = new THREE.Geometry();
                     for (xi = 0; xi<xpoints; xi++) {
-                        g.vertices.push(vertices[yi*xpoints+xi].clone());
+                        g.vertices.push(vertices[yi * xpoints + xi].clone());
                     }
                     obj.add(new THREE.Line(g, that.material.obj));
                 }
@@ -1213,87 +1242,851 @@ define(["nbextensions/widgets/widgets/js/widget", "nbextensions/widgets/widgets/
             })
         }
     });
-    register['SurfaceGridView'] = SurfaceGridView;
 
-    /* Custom models, which we need for serializing object references */
-
-    register.Object3dModel = widget.WidgetModel.extend({}, {
-        serializers: _.extend({
-            children: {deserialize: widget.unpack_models}
-        }, widget.WidgetModel.serializers)
+    var Basic3dObjectModel = widgets.WidgetModel.extend({
+        defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
+            _model_module: 'nbextensions/pythreejs/pythreejs',
+            _view_module: 'nbextensions/pythreejs/pythreejs',
+            _model_name: 'Basic3dObjectModel',
+            _view_name: 'Basic3dObjectView'
+        })
     });
 
-    register.ControlsModel = widget.WidgetModel.extend({}, {
-        serializers: _.extend({
-            controlling: {deserialize: widget.unpack_models}
-        }, widget.WidgetModel.serializers)
+    var LightModel = Basic3dObjectModel.extend({
+        defaults: _.extend({}, Basic3dObjectModel.prototype.defaults, {
+            _model_name: 'LightModel',
+            color: 'white'
+        })
     });
 
-    register.PickerModel = register.ControlsModel.extend({}, {
-        serializers: _.extend({
-            root: {deserialize: widget.unpack_models},
-            object: {deserialize: widget.unpack_models},
-        }, register.ControlsModel.serializers)
+    var AmbientLightModel = LightModel.extend({
+        defaults: _.extend({}, LightModel.prototype.defaults, {
+            _model_name: 'AmbientLightModel',
+            _view_name: 'AmbientLight'
+        })
     });
 
-    register.BasicMaterialModel = widget.WidgetModel.extend({}, {
+    var IntensityLightModel = LightModel.extend({
+        defaults: _.extend({}, LightModel.prototype.defaults, {
+            _model_name: 'PositionLightModel',
+            _view_name: 'PositionLight',
+            intensity: 1
+        })
+    }, {}, LightModel.serializers);
+
+    var HemisphereLightModel = LightModel.extend({
+        defaults: _.extend({}, LightModel.prototype.defaults, {
+            _model_name: 'HemisphereLightModel',
+            _view_name: 'HemisphereLight',
+            ground_color: 'blue'
+        })
+    }, {}, LightModel.serializers);
+
+    var DirectionalLightModel = LightModel.extend({
+        defaults: _.extend({}, LightModel.prototype.defaults, {
+            _model_name: 'DirectionalLightModel',
+            _view_name: 'DirectionalLight',
+        })
+    }, {}, LightModel.serializers);
+
+    var PointLightModel = LightModel.extend({
+        defaults: _.extend({}, LightModel.prototype.defaults, {
+            _model_name: 'PointLightModel',
+            _view_name: 'PointLight',
+            distance: 10
+        })
+    }, {}, LightModel.serializers);
+
+    var SpotLightModel = LightModel.extend({
+        defaults: _.extend({}, LightModel.prototype.defaults, {
+            _model_name: 'SpotLightModel',
+            _view_name: 'SpotLight',
+            angle: 10,
+            exponent: 0.5
+        })
+    }, {}, LightModel.serializers);
+
+    var Object3dModel = widgets.WidgetModel.extend({
+        defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
+            _view_module: 'nbextensions/pythreejs/pythreejs',
+            _model_module: 'nbextensions/pythreejs/pythreejs',
+            _view_name: 'Object3dView',
+            _model_name: 'Object3dModel'
+        })
+    }, {
         serializers: _.extend({
-            map: {deserialize: widget.unpack_models},
-            lightMap: {deserialize: widget.unpack_models},
-            specularMap: {deserialize: widget.unpack_models},
-            envMap: {deserialize: widget.unpack_models},
-        }, widget.WidgetModel.serializers)
+            children: { deserialize: widgets.unpack_models }
+        }, widgets.WidgetModel.serializers)
     });
 
-    register.ParticleSystemMaterialModel = widget.WidgetModel.extend({}, {
-        serializers: _.extend({
-            map: {deserialize: widget.unpack_models}
-        }, widget.WidgetModel.serializers)
+    var ScaledObjectModel = Object3dModel.extend({
+        defaults: _.extend({}, Object3dModel.prototype.defaults, {
+            _view_name: 'ScaledObjectView',
+            _model_name: 'ScaledObjectModel'
+        })
     });
 
-    register.SpriteMaterialModel = widget.WidgetModel.extend({}, {
-        serializers: _.extend({
-            map: {deserialize: widget.unpack_models}
-        }, widget.WidgetModel.serializers)
+    var SceneModel = Object3dModel.extend({
+        defaults: _.extend({}, Object3dModel.prototype.defaults, {
+            _view_name: 'SceneView',
+            _model_name: 'SceneModel'
+        })
     });
 
-    register.SpriteModel = widget.WidgetModel.extend({}, {
+    var ControlsModel = widgets.WidgetModel.extend({
+        defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
+            _view_module: 'nbextensions/pythreejs/pythreejs',
+            _model_module: 'nbextensions/pythreejs/pythreejs',
+
+            _view_name: 'ControlsView',
+            _model_name: 'ControlsModel',
+            controling: null
+        })
+    }, {
         serializers: _.extend({
-            material: {deserialize: widget.unpack_models}
-        }, register.Object3dModel.serializers)
+            controlling: { deserialize: widgets.unpack_models }
+        }, widgets.WidgetModel.serializers)
     });
 
-    register.MeshModel = widget.WidgetModel.extend({}, {
-        serializers: _.extend({
-            geometry: {deserialize: widget.unpack_models},
-            material: {deserialize: widget.unpack_models},
-        }, register.Object3dModel.serializers)
+    var OrbitControlsModel = ControlsModel.extend({
+        defaults: _.extend({}, ControlsModel.prototype.defaults, {
+            _view_name: 'OrbitControlsView',
+            _model_name: 'OrbitControlsModel',
+
+            target: [0.0, 0.0, 0.0]
+        })
     });
 
-    register.RendererModel = widget.WidgetModel.extend({}, {
+    var TrackballControlsModel = ControlsModel.extend({
+        defaults: _.extend({}, ControlsModel.prototype.defaults, {
+            _view_name: 'TrackballControlsView',
+            _model_name: 'TrackballControlsModel',
+
+            target: [0.0, 0.0, 0.0]
+        })
+    });
+
+    var FlyControlsModel = ControlsModel.extend({
+        defaults: _.extend({}, ControlsModel.prototype.defaults, {
+            _view_name: 'FlyControlsView',
+            _model_name: 'FlyControlsModel',
+
+            forward_speed: 0.0,
+            lateral_speed: 0.0,
+            upward_speed: 0.0,
+            roll: 0.0,
+            pitch: 0.0,
+            yaw: 0.0
+        })
+    });
+
+    var PickerModel = ControlsModel.extend({
+        defaults: _.extend({}, ControlsModel.prototype.defaults, {
+            _view_name: 'PickerView',
+            _model_name: 'PickerModel',
+
+            event: 'click',
+            root: null,
+            picked: [],
+            distance: 0.0,
+            point: [0.0, 0.0, 0.0],
+            object: null,
+            face: [0, 0, 0],
+            faceNormal: [0.0, 0.0, 0.0],
+            faceVertices: [],
+            faceIndex: 0,
+            all: false
+        })
+    }, {
         serializers: _.extend({
-            scene: {deserialize: widget.unpack_models},
-            camera: {deserialize: widget.unpack_models},
-            controls: {deserialize: widget.unpack_models},
-            effect: {deserialize: widget.unpack_models},
-        }, widget.WidgetModel.serializers)
+            root: { deserialize: widgets.unpack_models },
+            object: { deserialize: widgets.unpack_models }
+        }, ControlsModel.serializers)
+    });
+
+    var EffectModel = widgets.WidgetModel.extend({
+        defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
+            _model_module: 'nbextensions/pythreejs/pythreejs',
+            _view_module: 'nbextensions/pythreejs/pythreejs'
+        })
+    });
+
+    var AnaglyphEffectModel = EffectModel.extend({
+        defaults: _.extend({}, EffectModel.prototype.defaults, {
+            _view_name: 'AnaglyphEffectView',
+            _model_name: 'AnaglyphEffectModel'
+        })
+    });
+
+    var MaterialModel = widgets.WidgetModel.extend({
+        defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
+            _model_module: 'nbextensions/pythreejs/pythreejs',
+            _view_module: 'nbextensions/pythreejs/pythreejs',
+            _model_name: 'MaterialModel',
+            _view_name: 'MaterialView',
+
+            name: '',
+            side: 'DoubleSide',
+            opacity: 1.0,
+            transparent: false,
+            blending: 'NormalBlending',
+            blendSrc: 'SrcAlphaFactor',
+            blendDst: 'OneMinusDstColorFactor',
+            blendEquation: 'AddEquation',
+            depthTest: true,
+            depthWrite: true,
+            polygonOffset: true,
+            polygonOffsetFactor: 1.0,
+            polygonOffsetUnits: 1.0,
+            alphaTest: 1.0,
+            overdraw: 1.0,
+            visible: true,
+            needsUpdate: true
+        })
+    });
+
+    var BasicMaterialModel = MaterialModel.extend({
+        defaults: _.extend({}, MaterialModel.prototype.defaults, {
+            _view_name: 'BasicMaterialView',
+            _model_name: 'BasicMaterialModel',
+
+            color: 'white',
+            wireframe: false,
+            wireframeLinewidth: 1.0,
+            wireframeLinecap: 'round',
+            wireframeLinejoin: 'round',
+            shading: 'SmoothShading',
+            vertexColors: 'NoColors',
+            fog: false,
+            map: null,
+            lightMap: null,
+            specularMap: null,
+            envMap: null,
+            skinning: false,
+            morphTargets: false
+        })
+    }, {
+        serializers: _.extend({
+            map: { deserialize: widgets.unpack_models },
+            lightMap: { deserialize: widgets.unpack_models },
+            specularMap: { deserialize: widgets.unpack_models },
+            envMap: { deserialize: widgets.unpack_models }
+        }, MaterialModel.serializers)
+    });
+
+    var NormalMaterialModel = MaterialModel.extend({
+        defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
+            _view_name: 'NormalMaterialView',
+            _model_name: 'NormalMaterialModel',
+
+            morphTargets: false,
+            shading: 'SmoothShading',
+            wireframe: false,
+            wireframeLinewidth: 1.0
+        })
+    });
+
+    var LambertMaterialModel = BasicMaterialModel.extend({
+        defaults: _.extend({}, BasicMaterialModel.prototype.defaults, {
+            _view_name: 'LambertMaterialView',
+            _model_name: 'LambertMaterialModel',
+
+            ambient: 'white',
+            emissive: 'black',
+            reflectivity: 1.0,
+            refractionRatio: 0.98,
+            combine: 'MultiplyOperation'
+        })
+    });
+
+    var PhongMaterialModel = BasicMaterialModel.extend({
+        defaults: _.extend({}, BasicMaterialModel.prototype.defaults, {
+            _view_name: 'PhongMaterialView',
+            _model_name: 'PhongMaterialModel',
+
+            ambient: 'white',
+            emissive: 'black',
+            specular: 'darkgray',
+            shininess: 30,
+            reflectivity: 1.0,
+            refractionRatio: 0.98,
+            combine: 'MultiplyOperation'
+        })
+    });
+
+    var DepthMaterialModel = BasicMaterialModel.extend({
+        defaults: _.extend({}, BasicMaterialModel.prototype.defaults, {
+            _view_name: 'DepthMaterialView',
+            _model_name: 'DepthMaterialModel',
+            wireframe: false,
+            wireframeLinewidth: 1.0
+        })
+    });
+
+    var ParticleSystemMaterialModel = BasicMaterialModel.extend({
+        defaults: _.extend({}, BasicMaterialModel.prototype.defaults, {
+            _view_name: 'ParticleSystemMaterialView',
+            _model_name: 'ParticleSystemMaterialModel'
+        })
+    });
+
+    var SpriteMaterialModel = BasicMaterialModel.extend({
+        defaults: _.extend({}, BasicMaterialModel.prototype.defaults, {
+            _view_name: 'SpriteMaterialView',
+            _model_name: 'SpriteMaterialModel'
+        })
+    });
+
+    var ShaderMaterialModel = BasicMaterialModel.extend({
+        defaults: _.extend({}, BasicMaterialModel.prototype.defaults, {
+            _view_name: 'ShaderMaterialView',
+            _model_name: 'ShaderMaterialModel',
+
+            fragmentShader: 'void main(){ }',
+            vertexShader: 'void main(){ }',
+            morphTargets: false,
+            lights: false,
+            morphNormals: false,
+            wireframe: false,
+            vertexColors: 'NoColors',
+            skinning: false,
+            fog: false,
+            shading: 'SmoothShading',
+            linewidth: 1.0,
+            wireframeLinewidth: 1.0
+        })
+    });
+
+    var LineBasicMaterialModel = BasicMaterialModel.extend({
+        defaults: _.extend({}, BasicMaterialModel.prototype.defaults, {
+            _model_name: 'LineBasicMaterialModel',
+            _view_name: 'LineBasicMaterialView',
+
+            color: 'white',
+            linewidth: 1.0,
+            linecap: 'round',
+            linejoin: 'round',
+            fog: false,
+            vertexColors: 'NoColors'
+        })
     });
 
 
-/*    // Modified from jupyter_notebook/static/widgets/js/init.js
-    // we probably don't need this anymore, but we should check performance
-    // before removing it
-    for (var key in register) {
-        if (register.hasOwnProperty(key)) {
-            var target = module[target_name];
-            if (target.prototype instanceof widget.WidgetModel) {
-                manager.WidgetManager.register_widget_model(key, target);
-            } else if (target.prototype instanceof widget.WidgetView) {
-                manager.WidgetManager.register_widget_view(key, target);
-            }
-        }
-    }
-*/
-    return register;
+    var LineDashedMaterialModel = BasicMaterialModel.extend({
+        defaults: _.extend({}, BasicMaterialModel.prototype.defaults, {
+            _model_name: 'LineDashedMaterialModel',
+            _view_name: 'LineDashedMaterialView',
+            color: 'white',
+            linewidth: 1.0,
+            scale: 1.0,
+            dashSize: 3.0,
+            gapSize: 1.0,
+            vertexColors: 'NoColors',
+            fog: false
+        })
+    });
 
+    var TextureModel = widgets.WidgetModel.extend({
+        defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
+            _view_module: 'nbextensions/pythreejs/pythreejs',
+            _model_module: 'nbextensions/pythreejs/pythreejs',
+            _model_name: 'TextureModel'
+        })
+    });
+
+    var ImageTextureModel = TextureModel.extend({
+        defaults: _.extend({}, TextureModel.prototype.defaults, {
+            _view_name: 'ImageTextureView',
+            _model_name: 'ImageTextureModel',
+
+            imageuri: ''
+        })
+    });
+
+    var DataTextureModel = TextureModel.extend({
+        defaults: _.extend({}, TextureModel.prototype.defaults, {
+            _view_name: 'DataTextureView',
+            _model_name: 'DataTextureModel',
+
+            data: [],
+            format: 'RGBAFormat',
+            width: 256,
+            height: 256,
+            type: 'UnsignedByteType',
+            mapping: 'UVMapping',
+            wrapS: 'ClampToEdgeWrapping',
+            wrapT: 'ClampToEdgeWrapping',
+            magFilter: 'LinearFilter',
+            minFilter: 'NearestFilter'
+        })
+    });
+
+    var TextTextureModel = TextureModel.extend({
+        defaults: _.extend({}, TextureModel.prototype.defaults, {
+            _view_name: 'TextTextureView',
+            _model_name: 'TextTextureModel',
+
+            fontFace: 'Arial',
+            size: 12,
+            color: 'black',
+            string: '',
+            squareTexture: true
+        })
+    });
+
+    var GeometryModel = widgets.WidgetModel.extend({
+        defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
+            _model_module: 'nbextensions/pythreejs/pythreejs',
+            _view_module: 'nbextensions/pythreejs/pythreejs',
+            _model_name: 'GeometryModel',
+            _view_name: 'GeometryView'
+        })
+    });
+
+    var PlainGeometryModel = GeometryModel.extend({
+        defaults: _.extend({}, GeometryModel.prototype.defaults, {
+            _model_name: 'PlainGeometryModel',
+            _view_name: 'PlainGeometryView',
+
+            vertices: [],
+            colors: [],
+            faces: []
+            // todo: faceVertexUvs
+        })
+    });
+
+    var SphereGeometryModel = GeometryModel.extend({
+        defaults: _.extend({}, GeometryModel.prototype.defaults, {
+            _view_name: 'SphereGeometryView',
+            _model_name: 'SphereGeometryModel',
+
+            radius: 1.0
+        })
+    });
+
+    var CylinderGeometryModel = GeometryModel.extend({
+        defaults: _.extend({}, GeometryModel.prototype.defaults, {
+            _view_name: 'CylinderGeometryView',
+            _model_name: 'CylinderGeometryModel',
+
+            radiusTop: 1.0,
+            radiusBottom: 1.0,
+            height: 1.0,
+            radiusSegments: 10.0,
+            heightSegments: 1.0,
+            openEnded: false
+        })
+    });
+
+    var BoxGeometryModel = GeometryModel.extend({
+        defaults: _.extend({}, GeometryModel.prototype.defaults, {
+            _view_name: 'BoxGeometryView',
+            _model_name: 'BoxGeometryModel',
+
+            width: 1.0,
+            height: 1.0,
+            depth: 1.0,
+            widthSegments: 1.0,
+            heightSegments: 1.0,
+            depthSegments: 1.0
+        })
+    });
+
+    var CircleGeometryModel = GeometryModel.extend({
+        defaults: _.extend({}, GeometryModel.prototype.defaults, {
+            _view_name: 'CircleGeometryView',
+            _model_name: 'CircleGeometryModel',
+
+            radiusi: 1.0,
+            segments: 8.0,
+            thetaStart: 0.0,
+            thetaLength : 2 * Math.PI
+        })
+    });
+
+    var LatheGeometryModel = GeometryModel.extend({
+        defaults: _.extend({}, GeometryModel.prototype.defaults, {
+            _view_name: 'LatheGeometryView',
+            _model_name: 'LatheGeometryModel',
+
+            points: [],
+            segments: 12,
+            phiStart: 0,
+            phiLength: 2 * Math.PI
+        })
+    });
+
+    var TubeGeometryModel = GeometryModel.extend({
+        defaults: _.extend({}, GeometryModel.prototype.defaults, {
+            _view_name: 'TubeGeometryView',
+            _model_name: 'TubeGeometryModel',
+
+           path: [],
+           segments: 64,
+           radius: 1.0,
+           radialSegments: 8,
+           closed: false
+        })
+    });
+
+    var IcosahedronGeometryModel = GeometryModel.extend({
+        defaults: _.extend({}, GeometryModel.prototype.defaults, {
+            _view_name: 'IcosahedronGeometryView',
+            _model_name: 'IcosahedronGeometryModel',
+
+            radius: 1.0,
+            detail: 0.0
+        })
+    });
+
+    var OctahedronGeometryModel = GeometryModel.extend({
+        defaults: _.extend({}, GeometryModel.prototype.defaults, {
+            _view_name: 'OctahedronGeometryView',
+            _model_name: 'OctahedronGeometryModel',
+
+            radius: 1.0,
+            detail: 0.0
+        })
+    });
+
+    var PlaneGeometryModel = GeometryModel.extend({
+        defaults: _.extend({}, GeometryModel.prototype.defaults, {
+            _view_name: 'PlaneGeometryView',
+            _model_name: 'PlaneGeometryModel',
+
+            width: 1.0,
+            height: 1.0,
+            widthSegments: 1.0,
+            heightSegments: 1.0
+        })
+    });
+
+    var TetrahedronGeometryModel = GeometryModel.extend({
+        defaults: _.extend({}, GeometryModel.prototype.defaults, {
+            _view_name: 'TetrahedronGeometryView',
+            _model_name: 'TetrahedronGeometryModel',
+
+            radius: 1.0,
+            detail: 0.0
+        })
+    });
+
+    var TorusGeometryModel = GeometryModel.extend({
+        defaults: _.extend({}, GeometryModel.prototype.defaults, {
+            _view_name: 'TorusGeometryView',
+            _model_name: 'TorusGeometryModel',
+
+            radius: 1.0,
+            tube: 1.0,
+            radialSegments: 1.0,
+            tubularSegments: 1.0,
+            arc: 2 * Math.Pi
+        })
+    });
+
+    var TorusKnotGeometryModel = GeometryModel.extend({
+        defaults: _.extend({}, GeometryModel.prototype.defaults, {
+            _view_name: 'TorusKnotGeometryView',
+            _model_name: 'TorusKnotGeometryModel',
+
+           radius: 1.0,
+           tube: 1.0,
+           radialSegments: 10.0,
+           tubularSegments: 10.0,
+           p: 2.0,
+           q: 3.0,
+           heightScale: 1.0
+        })
+    });
+
+    var PolyhedronGeometryModel = GeometryModel.extend({
+        defaults: _.extend({}, GeometryModel.prototype.defaults, {
+            _view_name: 'PolyhedronGeometryView',
+            _model_name: 'PolyhedronGeometryModel',
+
+           radius: 0.0,
+           detail: 0,
+           vertices: [],
+           faces: []
+        })
+    });
+
+    var RingGeometryModel = GeometryModel.extend({
+        defaults: _.extend({}, GeometryModel.prototype.defaults, {
+            _view_name: 'RingGeometryView',
+            _model_name: 'RingGeometryModel',
+
+            innerRadius: 1.0,
+            outerRadius: 3.0,
+            thetaSegments: 8,
+            phiSegments: 8,
+            thetaStart: 0.0,
+            thetaLength: 2 * Math.PI
+        })
+    });
+
+    var SurfaceGeometryModel = GeometryModel.extend({
+        defaults: _.extend({}, GeometryModel.prototype.defaults, {
+            _view_name: 'SurfaceGeometryView',
+            _model_name: 'SurfaceGeometryModel',
+
+            // Array of zeros of length 100.
+            z: Array.from(Array(100)).map(function() { return 0.0; }), // Yes, really
+            width: 10,
+            height: 10,
+            width_segments: 10,
+            height_segments: 10
+        })
+    });
+
+    var FaceGeometryModel = GeometryModel.extend({
+        defaults: _.extend({}, GeometryModel.prototype.defaults, {
+            _view_name: 'FaceGeometryView',
+            _model_name: 'FaceGeometryModel',
+
+            vertices: [],
+            face3: [],
+            face4: [],
+            facen: []
+        })
+    });
+
+    var ParametricGeometryModel = GeometryModel.extend({
+        defaults: _.extend({}, GeometryModel.prototype.defaults, {
+            _view_name: 'PrametricGeometryView',
+            _model_name: 'ParametricGeometryModel',
+
+           func: '',
+           slices: 105,
+           stacks: 105
+        })
+    });
+
+    var SpriteModel = Object3dModel.extend({
+        defaults: _.extend({}, Object3dModel.prototype.defaults, {
+            _view_name: 'SpriteView',
+            _model_name: 'SpriteModel'
+        })
+    }, {
+        serializers: _.extend({
+            material: { deserialize: widgets.unpack_models }
+        }, Object3dModel.serializers)
+    });
+
+    var MeshModel = Object3dModel.extend({
+        defaults: _.extend({}, Object3dModel.prototype.defaults, {
+            _view_name: 'MeshView',
+            _model_name: 'MeshModel',
+
+            geometry: undefined,
+            material: undefined
+        })
+    }, {
+        serializers: _.extend({
+            geometry: { deserialize: widgets.unpack_models },
+            material: { deserialize: widgets.unpack_models }
+        }, Object3dModel.serializers)
+    });
+
+    var LineModel = MeshModel.extend({
+        defaults: _.extend({}, MeshModel.prototype.defaults, {
+            _view_name: 'LineView',
+            _model_name: 'LineModel',
+
+            type: 'LineStrip',
+            material: undefined
+        })
+    });
+
+    var PlotMeshModel = MeshModel.extend({
+        defaults: _.extend({}, MeshModel.prototype.defaults, {
+            _view_name: 'PlotMeshView',
+            _model_name: 'PlotMeshModel',
+
+            plot: undefined
+        })
+    });
+
+    var SurfaceGridModel = MeshModel.extend({
+        defaults: _.extend({}, MeshModel.prototype.defaults, {
+            _view_name: 'SurfaceGridView',
+            _model_name: 'SurfaceGridModel',
+
+            geometry: undefined,
+            material: undefined
+        })
+    });
+
+    var CameraModel = Object3dModel.extend({
+        defaults: _.extend({}, Object3dModel.prototype.defaults, {
+            _view_name: 'CameraView',
+            _model_name: 'CameraModel'
+        })
+    });
+
+    var PerspectiveCameraModel = CameraModel.extend({
+        defaults: _.extend({}, CameraModel.prototype.defaults, {
+            _view_name: 'PerspectiveCameraView',
+            _model_name: 'PerspectiveCameraModel',
+
+            fov: 50.0,
+            aspect: 1.5,  // 6.0 / 4.0
+            near: 0.1,
+            far: 2000.0
+        })
+    });
+
+    var OrthographicCameraModel = CameraModel.extend({
+        defaults: _.extend({}, CameraModel.prototype.defaults, {
+            _view_name: 'OrthographicCameraView',
+            _model_name: 'OrthographicCameraModel',
+
+            left: -10.0,
+            right: 10.0,
+            top: -10.0,
+            bottom: 10.0,
+            near: 0.1,
+            far: 2000.0
+        })
+    });
+
+    var RendererModel = widgets.DOMWidgetModel.extend({
+        defaults: _.extend({}, widgets.DOMWidgetModel.prototype.defaults, {
+            _view_module: 'nbextensions/pythreejs/pythreejs',
+            _model_module: 'nbextensions/pythreejs/pythreejs',
+            _view_name: 'RendererView',
+            _model_name: 'RendererModel',
+
+            width: 600,
+            height: 100,
+            renderer_type: 'auto',
+            scene: undefined,
+            camera: undefined,
+            controls: [],
+            effect: null,
+            background: 'black'
+        })
+    }, {
+        serializers: _.extend({
+            scene: { deserialize: widgets.unpack_models },
+            camera: { deserialize: widgets.unpack_models },
+            controls: { deserialize: widgets.unpack_models },
+            effect: { deserialize: widgets.unpack_models }
+        }, widgets.DOMWidgetModel.serializers)
+    });
+
+    return {
+        AmbientLight : AmbientLight,
+        AmbientLightModel : AmbientLightModel,
+        EffectModel : EffectModel,
+        AnaglyphEffectView : AnaglyphEffectView,
+        AnaglyphEffectModel : AnaglyphEffectModel,
+        Basic3dObject : Basic3dObject,
+        Basic3dObjectModel : Basic3dObjectModel,
+        BasicMaterialView : BasicMaterialView,
+        BasicMaterialModel : BasicMaterialModel,
+        BoxGeometryView : BoxGeometryView,
+        BoxGeometryModel : BoxGeometryModel,
+        CameraView : CameraView,
+        CameraModel : CameraModel,
+        CircleGeometryView : CircleGeometryView,
+        CircleGeometryModel : CircleGeometryModel,
+        ControlsModel : ControlsModel,
+        CylinderGeometryView : CylinderGeometryView,
+        CylinderGeometryModel : CylinderGeometryModel,
+        DataTextureView : DataTextureView,
+        DataTextureModel : DataTextureModel,
+        DepthMaterialView : DepthMaterialView,
+        DepthMaterialModel : DepthMaterialModel,
+        DirectionalLight : DirectionalLight,
+        DirectionalLightModel : DirectionalLightModel,
+        FaceGeometryView : FaceGeometryView,
+        FaceGeometryModel : FaceGeometryModel,
+        FlyControlsView : FlyControlsView,
+        FlyControlsModel : FlyControlsModel,
+        HemisphereLight : HemisphereLight,
+        HemisphereLightModel : HemisphereLightModel,
+        IcosahedronGeometryView : IcosahedronGeometryView,
+        IcosahedronGeometryModel : IcosahedronGeometryModel,
+        ImageTextureView : ImageTextureView,
+        ImageTextureModel : ImageTextureModel,
+        LambertMaterialView : LambertMaterialView,
+        LambertMaterialModel : LambertMaterialModel,
+        LatheGeometryView : LatheGeometryView,
+        LatheGeometryModel : LatheGeometryModel,
+        LineBasicMaterialView : LineBasicMaterialView,
+        LineBasicMaterialModel : LineBasicMaterialModel,
+        LineDashedMaterialView : LineDashedMaterialView,
+        LineDashedMaterialModel : LineDashedMaterialModel,
+        LineView : LineView,
+        LineModel : LineModel,
+        MaterialView : MaterialView,
+        MaterialModel : MaterialModel,
+        MeshView : MeshView,
+        MeshModel : MeshModel,
+        NormalMaterialView : NormalMaterialView,
+        NormalMaterialModel : NormalMaterialModel,
+        Object3dView : Object3dView,
+        Object3dModel : Object3dModel,
+        OctahedronGeometryView : OctahedronGeometryView,
+        OctahedronGeometryModel : OctahedronGeometryModel,
+        OrbitControlsView : OrbitControlsView,
+        OrbitControlsModel : OrbitControlsModel,
+        OrthographicCameraView : OrthographicCameraView,
+        OrthographicCameraModel : OrthographicCameraModel,
+        ParametricGeometryView : ParametricGeometryView,
+        ParametricGeometryModel : ParametricGeometryModel,
+        ParticleSystemMaterialView : ParticleSystemMaterialView,
+        ParticleSystemMaterialModel : ParticleSystemMaterialModel,
+        PerspectiveCameraView : PerspectiveCameraView,
+        PerspectiveCameraModel : PerspectiveCameraModel,
+        PhongMaterialView : PhongMaterialView,
+        PhongMaterialModel : PhongMaterialModel,
+        PickerView : PickerView,
+        PickerModel : PickerModel,
+        PlainGeometryView : PlainGeometryView,
+        PlainGeometryModel : PlainGeometryModel,
+        PlaneGeometryView : PlaneGeometryView,
+        PlaneGeometryModel : PlaneGeometryModel,
+        PointLight : PointLight,
+        PointLightModel : PointLightModel,
+        PolyhedronGeometryView : PolyhedronGeometryView,
+        PolyhedronGeometryModel : PolyhedronGeometryModel,
+        RendererView : RendererView,
+        RendererModel : RendererModel,
+        RingGeometryView : RingGeometryView,
+        RingGeometryModel : RingGeometryModel,
+        ScaledObjectView : ScaledObjectView,
+        ScaledObjectModel : ScaledObjectModel,
+        SceneView : SceneView,
+        SceneModel : SceneModel,
+        ShaderMaterialView : ShaderMaterialView,
+        ShaderMaterialModel : ShaderMaterialModel,
+        SphereGeometryView : SphereGeometryView,
+        SphereGeometryModel : SphereGeometryModel,
+        SpotLight : SpotLight,
+        SpotLightModel : SpotLightModel,
+        SpriteView : SpriteView,
+        SpriteModel : SpriteModel,
+        SpriteMaterialView : SpriteMaterialView,
+        SpriteMaterialModel : SpriteMaterialModel,
+        SurfaceGeometryView : SurfaceGeometryView,
+        SurfaceGeometryModel : SurfaceGeometryModel,
+        SurfaceGridView : SurfaceGridView,
+        SurfaceGridModel : SurfaceGridModel,
+        ThreeView : ThreeView,
+        TetrahedronGeometryView : TetrahedronGeometryView,
+        TetrahedronGeometryModel : TetrahedronGeometryModel,
+        TextTextureView : TextTextureView,
+        TextTextureModel : TextTextureModel,
+        TextureModel : TextureModel,
+        TorusGeometryView : TorusGeometryView,
+        TorusGeometryModel : TorusGeometryModel,
+        TorusKnotGeometryView : TorusKnotGeometryView,
+        TorusKnotGeometryModel : TorusKnotGeometryModel,
+        TrackballControlsView : TrackballControlsView,
+        TrackballControlsModel : TrackballControlsModel,
+        TubeGeometryView : TubeGeometryView,
+        TubeGeometryModel : TubeGeometryModel
+    };
 });
