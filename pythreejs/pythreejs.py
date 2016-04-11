@@ -852,7 +852,7 @@ def make_text(text, position=(0, 0, 0), height=1):
     sm = SpriteMaterial(map=TextTexture(string=text, color='white', size=100, squareTexture=False))
     return Sprite(material=sm, position = position, scaleToTexture=True, scale=[1, height, 1])
 
-def height_texture(z, colormap = 'YlGnBu_r'):
+def height_texture(z, colormap = 'viridis'):
     """Create a texture corresponding to the heights in z and the given colormap."""
     from matplotlib import cm
     from skimage import img_as_ubyte
