@@ -2,4 +2,11 @@
 .ipynb_checkpoints/
 dist/
 build/
-*.pyc
+*.py[cod]
+node_modules/
+
+# Compiled javascript
+pythreejs/static/
+
+# OS X
+.DS_Store

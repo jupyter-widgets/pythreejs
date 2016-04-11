@@ -29,8 +29,8 @@ def vector2(trait_type=CFloat, default=None, **kwargs):
 
 
 class Texture(Widget):
-    _view_module = Unicode('nbextensions/pythreejs/pythreejs').tag(sync=True)
-    _model_module = Unicode('nbextensions/pythreejs/pythreejs').tag(sync=True)
+    _view_module = Unicode('jupyter-threejs').tag(sync=True)
+    _model_module = Unicode('jupyter-threejs').tag(sync=True)
     _view_name = Unicode('TextureView').tag(sync=True)
     _model_name = Unicode('TextureModel').tag(sync=True)
 
@@ -92,8 +92,8 @@ class Object3d(Widget):
     """
     If matrix is not None, it overrides the position, rotation, scale, and up variables.
     """
-    _view_module = Unicode('nbextensions/pythreejs/pythreejs').tag(sync=True)
-    _model_module = Unicode('nbextensions/pythreejs/pythreejs').tag(sync=True)
+    _view_module = Unicode('jupyter-threejs').tag(sync=True)
+    _model_module = Unicode('jupyter-threejs').tag(sync=True)
     _view_name = Unicode('Object3dView').tag(sync=True)
     _model_name = Unicode('Object3dModel').tag(sync=True)
 
@@ -205,8 +205,8 @@ class ScaledObject(Object3d):
 
 
 class Controls(Widget):
-    _view_module = Unicode('nbextensions/pythreejs/pythreejs').tag(sync=True)
-    _model_module = Unicode('nbextensions/pythreejs/pythreejs').tag(sync=True)
+    _view_module = Unicode('jupyter-threejs').tag(sync=True)
+    _model_module = Unicode('jupyter-threejs').tag(sync=True)
     _view_name = Unicode('ControlsView').tag(sync=True)
     _model_name = Unicode('ControlsModel').tag(sync=True)
 
@@ -257,8 +257,8 @@ class Picker(Controls):
 
 
 class Geometry(Widget):
-    _view_module = Unicode('nbextensions/pythreejs/pythreejs').tag(sync=True)
-    _model_module = Unicode('nbextensions/pythreejs/pythreejs').tag(sync=True)
+    _view_module = Unicode('jupyter-threejs').tag(sync=True)
+    _model_module = Unicode('jupyter-threejs').tag(sync=True)
     _view_name = Unicode('GeometryView').tag(sync=True)
     _model_name = Unicode('GeometryModel').tag(sync=True)
 
@@ -452,8 +452,8 @@ class ParametricGeometry(Geometry):
 
 
 class Material(Widget):
-    _view_module = Unicode('nbextensions/pythreejs/pythreejs').tag(sync=True)
-    _model_module = Unicode('nbextensions/pythreejs/pythreejs').tag(sync=True)
+    _view_module = Unicode('jupyter-threejs').tag(sync=True)
+    _model_module = Unicode('jupyter-threejs').tag(sync=True)
     _view_name = Unicode('MaterialView').tag(sync=True)
     _model_name = Unicode('MaterialModel').tag(sync=True)
 
@@ -508,7 +508,6 @@ class LambertMaterial(BasicMaterial):
     _view_name = Unicode('LambertMaterialView').tag(sync=True)
     _model_name = Unicode('LambertMaterialModel').tag(sync=True)
 
-    ambient = Color('white').tag(sync=True)
     emissive = Color('black').tag(sync=True)
     reflectivity = CFloat(1.0).tag(sync=True)
     refractionRatio = CFloat(0.98).tag(sync=True)
@@ -520,7 +519,6 @@ class PhongMaterial(BasicMaterial):
     _view_name = Unicode('PhongMaterialView').tag(sync=True)
     _model_name = Unicode('PhongMaterialModel').tag(sync=True)
 
-    ambient = Color('white').tag(sync=True)
     emissive = Color('black').tag(sync=True)
     specular = Color('darkgray').tag(sync=True)
     shininess = CFloat(30).tag(sync=True)
@@ -744,8 +742,8 @@ class Scene(Object3d):
 
 
 class Effect(Widget):
-    _view_module = Unicode('nbextensions/pythreejs/pythreejs').tag(sync=True)
-    _model_module = Unicode('nbextensions/pythreejs/pythreejs').tag(sync=True)
+    _view_module = Unicode('jupyter-threejs').tag(sync=True)
+    _model_module = Unicode('jupyter-threejs').tag(sync=True)
 
 
 class AnaglyphEffect(Effect):
@@ -754,8 +752,8 @@ class AnaglyphEffect(Effect):
 
 
 class Renderer(DOMWidget):
-    _view_module = Unicode('nbextensions/pythreejs/pythreejs').tag(sync=True)
-    _model_module = Unicode('nbextensions/pythreejs/pythreejs').tag(sync=True)
+    _view_module = Unicode('jupyter-threejs').tag(sync=True)
+    _model_module = Unicode('jupyter-threejs').tag(sync=True)
     _view_name = Unicode('RendererView').tag(sync=True)
     _model_name = Unicode('RendererModel').tag(sync=True)
 
