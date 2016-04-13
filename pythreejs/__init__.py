@@ -134,3 +134,11 @@ __all__ = ["Texture",
            "make_text",
            "height_texture",
        ]
+
+def _jupyter_nbextension_paths():
+    return [{
+        'section': 'notebook',
+        'src': 'static',
+        'dest': 'jupyter-threejs',
+        'require': 'jupyter-threejs/extension'
+    }]

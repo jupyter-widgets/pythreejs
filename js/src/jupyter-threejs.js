@@ -1,31 +1,13 @@
-// included version of three.js is from commit da1a7a1e92a4410cf0901fee3ea69a36cd2b0025 from my fork at https://github.com/jasongrout/three.js/
-require.config({
-    map: {
-        "*": {
-            "threejs": "nbextensions/pythreejs/three.js/build/three",
-            "threejs-projector": "nbextensions/pythreejs/three.js/examples/js/renderers/Projector",
-            "threejs-canvas": "nbextensions/pythreejs/three.js/examples/js/renderers/CanvasRenderer",
-            "threejs-orbit": "nbextensions/pythreejs/three.js/examples/js/controls/OrbitControls",
-            "threejs-fly": "nbextensions/pythreejs/three.js/examples/js/controls/MomentumCameraControls",
-            "threejs-trackball": "nbextensions/pythreejs/three.js/examples/js/controls/TrackballControls",
-            "threejs-detector": "nbextensions/pythreejs/three.js/examples/js/Detector"
-        }
-    },
-    shim: {
-        "nbextensions/pythreejs/three.js/examples/js/renderers/Projector": {deps: ["nbextensions/pythreejs/three.js/build/three"]},
-        "nbextensions/pythreejs/three.js/examples/js/renderers/CanvasRenderer": {deps: ["nbextensions/pythreejs/three.js/build/three", "nbextensions/pythreejs/three.js/examples/js/renderers/Projector"]},
-        "nbextensions/pythreejs/three.js/examples/js/controls/OrbitControls": {deps: ["nbextensions/pythreejs/three.js/build/three"]},
-        "nbextensions/pythreejs/three.js/examples/js/controls/MomentumCameraControls": {deps: ["nbextensions/pythreejs/three.js/build/three"]},
-        "nbextensions/pythreejs/three.js/examples/js/controls/TrackballControls": {deps: ["nbextensions/pythreejs/three.js/build/three"]},
-        "nbextensions/pythreejs/three.js/examples/js/Detector": {deps: ["nbextensions/pythreejs/three.js/build/three"]},
-        "nbextensions/pythreejs/three.js/build/three": {exports: "THREE"}
-    },
-});
-
-define(["jupyter-js-widgets", "underscore",
-        "threejs", "threejs-canvas", "threejs-orbit", "threejs-fly",
-        "threejs-trackball", "threejs-detector", "threejs-projector"],
+define(["jupyter-js-widgets", "underscore", "three"],
        function(widgets, _, THREE) {
+
+    window.THREE = THREE;
+    require("./examples/js/renderers/Projector.js");
+    require("./examples/js/renderers/CanvasRenderer.js");
+    require("./examples/js/controls/OrbitControls.js");
+    require("./examples/js/controls/MomentumCameraControls.js");
+    require("./examples/js/controls/TrackballControls.js");
+    var Detector = require("./examples/js/Detector.js");
 
     var RendererView = widgets.DOMWidgetView.extend({
         render : function(){
@@ -158,7 +140,7 @@ define(["jupyter-js-widgets", "underscore",
 
             // pickers need access to the model from the three.js object
             // this.obj may not exist until after the update() call above
-            this.obj.pythreejs_view = this;
+            this.obj.threejs_view = this;
 
             return update ? update : this.obj;
         },
@@ -182,7 +164,7 @@ define(["jupyter-js-widgets", "underscore",
         replace_obj: function(new_obj) {
             var old_obj = this.obj;
             this.obj = new_obj;
-            this.obj.pythreejs_view = this;
+            this.obj.threejs_view = this;
             this.update_object_parameters();
             this.trigger('replace_obj', old_obj, new_obj);
         },
@@ -538,7 +520,7 @@ define(["jupyter-js-widgets", "underscore",
                         faceVertices: verts,
                         faceNormal: [o.face.normal.x, o.face.normal.y, o.face.normal.z],
                         faceIndex: o.faceIndex,
-                        object: o.object.pythreejs_view.model
+                        object: o.object.threejs_view.model
                     }
                 }
                 if(objs.length > 0) {
@@ -864,7 +846,7 @@ define(["jupyter-js-widgets", "underscore",
         new_properties: function() {
             BasicMaterialView.prototype.new_properties.call(this);
             this.enum_properties.push('combine');
-            this.set_properties.push('ambient', 'emissive');
+            this.set_properties.push('emissive');
             this.scalar_properties.push('reflectivity', 'refractionRatio');
         },
 
@@ -877,7 +859,7 @@ define(["jupyter-js-widgets", "underscore",
         new_properties: function() {
             BasicMaterialView.prototype.new_properties.call(this);
             this.enum_properties.push('combine');
-            this.set_properties.push('ambient', 'emissive', 'specular');
+            this.set_properties.push('emissive', 'specular');
             this.scalar_properties.push('shininess', 'reflectivity', 'refractionRatio');
         },
 
@@ -1245,8 +1227,8 @@ define(["jupyter-js-widgets", "underscore",
 
     var Basic3dObjectModel = widgets.WidgetModel.extend({
         defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
-            _model_module: 'nbextensions/pythreejs/pythreejs',
-            _view_module: 'nbextensions/pythreejs/pythreejs',
+            _model_module: 'jupyter-threejs',
+            _view_module: 'jupyter-threejs',
             _model_name: 'Basic3dObjectModel',
             _view_name: 'Basic3dObjectView'
         })
@@ -1308,8 +1290,8 @@ define(["jupyter-js-widgets", "underscore",
 
     var Object3dModel = widgets.WidgetModel.extend({
         defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
-            _view_module: 'nbextensions/pythreejs/pythreejs',
-            _model_module: 'nbextensions/pythreejs/pythreejs',
+            _view_module: 'jupyter-threejs',
+            _model_module: 'jupyter-threejs',
             _view_name: 'Object3dView',
             _model_name: 'Object3dModel'
         })
@@ -1335,8 +1317,8 @@ define(["jupyter-js-widgets", "underscore",
 
     var ControlsModel = widgets.WidgetModel.extend({
         defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
-            _view_module: 'nbextensions/pythreejs/pythreejs',
-            _model_module: 'nbextensions/pythreejs/pythreejs',
+            _view_module: 'jupyter-threejs',
+            _model_module: 'jupyter-threejs',
 
             _view_name: 'ControlsView',
             _model_name: 'ControlsModel',
@@ -1406,8 +1388,8 @@ define(["jupyter-js-widgets", "underscore",
 
     var EffectModel = widgets.WidgetModel.extend({
         defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
-            _model_module: 'nbextensions/pythreejs/pythreejs',
-            _view_module: 'nbextensions/pythreejs/pythreejs'
+            _model_module: 'jupyter-threejs',
+            _view_module: 'jupyter-threejs'
         })
     });
 
@@ -1420,8 +1402,8 @@ define(["jupyter-js-widgets", "underscore",
 
     var MaterialModel = widgets.WidgetModel.extend({
         defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
-            _model_module: 'nbextensions/pythreejs/pythreejs',
-            _view_module: 'nbextensions/pythreejs/pythreejs',
+            _model_module: 'jupyter-threejs',
+            _view_module: 'jupyter-threejs',
             _model_name: 'MaterialModel',
             _view_name: 'MaterialView',
 
@@ -1491,7 +1473,6 @@ define(["jupyter-js-widgets", "underscore",
             _view_name: 'LambertMaterialView',
             _model_name: 'LambertMaterialModel',
 
-            ambient: 'white',
             emissive: 'black',
             reflectivity: 1.0,
             refractionRatio: 0.98,
@@ -1504,7 +1485,6 @@ define(["jupyter-js-widgets", "underscore",
             _view_name: 'PhongMaterialView',
             _model_name: 'PhongMaterialModel',
 
-            ambient: 'white',
             emissive: 'black',
             specular: 'darkgray',
             shininess: 30,
@@ -1588,8 +1568,8 @@ define(["jupyter-js-widgets", "underscore",
 
     var TextureModel = widgets.WidgetModel.extend({
         defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
-            _view_module: 'nbextensions/pythreejs/pythreejs',
-            _model_module: 'nbextensions/pythreejs/pythreejs',
+            _view_module: 'jupyter-threejs',
+            _model_module: 'jupyter-threejs',
             _model_name: 'TextureModel'
         })
     });
@@ -1636,8 +1616,8 @@ define(["jupyter-js-widgets", "underscore",
 
     var GeometryModel = widgets.WidgetModel.extend({
         defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
-            _model_module: 'nbextensions/pythreejs/pythreejs',
-            _view_module: 'nbextensions/pythreejs/pythreejs',
+            _model_module: 'jupyter-threejs',
+            _view_module: 'jupyter-threejs',
             _model_name: 'GeometryModel',
             _view_name: 'GeometryView'
         })
@@ -1952,8 +1932,8 @@ define(["jupyter-js-widgets", "underscore",
 
     var RendererModel = widgets.DOMWidgetModel.extend({
         defaults: _.extend({}, widgets.DOMWidgetModel.prototype.defaults, {
-            _view_module: 'nbextensions/pythreejs/pythreejs',
-            _model_module: 'nbextensions/pythreejs/pythreejs',
+            _view_module: 'jupyter-threejs',
+            _model_module: 'jupyter-threejs',
             _view_name: 'RendererView',
             _model_name: 'RendererModel',
 
