@@ -1811,7 +1811,7 @@ define(["jupyter-js-widgets", "underscore", "three"],
             _model_name: 'SurfaceGeometryModel',
 
             // Array of zeros of length 100.
-            z: Array.from(Array(100)).map(function() { return 0.0; }), // Yes, really
+            z: Array.apply(null, Array(100)).map(Number.prototype.valueOf, 0), // Yes, really
             width: 10,
             height: 10,
             width_segments: 10,
