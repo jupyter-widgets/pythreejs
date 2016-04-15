@@ -124,7 +124,7 @@ setup_args = {
     'long_description': LONG_DESCRIPTION,
     'License': 'BSD',
     'include_package_data': True,
-    'install_requires': ['ipywidgets>=4.2.0dev'],
+    'install_requires': ['ipywidgets>=5.0.0b4'],
     'packages': find_packages(),
     'zip_safe': False,
     'cmdclass': {
