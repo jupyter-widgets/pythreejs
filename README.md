@@ -6,20 +6,28 @@ A Python / ThreeJS bridge utilizing the Jupyter widget infrastructure.
 Note
 ----
 
-This README concerns pythreejs version 0.2.0 beta 1.
+This README concerns pythreejs version 0.2.0 beta 2.
 
 Installation
 ------------
 
-- Install the Python package
-
 ```
 pip install --pre pythreejs
+jupyter nbextension enable --py pythreejs
 ```
 
-- Install and enable notebook extension
+For a development installation (requires npm),
 
 ```
-jupyter nbextension install -py pythreejs
-jupyter nbextension enable --py pyhteejs
+$ git clone https://github.com/jovyan/pythreejs.git
+$ cd pythreejs
+$ pip install -e .
+$ jupyter nbextension install --py --symlink --user pythreejs
+$ jupyter nbextension enable --py --user pythreejs
 ```
+
+Note for developers: the `--symlink` argument on Linux or OS X allows one to
+modify the JavaScript code in-place. This feature is not available
+with Windows.
+
+

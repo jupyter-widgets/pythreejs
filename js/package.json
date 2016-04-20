@@ -1,6 +1,6 @@
 {
   "name": "jupyter-threejs",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "jupyter - threejs bridge",
   "author": "Jupyter-Threejs development team",
   "license": "BSD",
@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "jquery": "^2.1.4",
-    "jupyter-js-widgets": "0.0.19",
+    "jupyter-js-widgets": "^1.0.0",
     "three": "^0.75.0",
     "underscore": "^1.8.3"
   }
