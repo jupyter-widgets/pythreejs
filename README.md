@@ -3,6 +3,8 @@ pythreejs
 
 A Python / ThreeJS bridge utilizing the Jupyter widget infrastructure.
 
+![Screencast](/screencast.gif)
+
 Note
 ----
 
