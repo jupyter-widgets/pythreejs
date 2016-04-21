@@ -5,16 +5,12 @@ A Python / ThreeJS bridge utilizing the Jupyter widget infrastructure.
 
 ![Screencast](/screencast.gif)
 
-Note
-----
-
-This README concerns pythreejs version 0.2.0 beta 2.
 
 Installation
 ------------
 
 ```
-pip install --pre pythreejs
+pip install pythreejs
 jupyter nbextension enable --py pythreejs
 ```
 
