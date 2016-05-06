@@ -9,12 +9,20 @@ A Python / ThreeJS bridge utilizing the Jupyter widget infrastructure.
 Installation
 ------------
 
+Using pip:
+
 ```
 pip install pythreejs
 jupyter nbextension enable --py pythreejs
 ```
 
-For a development installation (requires npm),
+Using conda
+
+```
+$ conda install -c conda-forge pythreejs
+```
+
+For a development installation (requires npm):
 
 ```
 $ git clone https://github.com/jovyan/pythreejs.git
