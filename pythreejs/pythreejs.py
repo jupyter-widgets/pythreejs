@@ -758,13 +758,14 @@ class Renderer(DOMWidget):
     _model_name = Unicode('RendererModel').tag(sync=True)
 
     width = Unicode('600').tag(sync=True)  # TODO: stop relying on deprecated DOMWidget attribute
-    height = Unicode('400').tag(sync=True) 
+    height = Unicode('400').tag(sync=True)
     renderer_type = Enum(['webgl', 'canvas', 'auto'], 'auto').tag(sync=True)
     scene = Instance(Scene).tag(sync=True, **widget_serialization)
     camera = Instance(Camera).tag(sync=True, **widget_serialization)
     controls = List(Instance(Controls)).tag(sync=True, **widget_serialization)
     effect = Instance(Effect, allow_none=True).tag(sync=True, **widget_serialization)
     background = Color('black', allow_none=True).tag(sync=True)
+    backgroud_opacity = Float(min=0.0, max=1.0).tag(sync=True)
 
 
 class Light(Object3d):

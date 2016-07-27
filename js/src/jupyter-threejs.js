@@ -56,11 +56,8 @@ define(["jupyter-js-widgets", "underscore", "three"],
                 });
             }
             view_promises.push(effect_promise.then(function() {
-                that.effectrenderer.setSize(that.model.get('width'),
-                                            that.model.get('height'));
-                if (that.model.get('background')) {
-                    that.effectrenderer.setClearColor(that.model.get('background'))
-                }
+                that.effectrenderer.setSize(that.model.get('width'), that.model.get('height'));
+                that.effectrenderer.setClearColor(that.model.get('background'), that.model.get('background_opacity'))
             }));
             this.view_promises = Promise.all(view_promises).then(function(objs) {
                 that.scene.obj.add(that.camera.obj);
@@ -114,11 +111,8 @@ define(["jupyter-js-widgets", "underscore", "three"],
         update : function(){
             var that = this;
             this.view_promises.then(function() {
-                that.effectrenderer.setSize(that.model.get('width'),
-                                            that.model.get('height'));
-                if (that.model.get('background')) {
-                    that.effectrenderer.setClearColor(that.model.get('background'))
-                }
+                that.effectrenderer.setSize(that.model.get('width'), that.model.get('height'));
+                that.effectrenderer.setClearColor(that.model.get('background'), that.model.get('background_opacity'));
             });
 
             widgets.DOMWidgetView.prototype.update.call(that);
@@ -1944,7 +1938,8 @@ define(["jupyter-js-widgets", "underscore", "three"],
             camera: undefined,
             controls: [],
             effect: null,
-            background: 'black'
+            background: 'black',
+            background_opacity: 0.0
         })
     }, {
         serializers: _.extend({
