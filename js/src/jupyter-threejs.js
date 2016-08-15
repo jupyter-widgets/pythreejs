@@ -10,7 +10,7 @@ define(["jupyter-js-widgets", "underscore", "three"],
     var Detector = require("./examples/js/Detector.js");
 
     var RendererView = widgets.DOMWidgetView.extend({
-        render : function(){
+        render : function() {
             console.log('created renderer');
             this.on('displayed', this.show, this);
             var that = this;
@@ -32,6 +32,7 @@ define(["jupyter-js-widgets", "underscore", "three"],
             } else {
                 this.renderer = new THREE.CanvasRenderer();
             }
+            this.el.className = "jupyter-widget jupyter-threejs";
             this.$el.empty().append(this.renderer.domElement);
             var that = this;
             var view_promises = [];
@@ -108,7 +109,7 @@ define(["jupyter-js-widgets", "underscore", "three"],
             }
         },
 
-        update : function(){
+        update: function() {
             var that = this;
             this.view_promises.then(function() {
                 that.effectrenderer.setSize(that.model.get('width'), that.model.get('height'));
@@ -1516,8 +1517,8 @@ define(["jupyter-js-widgets", "underscore", "three"],
             _view_name: 'ShaderMaterialView',
             _model_name: 'ShaderMaterialModel',
 
-            fragmentShader: 'void main(){ }',
-            vertexShader: 'void main(){ }',
+            fragmentShader: 'void main() {}',
+            vertexShader: 'void main() {}',
             morphTargets: false,
             lights: false,
             morphNormals: false,
