@@ -1,4 +1,5 @@
 from ._version import version_info, __version__
+from ._package import npm_pkg_name, py_pkg_name
 
 from .pythreejs import (
     Texture,
@@ -139,6 +140,6 @@ def _jupyter_nbextension_paths():
     return [{
         'section': 'notebook',
         'src': 'static',
-        'dest': 'jupyter-threejs',
-        'require': 'jupyter-threejs/extension'
+        'dest': npm_pkg_name,
+        'require': npm_pkg_name + '/extension'
     }]
