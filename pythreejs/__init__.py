@@ -1,6 +1,7 @@
 from ._version import version_info, __version__
 from ._package import npm_pkg_name, py_pkg_name
 
+from .enums import *
 from .core import *
 from .cameras import *
 from .controls import *

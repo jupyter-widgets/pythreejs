@@ -16,6 +16,7 @@ from ipywidgets import Widget, DOMWidget, widget_serialization, Color
 from traitlets import (Unicode, Int, CInt, Instance, Enum, List, Dict, Float, CFloat, Bool)
 from ._package import npm_pkg_name
 
+from .enums import PixelFormats, DataTypes, MappingModes, WrappingModes, Filters
 
 class Texture(Widget):
     _view_module = Unicode(npm_pkg_name).tag(sync=True)
@@ -44,25 +45,18 @@ class DataTexture(Texture):
     _model_name = Unicode('DataTextureModel').tag(sync=True)
 
     data = List(CInt).tag(sync=True)
-    format = Enum(['RGBAFormat', 'AlphaFormat', 'RGBFormat', 'LuminanceFormat',
-                   'LuminanceAlphaFormat'], 'RGBAFormat').tag(sync=True)
+    format = Enum(PixelFormats, 'RGBAFormat').tag(sync=True)
     width = CInt(256).tag(sync=True)
     height = CInt(256).tag(sync=True)
-    type = Enum(['UnsignedByteType', 'ByteType', 'ShortType',
-                 'UnsignedShortType', 'IntType', 'UnsignedIntType',
-                 'FloatType', 'UnsignedShort4444Type', 'UnsignedShort5551Type',
-                 'UnsignedShort565Type'], 'UnsignedByteType').tag(sync=True)
-    mapping = Enum(['UVMapping', 'CubeReflectionMapping',
-                    'CubeRefractionMapping', 'SphericalReflectionMapping',
-                    'SphericalRefractionMapping'], 'UVMapping').tag(sync=True)
-    wrapS = Enum(['ClampToEdgeWrapping', 'RepeatWrapping', 'MirroredRepeatWrapping'],
-                 'ClampToEdgeWrapping').tag(sync=True)
-    wrapT = Enum(['ClampToEdgeWrapping', 'RepeatWrapping', 'MirroredRepeatWrapping'],
-                 'ClampToEdgeWrapping').tag(sync=True)
-    magFilter = Enum(['LinearFilter', 'NearestFilter'], 'LinearFilter').tag(sync=True)
-    minFilter = Enum(['NearestFilter', 'NearestMipMapNearestFilter',
-                      'NearestMipMapLinearFilter', 'LinearFilter',
-                      'LinearMipMapNearestFilter'], 'NearestFilter').tag(sync=True)
+
+    # TODO: former list included entries from both DataTypes and PixelTypes
+    type = Enum(DataTypes, 'UnsignedByteType').tag(sync=True)
+
+    mapping = Enum(MappingModes, 'UVMapping').tag(sync=True)
+    wrapS = Enum(WrappingModes, 'ClampToEdgeWrapping').tag(sync=True)
+    wrapT = Enum(WrappingModes, 'ClampToEdgeWrapping').tag(sync=True)
+    magFilter = Enum(Filters, 'LinearFilter').tag(sync=True)
+    minFilter = Enum(Filters, 'NearestFilter').tag(sync=True)
     anisotropy = CInt(1).tag(sync=True)
 
 

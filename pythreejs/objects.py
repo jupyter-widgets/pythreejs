@@ -31,6 +31,7 @@ class Line(Mesh):
     _view_name = Unicode('LineView').tag(sync=True)
     _model_name = Unicode('LineModel').tag(sync=True)
 
+    # TODO: these enums are in Three.Legacy.js.  Should they be removed?
     type = Enum(['LineStrip', 'LinePieces'], 'LineStrip').tag(sync=True)
     material = Instance(_LineMaterial).tag(sync=True, **widget_serialization)
 

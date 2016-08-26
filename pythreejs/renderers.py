@@ -19,7 +19,10 @@ class Renderer(DOMWidget):
 
     width = Unicode('600').tag(sync=True)  # TODO: stop relying on deprecated DOMWidget attribute
     height = Unicode('400').tag(sync=True)
+
+    # TODO: should we just create separate classes for canvas/webgl renderers? and provide a convenience class for auto-detection?
     renderer_type = Enum(['webgl', 'canvas', 'auto'], 'auto').tag(sync=True)
+
     scene = Instance(Scene).tag(sync=True, **widget_serialization)
     camera = Instance(Camera).tag(sync=True, **widget_serialization)
     controls = List(Instance(Controls)).tag(sync=True, **widget_serialization)

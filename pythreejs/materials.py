@@ -6,6 +6,7 @@ from ipywidgets import Widget, DOMWidget, widget_serialization, Color
 from traitlets import (Unicode, Int, CInt, Instance, Enum, List, Dict, Float, CFloat, Bool)
 from ._package import npm_pkg_name
 
+from .enums import Side, BlendingMode, Shading, Colors, DestinationFactors, SourceFactors, Equations, Operations
 from .textures import Texture
 
 class Material(Widget):
@@ -16,20 +17,13 @@ class Material(Widget):
 
     # id = TODO
     name = Unicode(sync=True)
-    side = Enum(['FrontSide', 'BackSide', 'DoubleSide'], 'DoubleSide').tag(sync=True)
+    side = Enum(Side, 'DoubleSide').tag(sync=True)
     opacity = CFloat(1.0).tag(sync=True)
     transparent = Bool().tag(sync=True)
-    blending = Enum(['NoBlending', 'NormalBlending', 'AdditiveBlending',
-                     'SubtractiveBlending', 'MultiplyBlending',
-                     'CustomBlending'], 'NormalBlending').tag(sync=True)
-    blendSrc = Enum(['ZeroFactor', 'OneFactor', 'SrcColorFactor',
-                     'OneMinusSrcColorFactor', 'SrcAlphaFactor',
-                     'OneMinusSrcAlphaFactor', 'DstAlphaFactor',
-                     'OneMinusDstAlphaFactor'], 'SrcAlphaFactor').tag(sync=True)
-    blendDst = Enum(['DstColorFactor', 'OneMinusDstColorFactor',
-                     'SrcAlphaSaturateFactor'], 'OneMinusDstColorFactor').tag(sync=True)
-    blendEquation = Enum(['AddEquation', 'SubtractEquation',
-                          'ReverseSubtractEquation'], 'AddEquation').tag(sync=True)
+    blending = Enum(BlendingMode, 'NormalBlending').tag(sync=True)
+    blendSrc = Enum(DestinationFactors, 'SrcAlphaFactor').tag(sync=True)
+    blendDst = Enum(SourceFactors, 'OneMinusDstColorFactor').tag(sync=True)
+    blendEquation = Enum(Equations, 'AddEquation').tag(sync=True)
     depthTest = Bool(True).tag(sync=True)
     depthWrite = Bool(True).tag(sync=True)
     polygonOffset = Bool(True).tag(sync=True)
@@ -50,8 +44,8 @@ class BasicMaterial(Material):
     wireframeLinewidth = CFloat(1.0).tag(sync=True)
     wireframeLinecap = Unicode('round').tag(sync=True)
     wireframeLinejoin = Unicode('round').tag(sync=True)
-    shading = Enum(['SmoothShading', 'FlatShading', 'NoShading'], 'SmoothShading').tag(sync=True)
-    vertexColors = Enum(['NoColors', 'FaceColors', 'VertexColors'], 'NoColors').tag(sync=True)
+    shading = Enum(Shading, 'SmoothShading').tag(sync=True)
+    vertexColors = Enum(Colors, 'NoColors').tag(sync=True)
     fog = Bool().tag(sync=True)
     map = Instance(Texture, allow_none=True).tag(sync=True, **widget_serialization)
     lightMap = Instance(Texture, allow_none=True).tag(sync=True, **widget_serialization)
@@ -68,8 +62,7 @@ class LambertMaterial(BasicMaterial):
     emissive = Color('black').tag(sync=True)
     reflectivity = CFloat(1.0).tag(sync=True)
     refractionRatio = CFloat(0.98).tag(sync=True)
-    combine = Enum(['MultiplyOperation', 'MixOperation', 'AddOperation'],
-                   'MultiplyOperation').tag(sync=True)
+    combine = Enum(Operations, 'MultiplyOperation').tag(sync=True)
 
 
 class PhongMaterial(BasicMaterial):
@@ -81,8 +74,7 @@ class PhongMaterial(BasicMaterial):
     shininess = CFloat(30).tag(sync=True)
     reflectivity = CFloat(1.0).tag(sync=True)
     refractionRatio = CFloat(0.98).tag(sync=True)
-    combine = Enum(['MultiplyOperation', 'MixOperation', 'AddOperation'],
-                    'MultiplyOperation').tag(sync=True)
+    combine = Enum(Operations, 'MultiplyOperation').tag(sync=True)
 
 
 class DepthMaterial(Material):
@@ -107,7 +99,7 @@ class LineBasicMaterial(_LineMaterial):
     linecap = Unicode('round').tag(sync=True)
     linejoin = Unicode('round').tag(sync=True)
     fog = Bool().tag(sync=True)
-    vertexColors = Enum(['NoColors', 'FaceColors', 'VertexColors'], 'NoColors').tag(sync=True)
+    vertexColors = Enum(Colors, 'NoColors').tag(sync=True)
 
 
 class LineDashedMaterial(_LineMaterial):
@@ -119,7 +111,7 @@ class LineDashedMaterial(_LineMaterial):
     scale = CFloat(1.0).tag(sync=True)
     dashSize = CFloat(3.0).tag(sync=True)
     gapSize = CFloat(1.0).tag(sync=True)
-    vertexColors = Enum(['NoColors', 'FaceColors', 'VertexColors'], 'NoColors').tag(sync=True)
+    vertexColors = Enum(Colors, 'NoColors').tag(sync=True)
     fog = Bool().tag(sync=True)
 
 
@@ -128,7 +120,7 @@ class NormalMaterial(Material):
     _model_name = Unicode('NormalMaterialModel').tag(sync=True)
 
     morphTargets = Bool().tag(sync=True)
-    shading = Enum(['SmoothShading', 'FlatShading', 'NoShading'], 'SmoothShading').tag(sync=True)
+    shading = Enum(Shading, 'SmoothShading').tag(sync=True)
     wireframe = Bool().tag(sync=True)
     wireframeLinewidth = CFloat(1.0).tag(sync=True)
 
@@ -155,10 +147,10 @@ class ShaderMaterial(Material):
     lights = Bool().tag(sync=True)
     morphNormals = Bool().tag(sync=True)
     wireframe = Bool().tag(sync=True)
-    vertexColors = Enum(['NoColors', 'FaceColors', 'VertexColors'], 'NoColors').tag(sync=True)
+    vertexColors = Enum(Colors, 'NoColors').tag(sync=True)
     skinning = Bool().tag(sync=True)
     fog = Bool().tag(sync=True)
-    shading = Enum(['SmoothShading', 'FlatShading', 'NoShading'], 'SmoothShading').tag(sync=True)
+    shading = Enum(Shading, 'SmoothShading').tag(sync=True)
     linewidth = CFloat(1.0).tag(sync=True)
     wireframeLinewidth = CFloat(1.0).tag(sync=True)
 
