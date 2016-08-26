@@ -18,8 +18,6 @@ from traitlets import (Unicode, Int, CInt, Instance, Enum, List, Dict, Float,
 from ._package import npm_pkg_name
 from math import pi, sqrt
 
-from core import *
-
 def vector3(trait_type=CFloat, default=None, **kwargs):
     if default is None:
         default = [0, 0, 0]
