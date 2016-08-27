@@ -23,47 +23,6 @@ var AnaglyphEffectView = ThreeView.extend({
     }
 })
 
-var CameraView = Object3dView.extend({
-    new_obj: function() {
-        return new THREE.Camera();
-    },
-
-    needs_update: function() {
-        this.obj.updateProjectionMatrix();
-        this.options.render_frame();
-    }
-});
-
-var PerspectiveCameraView = CameraView.extend({
-    new_properties: function() {
-        CameraView.prototype.new_properties.call(this);
-        this.scalar_properties.push('fov', 'aspect', 'near', 'far');
-    },
-
-    new_obj: function() {
-        return new THREE.PerspectiveCamera(this.model.get('fov'),
-            this.model.get('aspect'),
-            this.model.get('near'),
-            this.model.get('far'));
-    }
-});
-
-var OrthographicCameraView = CameraView.extend({
-    new_properties: function() {
-        CameraView.prototype.new_properties.call(this);
-        this.scalar_properties.push('left', 'right', 'top', 'bottom', 'near', 'far');
-    },
-
-    new_obj: function() {
-        return new THREE.OrthographicCamera(this.model.get('left'),
-            this.model.get('right'),
-            this.model.get('top'),
-            this.model.get('bottom'),
-            this.model.get('near'),
-            this.model.get('far'));
-    }
-});
-
 var OrbitControlsView = ThreeView.extend({
     new_properties: function() {
         ThreeView.prototype.new_properties.call(this);
@@ -200,7 +159,6 @@ var TrackballControlsView = ThreeView.extend({
     },
 });
 
-
 var PickerView = ThreeView.extend({
     render: function() {
         var that = this;
@@ -266,18 +224,6 @@ var PickerView = ThreeView.extend({
         }
     }
 });
-
-
-var SceneView = Object3dView.extend({
-    new_obj: function() {
-        return new THREE.Scene();
-    },
-
-    needs_update: function() {
-        this.options.render_frame();
-    }
-});
-
 
 var SurfaceGeometryView = ThreeView.extend({
     update: function() {
@@ -996,13 +942,6 @@ var SpotLightModel = LightModel.extend({
     })
 }, {}, LightModel.serializers);
 
-var SceneModel = Object3dModel.extend({
-    defaults: _.extend({}, Object3dModel.prototype.defaults, {
-        _view_name: 'SceneView',
-        _model_name: 'SceneModel'
-    })
-});
-
 var ControlsModel = widgets.WidgetModel.extend({
     defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
         _view_module: 'jupyter-threejs',
@@ -1582,39 +1521,6 @@ var SurfaceGridModel = MeshModel.extend({
 
         geometry: undefined,
         material: undefined
-    })
-});
-
-var CameraModel = Object3dModel.extend({
-    defaults: _.extend({}, Object3dModel.prototype.defaults, {
-        _view_name: 'CameraView',
-        _model_name: 'CameraModel'
-    })
-});
-
-var PerspectiveCameraModel = CameraModel.extend({
-    defaults: _.extend({}, CameraModel.prototype.defaults, {
-        _view_name: 'PerspectiveCameraView',
-        _model_name: 'PerspectiveCameraModel',
-
-        fov: 50.0,
-        aspect: 1.5,  // 6.0 / 4.0
-        near: 0.1,
-        far: 2000.0
-    })
-});
-
-var OrthographicCameraModel = CameraModel.extend({
-    defaults: _.extend({}, CameraModel.prototype.defaults, {
-        _view_name: 'OrthographicCameraView',
-        _model_name: 'OrthographicCameraModel',
-
-        left: -10.0,
-        right: 10.0,
-        top: -10.0,
-        bottom: 10.0,
-        near: 0.1,
-        far: 2000.0
     })
 });
 
