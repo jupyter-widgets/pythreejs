@@ -7,15 +7,19 @@ module.exports = {
     modelSuperClass: 'ThreeModel',
     pySuperClass: 'Widget',
 
+    // pySuperModulePath: './core/Object3D',
+    // pySuperclass: 'Object3D',
+
     superDepModuleName: 'base',
     superDepModulePath: './base',
 
     // properties
     properties: {
         // objPropName: {
-        //     default: 100,
+        //     defaultValue: 100,
         //     type: 'Number',
-        //     serialize: false,
+        //     traitletType: 'CInt(%%default%%)'
+        //     traitletType: 'List(Instance(Object3D))'
         // }
     },
 

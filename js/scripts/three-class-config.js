@@ -24,13 +24,22 @@ module.exports = {
         constructorArgs: [ 'speed', 'duration' ],
 
         properties: {
+            name: {
+                defaultValue: 'TestAnimation',
+                serialize: false,
+                traitletType: 'Unicode(%%default%%)',
+            },
+            noDefault: {
+                serialize: false,
+                traitletType: 'Instance(Object3D)',
+            },
             speed: {
-                default: 20,
+                defaultValue: 20,
                 serialize: false,
                 traitletType: 'CInt(%%default%%)',
             },
             duration: {
-                default: 100,
+                defaultValue: 100,
                 serialize: false,
                 traitletType: 'CInt(%%default%%)',
             }

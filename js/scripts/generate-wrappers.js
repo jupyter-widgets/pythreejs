@@ -68,6 +68,7 @@ _.extend(JavascriptWrapper.prototype, {
         var body = [];
         body = body.concat(this.getHeader());
         body = body.concat(this.getSuperclassRequire());
+        body = body.concat(this.getDependencyRequires());
         body = body.concat(this.getModelOutput());
         body = body.concat(this.getViewOutput());
         body = body.concat(this.getFooter());
@@ -96,6 +97,11 @@ _.extend(JavascriptWrapper.prototype, {
         ];
     },
 
+    getDependencyRequires: function() {
+        // TODO: implement
+        return [];
+    },
+
     getFooter: function() {
         return [
             "module.exports = {",
@@ -116,6 +122,14 @@ _.extend(JavascriptWrapper.prototype, {
             "    defaults: _.extend({}, " + modelSuperClassVarName + ".prototype.defaults, {",
             "        _view_name: '" + this.config.viewName + "'",
             "        _model_name: '" + this.config.modelName + "'",
+            "",
+        ]);
+
+        result = result.concat(_.map(this.config.properties, function(prop, propName) {
+            return "        " + propName + ": " + JSON.stringify(prop.defaultValue) + ",";
+        }));
+
+        result = result.concat([
             "    }),",
         ]);
 
@@ -295,8 +309,6 @@ function writeIndices(dirPath, options) {
 
 }
 
-
-
 function createPythonWrapper(modulePath) {
 
     var dirname = path.dirname(modulePath);
@@ -360,8 +372,13 @@ function createPythonWrapper(modulePath) {
         "    _view_name = Unicode('" + className + "View').tag(sync=True)",
         "    _model_name = Unicode('" + className + "Model').tag(sync=True)",
         "    ",
-        ""
     ])
+
+    output = output.concat(_.map(config.properties, function(prop, propName) {
+        return "    " + propName + " = " + prop.traitletType.replace(/%%default%%/g, JSON.stringify(prop.defaultValue));
+    }));
+
+    output.push("");
 
     // TODO: properties plus serialization
 
