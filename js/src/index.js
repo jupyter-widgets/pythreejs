@@ -15,12 +15,18 @@ var THREE = require('three');
 window.THREE = THREE;
 
 var loadedModules = [
-    require('./jupyter-threejs'),
+    require('./Three.Legacy.autogen'),
+    require('./Three.autogen'),
+    require('./animation'),
+    require('./audio'),
     require('./cameras'),
     require('./core'),
     require('./examples'),
     require('./extras'),
+    require('./lights'),
+    require('./loaders'),
     require('./materials'),
+    require('./math'),
     require('./objects'),
     require('./renderers'),
     require('./scenes'),

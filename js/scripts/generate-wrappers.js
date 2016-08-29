@@ -259,6 +259,7 @@ function createPythonWrapper(modulePath) {
         "    _view_name = Unicode('" + className + "View').tag(sync=True)",
         "    _model_name = Unicode('" + className + "Model').tag(sync=True)",
         "    ",
+        ""
     ])
 
     // TODO: properties plus serialization

@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Mon Aug 29 2016 10:49:40 GMT-0700 (PDT)
+// Date: Mon Aug 29 2016 10:51:19 GMT-0700 (PDT)
 //
 
 var THREE = require('three');

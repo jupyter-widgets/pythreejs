@@ -58,6 +58,9 @@ function writeIndexForDir(dirPath, dirs, files, options) {
         index = index.concat([ options.footer ]);
     }
 
+    // trailing newline
+    index.push("");
+
     fs.writeFileSync(path.resolve(dirPath, 'index.js'), index.join('\n'));
 
 }
