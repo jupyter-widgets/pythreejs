@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Mon Aug 29 2016 10:36:50 GMT-0700 (PDT)
+// Date: Mon Aug 29 2016 10:49:40 GMT-0700 (PDT)
 //
 
 var THREE = require('three');
@@ -15,7 +15,10 @@ var AnimationClipModel = Animation.ThreeModel.extend({
 
 var AnimationClipView = Animation.ThreeView.extend({
     new_obj: function() {
-        return new THREE.AnimationClip(this.model.get('speed'), this.model.get('duration'));
+        return new THREE.AnimationClip(
+            this.model.get('speed'),
+            this.model.get('duration')
+        );
     },
 })
 

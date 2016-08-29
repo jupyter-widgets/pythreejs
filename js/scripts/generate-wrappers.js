@@ -155,11 +155,26 @@ _.extend(JavascriptWrapper.prototype, {
         var result = [
             "var " + this.config.viewName + " = " + viewSuperClassVarName + ".extend({", 
             "    new_obj: function() {",
-            "        return new THREE." + this.className + "(" + threeConstructorArgs.join(', ') + ");",
+        ];
+
+
+        if (threeConstructorArgs.length > 0) {
+            result.push("        return new THREE." + this.className + "(");
+
+            result = result.concat(threeConstructorArgs.map(function(arg, idx, list) {
+                return ('            ' + arg + (idx === list.length - 1 ? '' : ',')); 
+            }));
+
+            result.push("        );"); 
+        } else {
+            result.push("        return new THREE." + this.className + "();");
+        }
+
+        result = result.concat([
             "    },",
             "})",
             "",
-        ];
+        ]);
 
         return result;
     },
