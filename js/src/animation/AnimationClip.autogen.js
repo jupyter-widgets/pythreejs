@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Mon Aug 29 2016 13:01:10 GMT-0700 (PDT)
+// Date: Mon Aug 29 2016 13:13:04 GMT-0700 (PDT)
 //
 
 var THREE = require('three');
@@ -16,6 +16,10 @@ var AnimationClipModel = Animation.ThreeModel.extend({
         speed: 20,
         duration: 100,
     }),
+}, {
+    serializers: _.extend({
+        noDefault: { seserialize: widgets.unpack_models },
+    }, Animation.ThreeModel.serializers)
 });
 
 var AnimationClipView = Animation.ThreeView.extend({

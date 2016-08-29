@@ -115,7 +115,10 @@ _.extend(JavascriptWrapper.prototype, {
     getModelOutput: function() {
         var result = [];
         var modelSuperClassVarName = this.config.superDepModuleName + '.' + this.config.modelSuperClass;
-        var serializedProperties = this.config.serializedProperties || [];
+
+        var serializedProperties = _.filter(_.keys(this.config.properties), function(propName) {
+            return this.config.properties[propName].serialize;
+        }, this);
 
         result = result.concat([
             "var " + this.config.modelName + " = " + modelSuperClassVarName + ".extend({",

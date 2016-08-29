@@ -26,7 +26,6 @@ module.exports = {
         properties: {
             name: {
                 defaultValue: 'TestAnimation',
-                serialize: false,
                 traitletType: 'Unicode(%%default%%)',
             },
             noDefault: {
@@ -35,12 +34,10 @@ module.exports = {
             },
             speed: {
                 defaultValue: 20,
-                serialize: false,
                 traitletType: 'CInt(%%default%%)',
             },
             duration: {
                 defaultValue: 100,
-                serialize: false,
                 traitletType: 'CInt(%%default%%)',
             }
         }
