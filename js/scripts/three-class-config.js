@@ -15,8 +15,7 @@ module.exports = {
     AnimationClip: {
         relativePath: 'animation',
 
-        superDepModuleName: 'Animation',
-        superDepModulePath: './base/Animation',
+        superDepModulePath: './animation/Animation',
 
         pySuperModulePath: './animation/Animation',
         pySuperClass: 'Animation',
@@ -40,7 +39,13 @@ module.exports = {
                 defaultValue: 100,
                 traitletType: 'CInt(%%default%%)',
             }
-        }
+        },
+
+        dependencies: [ 
+            'Object3D', 
+            { relativePath: './base', className: 'ThreeView' },
+            { relativePath: './base', className: 'ThreeModel' },
+        ]
     },
     AnimationMixer: {
         relativePath: 'animation',

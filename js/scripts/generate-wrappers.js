@@ -69,6 +69,7 @@ _.extend(JavascriptWrapper.prototype, {
         body = body.concat(this.getHeader());
         body = body.concat(this.getSuperclassRequire());
         body = body.concat(this.getDependencyRequires());
+        body.push("");
         body = body.concat(this.getModelOutput());
         body = body.concat(this.getViewOutput());
         body = body.concat(this.getFooter());
@@ -92,14 +93,41 @@ _.extend(JavascriptWrapper.prototype, {
             path.resolve(jsSrcDir, this.config.superDepModulePath));
     
         return [
-            "var " + this.config.superDepModuleName + " = require('" + superDepModulePath + "');",
+            "var " + this.config.modelSuperClass + " = require('./" + superDepModulePath + "')." + this.config.modelSuperClass + ";",
+            "var " + this.config.viewSuperClass + " = require('./" + superDepModulePath + "')." + this.config.viewSuperClass + ";",
             "",
         ];
     },
 
     getDependencyRequires: function() {
         // TODO: implement
-        return [];
+
+        var deps = this.config.dependencies || [];
+        return deps.map(function(dep) {
+            
+
+            if (typeof dep === 'string') {
+
+                var depConfig = getClassConfig(dep);
+
+                console.log(jsSrcDir);
+                console.log(depConfig.relativePath);
+                console.log(this.jsAutoDestPath);
+
+                var depModulePath = path.relative(
+                    path.dirname(this.jsAutoDestPath), 
+                    path.resolve(jsSrcDir, depConfig.relativePath));
+
+                return "var " + dep + " = require('./" + depModulePath + "')." + dep + ";";
+            } else {
+
+                var depModulePath = path.relative(
+                    path.dirname(this.jsAutoDestPath), 
+                    path.resolve(jsSrcDir, dep.relativePath));
+
+                return "var " + dep.className + " = require('./" + depModulePath + "')." + dep.className + ";";
+            }
+        }, this);
     },
 
     getFooter: function() {
@@ -114,15 +142,14 @@ _.extend(JavascriptWrapper.prototype, {
 
     getModelOutput: function() {
         var result = [];
-        var modelSuperClassVarName = this.config.superDepModuleName + '.' + this.config.modelSuperClass;
 
         var serializedProperties = _.filter(_.keys(this.config.properties), function(propName) {
             return this.config.properties[propName].serialize;
         }, this);
 
         result = result.concat([
-            "var " + this.config.modelName + " = " + modelSuperClassVarName + ".extend({",
-            "    defaults: _.extend({}, " + modelSuperClassVarName + ".prototype.defaults, {",
+            "var " + this.config.modelName + " = " + this.config.modelSuperClass + ".extend({",
+            "    defaults: _.extend({}, " + this.config.modelSuperClass + ".prototype.defaults, {",
             "        _view_name: '" + this.config.viewName + "'",
             "        _model_name: '" + this.config.modelName + "'",
             "",
@@ -152,7 +179,7 @@ _.extend(JavascriptWrapper.prototype, {
                     return "        " + propName + ": { deserialize: widgets.unpack_models },"
                 }), 
                 [ 
-                    "    }, " + modelSuperClassVarName + ".serializers)",
+                    "    }, " + this.config.modelSuperClass + ".serializers)",
                     "});",
                     "",
                 ]
@@ -164,13 +191,12 @@ _.extend(JavascriptWrapper.prototype, {
 
     getViewOutput: function() {
 
-        var viewSuperClassVarName = this.config.superDepModuleName + '.' + this.config.viewSuperClass;
         var threeConstructorArgs = this.config.constructorArgs.map(function(propName) {
             return "this.model.get('" + propName + "')";
         });
 
         var result = [
-            "var " + this.config.viewName + " = " + viewSuperClassVarName + ".extend({", 
+            "var " + this.config.viewName + " = " + this.config.viewSuperClass + ".extend({", 
             "    new_obj: function() {",
         ];
 

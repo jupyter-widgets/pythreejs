@@ -1,13 +1,18 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Mon Aug 29 2016 13:14:43 GMT-0700 (PDT)
+// Date: Mon Aug 29 2016 13:39:58 GMT-0700 (PDT)
 //
 
 var THREE = require('three');
-var Animation = require('../base/Animation');
+var ThreeModel = require('./Animation').ThreeModel;
+var ThreeView = require('./Animation').ThreeView;
 
-var AnimationClipModel = Animation.ThreeModel.extend({
-    defaults: _.extend({}, Animation.ThreeModel.prototype.defaults, {
+var Object3D = require('./../core').Object3D;
+var ThreeView = require('./../base').ThreeView;
+var ThreeModel = require('./../base').ThreeModel;
+
+var AnimationClipModel = ThreeModel.extend({
+    defaults: _.extend({}, ThreeModel.prototype.defaults, {
         _view_name: 'AnimationClipView'
         _model_name: 'AnimationClipModel'
 
@@ -19,10 +24,10 @@ var AnimationClipModel = Animation.ThreeModel.extend({
 }, {
     serializers: _.extend({
         noDefault: { deserialize: widgets.unpack_models },
-    }, Animation.ThreeModel.serializers)
+    }, ThreeModel.serializers)
 });
 
-var AnimationClipView = Animation.ThreeView.extend({
+var AnimationClipView = ThreeView.extend({
     new_obj: function() {
         return new THREE.AnimationClip(
             this.model.get('speed'),
