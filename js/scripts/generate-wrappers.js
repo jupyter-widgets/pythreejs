@@ -397,8 +397,6 @@ function createTopLevelPythonModuleFile() {
             "# Date: " + new Date(),
             "#",
             "",
-            "from ._package import npm_pkg_name, py_pkg_name",
-            "",
         ];
         var imports = [];
         var footer = [
