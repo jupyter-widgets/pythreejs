@@ -15,8 +15,9 @@ var THREE = require('three');
 window.THREE = THREE;
 
 var loadedModules = [
-    require('./Three.Legacy.autogen'),
-    require('./Three.autogen'),
+    require('./Three.Legacy'),
+    require('./Three'),
+    require('./jupyter-threejs'),
     require('./animation'),
     require('./audio'),
     require('./cameras'),
