@@ -10,7 +10,10 @@ module.exports = [
             filename: 'extension.js',
             path: '../pythreejs/static',
             libraryTarget: 'amd'
-        }
+        },
+        resolve: {
+            extensions: [ "", ".js", ".autogen.js", ]
+        },
     },
     {
         // jupyter-threejs bundle for the notebook
@@ -24,7 +27,11 @@ module.exports = [
         module: {
             loaders: loaders
         },
-        externals: ['jupyter-js-widgets']
+        externals: ['jupyter-js-widgets'],
+        resolve: {
+            extensions: [ "", ".js", ".autogen.js", ]
+        },
+
     },
     {
         // embeddable jupyter-threejs bundle
@@ -38,6 +45,10 @@ module.exports = [
         module: {
             loaders: loaders
         },
-        externals: ['jupyter-js-widgets']
+        externals: ['jupyter-js-widgets'],
+        resolve: {
+            extensions: [ "", ".js", ".autogen.js", ]
+        },
+
     }
 ];

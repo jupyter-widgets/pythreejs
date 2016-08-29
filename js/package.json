@@ -14,6 +14,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
+    "bluebird": "^3.4.3",
+    "fs-extra": "^0.30.0",
+    "glob": "^7.0.6",
     "json-loader": "^0.5.4",
     "rimraf": "^2.4.1",
     "webpack": "^1.12.14"
