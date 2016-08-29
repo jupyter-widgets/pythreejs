@@ -30,7 +30,7 @@ module.exports = {
                 traitletType: 'Unicode(%%default%%)',
             },
             noDefault: {
-                serialize: false,
+                serialize: true,
                 traitletType: 'Instance(Object3D)',
             },
             speed: {

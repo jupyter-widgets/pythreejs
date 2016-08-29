@@ -375,7 +375,19 @@ function createPythonWrapper(modulePath) {
     ])
 
     output = output.concat(_.map(config.properties, function(prop, propName) {
-        return "    " + propName + " = " + prop.traitletType.replace(/%%default%%/g, JSON.stringify(prop.defaultValue));
+
+        var result = "    " + propName + " = " 
+
+        // traitlet type
+        result += prop.traitletType.replace(/%%default%%/g, JSON.stringify(prop.defaultValue));
+        result += ".tag(sync=True";
+
+        if (prop.serialize) {
+            result += ", **widget_serialization" ;
+        }
+        result += ")";
+
+        return result;
     }));
 
     output.push("");
