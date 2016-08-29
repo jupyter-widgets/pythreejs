@@ -149,7 +149,7 @@ _.extend(JavascriptWrapper.prototype, {
                     
                 ], 
                 serializedProperties.map(function(propName) {
-                    return "        " + propName + ": { seserialize: widgets.unpack_models },"
+                    return "        " + propName + ": { deserialize: widgets.unpack_models },"
                 }), 
                 [ 
                     "    }, " + modelSuperClassVarName + ".serializers)",
