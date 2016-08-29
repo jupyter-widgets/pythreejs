@@ -52,7 +52,7 @@ function relativePathToPythonImportPath(relativePath) {
     var tokens = relativePath.split(path.sep);
     var result = '.';
 
-    console.log('path to py import: ' + relativePath);
+    // console.log('path to py import: ' + relativePath);
 
     result += tokens.map(function(token) {
         if (token === '.') {
@@ -139,10 +139,6 @@ _.extend(JavascriptWrapper.prototype, {
             if (typeof dep === 'string') {
 
                 var depConfig = getClassConfig(dep);
-
-                console.log(jsSrcDir);
-                console.log(depConfig.relativePath);
-                console.log(this.jsAutoDestPath);
 
                 var depModulePath = path.relative(
                     path.dirname(this.jsAutoDestPath), 
@@ -269,8 +265,11 @@ function PythonWrapper(modulePath) {
 
     this.className = basename; 
     this.modulePath = modulePath;
-    this.pyDestPath = path.resolve(pySrcDir, dirname, basename + '.py')
-    this.pyAutoDestPath = path.resolve(pySrcDir, dirname, basename + '_' + AUTOGEN_EXT + '.py');
+
+    this.destDir = path.resolve(pySrcDir, dirname);
+
+    this.pyDestPath = path.resolve(this.destDir, basename + '.py')
+    this.pyAutoDestPath = path.resolve(this.destDir, basename + '_' + AUTOGEN_EXT + '.py');
 
     this.config = getClassConfig(this.className);
 
@@ -304,13 +303,11 @@ _.extend(PythonWrapper.prototype, {
 
         if (this.config.pySuperModulePath) {
 
-            var pySuperModulePath = path.relative(
-                path.dirname(this.pyAutoDestPath),
-                path.resolve(pySrcDir, this.config.pySuperModulePath));
-            pySuperModulePath = relativePathToPythonImportPath(pySuperModulePath);
-
             return [
-                "from " + pySuperModulePath + " import " + this.config.pySuperClass,
+                this.getDependencyRequireLine({ 
+                    relativePath: this.config.pySuperModulePath, 
+                    className: this.config.pySuperClass 
+                }),
                 "",
             ];
         } else {
@@ -320,9 +317,44 @@ _.extend(PythonWrapper.prototype, {
     },
 
     getDependencyRequires: function() {
-        // TODO:
-        return [];
+
+        if (!this.config.dependencies) { 
+            return []; 
+        }
+
+        return this.config.dependencies.map(function(dep) {
+            return this.getDependencyRequireLine(dep, this.destDir);
+        }, this);
     },  
+
+    getDependencyRequireLine: function(dep) {
+
+        var className;
+        var relativePath;
+
+        if (typeof dep === 'string') {
+
+            var className = dep;
+            var depConfig = getClassConfig(className);
+            var relativePath = path.join(depConfig.relativePath, className);
+    
+        } else if (typeof dep === 'object') {
+
+            className = dep.className;
+            relativePath = dep.relativePath;
+    
+        } else {
+            throw new Error('invalid dep: ' + dep);
+        }
+
+        console.log(this.destDir);
+        console.log(relativePath);
+
+        // get path of dependency relative to module dir
+        relativePath = path.resolve(pySrcDir, relativePath);
+        relativePath = path.relative(this.destDir, relativePath);
+        return 'from ' + relativePathToPythonImportPath(relativePath) + ' import ' + className;
+    },
 
     getPythonClassOutput: function() {
 
