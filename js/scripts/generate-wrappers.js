@@ -76,17 +76,15 @@ function relativePathToPythonImportPath(relativePath) {
 function JavascriptWrapper(modulePath) {
 
     this.jsDestPath = path.resolve(jsSrcDir, modulePath);
+    this.destDir = path.dirname(this.jsDestPath);
+
     this.jsAutoDestPath = path.resolve(
-        path.dirname(this.jsDestPath), 
+        this.destDir, 
         path.basename(this.jsDestPath, '.js') + '.' + AUTOGEN_EXT + '.js');
 
     this.className = path.basename(modulePath, '.js');
     this.config = getClassConfig(this.className);
-
-    this.superDepModulePath = path.relative(
-        path.dirname(this.jsDestPath), 
-        path.resolve(jsSrcDir, this.config.superDepModulePath));
-    
+        
 }
 _.extend(JavascriptWrapper.prototype, {
 
@@ -118,42 +116,49 @@ _.extend(JavascriptWrapper.prototype, {
     },
 
     getSuperclassRequire: function() {
-        var superDepModulePath = path.relative(
-            path.dirname(this.jsDestPath), 
-            path.resolve(jsSrcDir, this.config.superDepModulePath));
     
         return [
-            "var " + this.config.modelSuperClass + " = require('./" + superDepModulePath + "')." + this.config.modelSuperClass + ";",
-            "var " + this.config.viewSuperClass + " = require('./" + superDepModulePath + "')." + this.config.viewSuperClass + ";",
+            this.getDependencyRequireLine({
+                relativePath: this.config.superDepModulePath,
+                className: this.config.modelSuperClass
+            }),
+            this.getDependencyRequireLine({
+                relativePath: this.config.superDepModulePath,
+                className: this.config.viewSuperClass
+            }),
             "",
         ];
     },
 
     getDependencyRequires: function() {
-        // TODO: implement
-
         var deps = this.config.dependencies || [];
         return deps.map(function(dep) {
-            
-
-            if (typeof dep === 'string') {
-
-                var depConfig = getClassConfig(dep);
-
-                var depModulePath = path.relative(
-                    path.dirname(this.jsAutoDestPath), 
-                    path.resolve(jsSrcDir, depConfig.relativePath));
-
-                return "var " + dep + " = require('./" + depModulePath + "')." + dep + ";";
-            } else {
-
-                var depModulePath = path.relative(
-                    path.dirname(this.jsAutoDestPath), 
-                    path.resolve(jsSrcDir, dep.relativePath));
-
-                return "var " + dep.className + " = require('./" + depModulePath + "')." + dep.className + ";";
-            }
+            return this.getDependencyRequireLine(dep);
         }, this);
+    },
+
+    getDependencyRequireLine: function(dep) {
+
+        var className;
+        var relativePath;
+
+        if (typeof dep === 'string') {
+
+            var depConfig = getClassConfig(dep);
+            className = dep;
+            relativePath = path.join(depConfig.relativePath, className);
+        
+        } else if (typeof dep === 'object'){
+
+            className = dep.className;
+            relativePath = dep.relativePath;
+
+        } else {
+            throw new Error('invalid dep: ' + dep);
+        }
+
+        relativePath = path.relative(this.destDir, path.resolve(jsSrcDir, relativePath));
+        return "var " + className + " = require('./" + relativePath + "')." + className + ";";
     },
 
     getFooter: function() {
