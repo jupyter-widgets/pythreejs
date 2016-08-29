@@ -111,7 +111,6 @@ _.extend(JavascriptWrapper.prototype, {
             "// Date: " + new Date(),
             "//",
             "",
-            "var THREE = require('three');",
         ];
     },
 
