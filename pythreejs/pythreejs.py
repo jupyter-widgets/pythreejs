@@ -16,7 +16,14 @@ from ipywidgets import Widget, DOMWidget, widget_serialization, Color
 from traitlets import (Unicode, Int, CInt, Instance, Enum, List, Dict, Float,
                        CFloat, Bool)
 from ._package import npm_pkg_name
+from .enums import (
+        Equations, DestinationFactors, SourceFactors, Side, Shading, Colors,
+        BlendingMode, Operations, MappingModes, WrappingModes, Filters,
+        DataTypes, PixelTypes, PixelFormats, CompressedTextureFormats,
+        Lines, Renderers)
+
 from math import pi, sqrt
+
 
 def vector3(trait_type=CFloat, default=None, **kwargs):
     if default is None:
@@ -56,25 +63,22 @@ class DataTexture(Texture):
     _model_name = Unicode('DataTextureModel').tag(sync=True)
 
     data = List(CInt).tag(sync=True)
-    format = Enum(['RGBAFormat', 'AlphaFormat', 'RGBFormat', 'LuminanceFormat',
-                   'LuminanceAlphaFormat'], 'RGBAFormat').tag(sync=True)
+    format = Enum(PixelFormats, 'RGBAFormat').tag(sync=True)
     width = CInt(256).tag(sync=True)
     height = CInt(256).tag(sync=True)
-    type = Enum(['UnsignedByteType', 'ByteType', 'ShortType',
-                 'UnsignedShortType', 'IntType', 'UnsignedIntType',
-                 'FloatType', 'UnsignedShort4444Type', 'UnsignedShort5551Type',
-                 'UnsignedShort565Type'], 'UnsignedByteType').tag(sync=True)
-    mapping = Enum(['UVMapping', 'CubeReflectionMapping',
-                    'CubeRefractionMapping', 'SphericalReflectionMapping',
-                    'SphericalRefractionMapping'], 'UVMapping').tag(sync=True)
-    wrapS = Enum(['ClampToEdgeWrapping', 'RepeatWrapping', 'MirroredRepeatWrapping'],
-                 'ClampToEdgeWrapping').tag(sync=True)
-    wrapT = Enum(['ClampToEdgeWrapping', 'RepeatWrapping', 'MirroredRepeatWrapping'],
-                 'ClampToEdgeWrapping').tag(sync=True)
-    magFilter = Enum(['LinearFilter', 'NearestFilter'], 'LinearFilter').tag(sync=True)
-    minFilter = Enum(['NearestFilter', 'NearestMipMapNearestFilter',
-                      'NearestMipMapLinearFilter', 'LinearFilter',
-                      'LinearMipMapNearestFilter'], 'NearestFilter').tag(sync=True)
+    type = Enum(DataTypes, 'UnsignedByteType').tag(sync=True)
+
+    # TODO: this enum includes both DataTypes and PixelTypes?
+    # type = Enum(['UnsignedByteType', 'ByteType', 'ShortType',
+    #              'UnsignedShortType', 'IntType', 'UnsignedIntType',
+    #              'FloatType', 'UnsignedShort4444Type', 'UnsignedShort5551Type',
+    #              'UnsignedShort565Type'], 'UnsignedByteType').tag(sync=True)
+
+    mapping = Enum(MappingModes, 'UVMapping').tag(sync=True)
+    wrapS = Enum(WrappingModes, 'ClampToEdgeWrapping').tag(sync=True)
+    wrapT = Enum(WrappingModes, 'ClampToEdgeWrapping').tag(sync=True)
+    magFilter = Enum(Filters, 'LinearFilter').tag(sync=True)
+    minFilter = Enum(Filters, 'NearestFilter').tag(sync=True)
     anisotropy = CInt(1).tag(sync=True)
 
 
@@ -460,20 +464,13 @@ class Material(Widget):
 
     # id = TODO
     name = Unicode(sync=True)
-    side = Enum(['FrontSide', 'BackSide', 'DoubleSide'], 'DoubleSide').tag(sync=True)
+    side = Enum(Side, 'DoubleSide').tag(sync=True)
     opacity = CFloat(1.0).tag(sync=True)
     transparent = Bool().tag(sync=True)
-    blending = Enum(['NoBlending', 'NormalBlending', 'AdditiveBlending',
-                     'SubtractiveBlending', 'MultiplyBlending',
-                     'CustomBlending'], 'NormalBlending').tag(sync=True)
-    blendSrc = Enum(['ZeroFactor', 'OneFactor', 'SrcColorFactor',
-                     'OneMinusSrcColorFactor', 'SrcAlphaFactor',
-                     'OneMinusSrcAlphaFactor', 'DstAlphaFactor',
-                     'OneMinusDstAlphaFactor'], 'SrcAlphaFactor').tag(sync=True)
-    blendDst = Enum(['DstColorFactor', 'OneMinusDstColorFactor',
-                     'SrcAlphaSaturateFactor'], 'OneMinusDstColorFactor').tag(sync=True)
-    blendEquation = Enum(['AddEquation', 'SubtractEquation',
-                          'ReverseSubtractEquation'], 'AddEquation').tag(sync=True)
+    blending = Enum(BlendingMode, 'NormalBlending').tag(sync=True)
+    blendSrc = Enum(DestinationFactors, 'SrcAlphaFactor').tag(sync=True)
+    blendDst = Enum(SourceFactors, 'OneMinusDstColorFactor').tag(sync=True)
+    blendEquation = Enum(Equations, 'AddEquation').tag(sync=True)
     depthTest = Bool(True).tag(sync=True)
     depthWrite = Bool(True).tag(sync=True)
     polygonOffset = Bool(True).tag(sync=True)
@@ -494,8 +491,8 @@ class BasicMaterial(Material):
     wireframeLinewidth = CFloat(1.0).tag(sync=True)
     wireframeLinecap = Unicode('round').tag(sync=True)
     wireframeLinejoin = Unicode('round').tag(sync=True)
-    shading = Enum(['SmoothShading', 'FlatShading', 'NoShading'], 'SmoothShading').tag(sync=True)
-    vertexColors = Enum(['NoColors', 'FaceColors', 'VertexColors'], 'NoColors').tag(sync=True)
+    shading = Enum(Shading, 'SmoothShading').tag(sync=True)
+    vertexColors = Enum(Colors, 'NoColors').tag(sync=True)
     fog = Bool().tag(sync=True)
     map = Instance(Texture, allow_none=True).tag(sync=True, **widget_serialization)
     lightMap = Instance(Texture, allow_none=True).tag(sync=True, **widget_serialization)
@@ -512,8 +509,7 @@ class LambertMaterial(BasicMaterial):
     emissive = Color('black').tag(sync=True)
     reflectivity = CFloat(1.0).tag(sync=True)
     refractionRatio = CFloat(0.98).tag(sync=True)
-    combine = Enum(['MultiplyOperation', 'MixOperation', 'AddOperation'],
-                   'MultiplyOperation').tag(sync=True)
+    combine = Enum(Operations, 'MultiplyOperation').tag(sync=True)
 
 
 class PhongMaterial(BasicMaterial):
@@ -525,8 +521,7 @@ class PhongMaterial(BasicMaterial):
     shininess = CFloat(30).tag(sync=True)
     reflectivity = CFloat(1.0).tag(sync=True)
     refractionRatio = CFloat(0.98).tag(sync=True)
-    combine = Enum(['MultiplyOperation', 'MixOperation', 'AddOperation'],
-                   'MultiplyOperation').tag(sync=True)
+    combine = Enum(Operations, 'MultiplyOperation').tag(sync=True)
 
 
 class DepthMaterial(Material):
@@ -551,7 +546,7 @@ class LineBasicMaterial(_LineMaterial):
     linecap = Unicode('round').tag(sync=True)
     linejoin = Unicode('round').tag(sync=True)
     fog = Bool().tag(sync=True)
-    vertexColors = Enum(['NoColors', 'FaceColors', 'VertexColors'], 'NoColors').tag(sync=True)
+    vertexColors = Enum(Colors, 'NoColors').tag(sync=True)
 
 
 class LineDashedMaterial(_LineMaterial):
@@ -563,7 +558,7 @@ class LineDashedMaterial(_LineMaterial):
     scale = CFloat(1.0).tag(sync=True)
     dashSize = CFloat(3.0).tag(sync=True)
     gapSize = CFloat(1.0).tag(sync=True)
-    vertexColors = Enum(['NoColors', 'FaceColors', 'VertexColors'], 'NoColors').tag(sync=True)
+    vertexColors = Enum(Colors, 'NoColors').tag(sync=True)
     fog = Bool().tag(sync=True)
 
 
@@ -572,7 +567,7 @@ class NormalMaterial(Material):
     _model_name = Unicode('NormalMaterialModel').tag(sync=True)
 
     morphTargets = Bool().tag(sync=True)
-    shading = Enum(['SmoothShading', 'FlatShading', 'NoShading'], 'SmoothShading').tag(sync=True)
+    shading = Enum(Shading, 'SmoothShading').tag(sync=True)
     wireframe = Bool().tag(sync=True)
     wireframeLinewidth = CFloat(1.0).tag(sync=True)
 
@@ -599,10 +594,10 @@ class ShaderMaterial(Material):
     lights = Bool().tag(sync=True)
     morphNormals = Bool().tag(sync=True)
     wireframe = Bool().tag(sync=True)
-    vertexColors = Enum(['NoColors', 'FaceColors', 'VertexColors'], 'NoColors').tag(sync=True)
+    vertexColors = Enum(Colors, 'NoColors').tag(sync=True)
     skinning = Bool().tag(sync=True)
     fog = Bool().tag(sync=True)
-    shading = Enum(['SmoothShading', 'FlatShading', 'NoShading'], 'SmoothShading').tag(sync=True)
+    shading = Enum(Shading, 'SmoothShading').tag(sync=True)
     linewidth = CFloat(1.0).tag(sync=True)
     wireframeLinewidth = CFloat(1.0).tag(sync=True)
 
@@ -642,7 +637,7 @@ class Line(Mesh):
     _view_name = Unicode('LineView').tag(sync=True)
     _model_name = Unicode('LineModel').tag(sync=True)
 
-    type = Enum(['LineStrip', 'LinePieces'], 'LineStrip').tag(sync=True)
+    type = Enum(Lines, 'LineStrip').tag(sync=True)
     material = Instance(_LineMaterial).tag(sync=True, **widget_serialization)
 
 
@@ -760,7 +755,7 @@ class Renderer(DOMWidget):
 
     width = Unicode('600').tag(sync=True)  # TODO: stop relying on deprecated DOMWidget attribute
     height = Unicode('400').tag(sync=True)
-    renderer_type = Enum(['webgl', 'canvas', 'auto'], 'auto').tag(sync=True)
+    renderer_type = Enum(Renderers, 'auto').tag(sync=True)
     scene = Instance(Scene).tag(sync=True, **widget_serialization)
     camera = Instance(Camera).tag(sync=True, **widget_serialization)
     controls = List(Instance(Controls)).tag(sync=True, **widget_serialization)
