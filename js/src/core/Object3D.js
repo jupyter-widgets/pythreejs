@@ -1,4 +1,3 @@
-var THREE = require('three');
 var base = require('../base');
 
 var Object3dView = base.ThreeView.extend({

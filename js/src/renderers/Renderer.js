@@ -1,5 +1,4 @@
 var widgets = require('jupyter-js-widgets');
-var THREE = require('three');
 
 var base = require('../base');
 

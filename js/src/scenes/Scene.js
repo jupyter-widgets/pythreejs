@@ -1,4 +1,3 @@
-var THREE = require('three');
 var Object3D = require('../core/Object3D');
 
 var SceneView = Object3D.Object3dView.extend({

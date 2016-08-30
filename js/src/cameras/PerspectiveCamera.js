@@ -1,4 +1,3 @@
-var THREE = require('three');
 var Camera = require('./Camera');
 
 var PerspectiveCameraView = Camera.CameraView.extend({
