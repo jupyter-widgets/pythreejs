@@ -39,11 +39,17 @@ module.exports = {
             duration: {
                 defaultValue: 100,
                 traitletType: 'CInt(%%default%%)',
+            },
+            shading: {
+                defaultValue: 'Smooth',
+                traitletType: 'Enum(Shading)',
+                propertyType: 'enum',
             }
         },
 
         dependencies: [ 
             'Object3D', 
+            { relativePath: './enums', className: 'Shading' },
             { relativePath: './base', className: 'ThreeView' },
             { relativePath: './base', className: 'ThreeModel' },
         ]
