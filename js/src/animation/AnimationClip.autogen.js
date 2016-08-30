@@ -1,12 +1,13 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Tue Aug 30 2016 08:15:29 GMT-0700 (PDT)
+// Date: Tue Aug 30 2016 08:28:14 GMT-0700 (PDT)
 //
 
 var ThreeModel = require('./Animation').ThreeModel;
 var ThreeView = require('./Animation').ThreeView;
 
 var Object3D = require('./../core/Object3D').Object3D;
+var Shading = require('./../enums').Shading;
 var ThreeView = require('./../base').ThreeView;
 var ThreeModel = require('./../base').ThreeModel;
 
@@ -19,6 +20,7 @@ var AnimationClipModel = ThreeModel.extend({
         noDefault: undefined,
         speed: 20,
         duration: 100,
+        shading: "Smooth",
     }),
 }, {
     serializers: _.extend({
@@ -40,6 +42,7 @@ var AnimationClipView = ThreeView.extend({
         this.child_properties.push('noDefault');
         this.scalar_properties.push('speed');
         this.scalar_properties.push('duration');
+        this.enum_properties.push('shading');
     },
 
 })

@@ -244,7 +244,7 @@ _.extend(JavascriptWrapper.prototype, {
         }
         result.push("    },", "");
 
-        // new_properties
+        // new_properties()
         result.push(
             "    new_properties: function() {",
             "        " + this.config.viewSuperClass + ".prototype.new_properties.call(this);"
