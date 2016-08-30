@@ -4,7 +4,8 @@
 //
 
 module.exports = {
- _defaults: require('./three-class-config-defaults'),
+
+    _defaults: require('./three-class-config-defaults'),
 
     Three_Legacy: {
         relativePath: '.',
@@ -15,7 +16,7 @@ module.exports = {
     AnimationClip: {
         relativePath: 'animation',
 
-        superDepModulePath: './animation/Animation',
+        // superDepModulePath: './/Animation',
 
         pySuperModulePath: './animation/Animation',
         pySuperClass: 'Animation',
@@ -40,18 +41,18 @@ module.exports = {
                 defaultValue: 100,
                 traitletType: 'CInt(%%default%%)',
             },
-            shading: {
-                defaultValue: 'Smooth',
-                traitletType: 'Enum(Shading)',
-                propertyType: 'enum',
-            }
+            // shading: {
+            //     defaultValue: 'Smooth',
+            //     traitletType: 'Enum(Shading)',
+            //     propertyType: 'enum',
+            // }
         },
 
         dependencies: [ 
             'Object3D', 
-            { relativePath: './enums', className: 'Shading' },
-            { relativePath: './base', className: 'ThreeView' },
-            { relativePath: './base', className: 'ThreeModel' },
+            // { relativePath: './enums', className: 'Shading' },
+            { relativePath: './_base', className: 'ThreeView' },
+            { relativePath: './_base', className: 'ThreeModel' },
         ]
     },
     AnimationMixer: {

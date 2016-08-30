@@ -82,7 +82,7 @@ function JavascriptWrapper(modulePath) {
         this.destDir, 
         path.basename(this.jsDestPath, '.js') + '.' + AUTOGEN_EXT + '.js');
 
-    this.className = path.basename(modulePath, '.js');
+    this.className = path.basename(modulePath, '.js').replace(/\./g, '_');
     this.config = getClassConfig(this.className);
         
 }
@@ -183,8 +183,8 @@ _.extend(JavascriptWrapper.prototype, {
         result = result.concat([
             "var " + this.config.modelName + " = " + this.config.modelSuperClass + ".extend({",
             "    defaults: _.extend({}, " + this.config.modelSuperClass + ".prototype.defaults, {",
-            "        _view_name: '" + this.config.viewName + "'",
-            "        _model_name: '" + this.config.modelName + "'",
+            "        _view_name: '" + this.config.viewName + "',",
+            "        _model_name: '" + this.config.modelName + "',",
             "",
         ]);
 
