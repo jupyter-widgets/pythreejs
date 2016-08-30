@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Mon Aug 29 2016 15:36:49 GMT-0700 (PDT)
+// Date: Tue Aug 30 2016 08:15:29 GMT-0700 (PDT)
 //
 
 var ThreeModel = require('./Animation').ThreeModel;
@@ -36,6 +36,10 @@ var AnimationClipView = ThreeView.extend({
 
     new_properties: function() {
         ThreeView.prototype.new_properties.call(this);
+        this.scalar_properties.push('name');
+        this.child_properties.push('noDefault');
+        this.scalar_properties.push('speed');
+        this.scalar_properties.push('duration');
     },
 
 })

@@ -251,8 +251,9 @@ _.extend(JavascriptWrapper.prototype, {
         );
 
         result = result.concat(_.map(this.config.properties, function(prop, propName) {
-            
-        });
+            var propType = prop.propertyType || 'scalar';
+            return "        this." + propType + "_properties.push('" + propName + "');";
+        }));
 
         result.push(
             "    },",

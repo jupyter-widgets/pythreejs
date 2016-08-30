@@ -17,7 +17,7 @@ module.exports = {
     properties: {
         // objPropName: {
         //     defaultValue: 100,
-        //     type: 'scalar/array/vector/instance/instanceDict/enum',
+        //     propertyType: 'scalar/array/enum/child',
         //     traitletType: 'CInt(%%default%%)'
         //     traitletType: 'List(Instance(Object3D))'
         // }

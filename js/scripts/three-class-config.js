@@ -30,6 +30,7 @@ module.exports = {
             noDefault: {
                 serialize: true,
                 traitletType: 'Instance(Object3D)',
+                propertyType: 'child',
             },
             speed: {
                 defaultValue: 20,
