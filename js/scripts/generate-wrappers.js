@@ -225,11 +225,11 @@ _.extend(JavascriptWrapper.prototype, {
             return "this.model.get('" + propName + "')";
         });
 
+        // new_obj()
         var result = [
             "var " + this.config.viewName + " = " + this.config.viewSuperClass + ".extend({", 
             "    new_obj: function() {",
         ];
-
 
         if (threeConstructorArgs.length > 0) {
             result.push("        return new THREE." + this.className + "(");
@@ -242,13 +242,24 @@ _.extend(JavascriptWrapper.prototype, {
         } else {
             result.push("        return new THREE." + this.className + "();");
         }
+        result.push("    },", "");
 
-        result = result.concat([
+        // new_properties
+        result.push(
+            "    new_properties: function() {",
+            "        " + this.config.viewSuperClass + ".prototype.new_properties.call(this);"
+        );
+
+        result = result.concat(_.map(this.config.properties, function(prop, propName) {
+            
+        });
+
+        result.push(
             "    },",
-            "})",
-            "",
-        ]);
+            ""
+        );
 
+        result = result.concat([ "})", "" ]);
         return result;
     },
 
