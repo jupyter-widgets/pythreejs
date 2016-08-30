@@ -176,7 +176,6 @@ define(["jupyter-js-widgets", "underscore", "three"],
             // create an array of update handlers for each declared property
             // the update handlers depend on the type of property
 
-            var array_properties = this.array_properties;
             var updates = this.updates = {};
             // first, we create update functions for each attribute
             _.each(this.array_properties, function(p) {
