@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Tue Aug 30 2016 08:28:14 GMT-0700 (PDT)
+// Date: Tue Aug 30 2016 08:42:28 GMT-0700 (PDT)
 //
 
 var ThreeModel = require('./Animation').ThreeModel;
