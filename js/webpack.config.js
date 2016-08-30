@@ -12,7 +12,7 @@ module.exports = [
             libraryTarget: 'amd'
         },
         resolve: {
-            extensions: [ "", ".js", ".autogen.js", ]
+            extensions: [ "", ".autogen.js", ".js" ]
         },
     },
     {
@@ -29,7 +29,7 @@ module.exports = [
         },
         externals: ['jupyter-js-widgets'],
         resolve: {
-            extensions: [ "", ".js", ".autogen.js", ]
+            extensions: [ "", ".autogen.js", ".js" ]
         },
 
     },
@@ -47,7 +47,7 @@ module.exports = [
         },
         externals: ['jupyter-js-widgets'],
         resolve: {
-            extensions: [ "", ".js", ".autogen.js", ]
+            extensions: [ "", ".autogen.js", ".js" ]
         },
 
     }

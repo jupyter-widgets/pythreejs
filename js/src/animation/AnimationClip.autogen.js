@@ -1,7 +1,9 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Tue Aug 30 2016 08:42:28 GMT-0700 (PDT)
+// Date: Tue Aug 30 2016 11:21:23 GMT-0700 (PDT)
 //
+
+var _ = require('underscore');
 
 var ThreeModel = require('./Animation').ThreeModel;
 var ThreeView = require('./Animation').ThreeView;
@@ -28,6 +30,7 @@ var AnimationClipModel = ThreeModel.extend({
     }, ThreeModel.serializers)
 });
 
+
 var AnimationClipView = ThreeView.extend({
     new_obj: function() {
         return new THREE.AnimationClip(
@@ -46,6 +49,7 @@ var AnimationClipView = ThreeView.extend({
     },
 
 })
+
 
 module.exports = {
     AnimationClipView: AnimationClipView,

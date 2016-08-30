@@ -13,11 +13,9 @@ module.exports['version'] = require('../package.json').version;
 // Load three.js into window namespace
 var THREE = require('three');
 window.THREE = THREE;
-
 var loadedModules = [
     require('./Three.Legacy'),
     require('./Three'),
-    require('./jupyter-threejs'),
     require('./animation'),
     require('./audio'),
     require('./cameras'),
@@ -44,3 +42,4 @@ for (var i in loadedModules) {
         }
     }
 }
+

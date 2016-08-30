@@ -100,6 +100,7 @@ _.extend(JavascriptWrapper.prototype, {
         body.push("");
         body = body.concat(this.getModelOutput());
         body = body.concat(this.getViewOutput());
+        body = body.concat(this.getCustomImplementationOverrideOutput());
         body = body.concat(this.getFooter());
         return body.join('\n');
     },
@@ -110,6 +111,8 @@ _.extend(JavascriptWrapper.prototype, {
             "// This file auto-generated with " + path.basename(__filename),
             "// Date: " + new Date(),
             "//",
+            "",
+            "var _ = require('underscore');",
             "",
         ];
     },
@@ -197,7 +200,7 @@ _.extend(JavascriptWrapper.prototype, {
 
         // handle serialized properties
         if (serializedProperties.length <= 0) {
-            result.push("});", "");
+            result.push("});", "", "");
         } else {
             result = result.concat(
                 [ 
@@ -211,6 +214,7 @@ _.extend(JavascriptWrapper.prototype, {
                 [ 
                     "    }, " + this.config.modelSuperClass + ".serializers)",
                     "});",
+                    "",
                     "",
                 ]
             );
@@ -260,8 +264,32 @@ _.extend(JavascriptWrapper.prototype, {
             ""
         );
 
-        result = result.concat([ "})", "" ]);
+        result = result.concat([ "})", "", "" ]);
         return result;
+    },
+
+    getCustomImplementationOverrideOutput: function() {
+
+        // check if manual file exists
+        var customSrcPath = this.jsDestPath;
+
+        var overrideModule = "Override";
+        var overrideModel = overrideModule + "." + this.config.modelName;
+        var overrideView = overrideModule + "." + this.config.viewName;
+
+        if (!fs.existsSync(customSrcPath)) {
+            return [];
+        }    
+
+        return [
+            "// Override auto-gen class with custom implementation",
+            "var " + overrideModule + " = require('./" + this.className + ".js');",
+            "_.extend(" + this.config.modelName + ".prototype, " + overrideModel + ".prototype);",
+            "_.extend(" + this.config.modelName + ", " + overrideModel + ");", 
+            "_.extend(" + this.config.viewName + ".prototype, " + overrideView + ".prototype);",
+            "_.extend(" + this.config.viewName + ", " + overrideView + ");",
+            "",
+        ];
     },
 
     writeOutFile: function() {
@@ -446,13 +474,8 @@ _.extend(PythonWrapper.prototype, {
 function createJavascriptWrapper(modulePath) {
 
     var wrapper = new JavascriptWrapper(modulePath);
-    try {
-        fs.statSync(wrapper.jsDestPath);
-        return;
-    } catch (err) {
-        return wrapper.writeOutFile();
-    }
-
+    return wrapper.writeOutFile();
+    
 }
 
 function writeIndexForDir(dirPath, dirs, files, options) {
@@ -462,7 +485,6 @@ function writeIndexForDir(dirPath, dirs, files, options) {
     var baseDirRetrace = path.relative(dirPath, jsSrcDir);
 
     var index = [
-        "",
         "var loadedModules = [",
     ];
 
@@ -471,7 +493,9 @@ function writeIndexForDir(dirPath, dirs, files, options) {
     }
 
     files.forEach(function(filePath) {
-        index.push("    require('./" + path.basename(path.basename(filePath, '.js'), '.autogen') + "'),");
+        if (/\.autogen\.js$/.test(filePath)) {
+            index.push("    require('./" + path.basename(filePath, '.autogen.js') + "'),");
+        }
     });
 
     dirs.forEach(function(dirPath) {
@@ -491,6 +515,7 @@ function writeIndexForDir(dirPath, dirs, files, options) {
         "        }",
         "    }",
         "}",
+        "",
     ]);
 
     if (options.footer) {

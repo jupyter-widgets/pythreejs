@@ -11,7 +11,7 @@ module.exports = {
     // pySuperclass: 'Object3D',
 
     superDepModuleName: 'base',
-    superDepModulePath: './base',
+    superDepModulePath: './_base',
 
     // properties
     properties: {
