@@ -26,18 +26,19 @@ function generateClassConfig() {
             "//",
             "",
             "module.exports = {",
-            " _defaults: require('./three-class-config-defaults'),",
+            "    _defaults: require('./three-class-config-defaults'),",
             "",
         ];
 
         var glob = new Glob('**/*.js', { cwd: threeSrcDir, nodir: true, })
             .on('match', function(match) {
 
+                var classDir = path.dirname(match);
                 var className = path.basename(match, '.js');
 
                 lines = lines.concat([
                     "    " + className.replace(/\./g, '_') + ": {",
-                    "        relativePath: '" + path.dirname(match) + "',",
+                    "        relativePath: './" + path.join(classDir, className) + "',",
                     // "        modelName: '" + className + "Model',",
                     // "        viewName:  '" + className + "View',",
                     // "        superDepModuleName: 'base',",

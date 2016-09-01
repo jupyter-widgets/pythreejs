@@ -15,7 +15,7 @@ Equations = [
     'MaxEquation'
 ]
 
-DestinationFactors = [
+BlendFactors = [
     'ZeroFactor',
     'OneFactor',
     'SrcColorFactor',
@@ -23,10 +23,7 @@ DestinationFactors = [
     'SrcAlphaFactor',
     'OneMinusSrcAlphaFactor',
     'DstAlphaFactor',
-    'OneMinusDstAlphaFactor'
-]
-
-SourceFactors = [
+    'OneMinusDstAlphaFactor',
     'DstColorFactor',
     'OneMinusDstColorFactor',
     'SrcAlphaSaturateFactor'
@@ -60,6 +57,15 @@ BlendingMode = [
     'CustomBlending'
 ]
 
+DepthMode = [
+    'NeverDepth',
+    'AlwaysDepth',
+    'LessDepth',
+    'LessEqualDepth',
+    'GreaterEqualDepth',
+    'GreaterDepth',
+    'NotEqualDepth'
+]
 
 # Texture Constants
 # http://threejs.org/docs/index.html#Reference/Constants/Textures
