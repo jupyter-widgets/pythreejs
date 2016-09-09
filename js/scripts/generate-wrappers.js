@@ -218,11 +218,26 @@ _.extend(JavascriptWrapper.prototype, {
         ]
     },
 
+    getConstructorParametersObject: function() {
+        var result = [ '{' ];
+
+        result = result.concat(_.keys(this.config.properties).map(function(propName) {
+            return '                ' + propName + ": this.get('" + propName + "'),";
+        }, this))
+
+        result.push('            }');
+        return result;
+    },
+
     getModelOutput: function() {
 
         var threeConstructorArgs = this.config.constructorArgs.map(function(propName) {
-            return "this.model.get('" + propName + "')";
-        });
+            if (propName === 'parameters') {
+                return this.getConstructorParametersObject().join('\n'); 
+            } else {
+                return "this.get('" + propName + "')";
+            }
+        }, this);
 
         var result = [];
 
@@ -280,6 +295,10 @@ _.extend(JavascriptWrapper.prototype, {
                 result += "\n        this.enum_property_types['" + propName + "'] = '" + prop.enumTypeName + "';";
             }
             return result;
+        }));
+
+        result = result.concat(_.map(this.config.propsDefinedByThree, function(propName) {
+            return "        this.props_created_by_three['" + propName + "'] = true;"
         }));
 
         result.push(
@@ -424,7 +443,7 @@ _.extend(PythonWrapper.prototype, {
 
         return [
             "from ipywidgets import Widget, DOMWidget, widget_serialization, Color",
-            "from traitlets import Unicode, Int, CInt, Instance, This, Enum, List, Dict, Float, CFloat, Bool",
+            "from traitlets import Unicode, Int, CInt, Instance, This, Enum, Tuple, List, Dict, Float, CFloat, Bool",
             "",
             "from " + pyBaseRelativePath + "enums import *",
             "from " + pyBaseRelativePath + "traits import *",
@@ -731,6 +750,15 @@ function createTopLevelPythonModuleFile() {
                 var modulePath = path.dirname(match);
                 var moduleName = path.basename(match, '.py').replace(/\./g, '_');
 
+                if (/autogen/.test(moduleName)) {
+                    var overrideName = moduleName.replace('_autogen', '');
+                    var overridePath = path.resolve(pySrcDir, modulePath, overrideName + '.py');
+                    if (fs.existsSync(overridePath)) {
+                        console.log('Python override exists: ' + overrideName + '. Skipping...');
+                        return;
+                    }
+                }
+
                 if (modulePath !== '.') {
                     var importPath = '.' + modulePath.split(path.sep).join('.') + '.' + moduleName;
                 } else {
@@ -774,6 +802,7 @@ function createWrapperFiles() {
             nodir: true ,
             ignore: [
                 '**/Three.Legacy.js',
+                '**/renderers/**'
             ],
         })
             .on('match', function(match) {
@@ -838,6 +867,9 @@ if (require.main === module) {
                     "// Load three.js into window namespace",
                     "var THREE = require('three');",
                     "window.THREE = THREE;",
+                    "",
+                    "// Load three.js extensions",
+                    "require('./examples/controls/OrbitControls');",
                 ].join('\n'),
                 footer: [
                     "window.pythreejs = module.exports;",

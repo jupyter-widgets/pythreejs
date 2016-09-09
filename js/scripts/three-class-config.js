@@ -52,24 +52,72 @@ module.exports = {
     },
     Camera: {
         relativePath: './cameras/Camera',
+        superClass: 'Object3D',
+        properties: {
+            matrixWorldInverse: new Types.Matrix4(),
+            projectionMatrix:   new Types.Matrix4(),
+        },
     },
     CubeCamera: {
         relativePath: './cameras/CubeCamera',
+        superClass: 'Object3D',
     },
     OrthographicCamera: {
         relativePath: './cameras/OrthographicCamera',
+        superClass: 'Camera',
+        properties: {
+            zoom:   new Types.Float(1.0),
+            left:   new Types.Float(),
+            right:  new Types.Float(),
+            top:    new Types.Float(),
+            bottom: new Types.Float(),
+            near:   new Types.Float(0.1),
+            far:    new Types.Float(2000),
+        },
+        constructorArgs: [ 'left', 'right', 'top', 'bottom', 'near', 'far' ],
     },
     PerspectiveCamera: {
         relativePath: './cameras/PerspectiveCamera',
+        superClass: 'Camera',
+        properties: {
+            fov:        new Types.Float(50.0),
+            zoom:       new Types.Float(1.0),
+            near:       new Types.Float(0.1),
+            far:        new Types.Float(2000),
+            focus:      new Types.Float(10.0),
+            aspect:     new Types.Float(1.0),
+            view:       new Types.Dict(),
+            filmGauge:  new Types.Float(35.0),
+            filmOffset: new Types.Float(0.0),
+        },
+        constructorArgs: [ 'fov', 'aspect', 'near', 'far' ],
     },
     StereoCamera: {
         relativePath: './cameras/StereoCamera',
     },
     BufferAttribute: {
         relativePath: './core/BufferAttribute',
+        properties: {
+            uuid:        new Types.String(''),
+            array:       new Types.Array(),
+            itemSize:    new Types.Int(1),
+            count:       new Types.Int(0),
+            needsUpdate: new Types.Bool(false),
+            normalized:  new Types.Bool(true),
+            version:     new Types.Int(-1),
+        },
+        constructorArgs: [ 'array', 'itemSize', 'normalized' ],
+        propsDefinedByThree: [ 'uuid', 'count', 'version' ]
     },
     BufferGeometry: {
         relativePath: './core/BufferGeometry',
+        properties: {
+            uuid: new Types.String(''),
+            name: new Types.String(''),
+            type: new Types.String(''),
+
+        },
+        propsDefinedByThree: [ 'uuid', 'type' ]
     },
     Clock: {
         relativePath: './core/Clock',
@@ -82,9 +130,29 @@ module.exports = {
     },
     Face3: {
         relativePath: './core/Face3',
+        properties: {
+            a: new Types.Int(0),
+            b: new Types.Int(1),
+            c: new Types.Int(2),
+            normal: new Types.Vector3(),
+            color: new Types.Color('#ffffff'),
+            // TODO: arrays of vectors/colors
+            // vertexNormals: new Types.ThreeArray('Vector3')
+            // vertexColors: new Types.ThreeArray('Color')
+            materialIndex: new Types.Int(0),
+        },
+        constructorArgs: [ 'a', 'b', 'c', 'normal', 'color', 'materialIndex' ],
     },
     Geometry: {
         relativePath: './core/Geometry',
+        properties: {
+            uuid: new Types.String(''),
+            name: new Types.String(''),
+            type: new Types.String(''),
+
+            // TODO: arrays of geometry data
+        },
+        propsDefinedByThree: [ 'uuid', 'type' ]
     },
     InstancedBufferAttribute: {
         relativePath: './core/InstancedBufferAttribute',
@@ -107,30 +175,43 @@ module.exports = {
     Object3D: {
         relativePath: './core/Object3D',
         properties: {
-            uuid: new Types.String(''),
-            name: new Types.String(''),
-            parent: new Types.ThreeType('this'),
-            children: new Types.ThreeTypeArray('this'),
-            up: new Types.Vector3(0, 1, 0),
-            position: new Types.Vector3(),
-            rotation: new Types.Vector3(),
-            quaternion: new Types.Vector4(),
-            scale: new Types.Vector3(1, 1, 1),
-            modelViewMatrix: new Types.Matrix4(),
-            normalMatrix: new Types.Matrix3(),
-            matrix: new Types.Matrix4(),
-            matrixWorld: new Types.Matrix4(),
-            matrixAutoUpdate: new Types.Bool(true),
+            // TODO: id not supported as it conflicts with backbone's id
+            // id: new Types.String(''), 
+            uuid:                   new Types.String(''),
+            name:                   new Types.String(''),
+            type:                   new Types.String(''),
+            parent:                 new Types.ThreeType('this'),
+            children:               new Types.ThreeTypeArray('this'),
+            up:                     new Types.Vector3(0, 1, 0),
+            position:               new Types.Vector3(),
+            rotation:               new Types.Vector3(),
+            quaternion:             new Types.Vector4(),
+            scale:                  new Types.Vector3(1, 1, 1),
+            modelViewMatrix:        new Types.Matrix4(),
+            normalMatrix:           new Types.Matrix3(),
+            matrix:                 new Types.Matrix4(),
+            matrixWorld:            new Types.Matrix4(),
+            matrixAutoUpdate:       new Types.Bool(true),
             matrixWorldNeedsUpdate: new Types.Bool(false),
-            visible: new Types.Bool(true),
-            castShadow: new Types.Bool(false),
-            receiveShadow: new Types.Bool(false),
-            frustumCulled: new Types.Bool(true),
-            renderOrder: new Types.Int(0),
-        }
+            visible:                new Types.Bool(true),
+            castShadow:             new Types.Bool(false),
+            receiveShadow:          new Types.Bool(false),
+            frustumCulled:          new Types.Bool(true),
+            renderOrder:            new Types.Int(0),
+        },
+        propsDefinedByThree: [ 'uuid', 'type' ]
     },
     Raycaster: {
         relativePath: './core/Raycaster',
+        properties: {
+            origin: new Types.Vector3(),
+            direction: new Types.Vector3(),
+            near: new Types.Float(0.0),
+            far: new Types.Float(Infinity),
+            ray: new Types.ThreeType('Ray'),
+            linePrecision: new Types.Float(1.0),
+        },
+        constructorArgs: [ 'origin', 'direction', 'near', 'far' ],
     },
     Uniform: {
         relativePath: './core/Uniform',
@@ -146,24 +227,62 @@ module.exports = {
     },
     AmbientLight: {
         relativePath: './lights/AmbientLight',
+        superClass: 'Light',
+        constructorArgs: [ 'color', 'intensity' ],
     },
     DirectionalLight: {
         relativePath: './lights/DirectionalLight',
+        superClass: 'Light',
+        properties: {
+            target:      new Types.ThreeType('Object3D'),
+            shadow:      new Types.ThreeType('LightShadow'),
+            castsShadow: new Types.Bool(false),
+        },
+        constructorArgs: [ 'color', 'intensity' ],
     },
     HemisphereLight: {
         relativePath: './lights/HemisphereLight',
+        superClass: 'Light',
+        properties: {
+            groundColor: new Types.Color('#000000'),
+        },
+        constructorArgs: [ 'color', 'groundColor', 'intensity' ],
     },
     Light: {
         relativePath: './lights/Light',
+        superClass: 'Object3D',
+        properties: {
+            color:     new Types.Color('#ffffff'),
+            intensity: new Types.Float(1.0),
+        },
+        constructorArgs: [ 'color', 'intensity' ],
     },
     LightShadow: {
         relativePath: './lights/LightShadow',
     },
     PointLight: {
         relativePath: './lights/PointLight',
+        superClass: 'Light',
+        properties: {
+            power:    new Types.Float(4.0 * Math.PI),
+            distance: new Types.Float(0.0),
+            decay:    new Types.Float(1.0),
+            shadow:   new Types.ThreeType('LightShadow'),
+        },
+        constructorArgs: [ 'color', 'intensity', 'distance', 'decay' ],
     },
     SpotLight: {
         relativePath: './lights/SpotLight',
+        superClass: 'Light',
+        properties: {
+            target:   new Types.ThreeType('Object3D'),
+            distance: new Types.Float(0.0),
+            angle:    new Types.Float(Math.PI / 3.0),
+            penumbra: new Types.Float(0.0),
+            decay:    new Types.Float(1.0),
+            shadow:   new Types.ThreeType('LightShadow'),
+        },
+        constructorArgs: [ 'color', 'intensity', 'distance', 'angle', 'penumbra', 'decay' ],
     },
     AnimationLoader: {
         relativePath: './loaders/AnimationLoader',
@@ -210,11 +329,33 @@ module.exports = {
     XHRLoader: {
         relativePath: './loaders/XHRLoader',
     },
+    // NOTE: the constructor arg, 'parameters' is special-cased in our wrapper generator
+    //       it will be auto-detected, and properly generate the constructor dict arg
+    //       containing all props of the model
     LineBasicMaterial: {
         relativePath: './materials/LineBasicMaterial',
+        superClass: 'Material',
+        properties: {
+            color:        new Types.Color('#ffffff'),
+            linewidth:    new Types.Float(1.0),
+            linecap:      new Types.String('round'),
+            linejoin:     new Types.String('round'),
+            vertexColors: new Types.Enum('Colors', 'NoColors'),
+        },
+        constructorArgs: [ 'parameters' ],
     },
     LineDashedMaterial: {
         relativePath: './materials/LineDashedMaterial',
+        superClass: 'Material',
+        properties: {
+            color:        new Types.Color('#ffffff'),
+            linewidth:    new Types.Float(1.0),
+            scale:        new Types.Float(1.0),
+            dashSize:     new Types.Float(3.0),
+            gapSize:      new Types.Float(1.0),
+            vertexColors: new Types.Enum('Colors', 'NoColors'),
+        },
+        constructorArgs: [ 'parameters' ],
     },
     Material: {
         relativePath: './materials/Material',
@@ -241,7 +382,10 @@ module.exports = {
             overdraw:            new Types.Float(0),
             visible:             new Types.Bool(true),
             side:                new Types.Enum('Side', 'FrontSide'),
-        }
+            fog:                 new Types.Bool(true),
+            lights:              new Types.Bool(true),
+        },
+        propsDefinedByThree: [ 'uuid', 'type' ]
     },
     MeshBasicMaterial: {
         relativePath: './materials/MeshBasicMaterial',
@@ -268,22 +412,99 @@ module.exports = {
             skinning:           new Types.Bool(false),
             morphTargets:       new Types.Bool(false),
         },
+        constructorArgs: [ 'parameters' ],
     },
     MeshDepthMaterial: {
         relativePath: './materials/MeshDepthMaterial',
         superClass: 'Material',
+        properties: {
+            morphTargets:       new Types.Bool(false),
+            wireframe:          new Types.Bool(false),
+            wireframeLinewidth: new Types.Float(1.0),
+        },
+        constructorArgs: [ 'parameters' ],
     },
     MeshLambertMaterial: {
         relativePath: './materials/MeshLambertMaterial',
         superClass: 'Material',
+        properties: {
+            color:              new Types.String('0xffffff'),
+            map:                new Types.ThreeType('Texture'),
+            lightMap:           new Types.ThreeType('Texture'),
+            lightMapIntensity:  new Types.Float(1.0),
+            aoMap:              new Types.ThreeType('Texture'),
+            aoMapIntensity:     new Types.Float(1.0),
+            emissive:           new Types.Color('0x000000'),
+            emissiveMap:        new Types.ThreeType('Texture'),
+            emissiveIntensity:  new Types.Float(1.0),
+            specularMap:        new Types.ThreeType('Texture'),
+            alphaMap:           new Types.ThreeType('Texture'),
+            envMap:             new Types.ThreeType('Texture'),
+            combine:            new Types.Enum('Operations', 'MultiplyOperation'),
+            reflectivity:       new Types.Float(1.0),
+            refractionRatio:    new Types.Float(0.98),
+            fog:                new Types.Bool(false),
+            wireframe:          new Types.Bool(false),
+            wireframeLinewidth: new Types.Float(1.0),
+            wireframeLinecap:   new Types.String('round'),
+            wireframeLinejoin:  new Types.String('round'),
+            vertexColors:       new Types.Enum('Colors', 'NoColors'),
+            skinning:           new Types.Bool(false),
+            morphTargets:       new Types.Bool(false),
+            morphNormals:       new Types.Bool(false),
+        },
+        constructorArgs: [ 'parameters' ],
     },
     MeshNormalMaterial: {
         relativePath: './materials/MeshNormalMaterial',
         superClass: 'Material',
+        properties: {
+            wireframe: new Types.Bool(false),
+            wireframeLinewidth: new Types.Float(1.0),
+            morphTargets: new Types.Bool(false),
+        },
+        constructorArgs: [ 'parameters' ],
     },
     MeshPhongMaterial: {
         relativePath: './materials/MeshPhongMaterial',
         superClass: 'Material',
+        properties: {
+            color:              new Types.String('#ffffff'),
+            specular:           new Types.Color('#111111'),
+            shininess:          new Types.Float(30.0),
+            map:                new Types.ThreeType('Texture'),
+            lightMap:           new Types.ThreeType('Texture'),
+            lightMapIntensity:  new Types.Float(1.0),
+            aoMap:              new Types.ThreeType('Texture'),
+            aoMapIntensity:     new Types.Float(1.0),
+            emissive:           new Types.Color('0x000000'),
+            emissiveMap:        new Types.ThreeType('Texture'),
+            emissiveIntensity:  new Types.Float(1.0),
+            bumpMap:            new Types.ThreeType('Texture'),
+            bumpScale:          new Types.Float(1.0),
+            normalMap:          new Types.ThreeType('Texture'),
+            normalScale:        new Types.Vector2(1, 1),
+            displacementMap:    new Types.ThreeType('Texture'),
+            displacementScale:  new Types.Float(1.0),
+            displacementBias:   new Types.Float(0.0),
+            specularMap:        new Types.ThreeType('Texture'),
+            alphaMap:           new Types.ThreeType('Texture'),
+            envMap:             new Types.ThreeType('Texture'),
+            combine:            new Types.Enum('Operations', 'MultiplyOperation'),
+            reflectivity:       new Types.Float(1.0),
+            refractionRatio:    new Types.Float(0.98),
+            fog:                new Types.Bool(false),
+            shading:            new Types.Enum('Shading', 'SmoothShading'),
+            wireframe:          new Types.Bool(false),
+            wireframeLinewidth: new Types.Float(1.0),
+            wireframeLinecap:   new Types.String('round'),
+            wireframeLinejoin:  new Types.String('round'),
+            vertexColors:       new Types.Enum('Colors', 'NoColors'),
+            skinning:           new Types.Bool(false),
+            morphTargets:       new Types.Bool(false),
+            morphNormals:       new Types.Bool(false),
+        },
+        constructorArgs: [ 'parameters' ],
     },
     MeshStandardMaterial: {
         relativePath: './materials/MeshStandardMaterial',
@@ -325,27 +546,55 @@ module.exports = {
             skinning:           new Types.Bool(false),
             morphTargets:       new Types.Bool(false),
             morphNormals:       new Types.Bool(false),
-        }
+        },
+        constructorArgs: [ 'parameters' ],
     },
     MultiMaterial: {
         relativePath: './materials/MultiMaterial',
-        superClass: 'Material',
+        properties: {
+            materials: new Types.ThreeTypeArray('Material')
+        },
+        constructorArgs: [ 'parameters' ],
     },
     PointsMaterial: {
         relativePath: './materials/PointsMaterial',
         superClass: 'Material',
+        properties: {
+            color:           new Types.Color('0xffffff'),
+            map:             new Types.ThreeType('Texture'),
+            size:            new Types.Float(1.0),
+            sizeAttenuation: new Types.Bool(true),
+            vertexColors:    new Types.Enum('Colors', 'NoColors'),
+        },
+        constructorArgs: [ 'parameters' ],
     },
     RawShaderMaterial: {
         relativePath: './materials/RawShaderMaterial',
-        superClass: 'Material',
+        superClass: 'ShaderMaterial',
+        properties: {},
+        constructorArgs: [ 'parameters' ],
     },
     ShaderMaterial: {
         relativePath: './materials/ShaderMaterial',
         superClass: 'Material',
+        properties: {
+            uniforms:       new Types.Dict(),
+            // TODO: no longer supported by THREE.js
+            // attributes 
+            vertexShader:   new Types.String(''),
+            fragmentShader: new Types.String(''),
+        },
+        constructorArgs: [ 'parameters' ],
     },
     SpriteMaterial: {
         relativePath: './materials/SpriteMaterial',
         superClass: 'Material',
+        properties: {
+            color:    new Types.Color('0xffffff'),
+            map:      new Types.ThreeType('Texture'),
+            rotation: new Types.Float(0.0),
+        },
+        constructorArgs: [ 'parameters' ],
     },
     Box2: {
         relativePath: './math/Box2',
@@ -557,35 +806,96 @@ module.exports = {
     BoxBufferGeometry: {
         relativePath: './extras/geometries/BoxBufferGeometry',
         superClass: 'BufferGeometry',
+        constructorArgs: [ 'width', 'height', 'depth', 'widthSegments', 'heightSegments', 'depthSegments' ],
+        properties: {
+            width: new Types.Float(10.0),
+            height: new Types.Float(10.0),
+            depth: new Types.Float(10.0),
+            widthSegments: new Types.Int(1),
+            heightSegments: new Types.Int(1),
+            depthSegments: new Types.Int(1),
+        },
     },
     BoxGeometry: {
         relativePath: './extras/geometries/BoxGeometry',
         superClass: 'Geometry',
+        constructorArgs: [ 'width', 'height', 'depth', 'widthSegments', 'heightSegments', 'depthSegments' ],
+        properties: {
+            width: new Types.Float(10.0),
+            height: new Types.Float(10.0),
+            depth: new Types.Float(10.0),
+            widthSegments: new Types.Int(1),
+            heightSegments: new Types.Int(1),
+            depthSegments: new Types.Int(1),
+        },
     },
     CircleBufferGeometry: {
         relativePath: './extras/geometries/CircleBufferGeometry',
         superClass: 'BufferGeometry',
+        constructorArgs: [ 'radius', 'segments', 'thetaStart', 'thetaLength' ],
+        properties: {
+            radius: new Types.Float(50.0),
+            segments: new Types.Int(8), // TODO: min:3
+            thetaStart: new Types.Float(0.0),
+            thetaLength: new Types.Float(Math.PI * 2.0),
+        },
     },
     CircleGeometry: {
         relativePath: './extras/geometries/CircleGeometry',
         superClass: 'Geometry',
+        constructorArgs: [ 'radius', 'segments', 'thetaStart', 'thetaLength' ],
+        properties: {
+            radius: new Types.Float(50.0),
+            segments: new Types.Int(8), // TODO: min:3
+            thetaStart: new Types.Float(0.0),
+            thetaLength: new Types.Float(Math.PI * 2.0),
+        },
     },
     CylinderBufferGeometry: {
         relativePath: './extras/geometries/CylinderBufferGeometry',
         superClass: 'BufferGeometry',
+        constructorArgs: [ 'radiusTop', 'radiusBottom', 'height', 'radiusSegments', 'heightSegments', 'openEnded', 'thetaStart', 'thetaLength' ],
+        properties: {
+            radiusTop: new Types.Float(20.0),
+            radiusBottom: new Types.Float(20.0),
+            height: new Types.Float(100.0),
+            radiusSegments: new Types.Int(8),
+            heightSegments: new Types.Int(1),
+            openEnded: new Types.Bool(false),
+            thetaStart: new Types.Float(0.0),
+            thetaLength: new Types.Float(Math.PI * 2.0),
+        },
     },
     CylinderGeometry: {
         relativePath: './extras/geometries/CylinderGeometry',
         superClass: 'Geometry',
+        constructorArgs: [ 'radiusTop', 'radiusBottom', 'height', 'radiusSegments', 'heightSegments', 'openEnded', 'thetaStart', 'thetaLength' ],
+        properties: {
+            radiusTop: new Types.Float(20.0),
+            radiusBottom: new Types.Float(20.0),
+            height: new Types.Float(100.0),
+            radiusSegments: new Types.Int(8),
+            heightSegments: new Types.Int(1),
+            openEnded: new Types.Bool(false),
+            thetaStart: new Types.Float(0.0),
+            thetaLength: new Types.Float(Math.PI * 2.0),
+        },
     },
     DodecahedronGeometry: {
         relativePath: './extras/geometries/DodecahedronGeometry',
         superClass: 'Geometry',
+        constructorArgs: [ 'radius', 'detail' ],
+        properties: {
+            radius: new Types.Float(1.0),
+            detail: new Types.Int(0.0),
+        },
     },
+    // TODO:
     EdgesGeometry: {
         relativePath: './extras/geometries/EdgesGeometry',
         superClass: 'Geometry',
     },
+    // TODO: 
     ExtrudeGeometry: {
         relativePath: './extras/geometries/ExtrudeGeometry',
         superClass: 'Geometry',
@@ -593,58 +903,160 @@ module.exports = {
     IcosahedronGeometry: {
         relativePath: './extras/geometries/IcosahedronGeometry',
         superClass: 'Geometry',
+        constructorArgs: [ 'radius', 'detail' ],
+        properties: {
+            radius: new Types.Float(1.0),
+            detail: new Types.Int(0.0),
+        },
     },
     LatheBufferGeometry: {
         relativePath: './extras/geometries/LatheBufferGeometry',
         superClass: 'BufferGeometry',
+        constructorArgs: [ 'points', 'segments', 'phiStart', 'phiLength' ],
+        properties: {
+            points: new Types.ThreeTypeArray('Vector2'), // need vector_array type?
+            segments: new Types.Int(12),
+            phiStart: new Types.Float(0.0),
+            phiLength: new Types.Float(Math.PI * 2.0),
+        },
     },
     LatheGeometry: {
         relativePath: './extras/geometries/LatheGeometry',
         superClass: 'Geometry',
+        constructorArgs: [ 'points', 'segments', 'phiStart', 'phiLength' ],
+        properties: {
+            points: new Types.ThreeTypeArray('Vector2'), // need vector_array type?
+            segments: new Types.Int(12),
+            phiStart: new Types.Float(0.0),
+            phiLength: new Types.Float(Math.PI * 2.0),
+        },
     },
     OctahedronGeometry: {
         relativePath: './extras/geometries/OctahedronGeometry',
         superClass: 'Geometry',
+        constructorArgs: [ 'radius', 'detail' ],
+        properties: {
+            radius: new Types.Float(1.0),
+            detail: new Types.Int(0.0),
+        },
     },
     ParametricGeometry: {
         relativePath: './extras/geometries/ParametricGeometry',
         superClass: 'Geometry',
+        constructorArgs: [ 'func', 'slices', 'stacks' ],
+        properties: {
+            func:   new Types.Function(function(u,v) { return THREE.Vector3(); }),
+            slices: new Types.Int(3), // NOTE: default not specified in three.js
+            stacks: new Types.Int(3), // NOTE: default not specified in three.js
+        },
     },
     PlaneBufferGeometry: {
         relativePath: './extras/geometries/PlaneBufferGeometry',
         superClass: 'BufferGeometry',
+        constructorArgs: [ 'width', 'height', 'widthSegments', 'heightSegments' ],
+        properties: {
+            width:          new Types.Float(10.0), // NOTE: default not specified in three.js
+            height:         new Types.Float(10.0), // NOTE: default not specified in three.js
+            widthSegments:  new Types.Int(1),
+            heightSegments: new Types.Int(1),
+        },
     },
     PlaneGeometry: {
         relativePath: './extras/geometries/PlaneGeometry',
         superClass: 'Geometry',
+        constructorArgs: [ 'width', 'height', 'widthSegments', 'heightSegments' ],
+        properties: {
+            width:          new Types.Float(10.0), // NOTE: default not specified in three.js
+            height:         new Types.Float(10.0), // NOTE: default not specified in three.js
+            widthSegments:  new Types.Int(1),
+            heightSegments: new Types.Int(1),
+        },
     },
     PolyhedronGeometry: {
         relativePath: './extras/geometries/PolyhedronGeometry',
         superClass: 'Geometry',
+        constructorArgs: [ 'vertices', 'faces', 'radius', 'detail' ],
+        properties: {
+            vertices: new Types.Array(),
+            faces:    new Types.Array(),
+            radius:   new Types.Float(1.0),
+            detail:   new Types.Float(0.0),
+        },
     },
     RingBufferGeometry: {
         relativePath: './extras/geometries/RingBufferGeometry',
         superClass: 'BufferGeometry',
+        constructorArgs: [ 'innerRadius', 'outerRadius', 'thetaSegments', 'phiSegments', 'thetaStart', 'thetaLength' ],
+        properties: {
+            innerRadius:   new Types.Float(0.0), // Docs: "Default is 0, but it doesn't work right when innerRadius is set to 0.
+            outerRadius:   new Types.Float(50.0),
+            thetaSegments: new Types.Int(8), // TODO: min: 3
+            phiSegments:   new Types.Int(8), // TODO: min 1
+            thetaStart:    new Types.Float(0),
+            thetaLength:   new Types.Float(Math.PI * 2),
+        },
     },
     RingGeometry: {
         relativePath: './extras/geometries/RingGeometry',
         superClass: 'Geometry',
+        constructorArgs: [ 'innerRadius', 'outerRadius', 'thetaSegments', 'phiSegments', 'thetaStart', 'thetaLength' ],
+        properties: {
+            innerRadius:   new Types.Float(0.0), // Docs: "Default is 0, but it doesn't work right when innerRadius is set to 0.
+            outerRadius:   new Types.Float(50.0),
+            thetaSegments: new Types.Int(8), // TODO: min: 3
+            phiSegments:   new Types.Int(8), // TODO: min 1
+            thetaStart:    new Types.Float(0),
+            thetaLength:   new Types.Float(Math.PI * 2),
+        },
     },
+    // TODO: figure out options constructor args + UVGenerator
     ShapeGeometry: {
         relativePath: './extras/geometries/ShapeGeometry',
         superClass: 'Geometry',
+        constructorArgs: [ 'shape' ],
+        properties: {
+            shapes:        new Types.ThreeTypeArray('Shape'),
+            curveSegments: new Types.Int(12), // NOTE: docs say this is unused
+            material:      new Types.Int(0), // NOTE: no default specified
+            // 'UVGenerator': // TODO: figure out this option
+        }
     },
     SphereBufferGeometry: {
         relativePath: './extras/geometries/SphereBufferGeometry',
         superClass: 'BufferGeometry',
+        constructorArgs: [ 'radius', 'widthSegments', 'heightSegments', 'phiStart', 'phiLength', 'thetaStart', 'thetaLength' ],
+        properties: {
+            radius:         new Types.Int(50),
+            widthSegments:  new Types.Int(8),
+            heightSegments: new Types.Int(6),
+            phiStart:       new Types.Float(0),
+            phiLength:      new Types.Float(Math.PI * 2.0),
+            thetaStart:     new Types.Float(0),
+            thetaLength:    new Types.Float(Math.PI),
+        }
     },
     SphereGeometry: {
         relativePath: './extras/geometries/SphereGeometry',
         superClass: 'Geometry',
+        constructorArgs: [ 'radius', 'widthSegments', 'heightSegments', 'phiStart', 'phiLength', 'thetaStart', 'thetaLength' ],
+        properties: {
+            radius:         new Types.Int(50),
+            widthSegments:  new Types.Int(8),
+            heightSegments: new Types.Int(6),
+            phiStart:       new Types.Float(0),
+            phiLength:      new Types.Float(Math.PI * 2.0),
+            thetaStart:     new Types.Float(0),
+            thetaLength:    new Types.Float(Math.PI),
+        }
     },
     TetrahedronGeometry: {
         relativePath: './extras/geometries/TetrahedronGeometry',
         superClass: 'Geometry',
+        constructorArgs: [ 'radius', 'detail' ],
+        properties: {
+            radius: new Types.Float(1),
+            detail: new Types.Int(0),
+        },
     },
     TextGeometry: {
         relativePath: './extras/geometries/TextGeometry',
@@ -653,36 +1065,65 @@ module.exports = {
     TorusBufferGeometry: {
         relativePath: './extras/geometries/TorusBufferGeometry',
         superClass: 'BufferGeometry',
+        constructorArgs: [ 'radius', 'tube', 'radialSegments', 'tubularSegments', 'arc' ],
         properties: {
-            radius: new Types.Float(100),
-            tube: new Types.Float(40),
-            radialSegments: new Types.Int(8),
+            radius:          new Types.Float(100),
+            tube:            new Types.Float(40),
+            radialSegments:  new Types.Int(8),
             tubularSegments: new Types.Int(6),
-            arc: new Types.Float(Math.PI * 2.0),
-        }
+            arc:             new Types.Float(Math.PI * 2.0),
+        },
     },
     TorusGeometry: {
         relativePath: './extras/geometries/TorusGeometry',
         superClass: 'Geometry',
+        constructorArgs: [ 'radius', 'tube', 'radialSegments', 'tubularSegments', 'arc' ],
         properties: {
-            radius: new Types.Float(100),
-            tube: new Types.Float(40),
-            radialSegments: new Types.Int(8),
+            radius:          new Types.Float(100),
+            tube:            new Types.Float(40),
+            radialSegments:  new Types.Int(8),
             tubularSegments: new Types.Int(6),
-            arc: new Types.Float(Math.PI * 2.0),
-        }    
+            arc:             new Types.Float(Math.PI * 2.0),
+        },
     },
     TorusKnotBufferGeometry: {
         relativePath: './extras/geometries/TorusKnotBufferGeometry',
         superClass: 'BufferGeometry',
+        constructorArgs: [ 'radius', 'tube', 'tubularSegments', 'radialSegments', 'p', 'q' ],
+        properties: {
+            radius:          new Types.Float(100),
+            tube:            new Types.Float(40),
+            tubularSegments: new Types.Int(64),
+            radialSegments:  new Types.Int(8),
+            p:               new Types.Int(2),
+            q:               new Types.Int(3),
+        },
     },
     TorusKnotGeometry: {
         relativePath: './extras/geometries/TorusKnotGeometry',
         superClass: 'Geometry',
+        constructorArgs: [ 'radius', 'tube', 'tubularSegments', 'radialSegments', 'p', 'q' ],
+        properties: {
+            radius:          new Types.Float(100),
+            tube:            new Types.Float(40),
+            tubularSegments: new Types.Int(64),
+            radialSegments:  new Types.Int(8),
+            p:               new Types.Int(2),
+            q:               new Types.Int(3),
+        },
     },
     TubeGeometry: {
         relativePath: './extras/geometries/TubeGeometry',
         superClass: 'Geometry',
+        constructorArgs: [ 'path', 'segments', 'radius', 'radiusSegments', 'close' ],
+        properties: {
+            path:           new Types.ThreeType('Curve'),
+            segments:       new Types.Int(64),
+            radius:         new Types.Float(1.0),
+            radiusSegments: new Types.Int(8),
+            close:          new Types.Bool(false),
+        },
+        dependencies: [ 'Curve' ],
     },
     WireframeGeometry: {
         relativePath: './extras/geometries/WireframeGeometry',

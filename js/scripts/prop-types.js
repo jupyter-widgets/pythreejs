@@ -25,9 +25,11 @@ function ThreeTypeArray(typeName) {
 _.extend(ThreeTypeArray.prototype, {
     getTraitlet: function() {
         if (this.typeName === 'this') {
-            return 'List(This()).tag(sync=True, **widget_serialization)';
+            // return 'List(trait=This(), default_value=[]).tag(sync=True, **widget_serialization)';
+            return 'Tuple().tag(sync=True, **widget_serialization)';
         }
-        return 'List(Instance(' + this.typeName + ')).tag(sync=True, **widget_serialization)';
+        // return 'List(trait=Instance(' + this.typeName + ')).tag(sync=True, **widget_serialization)';
+        return 'Tuple().tag(sync=True, **widget_serialization)';
     },
     getPropArrayName: function() {
         return 'three_array_properties';
@@ -128,13 +130,39 @@ _.extend(Color.prototype, {
     }
 });
 
-function ArrayType() {}
+function ArrayType() {
+    this.defaultValue = [];
+}
 _.extend(ArrayType.prototype, {
     getTraitlet: function() {
         return 'List().tag(sync=True)';
     },
     getPropArrayName: function() {
         return 'array_properties';
+    }
+});
+
+function DictType() {
+    this.defaultValue = {};
+}
+_.extend(DictType.prototype, {
+    getTraitlet: function() {
+        return 'Dict().tag(sync=True)';
+    },
+    getPropArrayName: function() {
+        return 'dict_properties';
+    }
+});
+
+function FunctionType(fn) {
+    this.fn = fn;
+}
+_.extend(FunctionType.prototype, {
+    getTraitlet: function() {
+        return "Unicode('" + this.fn.toString() + "').tag(sync=True)";
+    },
+    getPropArrayName: function() {
+        return 'function_properties';
     }
 });
 
@@ -145,7 +173,6 @@ _.extend(Vector3.prototype, {
     getTraitlet: function() {
         return 'Vector3(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
     },
-
     getPropArrayName: function() {
         return 'vector_properties';
     },
@@ -158,7 +185,6 @@ _.extend(Vector4.prototype, {
     getTraitlet: function() {
         return 'Vector4(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
     },
-
     getPropArrayName: function() {
         return 'vector_properties';
     },
@@ -176,8 +202,6 @@ _.extend(Matrix3.prototype, {
     getTraitlet: function() {
         return 'Matrix3(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
     },
-
-
     getPropArrayName: function() {
         return 'vector_properties';
     },
@@ -195,7 +219,6 @@ _.extend(Matrix4.prototype, {
     getTraitlet: function() {
         return 'Matrix4(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
     },
-
     getPropArrayName: function() {
         return 'vector_properties';
     },
@@ -213,6 +236,8 @@ module.exports = {
     Enum: Enum,
     Color: Color,
     Array: ArrayType,
+    Dict: DictType,
+    Function: FunctionType,
     Vector3: Vector3,
     Vector4: Vector4,
     Matrix3: Matrix3,

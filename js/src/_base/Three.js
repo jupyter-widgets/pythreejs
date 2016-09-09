@@ -30,15 +30,52 @@ var ThreeView = widgets.DOMWidgetView.extend({
         this.camera.position.set(0, 0, 50);
         this.camera.lookAt(new THREE.Vector3(0,0,0));
 
+        // Allow user to inspect object with mouse/scrollwheel
+        this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+        this.controls.target.set(0, 0, 0);
+        this.controls.update();
+
+        // Only animate and enable controls when mouse is over dom element
+        this.$el.mouseenter(_.bind(function() {
+            this.animate = true;
+            this.tick();
+        }, this));
+        this.$el.mouseleave(_.bind(function() {
+            this.animate = false;
+        }, this));
+
+        // Lights
+        this.pointLight = new THREE.PointLight('#ffffff', 1, 0);
+        this.pointLight.position.set(-100, 100, 100);
+        this.pointLight.lookAt(new THREE.Vector3(0,0,0));
+
         this.ambLight = new THREE.AmbientLight('#ffffff', 0.5);
-        this.dirLight = new THREE.DirectionalLight('#ffffff', 0.5);
-        this.dirLight.position.set(-1, 1, 1);
+
+        // this.dirLight = new THREE.DirectionalLight('#ffffff', 0.5);
+        // this.dirLight.position.set(-1, 1, 1);
+
+        this.camera.add(this.ambLight);
+        this.camera.add(this.pointLight);
 
         if (this.model.obj) {
             this.constructScene();
             this.renderScene();
         }
 
+        this.on('destroy', this.destroy, this);
+        this.listenTo(this.model, 'rerender', this.renderScene);
+
+    },
+
+    tick: function() {
+        this.renderScene();
+        if (this.animate) {
+            requestAnimationFrame(this.tick.bind(this));
+        }
+    },
+
+    destroy: function() {
+        this.$el.empty();
     },
 
     setSize: function(width, height) {
@@ -62,7 +99,7 @@ var ThreeView = widgets.DOMWidgetView.extend({
         } else if (obj instanceof THREE.Geometry || obj instanceof THREE.BufferGeometry) {
 
             var material = new THREE.MeshStandardMaterial({
-                color: '#ff0000',
+                color: '#888888',
             });
             var mesh = new THREE.Mesh(obj, material);
             this.scene.add(mesh);
@@ -119,9 +156,64 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
 
         this.createPropertiesArrays();
         this.createThreeObject();
+
+        // pull in props created by three
+        // TODO: need to ensure changes are saved before syncing to three obj
+        this.syncToModel();
+
+        // sync the rest from the server to the model
         this.syncToThreeObj();
 
-        this.on('change', this.syncToThreeObj, this);
+        // Handle changes in three instance props
+        this.three_properties.forEach(function(propName) {
+            // register listener for current child value
+            var curValue = this.get(propName);
+            if (curValue) {
+                this.listenTo(curValue, 'change', this.onChildChanged);
+            }
+
+            // make sure to un/hook listeners when child points to new object
+            this.on('change:' + propName, function(model, value, options) {
+                var prevModel = this.previous(propName);
+                var currModel = value;
+                if (prevModel) {
+                    this.stopListening(prevModel);
+                }
+                if (currModel) {
+                    this.listenTo(currModel, 'change', this.onChildChanged);
+                }
+            }, this);
+        }, this);
+
+        // Handle changes in three instance array props
+        this.three_array_properties.forEach(function(propName) {
+
+            // listen to current values in array
+            var currArr = this.get(propName) || [];
+            currArr.forEach(function(childModel) {
+                this.listenTo(childModel, 'change', this.onChildChanged);
+            }, this);
+
+            // make sure to un/hook listeners when array changes
+            this.on('change:' + propName, function(model, value, options) {
+                var prevArr = this.previous(propName) || [];
+                var currArr = value || [];
+
+                var added = _.difference(currArr, prevArr);
+                var removed = _.difference(prevArr, currArr);
+
+                added.forEach(function(childModel) {
+                    this.listenTo(childModel, 'change', this.onChildChanged);
+                }, this);
+                removed.forEach(function(childModel) {
+                    this.stopListening(childModel);
+                }, this);
+            }, this);
+        }, this);
+
+        // TODO: handle dicts of children
+
+        this.on('change', this.onChange, this);
     
     },
 
@@ -134,9 +226,32 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
         this.enum_properties = [];
         this.color_properties = [];
         this.array_properties = [];
+        this.dict_properties = [];
+        this.function_properties = [];
+        this.properties_properties = [];
         this.vector_properties = [];
 
         this.enum_property_types = {};
+        this.props_created_by_three = {};
+    },
+
+    registerChildrenListeners: function() {
+        this.three_properties.forEach(function(propName) {
+            var childModel = this.get(propName);
+            if (childModel) {
+                childModel.on('change', this.onChildChanged, this);
+            }
+        }, this);
+        this.three_array_properties.forEach(function(propName) {
+            var childArr = this.get(propName);
+            if (childArr) {
+                childArr.forEach(function(childModel) {
+                    childModel.on('change', this.onChildChanged, this);    
+                }, this);
+            }
+        }, this);
+
+        // TODO: dict properties
     },
 
     createThreeObject: function() {
@@ -174,9 +289,7 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
 
     // Over-ride this method to customize how THREE object is created
 
-    constructThreeObject: function() {
-    
-    },
+    constructThreeObject: function() {},
 
     // 
     // Three.js object cache methods
@@ -217,22 +330,47 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
     // Data-binding methods for syncing between model and three.js object
     //
 
+    onChange: function(model, options) {
+        console.log(this.id + ' onChange: ');
+        console.log(this.changedAttributes());
+
+        this.syncToThreeObj();
+        this.trigger('rerender', this, {});
+    },
+
+    onChildChanged: function(model, options) {
+        console.log('child changed: ' + model.id);
+        this.trigger('rerender', this, {});
+    },
+
     // push data from model to three object
     syncToThreeObj: function() {
-        this.three_properties.forEach(this.syncThreePropToThree.bind(this)); 
-        this.three_array_properties.forEach(this.syncThreeArrayToThree.bind(this)); 
-        this.three_dict_properties.forEach(this.syncThreeDictToThree.bind(this)); 
-        this.scalar_properties.forEach(this.syncScalarToThree.bind(this)); 
-        this.enum_properties.forEach(this.syncEnumToThree.bind(this)); 
-        this.color_properties.forEach(this.syncColorToThree.bind(this)); 
-        this.array_properties.forEach(this.syncArrayToThree.bind(this)); 
-        this.vector_properties.forEach(this.syncVectorToThree.bind(this)); 
+
+        var arrayMappers = {
+            'three_properties': this.syncThreePropToThree,
+            'three_array_properties': this.syncThreeArrayToThree,
+            'three_dict_properties': this.syncThreeDictToThree,
+            'scalar_properties': this.syncScalarToThree,
+            'enum_properties': this.syncEnumToThree,
+            'color_properties': this.syncColorToThree,
+            'array_properties': this.syncArrayToThree,
+            'dict_properties': this.syncDictToThree,
+            'function_properties': this.syncFunctionToThree,
+            'vector_properties': this.syncVectorToThree,
+        };
+
+        _.each(arrayMappers, function(mapFn, arrayName) {
+            this[arrayName].forEach(function(propName) {
+                mapFn.bind(this)(propName); 
+            }, this); 
+        }, this);
 
         this.obj.needsUpdate = true;
     },
 
     syncThreePropToThree: function(propName) {
         var submodel = this.get(propName);
+
         if (!submodel) {
             this.obj[propName] = null;
         } else {
@@ -284,6 +422,17 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
         this.obj[propName] = this.get(propName);
     },
     
+    syncDictToThree: function(propName) {
+        // TODO: is this needed?
+        this.obj[propName] = this.get(propName);
+    },
+
+    syncFunctionToThree: function(propName) {
+        // TODO: is this needed?
+        eval('var fn = ' + this.get(propName));
+        this.obj[propName] = fn;
+    },
+
     syncVectorToThree: function(propName) {
         var arr = this.get(propName);
         this.obj[propName].fromArray(arr);
@@ -291,28 +440,56 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
 
     // push data from three object to model
     syncToModel: function() {
-        this.three_properties.forEach(this.syncThreePropToModel.bind(this)); 
-        this.three_array_properties.forEach(this.syncThreeArrayToModel.bind(this)); 
-        this.three_dict_properties.forEach(this.syncThreeDictToModel.bind(this)); 
-        this.scalar_properties.forEach(this.syncScalarToModel.bind(this)); 
-        this.enum_properties.forEach(this.syncEnumToModel.bind(this)); 
-        this.color_properties.forEach(this.syncColorToModel.bind(this)); 
-        this.array_properties.forEach(this.syncArrayToModel.bind(this)); 
-        this.vector_properties.forEach(this.syncVectorToModel.bind(this)); 
+
+        var arrayMappers = {
+            'three_properties': this.syncThreePropToModel,
+            'three_array_properties': this.syncThreeArrayToModel,
+            'three_dict_properties': this.syncThreeDictToModel,
+            'scalar_properties': this.syncScalarToModel,
+            'enum_properties': this.syncEnumToModel,
+            'color_properties': this.syncColorToModel,
+            'array_properties': this.syncArrayToModel,
+            'dict_properties': this.syncDictToModel,
+            'function_properties': this.syncFunctionToModel,
+            'vector_properties': this.syncVectorToModel,
+        };
+
+        _.each(arrayMappers, function(mapFn, arrayName) {
+            // class config defines the list of properties that are explicitly
+            // set by three.js.  
+            // this method will only sync those properties back to the model
+            // in order to minimize the number of props set and sent to the server
+
+            this[arrayName].filter(function(propName) {
+                return (propName in this.props_created_by_three);
+            }, this).forEach(function(propName) {
+                mapFn.bind(this)(propName); 
+            }, this); 
+        }, this);
+
+        // this.three_properties.forEach(this.syncThreePropToModel.bind(this)); 
+        // this.three_array_properties.forEach(this.syncThreeArrayToModel.bind(this)); 
+        // this.three_dict_properties.forEach(this.syncThreeDictToModel.bind(this)); 
+        // this.scalar_properties.forEach(this.syncScalarToModel.bind(this)); 
+        // this.enum_properties.forEach(this.syncEnumToModel.bind(this)); 
+        // this.color_properties.forEach(this.syncColorToModel.bind(this)); 
+        // this.array_properties.forEach(this.syncArrayToModel.bind(this)); 
+        // this.function_properties.forEach(this.syncFunctionToModel.bind(this)); 
+        // this.vector_properties.forEach(this.syncVectorToModel.bind(this)); 
 
         this.save_changes();
     },
 
     syncThreePropToModel: function(propName) {
-        
+        // TODO: implement
     },
     
     syncThreeArrayToModel: function(propName) {
-    
+        // TODO: implement
     },
     
     syncThreeDictToModel: function(propName) {
-    
+        // TODO: implement
     },
     
     syncScalarToModel: function(propName) {
@@ -334,6 +511,14 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
         this.set(propName, this.obj[propName]);
     },
     
+    syncDictToModel: function(propName) {
+        this.set(propName, this.obj[propName]);
+    },
+
+    syncFunctionToModel: function(propName) {
+        this.set(propName, this.obj[propName].toString());
+    },
+
     syncVectorToModel: function(propName) {
         this.set(propName, this.obj[propName].toArray());
     },
