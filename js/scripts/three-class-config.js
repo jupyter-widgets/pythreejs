@@ -207,7 +207,7 @@ module.exports = {
             origin: new Types.Vector3(),
             direction: new Types.Vector3(),
             near: new Types.Float(0.0),
-            far: new Types.Float(Infinity),
+            far: new Types.Float(1000000.0),
             ray: new Types.ThreeType('Ray'),
             linePrecision: new Types.Float(1.0),
         },
@@ -359,7 +359,6 @@ module.exports = {
     },
     Material: {
         relativePath: './materials/Material',
-        dependencies: [ 'Plane' ],
         properties: {
             id:                  new Types.String(''),
             uuid:                new Types.String(''),
@@ -390,7 +389,6 @@ module.exports = {
     MeshBasicMaterial: {
         relativePath: './materials/MeshBasicMaterial',
         superClass: 'Material',
-        dependencies: [ 'Texture' ],
         properties: {
             color:              new Types.Color('0xffffff'),
             map:                new Types.ThreeType('Texture'),
@@ -509,7 +507,6 @@ module.exports = {
     MeshStandardMaterial: {
         relativePath: './materials/MeshStandardMaterial',
         superClass: 'Material',
-        dependencies: [ 'Texture' ],
         properties: {
             color:              new Types.Color('0xffffff'),
             roughness:          new Types.Float(0.5),
@@ -677,10 +674,6 @@ module.exports = {
     Mesh: {
         relativePath: './objects/Mesh',
         superClass: 'Object3D',
-        dependencies: [
-            'Material',
-            'Geometry',
-        ],
         properties: {
             material: new Types.ThreeType('Material'),
             geometry: new Types.ThreeType('Geometry'),
@@ -1123,7 +1116,6 @@ module.exports = {
             radiusSegments: new Types.Int(8),
             close:          new Types.Bool(false),
         },
-        dependencies: [ 'Curve' ],
     },
     WireframeGeometry: {
         relativePath: './extras/geometries/WireframeGeometry',

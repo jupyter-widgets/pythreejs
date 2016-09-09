@@ -67,7 +67,7 @@ _.extend(Bool.prototype, {
 });
 
 function Int(defaultValue) {
-    this.defaultValue = defaultValue;
+    this.defaultValue = defaultValue == null ? 0 : defaultValue;
 }
 _.extend(Int.prototype, {
     getTraitlet: function() {
@@ -80,7 +80,7 @@ _.extend(Int.prototype, {
 });
 
 function Float(defaultValue) {
-    this.defaultValue = defaultValue;
+    this.defaultValue = defaultValue == null ? 0.0 : defaultValue;
 }
 _.extend(Float.prototype, {
     getTraitlet: function() {
@@ -166,6 +166,18 @@ _.extend(FunctionType.prototype, {
     }
 });
 
+function Vector2(x, y) {
+    this.defaultValue = [ x||0, y||0 ];
+}
+_.extend(Vector2.prototype, {
+    getTraitlet: function() {
+        return 'Vector2(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
+    },
+    getPropArrayName: function() {
+        return 'vector_properties';
+    },
+});
+
 function Vector3(x, y, z) {
     this.defaultValue = [ x||0, y||0, z||0 ];
 }
@@ -238,6 +250,7 @@ module.exports = {
     Array: ArrayType,
     Dict: DictType,
     Function: FunctionType,
+    Vector2: Vector2,
     Vector3: Vector3,
     Vector4: Vector4,
     Matrix3: Matrix3,

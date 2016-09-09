@@ -8,6 +8,7 @@ var Promise = require('bluebird');
 Promise.promisifyAll(fse);
 
 var classConfigs = require('./three-class-config');
+var Types = require('./prop-types.js');
 
 var scriptDir = __dirname;
 var baseDir = path.resolve(scriptDir, '..');
@@ -175,9 +176,30 @@ _.extend(JavascriptWrapper.prototype, {
 
         var result = [];
 
-        var deps = this.config.jsDependencies || [];
-        result = result.concat(deps.map(function(dep) {
-            return this.getDependencyRequireLine(dep);
+        var deps = {};
+
+        // explicitly listed dependencies
+        if (this.config.dependencies) {
+            this.config.dependencies.reduce(function(result, value) {
+                result[value] = true;
+                return result;
+            }, deps);
+        }
+
+        // any types referenced by properties
+        if (this.config.properties) {
+            _.reduce(this.config.properties, function(result, prop, propName) {
+                if (prop instanceof Types.ThreeType || prop instanceof Types.ThreeTypeArray || prop instanceof Types.ThreeTypeDict) {
+                    if (prop.typeName !== 'this') {
+                        result[prop.typeName] = true;        
+                    }
+                } 
+                return result;
+            }, deps, this);
+        }
+
+        result = result.concat(_.map(deps, function(isDep, depName) {
+            return this.getDependencyRequireLine(depName);
         }, this));
 
         return result;
@@ -190,9 +212,11 @@ _.extend(JavascriptWrapper.prototype, {
 
         if (typeof dep === 'string') {
 
+            className = dep;
+
+            // remove View/Model just in case
             var moduleName = dep.replace(/(View|Model)/, '');
             var depConfig = getClassConfig(className);
-            className = dep;
             relativePath = depConfig.relativePath;
         
         } else if (typeof dep === 'object'){
@@ -465,12 +489,30 @@ _.extend(PythonWrapper.prototype, {
 
     getDependencyRequires: function() {
 
-        if (!this.config.dependencies) { 
-            return []; 
+        var deps = {}
+
+        // explicitly listed dependencies
+        if (this.config.dependencies) {
+            this.config.dependencies.reduce(function(result, value) {
+                result[value] = true;
+                return result;
+            }, deps);
         }
 
-        return this.config.dependencies.map(function(dep) {
-            return this.getDependencyRequireLine(dep);
+        // any types referenced by properties
+        if (this.config.properties) {
+            _.reduce(this.config.properties, function(result, prop, propName) {
+                if (prop instanceof Types.ThreeType || prop instanceof Types.ThreeTypeArray || prop instanceof Types.ThreeTypeDict) {
+                    if (prop.typeName !== 'this') {
+                        result[prop.typeName] = true;        
+                    }
+                } 
+                return result;
+            }, deps, this);
+        }
+
+        return _.map(deps, function(isDep, depName) {
+            return this.getDependencyRequireLine(depName);
         }, this);
     },  
 
