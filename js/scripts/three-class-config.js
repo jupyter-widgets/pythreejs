@@ -360,7 +360,6 @@ module.exports = {
     Material: {
         relativePath: './materials/Material',
         properties: {
-            id:                  new Types.String(''),
             uuid:                new Types.String(''),
             name:                new Types.String(''),
             opacity:             new Types.Float(1.0),

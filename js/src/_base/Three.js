@@ -155,6 +155,8 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
         widgets.WidgetModel.prototype.initialize.apply(this, arguments);
 
         this.createPropertiesArrays();
+
+        // Instantiate Three.js object
         this.createThreeObject();
 
         // pull in props created by three
