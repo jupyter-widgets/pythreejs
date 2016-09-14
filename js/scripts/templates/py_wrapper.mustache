@@ -1,8 +1,8 @@
 from ipywidgets import Widget, DOMWidget, widget_serialization, Color
 from traitlets import Unicode, Int, CInt, Instance, This, Enum, Tuple, List, Dict, Float, CFloat, Bool
 
-from ..enums import *
-from ..traits import *
+from {{ py_base_relative_path }}enums import *
+from {{ py_base_relative_path }}traits import *
 
 from {{ superClass.pyRelativePath }} import {{ superClass.className }}
 

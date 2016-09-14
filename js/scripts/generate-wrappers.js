@@ -494,6 +494,9 @@ function PythonWrapper(modulePath) {
     this.pyDestPath = path.resolve(this.destDirAbsolutePath, this.className + '.py')
     this.pyAutoDestPath = path.resolve(this.destDirAbsolutePath, this.className + '_' + AUTOGEN_EXT + '.py');
 
+    this.pyBaseRelativePath = path.relative(this.destDirAbsolutePath, pySrcDir);
+    this.pyBaseRelativePath = relativePathToPythonImportPath(this.pyBaseRelativePath);
+
     this.config = getClassConfig(this.className);
 
     this.processSuperClass();
@@ -507,6 +510,7 @@ function PythonWrapper(modulePath) {
         now: new Date(),
         generatorScriptName: path.basename(__filename),
         threejs_docs_url: this.docsUrl,
+        py_base_relative_path: this.pyBaseRelativePath,
 
         className: this.className,
         viewName: this.className + 'View',
@@ -518,40 +522,7 @@ function PythonWrapper(modulePath) {
 
     // Render template
     this.output = this.template(this.context);
- 
 
-    // var dirname = path.dirname(modulePath);
-    // var basename = path.basename(modulePath, '.js');
-    //
-    // this.className = basename.replace(/\./g, '_'); 
-    // this.modulePath = modulePath;
-    //
-    // this.destDir = path.resolve(pySrcDir, dirname);
-    //
-    // this.pyDestPath = path.resolve(this.destDir, this.className + '.py')
-    // this.pyAutoDestPath = path.resolve(this.destDir, this.className + '_' + AUTOGEN_EXT + '.py');
-    //
-    // this.config = getClassConfig(this.className);
-    //
-    // var superClassDescriptor = this.config.superClass;
-    // if (typeof superClassDescriptor === 'string') {
-    //
-    //     if (superClassDescriptor in classConfigs) {
-    //         var config = classConfigs[superClassDescriptor];
-    //         this.superClassName = superClassDescriptor;
-    //         this.superModuleRelativePath = config.relativePath;
-    //     } else {
-    //         this.superClassName = path.basename(superClassDescriptor, '.js');
-    //         if (this.superClassName === 'Three') {
-    //             this.superClassName = 'ThreeWidget';
-    //         }
-    //         this.superModuleRelativePath = superClassDescriptor; 
-    //     }
-    //
-    // } else {
-    //     throw new Error('invalid superclass: ' + this.config.superClass);
-    // }
-    //
 }
 _.extend(PythonWrapper.prototype, {
     
@@ -672,171 +643,6 @@ _.extend(PythonWrapper.prototype, {
     getOutputFilename: function() {
         return this.pyAutoDestPath;
     },
-
-    // getOutput: function() {
-    //     var body = [];
-    //     body = body.concat(this.getHeader());
-    //     body = body.concat(this.getSuperclassRequire());
-    //     body = body.concat(this.getDependencyRequires());
-    //     body.push("");
-    //     body = body.concat(this.getPythonClassOutput());
-    //     body = body.concat(this.getFooter());
-    //     return body.join('\n');
-    // },
-    //
-    // getHeader: function() {
-    //     var pyBaseRelativePath = path.relative(
-    //         this.destDir,
-    //         pySrcDir);
-    //
-    //     // console.log(pyBaseRelativePath);
-    //
-    //     pyBaseRelativePath = relativePathToPythonImportPath(pyBaseRelativePath);
-    //
-    //     // console.log(this.destDir);
-    //     // console.log(pySrcDir);
-    //     // console.log(pyBaseRelativePath);
-    //     // console.log('');
-    //
-    //     return [
-    //         "from ipywidgets import Widget, DOMWidget, widget_serialization, Color",
-    //         "from traitlets import Unicode, Int, CInt, Instance, This, Enum, Tuple, List, Dict, Float, CFloat, Bool",
-    //         "",
-    //         "from " + pyBaseRelativePath + "enums import *",
-    //         "from " + pyBaseRelativePath + "traits import *",
-    //         "",
-    //     ];
-    // },
-    //
-    // getSuperclassRequire: function() {
-    //
-    //     return [
-    //         this.getDependencyRequireLine({
-    //             relativePath: this.superModuleRelativePath,
-    //             className: this.superClassName 
-    //         }),
-    //         "",
-    //     ];
-    //
-    // },
-    //
-    // getDependencyRequires: function() {
-    //
-    //     var deps = {}
-    //
-    //     // explicitly listed dependencies
-    //     if (this.config.dependencies) {
-    //         this.config.dependencies.reduce(function(result, value) {
-    //             result[value] = true;
-    //             return result;
-    //         }, deps);
-    //     }
-    //
-    //     // any types referenced by properties
-    //     if (this.config.properties) {
-    //         _.reduce(this.config.properties, function(result, prop, propName) {
-    //             if (prop instanceof Types.ThreeType || prop instanceof Types.ThreeTypeArray || prop instanceof Types.ThreeTypeDict) {
-    //                 if (prop.typeName !== 'this') {
-    //                     result[prop.typeName] = true;        
-    //                 }
-    //             } 
-    //             return result;
-    //         }, deps, this);
-    //     }
-    //
-    //     return _.map(deps, function(isDep, depName) {
-    //         return this.getDependencyRequireLine(depName);
-    //     }, this);
-    // },  
-    //
-    // getDependencyRequireLine: function(dep) {
-    //
-    //     var className;
-    //     var relativePath;
-    //
-    //     if (typeof dep === 'string') {
-    //
-    //         var className = dep;
-    //         var depConfig = getClassConfig(className);
-    //         relativePath = depConfig.relativePath;
-    //
-    //     } else if (typeof dep === 'object') {
-    //
-    //         className = dep.className;
-    //         relativePath = dep.relativePath;
-    //
-    //     } else {
-    //         throw new Error('invalid dep: ' + dep);
-    //     }
-    //
-    //
-    //     // get path of dependency relative to module dir
-    //     relativePath = path.resolve(pySrcDir, relativePath);
-    //
-    //     if (!fs.existsSync(relativePath + '.py')) {
-    //         relativePath += '_autogen';
-    //     }
-    //
-    //     relativePath = path.relative(this.destDir, relativePath);
-    //     return 'from ' + relativePathToPythonImportPath(relativePath) + ' import ' + className;
-    // },
-    //
-    // getPythonClassOutput: function() {
-    //
-    //     var refTokens = this.modulePath.split(path.sep);
-    //     // capitalize elements in url
-    //     refTokens = refTokens.map(function(token) {
-    //         return token.charAt(0).toUpperCase() + token.slice(1);
-    //     });
-    //     // strip extension off filename
-    //     refTokens[refTokens.length - 1] = path.basename(refTokens[refTokens.length - 1], '.js');
-    //
-    //     var refUrl = 'http://threejs.org/docs/#Reference/' + refTokens.join('/');
-    //
-    //     // combine middle elements of url with dot
-    //     refUrl = refUrl.replace('Renderers/WebGL/Plugins/', 'Renderers.WebGL.Plugins/');
-    //     refUrl = refUrl.replace('Renderers/WebGL/', 'Renderers.WebGL/');
-    //     refUrl = refUrl.replace('Renderers/Shaders/', 'Renderers.Shaders/');
-    //     refUrl = refUrl.replace('Extras/Animation/', 'Extras.Animation/');
-    //     refUrl = refUrl.replace('Extras/Core/', 'Extras.Core/');
-    //     refUrl = refUrl.replace('Extras/Curves/', 'Extras.Curves/');
-    //     refUrl = refUrl.replace('Extras/Geometries/', 'Extras.Geometries/');
-    //     refUrl = refUrl.replace('Extras/Helpers/', 'Extras.Helpers/');
-    //     refUrl = refUrl.replace('Extras/Objects/', 'Extras.Objects/');
-    //
-    //     var output = [];
-    //     output = output.concat([
-    //         "class " + this.className + "(" + this.superClassName + ")" + ":",
-    //         "    \"\"\"" + this.className,
-    //         "    ",
-    //         "    Autogenerated by " + path.basename(__filename),
-    //         "    Date: " + new Date(),
-    //         "    See " + refUrl,
-    //         "    \"\"\"",
-    //         "    ",
-    //         "    _view_name = Unicode('" + this.className + "View').tag(sync=True)",
-    //         "    _model_name = Unicode('" + this.className + "Model').tag(sync=True)",
-    //         "    ",
-    //     ]);
-    //
-    //     output = output.concat(_.map(this.config.properties, function(prop, propName) {
-    //
-    //         var result = "    " + propName + " = " + prop.getTraitlet(); 
-    //         return result;
-    //
-    //     }));
-    //
-    //     return output;
-    //
-    // },
-    //
-    // getFooter: function() {
-    //     return [ "" ];
-    // },
-    //
-    // writeOutFile: function() {
-    //     return fse.outputFileAsync(this.getOutputFilename(), this.getOutput())
-    // },
 
 });
 
