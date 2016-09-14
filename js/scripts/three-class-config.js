@@ -137,8 +137,8 @@ module.exports = {
             normal: new Types.Vector3(),
             color: new Types.Color('#ffffff'),
             // TODO: arrays of vectors/colors
-            // vertexNormals: new Types.ThreeArray('Vector3')
-            // vertexColors: new Types.ThreeArray('Color')
+            // vertexNormals: new Types.ThreeTypeArray('Vector3')
+            // vertexColors: new Types.ThreeTypeArray('Color')
             materialIndex: new Types.Int(0),
         },
         constructorArgs: [ 'a', 'b', 'c', 'normal', 'color', 'materialIndex' ],
@@ -185,7 +185,7 @@ module.exports = {
             up:                     new Types.Vector3(0, 1, 0),
             position:               new Types.Vector3(),
             rotation:               new Types.Vector3(),
-            quaternion:             new Types.Vector4(),
+            quaternion:             new Types.Vector4(0, 0, 0, 1),
             scale:                  new Types.Vector3(1, 1, 1),
             modelViewMatrix:        new Types.Matrix4(),
             normalMatrix:           new Types.Matrix3(),
@@ -389,7 +389,7 @@ module.exports = {
         relativePath: './materials/MeshBasicMaterial',
         superClass: 'Material',
         properties: {
-            color:              new Types.Color('0xffffff'),
+            color:              new Types.Color('#ffffff'),
             map:                new Types.ThreeType('Texture'),
             aoMap:              new Types.ThreeType('Texture'),
             aoMapIntensity:     new Types.Float(1),
@@ -425,13 +425,13 @@ module.exports = {
         relativePath: './materials/MeshLambertMaterial',
         superClass: 'Material',
         properties: {
-            color:              new Types.String('0xffffff'),
+            color:              new Types.String('#ffffff'),
             map:                new Types.ThreeType('Texture'),
             lightMap:           new Types.ThreeType('Texture'),
             lightMapIntensity:  new Types.Float(1.0),
             aoMap:              new Types.ThreeType('Texture'),
             aoMapIntensity:     new Types.Float(1.0),
-            emissive:           new Types.Color('0x000000'),
+            emissive:           new Types.Color('#000000'),
             emissiveMap:        new Types.ThreeType('Texture'),
             emissiveIntensity:  new Types.Float(1.0),
             specularMap:        new Types.ThreeType('Texture'),
@@ -474,7 +474,7 @@ module.exports = {
             lightMapIntensity:  new Types.Float(1.0),
             aoMap:              new Types.ThreeType('Texture'),
             aoMapIntensity:     new Types.Float(1.0),
-            emissive:           new Types.Color('0x000000'),
+            emissive:           new Types.Color('#000000'),
             emissiveMap:        new Types.ThreeType('Texture'),
             emissiveIntensity:  new Types.Float(1.0),
             bumpMap:            new Types.ThreeType('Texture'),
@@ -507,7 +507,7 @@ module.exports = {
         relativePath: './materials/MeshStandardMaterial',
         superClass: 'Material',
         properties: {
-            color:              new Types.Color('0xffffff'),
+            color:              new Types.Color('#ffffff'),
             roughness:          new Types.Float(0.5),
             metalness:          new Types.Float(0.5),
             map:                new Types.ThreeType('Texture'),
@@ -515,11 +515,11 @@ module.exports = {
             lightMapIntensity:  new Types.Float(1.0),
             aoMap:              new Types.ThreeType('Texture'),
             aoMapIntensity:     new Types.Float(1),
-            emissive:           new Types.Color('0x000000'),
+            emissive:           new Types.Color('#000000'),
             emissiveMap:        new Types.ThreeType('Texture'),
             emissiveIntensity:  new Types.Float(1.0),
             bumpMap:            new Types.ThreeType('Texture'),
-            bumpMapScale:       new Types.Float(1.0),
+            bumpScale:          new Types.Float(1.0),
             normalMap:          new Types.ThreeType('Texture'),
             // TODO:
             // normalMapScale:     new Types.Array([ 1, 1 ]),
@@ -556,7 +556,7 @@ module.exports = {
         relativePath: './materials/PointsMaterial',
         superClass: 'Material',
         properties: {
-            color:           new Types.Color('0xffffff'),
+            color:           new Types.Color('#ffffff'),
             map:             new Types.ThreeType('Texture'),
             size:            new Types.Float(1.0),
             sizeAttenuation: new Types.Bool(true),
@@ -586,7 +586,7 @@ module.exports = {
         relativePath: './materials/SpriteMaterial',
         superClass: 'Material',
         properties: {
-            color:    new Types.Color('0xffffff'),
+            color:    new Types.Color('#ffffff'),
             map:      new Types.ThreeType('Texture'),
             rotation: new Types.Float(0.0),
         },
@@ -594,63 +594,157 @@ module.exports = {
     },
     Box2: {
         relativePath: './math/Box2',
+        properties: {
+            min: new Types.Vector2(),
+            max: new Types.Vector2(),
+        },
+        constructorArgs: [ 'min', 'max' ],
     },
     Box3: {
         relativePath: './math/Box3',
+        properties: {
+            min: new Types.Vector3(),
+            max: new Types.Vector3(),
+        },
+        constructorArgs: [ 'min', 'max' ],
+
     },
     Color: {
         relativePath: './math/Color',
+        properties: {
+            r: new Types.Float(1.0),
+            g: new Types.Float(1.0),
+            b: new Types.Float(1.0),
+        },
+        constructorArgs: [ 'r', 'g', 'b' ],
     },
     Euler: {
         relativePath: './math/Euler',
+        properties: {
+            x: new Types.Float(0),
+            y: new Types.Float(0),
+            z: new Types.Float(0),
+            order: new Types.String('XYZ'),
+        },
+        constructorArgs: [ 'x', 'y', 'z', 'order' ],
     },
     Frustum: {
         relativePath: './math/Frustum',
+        properties: {
+            p0: new Types.ThreeType('Plane'),
+            p1: new Types.ThreeType('Plane'),
+            p2: new Types.ThreeType('Plane'),
+            p3: new Types.ThreeType('Plane'),
+            p4: new Types.ThreeType('Plane'),
+            p5: new Types.ThreeType('Plane'),
+        },
+        constructorArgs: [ 'p0', 'p1', 'p2', 'p3', 'p4', 'p5' ],
     },
     Interpolant: {
         relativePath: './math/Interpolant',
     },
     Line3: {
         relativePath: './math/Line3',
+        properties: {
+            start: new Types.Vector3(),
+            end: new Types.Vector3(),
+        },
+        constructorArgs: [ 'start', 'end' ],
     },
     Math: {
         relativePath: './math/Math',
     },
     Matrix3: {
         relativePath: './math/Matrix3',
+        properties: {
+            elements: new Types.Array(),
+        },
     },
     Matrix4: {
         relativePath: './math/Matrix4',
+        properties: {
+            elements: new Types.Array(),
+        },
     },
     Plane: {
         relativePath: './math/Plane',
+        properties: {
+            normal: new Types.Vector3(),
+            constant: new Types.Float(0.0),
+        },
+        constructorArgs: [ 'normal', 'constant' ],
     },
     Quaternion: {
         relativePath: './math/Quaternion',
+        properties: {
+            x: new Types.Float(0.0),
+            y: new Types.Float(0.0),
+            z: new Types.Float(0.0),
+            w: new Types.Float(1.0),
+        },
+        constructorArgs: [ 'x', 'y', 'z', 'w' ],
     },
     Ray: {
         relativePath: './math/Ray',
+        properties: {
+            origin: new Types.Vector3(),
+            direction: new Types.Vector3(),
+        },
+        constructorArgs: [ 'origin', 'direction' ],
     },
     Sphere: {
         relativePath: './math/Sphere',
+        properties: {
+            center: new Types.Vector3(),
+            radius: new Types.Float(0.0),
+        },
+        constructorArgs: [ 'center', 'radius' ],
     },
     Spherical: {
         relativePath: './math/Spherical',
     },
     Spline: {
         relativePath: './math/Spline',
+        properties: {
+            points: new Types.ThreeTypeArray('Vector3'),
+        },
+        constructorArgs: [ 'points' ],
     },
     Triangle: {
         relativePath: './math/Triangle',
+        properties: {
+            a: new Types.Vector3(),
+            b: new Types.Vector3(),
+            c: new Types.Vector3(),
+        },
+        constructorArgs: [ 'a', 'b', 'c' ],
     },
     Vector2: {
         relativePath: './math/Vector2',
+        properties: {
+            x: new Types.Float(),
+            y: new Types.Float(),
+        },
+        constructorArgs: [ 'x', 'y' ],
     },
     Vector3: {
         relativePath: './math/Vector3',
+        properties: {
+            x: new Types.Float(),
+            y: new Types.Float(),
+            z: new Types.Float(),
+        },
+        constructorArgs: [ 'x', 'y', 'z' ],
     },
     Vector4: {
         relativePath: './math/Vector4',
+        properties: {
+            x: new Types.Float(),
+            y: new Types.Float(),
+            z: new Types.Float(),
+            w: new Types.Float(),
+        },
+        constructorArgs: [ 'x', 'y', 'z', 'w' ],
     },
     Bone: {
         relativePath: './objects/Bone',
@@ -707,18 +801,28 @@ module.exports = {
     },
     Scene: {
         relativePath: './scenes/Scene',
+        superClass: 'Object3D',
+        properties: {
+            fog: new Types.ThreeType('Fog'),
+            overrideMaterial: new Types.ThreeType('Material'),
+            autoUpdate: new Types.Bool(true),
+        },
     },
     CanvasTexture: {
         relativePath: './textures/CanvasTexture',
+        superClass: 'Texture',
     },
     CompressedTexture: {
         relativePath: './textures/CompressedTexture',
+        superClass: 'Texture',
     },
     CubeTexture: {
         relativePath: './textures/CubeTexture',
+        superClass: 'Texture',
     },
     DataTexture: {
         relativePath: './textures/DataTexture',
+        superClass: 'Texture',
     },
     Texture: {
         relativePath: './textures/Texture',
