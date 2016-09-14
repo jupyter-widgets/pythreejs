@@ -4,6 +4,7 @@ var fs = require('fs');
 var fse = require('fs-extra');
 var Glob = require('glob').Glob;
 var Promise = require('bluebird');
+var Handlebars = require('handlebars');
 
 Promise.promisifyAll(fse);
 
@@ -15,10 +16,28 @@ var baseDir = path.resolve(scriptDir, '..');
 
 var jsSrcDir = path.resolve(baseDir, 'src/');
 var pySrcDir = path.resolve(baseDir, '..', 'pythreejs');
+var templateDir = path.resolve(scriptDir, 'templates');
 
 var threeSrcDir = path.resolve(baseDir, 'node_modules', 'three', 'src');
 
-var AUTOGEN_EXT = 'autogen'
+var AUTOGEN_EXT = 'autogen';
+
+//
+// Templates
+//
+
+function compileTemplate(templateName) {
+    var templateName = path.basename(templateName, '.mustache');
+    var templatePath = path.resolve(templateDir, templateName + '.mustache');
+    return Handlebars.compile(fs.readFileSync(templatePath, {
+        encoding: 'utf-8'
+    }));
+}
+
+var jsWrapperTemplate      = compileTemplate('js_wrapper');
+var jsIndexTemplate        = compileTemplate('js_index');
+var pyWrapperTemplate      = compileTemplate('py_wrapper');
+var pyTopLevelInitTemplate = compileTemplate('py_top_level_init');
 
 //
 // Helper Functions
@@ -37,8 +56,12 @@ function isDir(filePath) {
 function getClassConfig(className) {
 
     // console.log('getClassConfig: ' + className);
+    className = className.replace(/\./g, '_')
+    if (!(className in classConfigs)) {
+        throw new Error('invalid class name: ' + className);
+    }
 
-    var result = classConfigs[className.replace(/\./g, '_')];
+    var result = classConfigs[className];
     _.defaults(
         result, 
         classConfigs._defaults
@@ -83,6 +106,59 @@ function relativePathToPythonImportPath(relativePath) {
     return result;
 }
 
+// Execute a function for each match to a glob query
+// 
+// Parameters:
+//   globPattern: String glob pattern for node-glob
+//   mapFn:       Function function(pathRelativeToCwd), should return a promise or list of promises
+//   globOptions: Object of options passed directly to node-glob
+//
+// Returns: Promise that resolves with array of results from mapFn applies to all glob matches
+function mapPromiseFnOverGlob(globPattern, mapFn, globOptions) {
+    
+    return new Promise(function(resolve, reject) {
+    
+        var promises = [];
+        var result;
+
+        // trailing slash will match only directories
+        var glob = new Glob(globPattern, globOptions)
+            .on('match', function(match) {
+
+                result = mapFn(match);
+                if (result instanceof Array) {
+                    promises = promises.concat(result);
+                } else {
+                    promises.push(result);
+                }
+                
+            })
+            .on('end', function() {
+                // wait for all file ops to finish
+                Promise.all(promises).then(resolve).catch(reject);
+            })
+            .on('error', function(err) {
+                reject(err);
+            })
+            .on('abort', function() {
+                reject(new Error('Aborted'));
+            });
+
+    });
+
+}
+
+function mapPromiseFnOverThreeModules(mapFn) {
+    return mapPromiseFnOverGlob('**/*.js', mapFn, { 
+        cwd: threeSrcDir, 
+        nodir: true ,
+        ignore: [
+            '**/Three.Legacy.js',
+            '**/renderers/**'
+        ],
+    });
+}
+
 // 
 // Javascript wrapper writer
 //
@@ -91,6 +167,7 @@ function JavascriptWrapper(modulePath) {
 
     this.jsDestPath = path.resolve(jsSrcDir, modulePath);
     this.destDir = path.dirname(this.jsDestPath);
+    this.relativePathToBase = path.relative(this.destDir, jsSrcDir);
 
     this.jsAutoDestPath = path.resolve(
         this.destDir, 
@@ -99,301 +176,306 @@ function JavascriptWrapper(modulePath) {
     this.className = path.basename(modulePath, '.js').replace(/\./g, '_');
     this.config = getClassConfig(this.className);
 
-    this.modelClass = this.className + 'Model';
-    this.viewClass = this.className + 'View';
+    this.modelName = this.className + 'Model';
+    this.viewName = this.className + 'View';
 
-    var superClassDescriptor = this.config.superClass;
-    if (typeof superClassDescriptor === 'string') {
+    this.processSuperClass();
+    this.processDependencies();
+    this.processProperties();
+    this.processConstructorArgs();
+    this.processOverrideClass();
 
-        if (superClassDescriptor in classConfigs) {
-            var config = classConfigs[superClassDescriptor];
-            this.superClassName = superClassDescriptor;
-            this.superModuleRelativePath = config.relativePath;
-        } else {
-            this.superClassName = path.basename(superClassDescriptor, '.js');
-            this.superModuleRelativePath = superClassDescriptor; 
-        }
-    } else {
-        throw new Error('invalid superClass: ' + this.config.superClass);
-    }
+    // Template and context
+    this.template = jsWrapperTemplate;
+    this.context = {
+        now: new Date(),
+        generatorScriptName: path.basename(__filename),
 
-    this.modelSuperClass = this.superClassName + 'Model';
-    this.viewSuperClass = this.superClassName + 'View';
+        className: this.className,
+        viewName: this.viewName,
+        modelName: this.modelName,
+        superClass: this.superClass,
+        constructor: {
+            args: this.constructorArgs,
+        },
+        properties: this.properties,
+        dependencies: this.dependencies,
+        props_created_by_three: this.config.propsDefinedByThree,
+        serialized_props: this.serializedProps,
+        override_class: this.overrideClass, // { relativePath }
+    };
 
-    // console.log('modulePath: ' + modulePath);
+    // Render template
+    this.output = this.template(this.context);
         
 }
 _.extend(JavascriptWrapper.prototype, {
 
-    getOutputFilename: function() {
-        return this.jsAutoDestPath;
-    },
+    getRequireInfoFromClassDescriptor: function(classDescriptor) {
 
-    getOutput: function() {
-        var body = [];
-        body = body.concat(this.getHeader());
-        body = body.concat(this.getSuperclassRequire());
-        body = body.concat(this.getDependencyRequires());
-        body.push("");
-        body = body.concat(this.getModelOutput());
-        body = body.concat(this.getViewOutput());
-        body = body.concat(this.getCustomImplementationOverrideOutput());
-        body = body.concat(this.getFooter());
-        return body.join('\n');
-    },
+        var result = {};
 
-    getHeader: function() {
-        return [
-            "//",
-            "// This file auto-generated with " + path.basename(__filename),
-            "// Date: " + new Date(),
-            "//",
-            "",
-            "var _ = require('underscore');",
-            "var widgets = require('jupyter-js-widgets');",
-            "",
-        ];
-    },
+        if (typeof classDescriptor === 'string') {
 
-    getSuperclassRequire: function() {
-
-        return [
-            this.getDependencyRequireLine({
-                relativePath: this.superModuleRelativePath,
-                className: this.modelSuperClass
-            }),
-            this.getDependencyRequireLine({
-                relativePath: this.superModuleRelativePath,
-                className: this.viewSuperClass
-            }),
-            "",
-        ];
-    },
-
-    getDependencyRequires: function() {
-        
-        var relativePathToBase = path.relative(this.destDir, jsSrcDir);
-
-        var result = [];
-
-        var deps = {};
-
-        // explicitly listed dependencies
-        if (this.config.dependencies) {
-            this.config.dependencies.reduce(function(result, value) {
-                result[value] = true;
-                return result;
-            }, deps);
-        }
-
-        // any types referenced by properties
-        if (this.config.properties) {
-            _.reduce(this.config.properties, function(result, prop, propName) {
-                if (prop instanceof Types.ThreeType || prop instanceof Types.ThreeTypeArray || prop instanceof Types.ThreeTypeDict) {
-                    if (prop.typeName !== 'this') {
-                        result[prop.typeName] = true;        
-                    }
-                } 
-                return result;
-            }, deps, this);
-        }
-
-        result = result.concat(_.map(deps, function(isDep, depName) {
-            return this.getDependencyRequireLine(depName);
-        }, this));
-
-        return result;
-    },
-
-    getDependencyRequireLine: function(dep) {
-
-        var className;
-        var relativePath;
-
-        if (typeof dep === 'string') {
-
-            className = dep;
-
-            // remove View/Model just in case
-            var moduleName = dep.replace(/(View|Model)/, '');
-            var depConfig = getClassConfig(className);
-            relativePath = depConfig.relativePath;
-        
-        } else if (typeof dep === 'object'){
-
-            className = dep.className;
-            relativePath = dep.relativePath;
+            if (classDescriptor in classConfigs) {
+                var config = getClassConfig(classDescriptor);
+                result.className = classDescriptor;
+                result.relativePath = config.relativePath;
+            } else {
+                result.className = path.basename(classDescriptor, '.js');
+                result.relativePath = classDescriptor; 
+            }
 
         } else {
-            throw new Error('invalid dep: ' + dep);
+
+            throw new Error('invalid classDescriptor: ' + classDescriptor);
+
         }
 
-        relativePath = path.relative(this.destDir, path.resolve(jsSrcDir, relativePath));
-        return "var " + className + " = require('./" + relativePath + "')." + className + ";";
-    },
+        result.modelName = result.className + 'Model';
+        result.viewName = result.className + 'View';
 
-    getFooter: function() {
-        return [
-            "module.exports = {",
-            "    " + this.viewClass + ": " + this.viewClass + ",",
-            "    " + this.modelClass + ": " + this.modelClass + ",",
-            "};",
-            "",
-        ]
-    },
+        result.absolutePath = path.resolve(jsSrcDir, result.relativePath);
+        result.requirePath = path.relative(this.destDir, result.absolutePath);
 
-    getConstructorParametersObject: function() {
-        var result = [ '{' ];
-
-        result = result.concat(_.keys(this.config.properties).map(function(propName) {
-            return '                ' + propName + ": this.get('" + propName + "'),";
-        }, this))
-
-        result.push('            }');
         return result;
+
     },
 
-    getModelOutput: function() {
+    processSuperClass: function() {
 
-        var threeConstructorArgs = this.config.constructorArgs.map(function(propName) {
+        var superClassDescriptor = this.config.superClass;
+        this.superClass = this.getRequireInfoFromClassDescriptor(this.config.superClass);
+
+    },
+
+    processDependencies: function() {
+
+        var dependencies = {};
+
+        // process explicitly listed dependencies
+        _.reduce(this.config.dependencies, function(result, depName) {
+
+            result[depName] = this.getRequireInfoFromClassDescriptor(depName);
+            return result;
+
+        }, dependencies, this);
+
+        // infer dependencies from any properties that reference other Three types
+        _.reduce(this.config.properties, function(result, prop, propName) {
+
+            if (prop instanceof Types.ThreeType || prop instanceof Types.ThreeTypeArray || prop instanceof Types.ThreeTypeDict) {
+                if (prop.typeName !== 'this') {
+                    result[prop.typeName] = this.getRequireInfoFromClassDescriptor(prop.typeName);        
+                }
+            } 
+            return result;
+
+        }, dependencies, this);
+    
+        this.dependencies = dependencies;
+
+    },
+
+    processProperties: function() {
+
+        this.properties = _.mapObject(this.config.properties, function(prop, propName) {
+
+            return {
+                defaultJson: JSON.stringify(prop.defaultValue),
+                property_array_name: prop.getPropArrayName(),
+            };
+        
+        }, this);
+
+        this.serializedProps = _.reduce(this.config.properties, function(result, prop, propName) {
+            
+            if (prop.serialize) {
+                result.push(propName);
+            }
+            return result;
+
+        }, []);
+    
+    },
+
+    processConstructorArgs: function() {
+
+        function getConstructorParametersObject() {
+            var result = [ '{' ];
+
+            result = result.concat(_.keys(this.config.properties).map(function(propName) {
+                return '                ' + propName + ": this.get('" + propName + "'),";
+            }, this))
+
+            result.push('            }');
+            return result;
+        }
+
+        var constructorArgs = this.config.constructorArgs.map(function(propName) {
             if (propName === 'parameters') {
-                return this.getConstructorParametersObject().join('\n'); 
+                return getConstructorParametersObject.bind(this)().join('\n'); 
             } else {
                 return "this.get('" + propName + "')";
             }
         }, this);
 
-        var result = [];
+        this.constructorArgs = constructorArgs;
 
-        // console.log(this.config.properties);
-        var serializedProperties = _.filter(_.keys(this.config.properties), function(propName) {
-            return this.config.properties[propName].serialize;
-        }, this);
-
-        result = result.concat([
-            "var " + this.modelClass + " = " + this.modelSuperClass + ".extend({",
-            "    defaults: _.extend({}, " + this.modelSuperClass + ".prototype.defaults, {",
-            "        _view_name: '" + this.viewClass + "',",
-            "        _model_name: '" + this.modelClass + "',",
-            "",
-        ]);
-
-        result = result.concat(_.map(this.config.properties, function(prop, propName) {
-            return "        " + propName + ": " + JSON.stringify(prop.defaultValue) + ",";
-        }));
-
-        result = result.concat([
-            "    }),",
-            "",
-        ]);
-
-        // constructThreeObject()
-        result = result.concat([
-            "    constructThreeObject: function() {",
-        ]);
-
-        if (threeConstructorArgs.length > 0) {
-            result.push("        return new THREE." + this.className + "(");
-
-            result = result.concat(threeConstructorArgs.map(function(arg, idx, list) {
-                return ('            ' + arg + (idx === list.length - 1 ? '' : ',')); 
-            }));
-
-            result.push("        );"); 
-        } else {
-            result.push("        return new THREE." + this.className + "();");
-        }
-        result.push("    },", "");
-
-        // new_properties()
-        result.push(
-            "    createPropertiesArrays: function() {",
-            "        " + this.modelSuperClass + ".prototype.createPropertiesArrays.call(this);"
-        );
-
-        result = result.concat(_.map(this.config.properties, function(prop, propName) {
-            var propType = prop.propertyType || 'scalar';
-
-            var result = "        this." + prop.getPropArrayName() + ".push('" + propName + "');";
-            if (prop.enumTypeName) {
-                result += "\n        this.enum_property_types['" + propName + "'] = '" + prop.enumTypeName + "';";
-            }
-            return result;
-        }));
-
-        result = result.concat(_.map(this.config.propsDefinedByThree, function(propName) {
-            return "        this.props_created_by_three['" + propName + "'] = true;"
-        }));
-
-        result.push(
-            "    },",
-            ""
-        );
-
-        // handle serialized properties
-        if (serializedProperties.length <= 0) {
-            result.push("});", "", "");
-        } else {
-            result = result.concat(
-                [ 
-                    "}, {",
-                    "    serializers: _.extend({",
-                    
-                ], 
-                serializedProperties.map(function(propName) {
-                    return "        " + propName + ": { deserialize: widgets.unpack_models },"
-                }), 
-                [ 
-                    "    }, " + this.modelSuperClass + ".serializers)",
-                    "});",
-                    "",
-                    "",
-                ]
-            );
-        }
-
-        return result;
     },
 
-    getViewOutput: function() {
-
-        var result = [
-            "var " + this.viewClass + " = " + this.viewSuperClass + ".extend({",
-        ];
-
-        result = result.concat([ "});", "", "" ]);
-        return result;
-    },
-
-    getCustomImplementationOverrideOutput: function() {
-
+    processOverrideClass: function() {
+    
         // check if manual file exists
-        var customSrcPath = this.jsDestPath;
+        var customSrcPath = path.join(path.dirname(this.jsDestPath), path.basename(this.jsDestPath, '.js') + '.js');
+        console.log(customSrcPath);
 
         var overrideModule = "Override";
         var overrideModel = overrideModule + "." + this.modelClass;
         var overrideView = overrideModule + "." + this.viewClass;
 
         if (!fs.existsSync(customSrcPath)) {
-            return [];
+            return;
         }    
 
-        return [
-            "// Override auto-gen class with custom implementation",
-            "var " + overrideModule + " = require('./" + this.className + ".js');",
-            "_.extend(" + this.modelClass + ".prototype, " + overrideModel + ".prototype);",
-            "_.extend(" + this.modelClass + ", " + overrideModel + ");", 
-            "_.extend(" + this.viewClass + ".prototype, " + overrideView + ".prototype);",
-            "_.extend(" + this.viewClass + ", " + overrideView + ");",
-            "",
-        ];
+        console.log('EXISTS');
+
+        this.overrideClass = {
+            relativePath: './' + this.className + '.js',
+            modelName: overrideModel,
+            viewName: overrideView,
+        };
+
     },
 
-    writeOutFile: function() {
-        return fse.outputFileAsync(this.getOutputFilename(), this.getOutput())
+    getOutputFilename: function() {
+        return this.jsAutoDestPath;
     },
+
 });
 
+function createJavascriptWrapper(modulePath) {
+
+    var wrapper = new JavascriptWrapper(modulePath);
+    return fse.outputFileAsync(wrapper.getOutputFilename(), wrapper.output);
+
+    // NOTE: Old implementation
+    // var wrapper = new JavascriptWrapper(modulePath);
+    // return wrapper.writeOutFile();
+    
+}
+
+function writeJavascriptIndexForDir(dirPath, dirs, files, options) {
+
+    console.log('Writing index file: ' + dirPath);
+    // console.log(dirs);
+    // console.log(files);
+
+    options = (options == null) ? {} : options;
+
+    var baseDirRetrace = path.relative(dirPath, jsSrcDir);
+
+    var index = [
+        "var loadedModules = [",
+    ];
+
+    if (options.header) {
+        index = [ options.header ].concat(index);
+    }
+
+    files.forEach(function(filePath) {
+        if (path.basename(dirPath) === '_base') {
+            index.push("    require('./" + path.basename(path.basename(filePath, '.autogen.js'), '.js') + "'),");
+        } else {
+            if (/\.autogen\.js$/.test(filePath)) {
+                index.push("    require('./" + path.basename(filePath, '.autogen.js') + "'),");
+            }
+        }
+    });
+
+    dirs.forEach(function(dirPath) {
+        index.push("    require('./" + path.basename(dirPath) + "'),");
+    });
+
+    index = index.concat([
+        "];",
+        "",
+        "for (var i in loadedModules) {",
+        "    if (loadedModules.hasOwnProperty(i)) {",
+        "        var loadedModule = loadedModules[i];",
+        "        for (var target_name in loadedModule) {",
+        "            if (loadedModule.hasOwnProperty(target_name)) {",
+        "                module.exports[target_name] = loadedModule[target_name];",
+        "            }",
+        "        }",
+        "    }",
+        "}",
+        "",
+    ]);
+
+    if (options.footer) {
+        index = index.concat([ options.footer ]);
+    }
+
+    // trailing newline
+    index.push("");
+
+    fs.writeFileSync(path.resolve(dirPath, 'index.js'), index.join('\n'));
+
+}
+
+function writeJavascriptIndexFiles(dirPath, options) {
+
+    console.log('Writing indices: ' + dirPath);
+    // console.log(options);
+
+    options = (options == null) ? {} : options;
+
+    dirFiles = fs.readdirSync(dirPath).map(function(filename) {
+        return path.join(dirPath, filename);
+    });
+    dirFiles = dirFiles.filter(function(filePath) {
+        var fileName = path.basename(filePath);
+        return !/\.swp$/.test(filePath)
+            && !/index\.js$/.test(filePath);
+    });
+
+
+    if (options.exclude) {
+        dirFiles = dirFiles.filter(function(filePath) {
+            var relPath = './' + path.relative(jsSrcDir, filePath);
+            return options.exclude.every(function(excludeStr) {
+                if (excludeStr instanceof RegExp) {
+                    return !excludeStr.test(relPath);
+                } else {
+                    return relPath !== excludeStr;
+                }
+            });
+        });
+    }
+
+    // console.log(dirFiles);
+
+    dirs = dirFiles.filter(function(filePath) {
+        return isDir(filePath);
+    });
+    files = dirFiles.filter(function(filePath) {
+        return isFile(filePath);
+    });
+
+    writeJavascriptIndexForDir(dirPath, dirs, files, options);
+    dirs.forEach(function (childDirPath) {
+        writeJavascriptIndexFiles(childDirPath, {
+
+            exclude: [
+                /\..*\.swp$/,
+                /\..*\.swo$/,
+            ],
+
+        });
+    });
+
+}
 
 // 
 // Python wrapper writer
@@ -607,125 +689,6 @@ _.extend(PythonWrapper.prototype, {
 
 });
 
-function createJavascriptWrapper(modulePath) {
-
-    var wrapper = new JavascriptWrapper(modulePath);
-    return wrapper.writeOutFile();
-    
-}
-
-function writeIndexForDir(dirPath, dirs, files, options) {
-
-    console.log('Writing index file: ' + dirPath);
-    // console.log(dirs);
-    // console.log(files);
-
-    options = (options == null) ? {} : options;
-
-    var baseDirRetrace = path.relative(dirPath, jsSrcDir);
-
-    var index = [
-        "var loadedModules = [",
-    ];
-
-    if (options.header) {
-        index = [ options.header ].concat(index);
-    }
-
-    files.forEach(function(filePath) {
-        if (path.basename(dirPath) === '_base') {
-            index.push("    require('./" + path.basename(path.basename(filePath, '.autogen.js'), '.js') + "'),");
-        } else {
-            if (/\.autogen\.js$/.test(filePath)) {
-                index.push("    require('./" + path.basename(filePath, '.autogen.js') + "'),");
-            }
-        }
-    });
-
-    dirs.forEach(function(dirPath) {
-        index.push("    require('./" + path.basename(dirPath) + "'),");
-    });
-
-    index = index.concat([
-        "];",
-        "",
-        "for (var i in loadedModules) {",
-        "    if (loadedModules.hasOwnProperty(i)) {",
-        "        var loadedModule = loadedModules[i];",
-        "        for (var target_name in loadedModule) {",
-        "            if (loadedModule.hasOwnProperty(target_name)) {",
-        "                module.exports[target_name] = loadedModule[target_name];",
-        "            }",
-        "        }",
-        "    }",
-        "}",
-        "",
-    ]);
-
-    if (options.footer) {
-        index = index.concat([ options.footer ]);
-    }
-
-    // trailing newline
-    index.push("");
-
-    fs.writeFileSync(path.resolve(dirPath, 'index.js'), index.join('\n'));
-
-}
-
-function writeIndices(dirPath, options) {
-
-    console.log('Writing indices: ' + dirPath);
-    // console.log(options);
-
-    options = (options == null) ? {} : options;
-
-    dirFiles = fs.readdirSync(dirPath).map(function(filename) {
-        return path.join(dirPath, filename);
-    });
-    dirFiles = dirFiles.filter(function(filePath) {
-        var fileName = path.basename(filePath);
-        return !/\.swp$/.test(filePath)
-            && !/index\.js$/.test(filePath);
-    });
-
-
-    if (options.exclude) {
-        dirFiles = dirFiles.filter(function(filePath) {
-            var relPath = './' + path.relative(jsSrcDir, filePath);
-            return options.exclude.every(function(excludeStr) {
-                if (excludeStr instanceof RegExp) {
-                    return !excludeStr.test(relPath);
-                } else {
-                    return relPath !== excludeStr;
-                }
-            });
-        });
-    }
-
-    // console.log(dirFiles);
-
-    dirs = dirFiles.filter(function(filePath) {
-        return isDir(filePath);
-    });
-    files = dirFiles.filter(function(filePath) {
-        return isFile(filePath);
-    });
-
-    writeIndexForDir(dirPath, dirs, files, options);
-    dirs.forEach(function (childDirPath) {
-        writeIndices(childDirPath, {
-
-            exclude: [
-                /\..*\.swp$/,
-                /\..*\.swo$/,
-            ],
-
-        });
-    });
-
-}
-
 function createPythonWrapper(modulePath) {
 
     var wrapper = new PythonWrapper(modulePath);
@@ -830,64 +793,11 @@ function createTopLevelPythonModuleFile() {
 
 }
 
-function createWrapperFiles() {
+function createJavascriptFiles() {
 
-    console.log('Creating wrapper files...');
-
-    return new Promise(function(resolve, reject) {
+    return mapPromiseFnOverThreeModules(createJavascriptWrapper).then(function() {
     
-        var promises = [];
-
-        // trailing slash will match only directories
-        var glob = new Glob('**/*.js', { 
-            cwd: threeSrcDir, 
-            nodir: true ,
-            ignore: [
-                '**/Three.Legacy.js',
-                '**/renderers/**'
-            ],
-        })
-            .on('match', function(match) {
-
-                promises.push(createJavascriptWrapper(match));
-                promises.push(createPythonWrapper(match));
-                promises.push(createPythonModuleInitFile(match));
-
-            })
-            .on('end', function() {
-                // wait for all file ops to finish
-                Promise.all(promises).then(resolve).catch(reject);
-            })
-            .on('error', function(err) {
-                reject(err);
-            })
-            .on('abort', function() {
-                reject(new Error('Aborted'));
-            });
-
-    });
-
-}
-
-function createTopLevelFiles() {
-    
-    return Promise.all([
-        createTopLevelPythonModuleFile(),
-    ]);
-
-}
-
-if (require.main === module) {
-
-    Promise.resolve(true)
-        // .then(function() {
-        //     return createDirectories()
-        // })
-        .then(function() {
-            return createWrapperFiles();
-        })
-        .then(function() {
-            return writeIndices(jsSrcDir, {
+        return writeJavascriptIndexFiles(jsSrcDir, {
                 exclude: [
                     './embed.js',
                     './extension.js',
@@ -918,17 +828,38 @@ if (require.main === module) {
                 ]
             });
 
-        })
-        .then(function() {
-            return createTopLevelFiles();
-        })
-        .then(function() {
-            console.log('DONE');
-        });
+    });
 
-    // for each dir in three src
-    //   create dir in src
-    // for each file in three src
-    //   create wrapper in src relative path to path in three src
-    
+}
+
+function createPythonFiles() {
+
+    return mapPromiseFnOverThreeModules(function(relativePath) {
+
+        createPythonWrapper(relativePath);
+
+        // ensures each dir has empty __init__.py file
+        createPythonModuleInitFile(relativePath);
+
+    }).then(function() {
+
+        return createTopLevelPythonModuleFile();
+
+    });
+
+}
+
+function generateFiles() {
+
+    return Promise.all([
+        createJavascriptFiles(),
+        createPythonFiles(),
+    ]);
+
+}
+
+if (require.main === module) {
+    generateFiles().then(function() {
+        console.log('DONE');
+    });
 }
