@@ -6,6 +6,10 @@ from ..traits import *
 
 from {{ superClass.pyRelativePath }} import {{ superClass.className }}
 
+{{#each dependencies as |dep depName|}}
+from {{ dep.pyRelativePath }} import {{ dep.className }}
+{{/each}}
+
 class {{ className }}({{ superClass.className }}):
     """{{ className }}
     
@@ -17,7 +21,7 @@ class {{ className }}({{ superClass.className }}):
     _view_name = Unicode('{{ viewName }}').tag(sync=True)
     _model_name = Unicode('{{ modelName }}').tag(sync=True)
 
-    {{#each properties |prop propName|}}
-    {{ propName }} = {{ prop.traitDeclaration }}
+    {{#each properties as |prop propName|}}
+    {{ propName }} = {{{ prop.trait_declaration }}}
     {{/each}}
 

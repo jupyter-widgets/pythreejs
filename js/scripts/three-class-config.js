@@ -6,7 +6,8 @@
 var Types = require('./prop-types');
 
 module.exports = {
- _defaults: require('./three-class-config-defaults'),
+    
+    _defaults: require('./three-class-config-defaults'),
 
     Three_Legacy: {
         relativePath: './Three.Legacy',
