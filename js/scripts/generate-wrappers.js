@@ -6,6 +6,7 @@ var Glob = require('glob').Glob;
 var Promise = require('bluebird');
 var Handlebars = require('handlebars');
 
+Promise.promisifyAll(fs);
 Promise.promisifyAll(fse);
 
 var classConfigs = require('./three-class-config');
@@ -370,10 +371,8 @@ function writeJavascriptIndexForDir(dirPath, dirs, files, options) {
     console.log('Writing index file: ' + dirPath);
     // console.log(dirs);
     // console.log(files);
-
+    
     options = (options == null) ? {} : options;
-
-    var baseDirRetrace = path.relative(dirPath, jsSrcDir);
 
     var index = [
         "var loadedModules = [",
@@ -384,6 +383,7 @@ function writeJavascriptIndexForDir(dirPath, dirs, files, options) {
     }
 
     files.forEach(function(filePath) {
+        // for files in _base, ignore autogen files and just use '.js'
         if (path.basename(dirPath) === '_base') {
             index.push("    require('./" + path.basename(path.basename(filePath, '.autogen.js'), '.js') + "'),");
         } else {
@@ -424,55 +424,91 @@ function writeJavascriptIndexForDir(dirPath, dirs, files, options) {
 
 }
 
-function writeJavascriptIndexFiles(dirPath, options) {
+function writeJavascriptIndexFiles(dirPath) {
 
     console.log('Writing indices: ' + dirPath);
-    // console.log(options);
 
-    options = (options == null) ? {} : options;
+    var defaultExcludes = [
+        /\.swp$/,
+        /index\.js$/,
+    ];
+    var topLevelExcludes = [
+        './embed.js',
+        './extension.js',
+        /\.DS_Store$/,
+    ];
 
-    dirFiles = fs.readdirSync(dirPath).map(function(filename) {
-        return path.join(dirPath, filename);
-    });
-    dirFiles = dirFiles.filter(function(filePath) {
-        var fileName = path.basename(filePath);
-        return !/\.swp$/.test(filePath)
-            && !/index\.js$/.test(filePath);
-    });
+    function writeIndexForDir(dirPath, isTopLevel) {
 
+        var dirAbsPath = path.resolve(jsSrcDir, dirPath);
 
-    if (options.exclude) {
-        dirFiles = dirFiles.filter(function(filePath) {
-            var relPath = './' + path.relative(jsSrcDir, filePath);
-            return options.exclude.every(function(excludeStr) {
-                if (excludeStr instanceof RegExp) {
-                    return !excludeStr.test(relPath);
-                } else {
-                    return relPath !== excludeStr;
-                }
+        var excludes = [].concat(defaultExcludes);
+        if (isTopLevel) {
+            excludes = excludes.concat(topLevelExcludes);
+        }
+
+        // Generate list of files in dir to include in index.js as require lines
+        return fs.readdirAsync(dirAbsPath).then(function(dirFiles) {
+
+            // get proper relative path for file
+            dirFiles = dirFiles.map(function(filename) {
+                return './' + path.join(dirPath, filename);
             });
+
+            // filter excluded files
+            dirFiles = dirFiles.filter(function(filePath) {
+
+                // ignore autogen files in _base dir
+                if (dirPath === '_base' && /\.autogen\.js$/.test(filePath)) {
+                    return false;
+                }
+
+                // do not load override classes in index.js files
+                // the override functionality is pull in via the autogen classes
+                if (/\.js$/.test(filePath) && !/\.autogen\.js$/.test(filePath)) {
+                    return false;
+                }
+
+                // compare filePath to each exclude pattern
+                return _.any(excludes, function(testPattern) {
+                    if (testPattern instanceof RegExp) {
+                        return !testPattern.test(filePath);
+                    } else if (typeof testPattern === 'string') {
+                        return testPatern !== filePath;
+                    }
+                });
+            });
+
+            // convert file paths relative to js src dir to paths relative to dirPath
+            dirFiles = dirFiles.map(function(filePath) {
+                return './' + path.basename(filePath);
+            });
+
+            // render template
+            var context = {
+                now: new Date(),
+                generatorScriptName: path.basename(__filename),
+                top_level: isTopLevel,
+                submodules: dirFiles,
+            };
+            var output = jsIndexTemplate(context);
+            var outputPath = path.resolve(jsSrcDir, dirPath, 'index.js');
+
+            return fse.outputFileAsync(outputPath, output);
+
         });
     }
 
-    // console.log(dirFiles);
-
-    dirs = dirFiles.filter(function(filePath) {
-        return isDir(filePath);
-    });
-    files = dirFiles.filter(function(filePath) {
-        return isFile(filePath);
-    });
-
-    writeJavascriptIndexForDir(dirPath, dirs, files, options);
-    dirs.forEach(function (childDirPath) {
-        writeJavascriptIndexFiles(childDirPath, {
-
-            exclude: [
-                /\..*\.swp$/,
-                /\..*\.swo$/,
-            ],
-
-        });
+    // map over all directories in js src dir
+    return mapPromiseFnOverGlob(
+        '**/', // trailing slash globs for dirs only
+        function(dirPath) {
+            return writeIndexForDir(dirPath, false);
+        }, 
+        { cwd: jsSrcDir, }
+    ).then(function() {
+        // write top-level index (not included in above glob)
+        return writeIndexForDir('.', true);
     });
 
 }

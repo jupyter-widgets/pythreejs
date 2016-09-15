@@ -1,3 +1,7 @@
+//
+// This file auto-generated with {{ generatorScriptName }}
+// Date: {{ now }}
+//
 {{#if top_level}}
 // Entry point for the notebook bundle containing custom model definitions.
 //
@@ -21,8 +25,8 @@ require('./examples/controls/OrbitControls');
 {{/if}}
 // Load all three.js python wrappers
 var loadedModules = [
-    {{#each submodules |module|}}
-    require('{{ module.relativePath }}'),
+    {{#each submodules as |submodule|}}
+    require('{{ submodule }}'),
     {{/each}}
 ];
 
