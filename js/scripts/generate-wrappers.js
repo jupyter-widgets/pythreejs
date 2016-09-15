@@ -663,6 +663,7 @@ function createTopLevelPythonModuleFile() {
             }
         }
 
+        // convert relative path to python-style import path
         if (modulePath !== '.') {
             var importPath = '.' + modulePath.split(path.sep).join('.') + '.' + moduleName;
         } else {
@@ -679,6 +680,7 @@ function createTopLevelPythonModuleFile() {
         ignore: ignorePyFiles,
     }).then(function() {
 
+        // render template
         var context = {
             generatorScriptName: path.basename(__filename),
             now: new Date(),
