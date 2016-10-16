@@ -2,7 +2,7 @@ var loaders = [
     { test: /\.json$/, loader: "json-loader" },
 ];
 
-var buildExtension = require('jupyterlab-extension-builder/lib/builder').buildExtension;
+var buildExtension = require('@jupyterlab/extension-builder/lib/builder').buildExtension;
 
 buildExtension({
     name: 'jupyter-threejs',
