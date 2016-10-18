@@ -51,3 +51,9 @@ class WebGLRenderer(ThreeWidget):
         }
         self.send(content)
 
+    def freeze(self):
+        content = {
+            "type": "freeze"
+        }
+        self.send(content)
+

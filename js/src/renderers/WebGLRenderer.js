@@ -65,8 +65,7 @@ var WebGLRendererView = widgets.DOMWidgetView.extend({
     },
 
     onCustomMessage: function(content, buffers) {
-        var type = content.type;
-        switch(type) {
+        switch(content.type) {
 
             case 'render':
                 Promise.props({
@@ -76,6 +75,9 @@ var WebGLRendererView = widgets.DOMWidgetView.extend({
                     this.renderScene(result.scene, result.camera);
                 });
                 break;
+
+            case 'freeze':
+                this.freeze();
 
             default:
                 throw new Error('Invalid custom msg type: ' + type);
@@ -92,7 +94,10 @@ var WebGLRendererView = widgets.DOMWidgetView.extend({
     },
 
     render: function() {
-        this.renderer = new THREE.WebGLRenderer(this.model.get('width'), this.model.get('size'));
+        this.renderer = new THREE.WebGLRenderer({
+            // required for converting canvas to png
+            preserveDrawingBuffer: true,
+        });
 
         this.el.className = "jupytr-widget jupyter-threejs";
         this.$el.empty().append(this.renderer.domElement);
@@ -110,6 +115,10 @@ var WebGLRendererView = widgets.DOMWidgetView.extend({
     renderScene: function(scene, camera) {
         console.log("WebGLRenderer.renderScene");
         this.renderer.render(scene, camera);
+    },
+
+    freeze: function() {
+        this.$el.empty().append('<img src="' + this.renderer.domElement.toDataURL() + '" />');
     },
 
     invoke: function(methodName, propNames) {

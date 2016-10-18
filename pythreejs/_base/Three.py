@@ -26,6 +26,12 @@ class ThreeWidget(Widget):
         }
         self.send(content=content, buffers=None)
 
+    def freeze(self):
+        content = {
+            "type": "freeze"
+        }
+        self.send(content)
+
     def on_potential_ret_val(self, widget, content, buffers):
         if content['type'] == "exec_three_obj_method_retval":
             self.on_ret_val(content['method_name'], content['ret_val'])

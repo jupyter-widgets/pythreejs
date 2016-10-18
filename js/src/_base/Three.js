@@ -21,7 +21,11 @@ var ThreeView = widgets.DOMWidgetView.extend({
 
         var obj = this.model.obj;
 
-        this.renderer = new THREE.WebGLRenderer();
+        this.renderer = new THREE.WebGLRenderer({
+            // required for converting canvas to png
+            preserveDrawingBuffer: true,
+        });
+
         this.el.className = "jupyter-widget jupyter-threejs";
         this.$el.empty().append(this.renderer.domElement);
 
@@ -68,7 +72,8 @@ var ThreeView = widgets.DOMWidgetView.extend({
         }
 
         this.on('destroy', this.destroy, this);
-        this.listenTo(this.model, 'rerender', this.renderScene);
+        this.listenTo(this.model, 'rerender',   this.renderScene);
+        this.listenTo(this.model, 'msg:custom', this.onCustomMessage.bind(this));
 
     },
 
@@ -145,6 +150,19 @@ var ThreeView = widgets.DOMWidgetView.extend({
     renderScene: function() {
         console.log('renderScene');
         this.renderer.render(this.scene, this.camera);
+    },
+
+    freeze: function() {
+        this.$el.empty().append('<img src="' + this.renderer.domElement.toDataURL() + '" />');
+    },
+
+    onCustomMessage: function(content, buffers) {
+        switch(content.type) {
+            case 'freeze':
+                this.freeze();
+                break;
+            default:
+        }
     },
 
 });
@@ -341,13 +359,19 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
     //
 
     onCustomMessage: function(content, buffers) {
-        if (content.type === 'exec_three_obj_method') {
-            this.onExecThreeObjMethod(content.method_name, content.args, content.buffers);
-        } else if (content.type === 'print') {
-            console.log("SERVER: " + JSON.stringify(content.msg));
-        } else {
-            console.log("ERROR: invalid custom message");
-            console.log(content);
+        switch(content.type) {
+            case 'exec_three_obj_method':
+                this.onExecThreeObjMethod(content.method_name, content.args, content.buffers);
+                break;
+            case 'freeze':
+                break;
+            case 'print':
+                console.log("SERVER: " + JSON.stringify(content.msg));
+                break;
+            default:
+                console.log("ERROR: invalid custom message");
+                console.log(content);
+
         }
     },
 
