@@ -1,11 +1,18 @@
 var _ = require('underscore');
 
+function BaseType() {}
+_.extend(BaseType.prototype, {
+    getJSPropertyValue: function() {
+        return JSON.stringify(this.defaultValue);
+    },
+})
+
 function ThreeType(typeName) {
     this.typeName = typeName;
     this.defaultValue = null;
     this.serialize = true;
 }
-_.extend(ThreeType.prototype, {
+_.extend(ThreeType.prototype, BaseType.prototype, {
     getTraitlet: function() {
         if (this.typeName.toLowerCase() === 'this') {
             return 'This().tag(sync=True, **widget_serialization)';
@@ -22,7 +29,7 @@ function ThreeTypeArray(typeName) {
     this.defaultValue = [];
     this.serialize = true;
 }
-_.extend(ThreeTypeArray.prototype, {
+_.extend(ThreeTypeArray.prototype, BaseType.prototype, {
     getTraitlet: function() {
         if (this.typeName === 'this') {
             // return 'List(trait=This(), default_value=[]).tag(sync=True, **widget_serialization)';
@@ -41,7 +48,7 @@ function ThreeTypeDict(typeName) {
     this.defaultValue = {};
     this.serialize = true;
 }
-_.extend(ThreeTypeDict.prototype, {
+_.extend(ThreeTypeDict.prototype, BaseType.prototype, {
     getTraitlet: function() {
         if (this.typeName === 'this') {
             return 'Dict(This()).tag(sync=True, **widget_serialization)';
@@ -56,7 +63,7 @@ _.extend(ThreeTypeDict.prototype, {
 function Bool(defaultValue) {
     this.defaultValue = defaultValue;
 }
-_.extend(Bool.prototype, {
+_.extend(Bool.prototype, BaseType.prototype, {
     getTraitlet: function() {
         var pyBoolValue = this.defaultValue ? 'True' : 'False';
         return 'Bool(' + pyBoolValue + ').tag(sync=True)';
@@ -69,7 +76,7 @@ _.extend(Bool.prototype, {
 function Int(defaultValue) {
     this.defaultValue = defaultValue == null ? 0 : defaultValue;
 }
-_.extend(Int.prototype, {
+_.extend(Int.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'CInt(' + this.defaultValue + ').tag(sync=True)';
     },
@@ -82,7 +89,7 @@ _.extend(Int.prototype, {
 function Float(defaultValue) {
     this.defaultValue = defaultValue == null ? 0.0 : defaultValue;
 }
-_.extend(Float.prototype, {
+_.extend(Float.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'CFloat(' + this.defaultValue + ').tag(sync=True)';
     },
@@ -95,7 +102,7 @@ _.extend(Float.prototype, {
 function StringType(defaultValue) {
     this.defaultValue = defaultValue;
 }
-_.extend(StringType.prototype, {
+_.extend(StringType.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Unicode("' + this.defaultValue + '").tag(sync=True)';
     },
@@ -109,7 +116,7 @@ function Enum(enumTypeName, defaultValue) {
     this.enumTypeName = enumTypeName;
     this.defaultValue = defaultValue;
 }
-_.extend(Enum.prototype, {
+_.extend(Enum.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Enum(' + this.enumTypeName + ', "' + this.defaultValue + '").tag(sync=True)';
     },
@@ -121,7 +128,7 @@ _.extend(Enum.prototype, {
 function Color(defaultValue) {
     this.defaultValue = defaultValue || "#ffffff";
 }
-_.extend(Color.prototype, {
+_.extend(Color.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Unicode(' + JSON.stringify(this.defaultValue) + ').tag(sync=True)'
     },
@@ -133,7 +140,7 @@ _.extend(Color.prototype, {
 function ArrayType() {
     this.defaultValue = [];
 }
-_.extend(ArrayType.prototype, {
+_.extend(ArrayType.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'List().tag(sync=True)';
     },
@@ -145,7 +152,7 @@ _.extend(ArrayType.prototype, {
 function DictType() {
     this.defaultValue = {};
 }
-_.extend(DictType.prototype, {
+_.extend(DictType.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Dict().tag(sync=True)';
     },
@@ -155,21 +162,24 @@ _.extend(DictType.prototype, {
 });
 
 function FunctionType(fn) {
-    this.fn = fn;
+    this.defaultValue = fn || function() {};
 }
-_.extend(FunctionType.prototype, {
+_.extend(FunctionType.prototype, BaseType.prototype, {
     getTraitlet: function() {
-        return "Unicode('" + this.fn.toString() + "').tag(sync=True)";
+        return "Unicode('" + this.defaultValue.toString() + "').tag(sync=True)";
     },
     getPropArrayName: function() {
         return 'function_properties';
-    }
+    },
+    getJSPropertyValue: function() {
+        return this.defaultValue.toString();
+    },
 });
 
 function Vector2(x, y) {
     this.defaultValue = [ x||0, y||0 ];
 }
-_.extend(Vector2.prototype, {
+_.extend(Vector2.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Vector2(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
     },
@@ -181,7 +191,7 @@ _.extend(Vector2.prototype, {
 function Vector3(x, y, z) {
     this.defaultValue = [ x||0, y||0, z||0 ];
 }
-_.extend(Vector3.prototype, {
+_.extend(Vector3.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Vector3(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
     },
@@ -193,7 +203,7 @@ _.extend(Vector3.prototype, {
 function Vector4(x, y, z, w) {
     this.defaultValue = [ x||0, y||0, z||0, w||0 ];
 }
-_.extend(Vector4.prototype, {
+_.extend(Vector4.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Vector4(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
     },
@@ -210,7 +220,7 @@ function Matrix3() {
     ];
 
 }
-_.extend(Matrix3.prototype, {
+_.extend(Matrix3.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Matrix3(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
     },
@@ -227,7 +237,7 @@ function Matrix4() {
         0, 0, 0, 1 
     ];
 } 
-_.extend(Matrix4.prototype, {
+_.extend(Matrix4.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Matrix4(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
     },

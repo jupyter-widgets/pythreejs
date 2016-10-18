@@ -1,3 +1,7 @@
+//
+// This file auto-generated with generate-wrappers.js
+// Date: Tue Oct 18 2016 14:57:28 GMT-0700 (PDT)
+//
 // Entry point for the notebook bundle containing custom model definitions.
 //
 // Setup notebook base URL
@@ -13,9 +17,13 @@ module.exports['version'] = require('../package.json').version;
 // Load three.js into window namespace
 var THREE = require('three');
 window.THREE = THREE;
+
+// Load three.js extensions
+require('./examples/controls/OrbitControls');
+
+// Load all three.js python wrappers
 var loadedModules = [
-    require('./Three.Legacy'),
-    require('./Three'),
+    require('./_base'),
     require('./animation'),
     require('./audio'),
     require('./cameras'),

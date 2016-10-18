@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var widgets = require("jupyter-js-widgets");
 var pkgName = require('../../package.json').name;
+var Promise = require('bluebird');
 
 var Enums = require('./enums');
 
@@ -18,17 +19,21 @@ var ThreeView = widgets.DOMWidgetView.extend({
 
     render: function() {
 
+        var obj = this.model.obj;
+
         this.renderer = new THREE.WebGLRenderer();
         this.el.className = "jupyter-widget jupyter-threejs";
         this.$el.empty().append(this.renderer.domElement);
-
-        this.scene = new THREE.Scene();
 
         this.camera = new THREE.PerspectiveCamera(
             60, 
             this.renderer.domElement.width / this.renderer.domElement.height);
         this.camera.position.set(0, 0, 50);
         this.camera.lookAt(new THREE.Vector3(0,0,0));
+
+        this.scene = new THREE.Scene();
+        // cameras need to be added to scene
+        this.scene.add(this.camera);
 
         // Allow user to inspect object with mouse/scrollwheel
         this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
@@ -87,12 +92,13 @@ var ThreeView = widgets.DOMWidgetView.extend({
     constructScene: function() {
     
         var obj = this.model.obj; 
+
         this.clearScene();
+        this.scene.add(this.camera);
 
-        this.scene.add(this.camera, this.ambLight, this.dirLight);
+        if (obj instanceof THREE.Object3D) {
 
-        if (obj instanceof THREE.Mesh) {
-
+            console.log('render Object3D');
             this.scene.add(obj);
             this.setSize(200, 200);
 
@@ -119,6 +125,7 @@ var ThreeView = widgets.DOMWidgetView.extend({
     },
 
     clearScene: function() {
+        this.controls.reset();
         this.scene.children.forEach(function(child) {
             this.scene.remove(child);
         }, this);
@@ -216,6 +223,7 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
         // TODO: handle dicts of children
 
         this.on('change', this.onChange, this);
+        this.on('msg:custom', this.onCustomMessage, this);
     
     },
 
@@ -329,12 +337,92 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
     },  
 
     //
+    // Remote execution of three.js object methods
+    //
+
+    onCustomMessage: function(content, buffers) {
+        if (content.type === 'exec_three_obj_method') {
+            this.onExecThreeObjMethod(content.method_name, content.args, content.buffers);
+        } else if (content.type === 'print') {
+            console.log("SERVER: " + JSON.stringify(content.msg));
+        } else {
+            console.log("ERROR: invalid custom message");
+            console.log(content);
+        }
+    },
+
+    onExecThreeObjMethod: function(methodName, args, buffers) {
+        console.log('execThreeObjMethod: ' + methodName + 
+            '(' + args.map(JSON.stringify).join(',') + ')');
+
+        if (!(methodName in this.obj)) {
+            throw new Error('Invalid methodName: ' + methodName);
+        }
+
+        // convert serialized args to three.js compatible values
+        args = args.map(function(arg) {
+
+            if (arg instanceof Array) {
+
+                if (arg.length === 2) {
+                    return new THREE.Vector2().fromArray(arg);
+                } else if (arg.length === 3) {
+                    return new THREE.Vector3().fromArray(arg);
+                } else if (arg.length === 4) {
+                    return new THREE.Vector4().fromArray(arg);
+                } else if (arg.length === 9) {
+                    return new THREE.Matrix3().fromArray(arg);
+                } else if (arg.length === 16) {
+                    return new THREE.Matrix4().fromArray(arg);
+                } else {
+                    return arg;
+                }
+            
+            } else if (arg instanceof String && /IPY_MODEL_/.test(arg)) {
+
+                arg = arg.replace('IPY_MODEL_', '');
+                return this.widget_manager.get_model(arg).then(function(model) {
+                    return model.obj;
+                });
+                
+            } else {
+                return arg;
+            }
+        
+        }, this);
+
+        return Promise.all(args).bind(this).then(function(args) {
+            
+            var retVal = this.obj[methodName].apply(this.obj, args);
+
+            // TODO: sync new values from object back to model
+            this.syncToModel(true);
+
+            if (retVal != null) {
+
+                if (retVal.ipymodel) {
+                    retVal = retVal.ipymodel;
+                }
+
+                console.log('sending return value to server...');
+                this.send({
+                    type: "exec_three_obj_method_retval",
+                    method_name: methodName,
+                    ret_val: retVal,
+                }, this.callbacks(), null);
+            }
+
+        });
+
+    },
+
+    //
     // Data-binding methods for syncing between model and three.js object
     //
 
     onChange: function(model, options) {
-        console.log(this.id + ' onChange: ');
-        console.log(this.changedAttributes());
+        // console.log(this.id + ' onChange: ');
+        // console.log(this.changedAttributes());
 
         this.syncToThreeObj();
         this.trigger('rerender', this, {});
@@ -441,7 +529,9 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
     },
 
     // push data from three object to model
-    syncToModel: function() {
+    syncToModel: function(syncAllProps) {
+
+        syncAllProps = syncAllProps == null ? false : syncAllProps;
 
         var arrayMappers = {
             'three_properties': this.syncThreePropToModel,
@@ -462,22 +552,18 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
             // this method will only sync those properties back to the model
             // in order to minimize the number of props set and sent to the server
 
-            this[arrayName].filter(function(propName) {
-                return (propName in this.props_created_by_three);
-            }, this).forEach(function(propName) {
+            var props = this[arrayName];
+            if (!syncAllProps) {
+                props = props.filter(function(propName) {
+                    return (propName in this.props_created_by_three);
+                }, this);
+            }
+
+            props.forEach(function(propName) {
                 mapFn.bind(this)(propName); 
             }, this); 
-        }, this);
 
-        // this.three_properties.forEach(this.syncThreePropToModel.bind(this)); 
-        // this.three_array_properties.forEach(this.syncThreeArrayToModel.bind(this)); 
-        // this.three_dict_properties.forEach(this.syncThreeDictToModel.bind(this)); 
-        // this.scalar_properties.forEach(this.syncScalarToModel.bind(this)); 
-        // this.enum_properties.forEach(this.syncEnumToModel.bind(this)); 
-        // this.color_properties.forEach(this.syncColorToModel.bind(this)); 
-        // this.array_properties.forEach(this.syncArrayToModel.bind(this)); 
-        // this.function_properties.forEach(this.syncFunctionToModel.bind(this)); 
-        // this.vector_properties.forEach(this.syncVectorToModel.bind(this)); 
+        }, this);
 
         this.save_changes();
     },

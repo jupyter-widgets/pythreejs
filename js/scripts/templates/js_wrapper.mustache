@@ -46,6 +46,9 @@ var {{ modelName }} = {{ superClass.modelName }}.extend({
         {{#each props_created_by_three as |propName|}}
         this.props_created_by_three['{{propName}}'] = true;
         {{/each}}
+        {{#each enum_properties as |enumTypeName propName|}}
+        this.enum_property_types['{{ propName }}'] = '{{ enumTypeName }}';
+        {{/each}}
 
     },
 

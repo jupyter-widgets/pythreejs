@@ -1,6 +1,11 @@
+//
+// This file auto-generated with generate-wrappers.js
+// Date: Tue Oct 18 2016 14:57:28 GMT-0700 (PDT)
+//
+// Load all three.js python wrappers
 var loadedModules = [
-    require('./Three'),
-    require('./enums'),
+    require('./Three.js'),
+    require('./enums.js'),
 ];
 
 for (var i in loadedModules) {

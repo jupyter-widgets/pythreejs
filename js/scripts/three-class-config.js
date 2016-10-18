@@ -9,12 +9,12 @@ module.exports = {
     
     _defaults: require('./three-class-config-defaults'),
 
-    Three_Legacy: {
-        relativePath: './Three.Legacy',
-    },
-    Three: {
-        relativePath: './Three',
-    },
+    // Three_Legacy: {
+    //     relativePath: './Three.Legacy',
+    // },
+    // Three: {
+    //     relativePath: './Three',
+    // },
     AnimationClip: {
         relativePath: './animation/AnimationClip',
     },
@@ -58,6 +58,7 @@ module.exports = {
             matrixWorldInverse: new Types.Matrix4(),
             projectionMatrix:   new Types.Matrix4(),
         },
+        propsDefinedByThree: [ 'matrixWorldInverse', 'projectionMatrix' ],
     },
     CubeCamera: {
         relativePath: './cameras/CubeCamera',
@@ -87,9 +88,9 @@ module.exports = {
             far:        new Types.Float(2000),
             focus:      new Types.Float(10.0),
             aspect:     new Types.Float(1.0),
-            view:       new Types.Dict(),
-            filmGauge:  new Types.Float(35.0),
-            filmOffset: new Types.Float(0.0),
+            // view:       new Types.Dict(),
+            // filmGauge:  new Types.Float(35.0),
+            // filmOffset: new Types.Float(0.0),
         },
         constructorArgs: [ 'fov', 'aspect', 'near', 'far' ],
     },
@@ -236,7 +237,8 @@ module.exports = {
         superClass: 'Light',
         properties: {
             target:      new Types.ThreeType('Object3D'),
-            shadow:      new Types.ThreeType('LightShadow'),
+            // TODO: shadows
+            // shadow:      new Types.ThreeType('LightShadow'),
             castsShadow: new Types.Bool(false),
         },
         constructorArgs: [ 'color', 'intensity' ],
@@ -268,7 +270,8 @@ module.exports = {
             power:    new Types.Float(4.0 * Math.PI),
             distance: new Types.Float(0.0),
             decay:    new Types.Float(1.0),
-            shadow:   new Types.ThreeType('LightShadow'),
+            // TODO: shadows
+            // shadow:   new Types.ThreeType('LightShadow'),
         },
         constructorArgs: [ 'color', 'intensity', 'distance', 'decay' ],
     },
@@ -281,7 +284,8 @@ module.exports = {
             angle:    new Types.Float(Math.PI / 3.0),
             penumbra: new Types.Float(0.0),
             decay:    new Types.Float(1.0),
-            shadow:   new Types.ThreeType('LightShadow'),
+            // TODO: shadows
+            // shadow:   new Types.ThreeType('LightShadow'),
         },
         constructorArgs: [ 'color', 'intensity', 'distance', 'angle', 'penumbra', 'decay' ],
     },
@@ -809,6 +813,9 @@ module.exports = {
             autoUpdate: new Types.Bool(true),
         },
     },
+    Texture: {
+        relativePath: './textures/Texture',
+    },
     CanvasTexture: {
         relativePath: './textures/CanvasTexture',
         superClass: 'Texture',
@@ -824,9 +831,6 @@ module.exports = {
     DataTexture: {
         relativePath: './textures/DataTexture',
         superClass: 'Texture',
-    },
-    Texture: {
-        relativePath: './textures/Texture',
     },
     VideoTexture: {
         relativePath: './textures/VideoTexture',

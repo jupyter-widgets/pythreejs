@@ -155,7 +155,9 @@ function mapPromiseFnOverThreeModules(mapFn) {
         nodir: true ,
         ignore: [
             '**/Three.Legacy.js',
-            '**/renderers/**'
+            '**/renderers/WebGLRenderer.js',
+            '**/renderers/webgl/**',
+            '**/renderers/shaders/**'
         ],
     });
 }
@@ -203,6 +205,7 @@ function JavascriptWrapper(modulePath) {
         dependencies: this.dependencies,
         props_created_by_three: this.config.propsDefinedByThree,
         serialized_props: this.serializedProps,
+        enum_properties: this.enum_properties,
         override_class: this.overrideClass, // { relativePath }
     };
 
@@ -238,6 +241,9 @@ _.extend(JavascriptWrapper.prototype, {
 
         result.absolutePath = path.resolve(jsSrcDir, result.relativePath);
         result.requirePath = path.relative(this.destDir, result.absolutePath);
+        if (result.requirePath.charAt(0) !== '.') {
+            result.requirePath = './' + result.requirePath;
+        }
 
         return result;
 
@@ -247,7 +253,7 @@ _.extend(JavascriptWrapper.prototype, {
 
         var superClassDescriptor = this.config.superClass;
         this.superClass = this.getRequireInfoFromClassDescriptor(this.config.superClass);
-
+        
     },
 
     processDependencies: function() {
@@ -283,7 +289,7 @@ _.extend(JavascriptWrapper.prototype, {
         this.properties = _.mapObject(this.config.properties, function(prop, propName) {
 
             return {
-                defaultJson: JSON.stringify(prop.defaultValue),
+                defaultJson: prop.getJSPropertyValue(),
                 property_array_name: prop.getPropArrayName(),
             };
         
@@ -297,6 +303,13 @@ _.extend(JavascriptWrapper.prototype, {
             return result;
 
         }, []);
+
+        this.enum_properties = _.reduce(this.config.properties, function(result, prop, propName) {
+            if (prop.enumTypeName) {
+                result[propName] = prop.enumTypeName;
+            }
+            return result;
+        }, {});
     
     },
 
@@ -357,7 +370,12 @@ _.extend(JavascriptWrapper.prototype, {
 
 function createJavascriptWrapper(modulePath) {
 
-    var wrapper = new JavascriptWrapper(modulePath);
+    try {
+        var wrapper = new JavascriptWrapper(modulePath);
+    } catch (e) {
+        console.log('skipping: ' + modulePath);
+        return Promise.resolve(false);
+    }
     return fse.outputFileAsync(wrapper.getOutputFilename(), wrapper.output);
 
     // NOTE: Old implementation
@@ -398,24 +416,41 @@ function writeJavascriptIndexFiles() {
             dirFiles = dirFiles.filter(function(filePath) {
 
                 // ignore autogen files in _base dir
-                if (dirPath === '_base' && RE_AUTOGEN_EXT.test(filePath)) {
-                    return false;
-                }
-
-                // do not load override classes in index.js files
-                // the override functionality is pull in via the autogen classes
-                if (RE_JS_EXT.test(filePath) && !RE_AUTOGEN_EXT.test(filePath)) {
+                if (/_base/.test(dirPath) && RE_AUTOGEN_EXT.test(filePath)) {
                     return false;
                 }
 
                 // compare filePath to each exclude pattern
-                return _.any(excludes, function(testPattern) {
+                var shouldExclude = _.any(excludes, function(testPattern) {
                     if (testPattern instanceof RegExp) {
-                        return !testPattern.test(filePath);
+                        return testPattern.test(filePath);
                     } else if (typeof testPattern === 'string') {
-                        return testPatern !== filePath;
+                        return testPattern === filePath;
                     }
                 });
+                if (shouldExclude) { 
+                    return false; 
+                }
+
+                // only load override classes if no autogen file is present
+                // e.g. for WebGLRenderer.js
+                // do not load override classes in index.js files
+                // the override functionality is pull in via the autogen classes
+                if (RE_JS_EXT.test(filePath) && !RE_AUTOGEN_EXT.test(filePath)) {
+                    var dirname = path.dirname(filePath);
+                    var basename = path.basename(filePath);
+                    var autogenName = basename + '.' + AUTOGEN_EXT + '.js';
+                    var autogenPath = path.join(dirname, autogenName);
+
+                    // if autogen file exists, skip, otherwise, keep going
+                    if (dirFiles.indexOf(autogenPath) > -1) {
+                        return false;
+                    }
+                    
+                    console.log('no autogen file exists for: ' + filePath);
+                }
+
+                return true;
             });
 
             // convert file paths relative to js src dir to paths relative to dirPath
@@ -544,7 +579,6 @@ _.extend(PythonWrapper.prototype, {
         if (this.superClass.className === 'Three') {
             this.superClass.className = 'ThreeWidget';
         }
-
     },
 
     processDependencies: function() {
@@ -623,7 +657,12 @@ _.extend(PythonWrapper.prototype, {
 
 function createPythonWrapper(modulePath) {
 
-    var wrapper = new PythonWrapper(modulePath);
+    try {
+        var wrapper = new PythonWrapper(modulePath);
+    } catch (e) {
+        console.log('skipping: ' + modulePath);
+        return Promise.resolve(false);
+    }
     return fse.outputFileAsync(wrapper.getOutputFilename(), wrapper.output);
 
 }

@@ -7,6 +7,9 @@ from ..traits import *
 from .._base.Three import ThreeWidget
 from ..math.Plane_autogen import Plane
 
+to_json = widget_serialization['to_json']
+from_json = widget_serialization['from_json']
+
 class WebGLRenderer(ThreeWidget):
     """WebGLRenderer
     
@@ -40,7 +43,11 @@ class WebGLRenderer(ThreeWidget):
     maxMorphTargets = CInt(8).tag(sync=True)
     maxMorphNormals = CInt(4).tag(sync=True)
 
-
-
-
+    def render(self, scene, camera):
+        content = {
+            "type": "render",
+            "scene": to_json(scene, None),
+            "camera": to_json(camera, None)
+        }
+        self.send(content)
 
