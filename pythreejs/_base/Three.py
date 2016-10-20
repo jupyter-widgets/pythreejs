@@ -7,6 +7,10 @@ class ThreeWidget(Widget):
     _view_module = Unicode(npm_pkg_name).tag(sync=True)
     _model_module = Unicode(npm_pkg_name).tag(sync=True)
 
+    # renderer properties
+    _width = CInt(200).tag(sync=True)
+    _height = CInt(200).tag(sync=True)
+
     def __init__(self, **kwargs):
         Widget.__init__(self, **kwargs)
         self.on_msg(self.on_potential_ret_val)
