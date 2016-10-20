@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Tue Oct 18 2016 14:57:27 GMT-0700 (PDT)
+// Date: Thu Oct 20 2016 12:05:52 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -18,9 +18,10 @@ var PolyhedronGeometryModel = GeometryModel.extend({
         _model_name: 'PolyhedronGeometryModel',
 
         vertices: [],
-        faces: [],
+        indices: [],
         radius: 1,
         detail: 0,
+        faces: [],
 
     }),
 
@@ -39,9 +40,11 @@ var PolyhedronGeometryModel = GeometryModel.extend({
 
         GeometryModel.prototype.createPropertiesArrays.call(this);
         this.array_properties.push('vertices');
-        this.array_properties.push('faces');
+        this.array_properties.push('indices');
         this.scalar_properties.push('radius');
         this.scalar_properties.push('detail');
+        this.array_properties.push('faces');
+        this.props_created_by_three['faces'] = true;
 
     },
 

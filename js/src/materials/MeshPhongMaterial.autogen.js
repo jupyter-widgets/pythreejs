@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Tue Oct 18 2016 14:57:27 GMT-0700 (PDT)
+// Date: Thu Oct 20 2016 12:05:52 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -74,7 +74,7 @@ var MeshPhongMaterialModel = MaterialModel.extend({
                 bumpMap: this.get('bumpMap'),
                 bumpScale: this.get('bumpScale'),
                 normalMap: this.get('normalMap'),
-                normalScale: this.get('normalScale'),
+                normalScale: this.convertVectorModelToThree(this.get('normalScale')),
                 displacementMap: this.get('displacementMap'),
                 displacementScale: this.get('displacementScale'),
                 displacementBias: this.get('displacementBias'),

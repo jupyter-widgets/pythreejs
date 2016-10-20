@@ -1079,10 +1079,12 @@ module.exports = {
         constructorArgs: [ 'vertices', 'faces', 'radius', 'detail' ],
         properties: {
             vertices: new Types.Array(),
-            faces:    new Types.Array(),
+            indices:  new Types.Array(),
             radius:   new Types.Float(1.0),
             detail:   new Types.Float(0.0),
+            faces:    new Types.Array(),
         },
+        propsDefinedByThree: [ 'faces' ],
     },
     RingBufferGeometry: {
         relativePath: './extras/geometries/RingBufferGeometry',

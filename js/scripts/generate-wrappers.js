@@ -319,7 +319,7 @@ _.extend(JavascriptWrapper.prototype, {
             var result = [ '{' ];
 
             result = result.concat(_.keys(this.config.properties).map(function(propName) {
-                return '                ' + propName + ": this.get('" + propName + "'),";
+                return '                ' + propName + ": " + this.getModelToThreeGetter(propName) + ',';
             }, this))
 
             result.push('            }');
@@ -330,7 +330,7 @@ _.extend(JavascriptWrapper.prototype, {
             if (propName === 'parameters') {
                 return getConstructorParametersObject.bind(this)().join('\n'); 
             } else {
-                return "this.get('" + propName + "')";
+                return this.getModelToThreeGetter(propName);
             }
         }, this);
 
@@ -360,6 +360,16 @@ _.extend(JavascriptWrapper.prototype, {
             viewName: overrideView,
         };
 
+    },
+
+    getModelToThreeGetter: function(propName) {
+        var prop = this.config.properties[propName];
+        var converter = prop.propToValueConverterFn();
+        if (converter) {
+            return "this." + converter + "(this.get('" + propName + "'))";
+        } else {
+            return "this.get('" + propName + "')";
+        }
     },
 
     getOutputFilename: function() {

@@ -43,7 +43,7 @@ var ThreeView = widgets.DOMWidgetView.extend({
         this.acquireRenderer();
 
         this.camera = new THREE.PerspectiveCamera(60, 1.0); // aspect is updated by this.updateSize()
-        this.camera.position.set(0, 0, 50);
+        this.camera.position.set(-40, 40, 40);
         this.camera.lookAt(new THREE.Vector3(0,0,0));
 
         this.updateSize();
@@ -744,6 +744,36 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
 
     syncVectorToModel: function(propName) {
         this.set(propName, this.obj[propName].toArray());
+    },
+
+    convertVectorModelToThree: function(v) {
+        var result;
+        switch(v.length) {
+            case 2: result = new THREE.Vector2(); break;
+            case 3: result = new THREE.Vector3(); break;
+            case 4: result = new THREE.Vector4(); break;
+            default:
+                throw new Error('model vector has invalid length: ' + v.length); 
+        }
+        result.fromArray(v);
+        return result;
+    },
+
+    convertMatrixModelToThree: function(m) {
+        var result;
+        switch(m.length) {
+            case 9: result = new THREE.Matrix3(); break;
+            case 16: result = new THREE.Matrix4(); break;
+            default:
+                throw new Error('model matrix has invalid length: ' + m.length);
+        }
+        result.fromArray(m);
+        return result;
+    },
+
+    convertFunctionModelToThree: function(fnStr) {
+        eval('var fn = ' + fnStr);
+        return fn;
     },
  
 }, {

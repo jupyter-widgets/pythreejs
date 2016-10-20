@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Tue Oct 18 2016 14:57:27 GMT-0700 (PDT)
+// Date: Thu Oct 20 2016 12:05:52 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -26,9 +26,9 @@ var TriangleModel = ThreeModel.extend({
     constructThreeObject: function() {
 
         return new THREE.Triangle(
-            this.get('a'),
-            this.get('b'),
-            this.get('c')
+            this.convertVectorModelToThree(this.get('a')),
+            this.convertVectorModelToThree(this.get('b')),
+            this.convertVectorModelToThree(this.get('c'))
         );
 
     },

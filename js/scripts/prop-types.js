@@ -5,6 +5,9 @@ _.extend(BaseType.prototype, {
     getJSPropertyValue: function() {
         return JSON.stringify(this.defaultValue);
     },
+    propToValueConverterFn: function() {
+        return null;
+    },
 })
 
 function ThreeType(typeName) {
@@ -174,6 +177,9 @@ _.extend(FunctionType.prototype, BaseType.prototype, {
     getJSPropertyValue: function() {
         return this.defaultValue.toString();
     },
+    propToValueConverterFn: function() {
+        return 'convertFunctionModelToThree';
+    },
 });
 
 function Vector2(x, y) {
@@ -185,6 +191,9 @@ _.extend(Vector2.prototype, BaseType.prototype, {
     },
     getPropArrayName: function() {
         return 'vector_properties';
+    },
+    propToValueConverterFn: function() {
+        return 'convertVectorModelToThree';
     },
 });
 
@@ -198,6 +207,9 @@ _.extend(Vector3.prototype, BaseType.prototype, {
     getPropArrayName: function() {
         return 'vector_properties';
     },
+    propToValueConverterFn: function() {
+        return 'convertVectorModelToThree';
+    },
 });
 
 function Vector4(x, y, z, w) {
@@ -209,6 +221,9 @@ _.extend(Vector4.prototype, BaseType.prototype, {
     },
     getPropArrayName: function() {
         return 'vector_properties';
+    },
+    propToValueConverterFn: function() {
+        return 'convertVectorModelToThree';
     },
 });
 
@@ -227,6 +242,9 @@ _.extend(Matrix3.prototype, BaseType.prototype, {
     getPropArrayName: function() {
         return 'vector_properties';
     },
+    propToValueConverterFn: function() {
+        return 'convertMatrixModelToThree';
+    },
 });
 
 function Matrix4() {
@@ -243,6 +261,9 @@ _.extend(Matrix4.prototype, BaseType.prototype, {
     },
     getPropArrayName: function() {
         return 'vector_properties';
+    },
+    propToValueConverterFn: function() {
+        return 'convertMatrixModelToThree';
     },
 });
 

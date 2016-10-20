@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Tue Oct 18 2016 14:57:27 GMT-0700 (PDT)
+// Date: Thu Oct 20 2016 12:05:52 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -25,7 +25,7 @@ var PlaneModel = ThreeModel.extend({
     constructThreeObject: function() {
 
         return new THREE.Plane(
-            this.get('normal'),
+            this.convertVectorModelToThree(this.get('normal')),
             this.get('constant')
         );
 
