@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Thu Oct 20 2016 12:05:52 GMT-0700 (PDT)
+// Date: Thu Oct 20 2016 15:52:38 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -62,24 +62,24 @@ var MeshStandardMaterialModel = MaterialModel.extend({
                 color: this.get('color'),
                 roughness: this.get('roughness'),
                 metalness: this.get('metalness'),
-                map: this.get('map'),
-                lightMap: this.get('lightMap'),
+                map: this.convertThreeTypeModelToThree(this.get('map')),
+                lightMap: this.convertThreeTypeModelToThree(this.get('lightMap')),
                 lightMapIntensity: this.get('lightMapIntensity'),
-                aoMap: this.get('aoMap'),
+                aoMap: this.convertThreeTypeModelToThree(this.get('aoMap')),
                 aoMapIntensity: this.get('aoMapIntensity'),
                 emissive: this.get('emissive'),
-                emissiveMap: this.get('emissiveMap'),
+                emissiveMap: this.convertThreeTypeModelToThree(this.get('emissiveMap')),
                 emissiveIntensity: this.get('emissiveIntensity'),
-                bumpMap: this.get('bumpMap'),
+                bumpMap: this.convertThreeTypeModelToThree(this.get('bumpMap')),
                 bumpScale: this.get('bumpScale'),
-                normalMap: this.get('normalMap'),
-                displacementMap: this.get('displacementMap'),
+                normalMap: this.convertThreeTypeModelToThree(this.get('normalMap')),
+                displacementMap: this.convertThreeTypeModelToThree(this.get('displacementMap')),
                 displacementScale: this.get('displacementScale'),
                 displacementBias: this.get('displacementBias'),
-                roughnessMap: this.get('roughnessMap'),
-                metalnessMap: this.get('metalnessMap'),
-                alphaMap: this.get('alphaMap'),
-                envMap: this.get('envMap'),
+                roughnessMap: this.convertThreeTypeModelToThree(this.get('roughnessMap')),
+                metalnessMap: this.convertThreeTypeModelToThree(this.get('metalnessMap')),
+                alphaMap: this.convertThreeTypeModelToThree(this.get('alphaMap')),
+                envMap: this.convertThreeTypeModelToThree(this.get('envMap')),
                 envMapIntensity: this.get('envMapIntensity'),
                 refractionRatio: this.get('refractionRatio'),
                 fog: this.get('fog'),

@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Thu Oct 20 2016 12:05:52 GMT-0700 (PDT)
+// Date: Thu Oct 20 2016 15:52:38 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -26,7 +26,7 @@ var SplineModel = ThreeModel.extend({
     constructThreeObject: function() {
 
         return new THREE.Spline(
-            this.get('points')
+            this.convertThreeTypeArrayModelToThree(this.get('points'))
         );
 
     },

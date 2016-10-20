@@ -54,7 +54,7 @@ function isDir(filePath) {
     return stats.isDirectory();
 }
 
-function getClassConfig(className) {
+function getClassConfig(className, doLog) {
 
     // console.log('getClassConfig: ' + className);
     className = className.replace(/\./g, '_')
@@ -62,13 +62,24 @@ function getClassConfig(className) {
         throw new Error('invalid class name: ' + className);
     }
 
-    var result = classConfigs[className];
+    var curClass = classConfigs[className];
+
+    var result = {};
+    _.extend(result, curClass);
+
+    // combine cur props with superclass properties for allProperties
+    result.allProperties = {};
+    if (curClass.superClass && curClass.superClass !== classConfigs._defaults.superClass) {
+        var superClassConfig = getClassConfig(curClass.superClass);
+        _.extend(result.allProperties, superClassConfig.allProperties);
+    }
+    _.extend(result.allProperties, curClass.properties);
+
+    // add defaults
     _.defaults(
         result, 
         classConfigs._defaults
     );
-
-    // console.log(result);
 
     return result;
 }
@@ -231,9 +242,7 @@ _.extend(JavascriptWrapper.prototype, {
             }
 
         } else {
-
             throw new Error('invalid classDescriptor: ' + classDescriptor);
-
         }
 
         result.modelName = result.className + 'Model';
@@ -273,7 +282,13 @@ _.extend(JavascriptWrapper.prototype, {
 
             if (prop instanceof Types.ThreeType || prop instanceof Types.ThreeTypeArray || prop instanceof Types.ThreeTypeDict) {
                 if (prop.typeName !== 'this') {
-                    result[prop.typeName] = this.getRequireInfoFromClassDescriptor(prop.typeName);        
+                    if (typeof prop.typeName === 'string') {
+                        result[prop.typeName] = this.getRequireInfoFromClassDescriptor(prop.typeName);        
+                    } else if (prop.typeName instanceof Array) {
+                        prop.typeName.forEach(function(typeName) {
+                            result[typeName] = this.getRequireInfoFromClassDescriptor(typeName);
+                        }, this);
+                    }
                 }
             } 
             return result;
@@ -363,7 +378,10 @@ _.extend(JavascriptWrapper.prototype, {
     },
 
     getModelToThreeGetter: function(propName) {
-        var prop = this.config.properties[propName];
+        var prop = this.config.allProperties[propName];
+        if (!prop) {
+            throw new Error('invalid propName: ' + propName);
+        }
         var converter = prop.propToValueConverterFn();
         if (converter) {
             return "this." + converter + "(this.get('" + propName + "'))";
@@ -383,6 +401,8 @@ function createJavascriptWrapper(modulePath) {
     try {
         var wrapper = new JavascriptWrapper(modulePath);
     } catch (e) {
+        console.log('error creating wrapper: ');
+        console.log(e);
         console.log('skipping: ' + modulePath);
         return Promise.resolve(false);
     }
@@ -562,9 +582,7 @@ _.extend(PythonWrapper.prototype, {
             }
 
         } else {
-
             throw new Error('invalid classDescriptor: ' + classDescriptor);
-
         }
 
         // get path of dependency relative to module dir
@@ -608,7 +626,13 @@ _.extend(PythonWrapper.prototype, {
 
             if (prop instanceof Types.ThreeType || prop instanceof Types.ThreeTypeArray || prop instanceof Types.ThreeTypeDict) {
                 if (prop.typeName !== 'this') {
-                    result[prop.typeName] = this.getRequireInfoFromClassDescriptor(prop.typeName);        
+                    if (typeof prop.typeName === 'string') {
+                        result[prop.typeName] = this.getRequireInfoFromClassDescriptor(prop.typeName);        
+                    } else if (prop.typeName instanceof Array) {
+                        prop.typeName.forEach(function(typeName) {
+                            result[typeName] = this.getRequireInfoFromClassDescriptor(typeName);
+                        }, this);
+                    }
                 }
             } 
             return result;

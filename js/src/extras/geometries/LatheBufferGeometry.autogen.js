@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Thu Oct 20 2016 12:05:52 GMT-0700 (PDT)
+// Date: Thu Oct 20 2016 15:52:38 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -9,8 +9,6 @@ var widgets = require('jupyter-js-widgets');
 var BufferGeometryModel = require('../../core/BufferGeometry').BufferGeometryModel;
 var BufferGeometryView = require('../../core/BufferGeometry').BufferGeometryView;
 
-var Vector2Model = require('../../math/Vector2').Vector2Model;
-var Vector2View = require('../../math/Vector2').Vector2View;
 
 var LatheBufferGeometryModel = BufferGeometryModel.extend({
 
@@ -29,7 +27,7 @@ var LatheBufferGeometryModel = BufferGeometryModel.extend({
     constructThreeObject: function() {
 
         return new THREE.LatheBufferGeometry(
-            this.get('points'),
+            this.convertVectorArrayModelToThree(this.get('points')),
             this.get('segments'),
             this.get('phiStart'),
             this.get('phiLength')
@@ -40,19 +38,13 @@ var LatheBufferGeometryModel = BufferGeometryModel.extend({
     createPropertiesArrays: function() {
 
         BufferGeometryModel.prototype.createPropertiesArrays.call(this);
-        this.three_array_properties.push('points');
+        this.array_properties.push('points');
         this.scalar_properties.push('segments');
         this.scalar_properties.push('phiStart');
         this.scalar_properties.push('phiLength');
 
     },
 
-}, {
-
-    serializers: _.extend({
-        points: { deserialize: widgets.unpack_models },
-    }, BufferGeometryModel.serializers),
-    
 });
 
 var LatheBufferGeometryView = BufferGeometryView.extend({});

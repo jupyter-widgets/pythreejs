@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Thu Oct 20 2016 12:05:52 GMT-0700 (PDT)
+// Date: Thu Oct 20 2016 15:52:38 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -63,24 +63,24 @@ var MeshPhongMaterialModel = MaterialModel.extend({
                 color: this.get('color'),
                 specular: this.get('specular'),
                 shininess: this.get('shininess'),
-                map: this.get('map'),
-                lightMap: this.get('lightMap'),
+                map: this.convertThreeTypeModelToThree(this.get('map')),
+                lightMap: this.convertThreeTypeModelToThree(this.get('lightMap')),
                 lightMapIntensity: this.get('lightMapIntensity'),
-                aoMap: this.get('aoMap'),
+                aoMap: this.convertThreeTypeModelToThree(this.get('aoMap')),
                 aoMapIntensity: this.get('aoMapIntensity'),
                 emissive: this.get('emissive'),
-                emissiveMap: this.get('emissiveMap'),
+                emissiveMap: this.convertThreeTypeModelToThree(this.get('emissiveMap')),
                 emissiveIntensity: this.get('emissiveIntensity'),
-                bumpMap: this.get('bumpMap'),
+                bumpMap: this.convertThreeTypeModelToThree(this.get('bumpMap')),
                 bumpScale: this.get('bumpScale'),
-                normalMap: this.get('normalMap'),
+                normalMap: this.convertThreeTypeModelToThree(this.get('normalMap')),
                 normalScale: this.convertVectorModelToThree(this.get('normalScale')),
-                displacementMap: this.get('displacementMap'),
+                displacementMap: this.convertThreeTypeModelToThree(this.get('displacementMap')),
                 displacementScale: this.get('displacementScale'),
                 displacementBias: this.get('displacementBias'),
-                specularMap: this.get('specularMap'),
-                alphaMap: this.get('alphaMap'),
-                envMap: this.get('envMap'),
+                specularMap: this.convertThreeTypeModelToThree(this.get('specularMap')),
+                alphaMap: this.convertThreeTypeModelToThree(this.get('alphaMap')),
+                envMap: this.convertThreeTypeModelToThree(this.get('envMap')),
                 combine: this.get('combine'),
                 reflectivity: this.get('reflectivity'),
                 refractionRatio: this.get('refractionRatio'),

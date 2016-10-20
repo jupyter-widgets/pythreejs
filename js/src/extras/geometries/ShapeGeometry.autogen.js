@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Tue Oct 18 2016 14:57:27 GMT-0700 (PDT)
+// Date: Thu Oct 20 2016 15:52:38 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -28,7 +28,7 @@ var ShapeGeometryModel = GeometryModel.extend({
     constructThreeObject: function() {
 
         return new THREE.ShapeGeometry(
-            this.get('shape')
+            this.convertThreeTypeArrayModelToThree(this.get('shapes'))
         );
 
     },

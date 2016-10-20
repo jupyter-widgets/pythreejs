@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Thu Oct 20 2016 12:05:52 GMT-0700 (PDT)
+// Date: Thu Oct 20 2016 15:52:38 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -31,12 +31,12 @@ var FrustumModel = ThreeModel.extend({
     constructThreeObject: function() {
 
         return new THREE.Frustum(
-            this.get('p0'),
-            this.get('p1'),
-            this.get('p2'),
-            this.get('p3'),
-            this.get('p4'),
-            this.get('p5')
+            this.convertThreeTypeModelToThree(this.get('p0')),
+            this.convertThreeTypeModelToThree(this.get('p1')),
+            this.convertThreeTypeModelToThree(this.get('p2')),
+            this.convertThreeTypeModelToThree(this.get('p3')),
+            this.convertThreeTypeModelToThree(this.get('p4')),
+            this.convertThreeTypeModelToThree(this.get('p5'))
         );
 
     },

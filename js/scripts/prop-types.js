@@ -17,13 +17,28 @@ function ThreeType(typeName) {
 }
 _.extend(ThreeType.prototype, BaseType.prototype, {
     getTraitlet: function() {
+        // allow type unions
+        if (this.typeName instanceof Array) {
+            // TODO: only instan
+            var instances = this.typeName.map(function(typeName) {
+                return '        Instance(' + typeName + ', allow_none=True).tag(sync=True, **widget_serialization)';
+            });
+            return 'Union([\n' + instances.join(',\n') + '\n    ])';
+
+            // return 'Any()';
+        }
+
         if (this.typeName.toLowerCase() === 'this') {
             return 'This().tag(sync=True, **widget_serialization)';
         }
+        
         return 'Instance(' + this.typeName + ', allow_none=True).tag(sync=True, **widget_serialization)';
     },
     getPropArrayName: function() {
         return 'three_properties';
+    },
+    propToValueConverterFn: function() {
+        return 'convertThreeTypeModelToThree';
     },
 });
 
@@ -44,6 +59,9 @@ _.extend(ThreeTypeArray.prototype, BaseType.prototype, {
     getPropArrayName: function() {
         return 'three_array_properties';
     },
+    propToValueConverterFn: function() {
+        return 'convertThreeTypeArrayModelToThree';
+    },
 });
 
 function ThreeTypeDict(typeName) {
@@ -60,6 +78,9 @@ _.extend(ThreeTypeDict.prototype, BaseType.prototype, {
     },
     getPropArrayName: function() {
         return 'three_dict_properties';
+    },
+    propToValueConverterFn: function() {
+        return 'convertThreeTypeDictModelToThree';
     },
 });
 
@@ -227,6 +248,21 @@ _.extend(Vector4.prototype, BaseType.prototype, {
     },
 });
 
+function VectorArray() {
+    this.defaultValue = [];
+}
+_.extend(VectorArray.prototype, BaseType.prototype, {
+    getTraitlet: function() {
+        return 'List(trait=List()).tag(sync=True)';
+    },
+    getPropArrayName: function() {
+        return 'array_properties';
+    },
+    propToValueConverterFn: function() {
+        return 'convertVectorArrayModelToThree';
+    },
+});
+
 function Matrix3() {
     this.defaultValue = [
         1, 0, 0,
@@ -284,6 +320,7 @@ module.exports = {
     Vector2: Vector2,
     Vector3: Vector3,
     Vector4: Vector4,
+    VectorArray: VectorArray,
     Matrix3: Matrix3,
     Matrix4: Matrix4,
 };

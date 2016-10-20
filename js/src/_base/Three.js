@@ -118,6 +118,12 @@ var ThreeView = widgets.DOMWidgetView.extend({
                     color: '#888888',
                     shading: THREE.FlatShading,
                 });
+            } else if (this.model.get('_wire') || obj instanceof THREE.WireframeGeometry) {
+                material = new THREE.MeshBasicMaterial({
+                    color: '#888888',
+                    wireframe: true,
+                    shading: THREE.FlatShading,
+                });
             } else {
                 material = new THREE.MeshStandardMaterial({
                     color: '#888888',
@@ -294,6 +300,7 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
         _width: 200,
         _height: 200,
         _flat: false,
+        _wire: false,
     }),
 
     initialize: function(attributes, options) {
@@ -768,6 +775,12 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
         return result;
     },
 
+    convertVectorArrayModelToThree: function(varr) {
+        return varr.map(function(v) {
+            return this.convertVectorModelToThree(v);
+        }, this);
+    },
+
     convertMatrixModelToThree: function(m) {
         var result;
         switch(m.length) {
@@ -783,6 +796,25 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
     convertFunctionModelToThree: function(fnStr) {
         eval('var fn = ' + fnStr);
         return fn;
+    },
+
+    convertThreeTypeModelToThree: function(model) {
+        if (model) {
+            return model.obj;    
+        }
+        return null;
+    },
+
+    convertThreeTypeArrayModelToThree: function(modelArr) {
+        return modelArr.map(function(model) {
+            return this.convertThreeTypeModelToThree(model);
+        }, this);
+    },
+
+    convertThreeTypeDictModelToThree: function(modelDict) {
+        return _.mapObject(modelDict, function(model, name) {
+            return this.convertThreeTypeModelToThree(model);
+        }, this);
     },
  
 }, {

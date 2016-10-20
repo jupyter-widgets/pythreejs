@@ -1015,7 +1015,7 @@ module.exports = {
         superClass: 'BufferGeometry',
         constructorArgs: [ 'points', 'segments', 'phiStart', 'phiLength' ],
         properties: {
-            points: new Types.ThreeTypeArray('Vector2'), // need vector_array type?
+            points: new Types.VectorArray(),
             segments: new Types.Int(12),
             phiStart: new Types.Float(0.0),
             phiLength: new Types.Float(Math.PI * 2.0),
@@ -1026,7 +1026,7 @@ module.exports = {
         superClass: 'Geometry',
         constructorArgs: [ 'points', 'segments', 'phiStart', 'phiLength' ],
         properties: {
-            points: new Types.ThreeTypeArray('Vector2'), // need vector_array type?
+            points: new Types.VectorArray(),
             segments: new Types.Int(12),
             phiStart: new Types.Float(0.0),
             phiLength: new Types.Float(Math.PI * 2.0),
@@ -1116,7 +1116,7 @@ module.exports = {
     ShapeGeometry: {
         relativePath: './extras/geometries/ShapeGeometry',
         superClass: 'Geometry',
-        constructorArgs: [ 'shape' ],
+        constructorArgs: [ 'shapes' ],
         properties: {
             shapes:        new Types.ThreeTypeArray('Shape'),
             curveSegments: new Types.Int(12), // NOTE: docs say this is unused
@@ -1230,6 +1230,11 @@ module.exports = {
     WireframeGeometry: {
         relativePath: './extras/geometries/WireframeGeometry',
         superClass: 'Geometry',
+        constructorArgs: [ 'geometry' ],
+        properties: {
+            geometry:       new Types.ThreeType(['Geometry', 'BufferGeometry']),
+            // geometry:       new Types.ThreeType('Geometry'),
+        },
     },
     ArrowHelper: {
         relativePath: './extras/helpers/ArrowHelper',

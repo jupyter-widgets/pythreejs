@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Thu Oct 20 2016 12:05:52 GMT-0700 (PDT)
+// Date: Thu Oct 20 2016 15:52:38 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -30,7 +30,7 @@ var TubeGeometryModel = GeometryModel.extend({
     constructThreeObject: function() {
 
         return new THREE.TubeGeometry(
-            this.get('path'),
+            this.convertThreeTypeModelToThree(this.get('path')),
             this.get('segments'),
             this.get('radius'),
             this.get('radiusSegments'),

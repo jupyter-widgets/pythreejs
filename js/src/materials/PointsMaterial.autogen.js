@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Thu Oct 20 2016 12:05:52 GMT-0700 (PDT)
+// Date: Thu Oct 20 2016 15:52:38 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -32,7 +32,7 @@ var PointsMaterialModel = MaterialModel.extend({
         return new THREE.PointsMaterial(
             {
                 color: this.get('color'),
-                map: this.get('map'),
+                map: this.convertThreeTypeModelToThree(this.get('map')),
                 size: this.get('size'),
                 sizeAttenuation: this.get('sizeAttenuation'),
                 vertexColors: this.get('vertexColors'),
