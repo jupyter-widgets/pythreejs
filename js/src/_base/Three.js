@@ -112,9 +112,17 @@ var ThreeView = widgets.DOMWidgetView.extend({
 
         } else if (obj instanceof THREE.Geometry || obj instanceof THREE.BufferGeometry) {
 
-            var material = new THREE.MeshStandardMaterial({
-                color: '#888888',
-            });
+            var material;
+            if (this.model.get('_flat')) {
+                material = new THREE.MeshPhongMaterial({
+                    color: '#888888',
+                    shading: THREE.FlatShading,
+                });
+            } else {
+                material = new THREE.MeshStandardMaterial({
+                    color: '#888888',
+                });
+            }
             var mesh = new THREE.Mesh(obj, material);
             this.scene.add(mesh);
 
@@ -285,6 +293,7 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
 
         _width: 200,
         _height: 200,
+        _flat: false,
     }),
 
     initialize: function(attributes, options) {

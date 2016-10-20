@@ -10,6 +10,7 @@ class ThreeWidget(Widget):
     # renderer properties
     _width = CInt(200).tag(sync=True)
     _height = CInt(200).tag(sync=True)
+    _flat = Bool(False).tag(sync=True)
 
     def __init__(self, **kwargs):
         Widget.__init__(self, **kwargs)
