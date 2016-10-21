@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Fri Oct 21 2016 15:47:51 GMT-0700 (PDT)
+// Date: Fri Oct 21 2016 15:59:19 GMT-0700 (PDT)
 //
 // Entry point for the notebook bundle containing custom model definitions.
 //

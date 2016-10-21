@@ -999,8 +999,8 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
         var result;
         if (cached) {
             result = cached;
-            result.array = new Float32Array(ba[0]);
-            result.itemSize = ba[1];
+            // result.array = new Float32Array(ba[0]);
+            // result.itemSize = ba[1];
         } else {
             result = new THREE.BufferAttribute(
                 ba[0], // array

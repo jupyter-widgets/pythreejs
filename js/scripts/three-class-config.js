@@ -920,6 +920,7 @@ module.exports = {
             heightSegments: new Types.Int(1),
             depthSegments: new Types.Int(1),
         },
+        propsDefinedByThree: [ 'attributes', 'index' ],
     },
     BoxGeometry: {
         relativePath: './extras/geometries/BoxGeometry',
@@ -945,6 +946,7 @@ module.exports = {
             thetaStart: new Types.Float(0.0),
             thetaLength: new Types.Float(Math.PI * 2.0),
         },
+        propsDefinedByThree: [ 'attributes', 'index' ],
     },
     CircleGeometry: {
         relativePath: './extras/geometries/CircleGeometry',
@@ -971,6 +973,7 @@ module.exports = {
             thetaStart: new Types.Float(0.0),
             thetaLength: new Types.Float(Math.PI * 2.0),
         },
+        propsDefinedByThree: [ 'attributes', 'index' ],
     },
     CylinderGeometry: {
         relativePath: './extras/geometries/CylinderGeometry',
@@ -1026,6 +1029,7 @@ module.exports = {
             phiStart: new Types.Float(0.0),
             phiLength: new Types.Float(Math.PI * 2.0),
         },
+        propsDefinedByThree: [ 'attributes', 'index' ],
     },
     LatheGeometry: {
         relativePath: './extras/geometries/LatheGeometry',
@@ -1070,6 +1074,7 @@ module.exports = {
             widthSegments:  new Types.Int(1),
             heightSegments: new Types.Int(1),
         },
+        propsDefinedByThree: [ 'attributes', 'index' ],
     },
     PlaneGeometry: {
         relativePath: './extras/geometries/PlaneGeometry',
@@ -1108,6 +1113,7 @@ module.exports = {
             thetaStart:    new Types.Float(0),
             thetaLength:   new Types.Float(Math.PI * 2),
         },
+        propsDefinedByThree: [ 'attributes', 'index' ],
     },
     RingGeometry: {
         relativePath: './extras/geometries/RingGeometry',
@@ -1190,6 +1196,7 @@ module.exports = {
             tubularSegments: new Types.Int(6),
             arc:             new Types.Float(Math.PI * 2.0),
         },
+        propsDefinedByThree: [ 'attributes', 'index' ],
     },
     TorusGeometry: {
         relativePath: './extras/geometries/TorusGeometry',
@@ -1216,6 +1223,7 @@ module.exports = {
             p:               new Types.Int(2),
             q:               new Types.Int(3),
         },
+        propsDefinedByThree: [ 'attributes', 'index' ],
     },
     TorusKnotGeometry: {
         relativePath: './extras/geometries/TorusKnotGeometry',

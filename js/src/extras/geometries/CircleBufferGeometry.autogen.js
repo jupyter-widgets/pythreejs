@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Fri Oct 21 2016 15:47:51 GMT-0700 (PDT)
+// Date: Fri Oct 21 2016 15:59:18 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -39,6 +39,8 @@ var CircleBufferGeometryModel = BufferGeometryModel.extend({
 
         BufferGeometryModel.prototype.createPropertiesArrays.call(this);
         
+        this.props_created_by_three['attributes'] = true;
+        this.props_created_by_three['index'] = true;
         this.props_created_by_three['uuid'] = true;
         this.props_created_by_three['type'] = true;
 
