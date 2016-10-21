@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Thu Oct 20 2016 15:52:38 GMT-0700 (PDT)
+// Date: Fri Oct 21 2016 15:47:51 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -29,8 +29,8 @@ var SpriteMaterialModel = MaterialModel.extend({
 
         return new THREE.SpriteMaterial(
             {
-                color: this.get('color'),
-                map: this.convertThreeTypeModelToThree(this.get('map')),
+                color: this.convertColorModelToThree(this.get('color'), 'color'),
+                map: this.convertThreeTypeModelToThree(this.get('map'), 'map'),
                 rotation: this.get('rotation'),
             }
         );
@@ -40,9 +40,14 @@ var SpriteMaterialModel = MaterialModel.extend({
     createPropertiesArrays: function() {
 
         MaterialModel.prototype.createPropertiesArrays.call(this);
-        this.color_properties.push('color');
         this.three_properties.push('map');
-        this.scalar_properties.push('rotation');
+        
+        this.props_created_by_three['uuid'] = true;
+        this.props_created_by_three['type'] = true;
+
+        this.property_converters['color'] = 'convertColor';
+        this.property_converters['map'] = 'convertThreeType';
+        this.property_converters['rotation'] = null;
 
     },
 

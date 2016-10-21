@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Thu Oct 20 2016 15:52:38 GMT-0700 (PDT)
+// Date: Fri Oct 21 2016 15:47:51 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -50,29 +50,33 @@ var Object3DModel = ThreeModel.extend({
     createPropertiesArrays: function() {
 
         ThreeModel.prototype.createPropertiesArrays.call(this);
-        this.scalar_properties.push('uuid');
-        this.scalar_properties.push('name');
-        this.scalar_properties.push('type');
         this.three_properties.push('parent');
         this.three_array_properties.push('children');
-        this.vector_properties.push('up');
-        this.vector_properties.push('position');
-        this.vector_properties.push('rotation');
-        this.vector_properties.push('quaternion');
-        this.vector_properties.push('scale');
-        this.vector_properties.push('modelViewMatrix');
-        this.vector_properties.push('normalMatrix');
-        this.vector_properties.push('matrix');
-        this.vector_properties.push('matrixWorld');
-        this.scalar_properties.push('matrixAutoUpdate');
-        this.scalar_properties.push('matrixWorldNeedsUpdate');
-        this.scalar_properties.push('visible');
-        this.scalar_properties.push('castShadow');
-        this.scalar_properties.push('receiveShadow');
-        this.scalar_properties.push('frustumCulled');
-        this.scalar_properties.push('renderOrder');
+        
         this.props_created_by_three['uuid'] = true;
         this.props_created_by_three['type'] = true;
+
+        this.property_converters['uuid'] = null;
+        this.property_converters['name'] = null;
+        this.property_converters['type'] = null;
+        this.property_converters['parent'] = 'convertThreeType';
+        this.property_converters['children'] = 'convertThreeTypeArray';
+        this.property_converters['up'] = 'convertVector';
+        this.property_converters['position'] = 'convertVector';
+        this.property_converters['rotation'] = 'convertVector';
+        this.property_converters['quaternion'] = 'convertVector';
+        this.property_converters['scale'] = 'convertVector';
+        this.property_converters['modelViewMatrix'] = 'convertMatrix';
+        this.property_converters['normalMatrix'] = 'convertMatrix';
+        this.property_converters['matrix'] = 'convertMatrix';
+        this.property_converters['matrixWorld'] = 'convertMatrix';
+        this.property_converters['matrixAutoUpdate'] = null;
+        this.property_converters['matrixWorldNeedsUpdate'] = null;
+        this.property_converters['visible'] = null;
+        this.property_converters['castShadow'] = null;
+        this.property_converters['receiveShadow'] = null;
+        this.property_converters['frustumCulled'] = null;
+        this.property_converters['renderOrder'] = null;
 
     },
 

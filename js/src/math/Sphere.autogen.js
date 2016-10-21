@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Thu Oct 20 2016 15:52:38 GMT-0700 (PDT)
+// Date: Fri Oct 21 2016 15:47:51 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -25,7 +25,7 @@ var SphereModel = ThreeModel.extend({
     constructThreeObject: function() {
 
         return new THREE.Sphere(
-            this.convertVectorModelToThree(this.get('center')),
+            this.convertVectorModelToThree(this.get('center'), 'center'),
             this.get('radius')
         );
 
@@ -34,8 +34,10 @@ var SphereModel = ThreeModel.extend({
     createPropertiesArrays: function() {
 
         ThreeModel.prototype.createPropertiesArrays.call(this);
-        this.vector_properties.push('center');
-        this.scalar_properties.push('radius');
+        
+
+        this.property_converters['center'] = 'convertVector';
+        this.property_converters['radius'] = null;
 
     },
 

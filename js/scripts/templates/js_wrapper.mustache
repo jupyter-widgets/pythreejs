@@ -41,13 +41,24 @@ var {{ modelName }} = {{ superClass.modelName }}.extend({
 
         {{ superClass.modelName }}.prototype.createPropertiesArrays.call(this);
         {{#each properties as |prop propName|}}
+        {{#if prop.property_array_name }}
         this.{{ prop.property_array_name }}.push('{{ propName }}');
+        {{/if}}
         {{/each}}
+        
         {{#each props_created_by_three as |propName|}}
         this.props_created_by_three['{{propName}}'] = true;
         {{/each}}
         {{#each enum_properties as |enumTypeName propName|}}
         this.enum_property_types['{{ propName }}'] = '{{ enumTypeName }}';
+        {{/each}}
+
+        {{#each properties as |prop propName|}}
+        {{#if prop.property_converter }}
+        this.property_converters['{{ propName }}'] = '{{ prop.property_converter }}';
+        {{else}}
+        this.property_converters['{{ propName }}'] = null;
+        {{/if}}
         {{/each}}
 
     },

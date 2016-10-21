@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Thu Oct 20 2016 15:52:38 GMT-0700 (PDT)
+// Date: Fri Oct 21 2016 15:47:51 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -32,8 +32,8 @@ var Face3Model = ThreeModel.extend({
             this.get('a'),
             this.get('b'),
             this.get('c'),
-            this.convertVectorModelToThree(this.get('normal')),
-            this.get('color'),
+            this.convertVectorModelToThree(this.get('normal'), 'normal'),
+            this.convertColorModelToThree(this.get('color'), 'color'),
             this.get('materialIndex')
         );
 
@@ -42,12 +42,14 @@ var Face3Model = ThreeModel.extend({
     createPropertiesArrays: function() {
 
         ThreeModel.prototype.createPropertiesArrays.call(this);
-        this.scalar_properties.push('a');
-        this.scalar_properties.push('b');
-        this.scalar_properties.push('c');
-        this.vector_properties.push('normal');
-        this.color_properties.push('color');
-        this.scalar_properties.push('materialIndex');
+        
+
+        this.property_converters['a'] = null;
+        this.property_converters['b'] = null;
+        this.property_converters['c'] = null;
+        this.property_converters['normal'] = 'convertVector';
+        this.property_converters['color'] = 'convertColor';
+        this.property_converters['materialIndex'] = null;
 
     },
 

@@ -67,13 +67,20 @@ function getClassConfig(className, doLog) {
     var result = {};
     _.extend(result, curClass);
 
+    result.propsDefinedByThree = [];
+    result.propsDefinedByThree = result.propsDefinedByThree.concat(curClass.propsDefinedByThree || []);
+
     // combine cur props with superclass properties for allProperties
     result.allProperties = {};
     if (curClass.superClass && curClass.superClass !== classConfigs._defaults.superClass) {
         var superClassConfig = getClassConfig(curClass.superClass);
         _.extend(result.allProperties, superClassConfig.allProperties);
+
+        result.propsDefinedByThree = result.propsDefinedByThree.concat(superClassConfig.propsDefinedByThree || []);
     }
     _.extend(result.allProperties, curClass.properties);
+
+    // we want to inherit all propsDefinedByThree
 
     // add defaults
     _.defaults(
@@ -306,6 +313,7 @@ _.extend(JavascriptWrapper.prototype, {
             return {
                 defaultJson: prop.getJSPropertyValue(),
                 property_array_name: prop.getPropArrayName(),
+                property_converter: prop.getPropertyConverterFn(),
             };
         
         }, this);
@@ -382,9 +390,9 @@ _.extend(JavascriptWrapper.prototype, {
         if (!prop) {
             throw new Error('invalid propName: ' + propName);
         }
-        var converter = prop.propToValueConverterFn();
+        var converter = prop.getPropertyConverterFn();
         if (converter) {
-            return "this." + converter + "(this.get('" + propName + "'))";
+            return "this." + converter +  "ModelToThree(this.get('" + propName + "'), '" + propName +"')";
         } else {
             return "this.get('" + propName + "')";
         }
@@ -537,12 +545,15 @@ function PythonWrapper(modulePath) {
     this.pyBaseRelativePath = path.relative(this.destDirAbsolutePath, pySrcDir);
     this.pyBaseRelativePath = relativePathToPythonImportPath(this.pyBaseRelativePath);
 
+    this.hasParameters = false;
+
     this.config = getClassConfig(this.className);
 
     this.processSuperClass();
     this.processDependencies();
     this.processProperties();
     this.processDocsUrl();
+    this.processConstructorArgs();
 
     // Template and context
     this.template = pyWrapperTemplate;
@@ -551,6 +562,10 @@ function PythonWrapper(modulePath) {
         generatorScriptName: path.basename(__filename),
         threejs_docs_url: this.docsUrl,
         py_base_relative_path: this.pyBaseRelativePath,
+        constructor: {
+            args: this.constructorArgs,
+            hasParameters: this.hasParameters,
+        },
 
         className: this.className,
         viewName: this.className + 'View',
@@ -646,13 +661,34 @@ _.extend(PythonWrapper.prototype, {
     processProperties: function() {
 
         this.properties = _.mapObject(this.config.properties, function(prop, propName) {
-
             return {
                 trait_declaration: prop.getTraitlet(),
+                defaultJson: prop.getPythonDefaultValue(),
             };
-        
         }, this);
 
+    },
+
+    processConstructorArgs: function() {
+        this.constructorArgs = this.config.constructorArgs.map(function(propName) {
+            // Currently, we don't generate an __init__ method for classes that use the parameters
+            // constructor arg
+            if (propName === 'parameters') {
+                this.hasParameters = true;
+                return {
+                    name: propName,
+                    prop: {
+                        defaultJson: '{}',
+                    }
+                }
+            }
+            return {
+                name: propName,
+                prop: {
+                    defaultJson: this.config.allProperties[propName].getPythonDefaultValue(),
+                }
+            };
+        }, this);
     },
 
     processDocsUrl: function() {
@@ -694,6 +730,7 @@ function createPythonWrapper(modulePath) {
     try {
         var wrapper = new PythonWrapper(modulePath);
     } catch (e) {
+        console.log(e);
         console.log('skipping: ' + modulePath);
         return Promise.resolve(false);
     }

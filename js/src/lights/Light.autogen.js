@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Thu Oct 20 2016 15:52:38 GMT-0700 (PDT)
+// Date: Fri Oct 21 2016 15:47:51 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -25,7 +25,7 @@ var LightModel = Object3DModel.extend({
     constructThreeObject: function() {
 
         return new THREE.Light(
-            this.get('color'),
+            this.convertColorModelToThree(this.get('color'), 'color'),
             this.get('intensity')
         );
 
@@ -34,8 +34,12 @@ var LightModel = Object3DModel.extend({
     createPropertiesArrays: function() {
 
         Object3DModel.prototype.createPropertiesArrays.call(this);
-        this.color_properties.push('color');
-        this.scalar_properties.push('intensity');
+        
+        this.props_created_by_three['uuid'] = true;
+        this.props_created_by_three['type'] = true;
+
+        this.property_converters['color'] = 'convertColor';
+        this.property_converters['intensity'] = null;
 
     },
 

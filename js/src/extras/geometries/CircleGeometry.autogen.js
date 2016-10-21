@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Thu Oct 20 2016 15:52:38 GMT-0700 (PDT)
+// Date: Fri Oct 21 2016 15:47:51 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -38,10 +38,14 @@ var CircleGeometryModel = GeometryModel.extend({
     createPropertiesArrays: function() {
 
         GeometryModel.prototype.createPropertiesArrays.call(this);
-        this.scalar_properties.push('radius');
-        this.scalar_properties.push('segments');
-        this.scalar_properties.push('thetaStart');
-        this.scalar_properties.push('thetaLength');
+        
+        this.props_created_by_three['uuid'] = true;
+        this.props_created_by_three['type'] = true;
+
+        this.property_converters['radius'] = null;
+        this.property_converters['segments'] = null;
+        this.property_converters['thetaStart'] = null;
+        this.property_converters['thetaLength'] = null;
 
     },
 

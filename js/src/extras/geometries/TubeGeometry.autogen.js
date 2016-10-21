@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Thu Oct 20 2016 15:52:38 GMT-0700 (PDT)
+// Date: Fri Oct 21 2016 15:47:51 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -30,7 +30,7 @@ var TubeGeometryModel = GeometryModel.extend({
     constructThreeObject: function() {
 
         return new THREE.TubeGeometry(
-            this.convertThreeTypeModelToThree(this.get('path')),
+            this.convertThreeTypeModelToThree(this.get('path'), 'path'),
             this.get('segments'),
             this.get('radius'),
             this.get('radiusSegments'),
@@ -43,10 +43,17 @@ var TubeGeometryModel = GeometryModel.extend({
 
         GeometryModel.prototype.createPropertiesArrays.call(this);
         this.three_properties.push('path');
-        this.scalar_properties.push('segments');
-        this.scalar_properties.push('radius');
-        this.scalar_properties.push('radiusSegments');
-        this.scalar_properties.push('close');
+        
+        this.props_created_by_three['vertices'] = true;
+        this.props_created_by_three['faces'] = true;
+        this.props_created_by_three['uuid'] = true;
+        this.props_created_by_three['type'] = true;
+
+        this.property_converters['path'] = 'convertThreeType';
+        this.property_converters['segments'] = null;
+        this.property_converters['radius'] = null;
+        this.property_converters['radiusSegments'] = null;
+        this.property_converters['close'] = null;
 
     },
 

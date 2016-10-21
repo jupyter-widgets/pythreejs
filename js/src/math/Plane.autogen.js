@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Thu Oct 20 2016 15:52:38 GMT-0700 (PDT)
+// Date: Fri Oct 21 2016 15:47:51 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -25,7 +25,7 @@ var PlaneModel = ThreeModel.extend({
     constructThreeObject: function() {
 
         return new THREE.Plane(
-            this.convertVectorModelToThree(this.get('normal')),
+            this.convertVectorModelToThree(this.get('normal'), 'normal'),
             this.get('constant')
         );
 
@@ -34,8 +34,10 @@ var PlaneModel = ThreeModel.extend({
     createPropertiesArrays: function() {
 
         ThreeModel.prototype.createPropertiesArrays.call(this);
-        this.vector_properties.push('normal');
-        this.scalar_properties.push('constant');
+        
+
+        this.property_converters['normal'] = 'convertVector';
+        this.property_converters['constant'] = null;
 
     },
 

@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Thu Oct 20 2016 15:52:38 GMT-0700 (PDT)
+// Date: Fri Oct 21 2016 15:47:51 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -25,8 +25,8 @@ var Box2Model = ThreeModel.extend({
     constructThreeObject: function() {
 
         return new THREE.Box2(
-            this.convertVectorModelToThree(this.get('min')),
-            this.convertVectorModelToThree(this.get('max'))
+            this.convertVectorModelToThree(this.get('min'), 'min'),
+            this.convertVectorModelToThree(this.get('max'), 'max')
         );
 
     },
@@ -34,8 +34,10 @@ var Box2Model = ThreeModel.extend({
     createPropertiesArrays: function() {
 
         ThreeModel.prototype.createPropertiesArrays.call(this);
-        this.vector_properties.push('min');
-        this.vector_properties.push('max');
+        
+
+        this.property_converters['min'] = 'convertVector';
+        this.property_converters['max'] = 'convertVector';
 
     },
 

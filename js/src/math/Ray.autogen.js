@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Thu Oct 20 2016 15:52:38 GMT-0700 (PDT)
+// Date: Fri Oct 21 2016 15:47:51 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -25,8 +25,8 @@ var RayModel = ThreeModel.extend({
     constructThreeObject: function() {
 
         return new THREE.Ray(
-            this.convertVectorModelToThree(this.get('origin')),
-            this.convertVectorModelToThree(this.get('direction'))
+            this.convertVectorModelToThree(this.get('origin'), 'origin'),
+            this.convertVectorModelToThree(this.get('direction'), 'direction')
         );
 
     },
@@ -34,8 +34,10 @@ var RayModel = ThreeModel.extend({
     createPropertiesArrays: function() {
 
         ThreeModel.prototype.createPropertiesArrays.call(this);
-        this.vector_properties.push('origin');
-        this.vector_properties.push('direction');
+        
+
+        this.property_converters['origin'] = 'convertVector';
+        this.property_converters['direction'] = 'convertVector';
 
     },
 

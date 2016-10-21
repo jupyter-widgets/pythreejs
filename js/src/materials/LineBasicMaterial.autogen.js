@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Thu Oct 20 2016 15:52:38 GMT-0700 (PDT)
+// Date: Fri Oct 21 2016 15:47:51 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -29,11 +29,11 @@ var LineBasicMaterialModel = MaterialModel.extend({
 
         return new THREE.LineBasicMaterial(
             {
-                color: this.get('color'),
+                color: this.convertColorModelToThree(this.get('color'), 'color'),
                 linewidth: this.get('linewidth'),
                 linecap: this.get('linecap'),
                 linejoin: this.get('linejoin'),
-                vertexColors: this.get('vertexColors'),
+                vertexColors: this.convertEnumModelToThree(this.get('vertexColors'), 'vertexColors'),
             }
         );
 
@@ -42,12 +42,16 @@ var LineBasicMaterialModel = MaterialModel.extend({
     createPropertiesArrays: function() {
 
         MaterialModel.prototype.createPropertiesArrays.call(this);
-        this.color_properties.push('color');
-        this.scalar_properties.push('linewidth');
-        this.scalar_properties.push('linecap');
-        this.scalar_properties.push('linejoin');
-        this.enum_properties.push('vertexColors');
+        
+        this.props_created_by_three['uuid'] = true;
+        this.props_created_by_three['type'] = true;
         this.enum_property_types['vertexColors'] = 'Colors';
+
+        this.property_converters['color'] = 'convertColor';
+        this.property_converters['linewidth'] = null;
+        this.property_converters['linecap'] = null;
+        this.property_converters['linejoin'] = null;
+        this.property_converters['vertexColors'] = 'convertEnum';
 
     },
 

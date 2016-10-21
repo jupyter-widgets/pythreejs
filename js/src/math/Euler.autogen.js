@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Thu Oct 20 2016 15:52:38 GMT-0700 (PDT)
+// Date: Fri Oct 21 2016 15:47:51 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -38,10 +38,12 @@ var EulerModel = ThreeModel.extend({
     createPropertiesArrays: function() {
 
         ThreeModel.prototype.createPropertiesArrays.call(this);
-        this.scalar_properties.push('x');
-        this.scalar_properties.push('y');
-        this.scalar_properties.push('z');
-        this.scalar_properties.push('order');
+        
+
+        this.property_converters['x'] = null;
+        this.property_converters['y'] = null;
+        this.property_converters['z'] = null;
+        this.property_converters['order'] = null;
 
     },
 

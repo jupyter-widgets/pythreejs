@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Thu Oct 20 2016 15:52:38 GMT-0700 (PDT)
+// Date: Fri Oct 21 2016 15:47:51 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -31,8 +31,8 @@ var RaycasterModel = ThreeModel.extend({
     constructThreeObject: function() {
 
         return new THREE.Raycaster(
-            this.convertVectorModelToThree(this.get('origin')),
-            this.convertVectorModelToThree(this.get('direction')),
+            this.convertVectorModelToThree(this.get('origin'), 'origin'),
+            this.convertVectorModelToThree(this.get('direction'), 'direction'),
             this.get('near'),
             this.get('far')
         );
@@ -42,12 +42,15 @@ var RaycasterModel = ThreeModel.extend({
     createPropertiesArrays: function() {
 
         ThreeModel.prototype.createPropertiesArrays.call(this);
-        this.vector_properties.push('origin');
-        this.vector_properties.push('direction');
-        this.scalar_properties.push('near');
-        this.scalar_properties.push('far');
         this.three_properties.push('ray');
-        this.scalar_properties.push('linePrecision');
+        
+
+        this.property_converters['origin'] = 'convertVector';
+        this.property_converters['direction'] = 'convertVector';
+        this.property_converters['near'] = null;
+        this.property_converters['far'] = null;
+        this.property_converters['ray'] = 'convertThreeType';
+        this.property_converters['linePrecision'] = null;
 
     },
 

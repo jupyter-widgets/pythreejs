@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Thu Oct 20 2016 15:52:38 GMT-0700 (PDT)
+// Date: Fri Oct 21 2016 15:47:51 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -31,11 +31,11 @@ var PointsMaterialModel = MaterialModel.extend({
 
         return new THREE.PointsMaterial(
             {
-                color: this.get('color'),
-                map: this.convertThreeTypeModelToThree(this.get('map')),
+                color: this.convertColorModelToThree(this.get('color'), 'color'),
+                map: this.convertThreeTypeModelToThree(this.get('map'), 'map'),
                 size: this.get('size'),
                 sizeAttenuation: this.get('sizeAttenuation'),
-                vertexColors: this.get('vertexColors'),
+                vertexColors: this.convertEnumModelToThree(this.get('vertexColors'), 'vertexColors'),
             }
         );
 
@@ -44,12 +44,17 @@ var PointsMaterialModel = MaterialModel.extend({
     createPropertiesArrays: function() {
 
         MaterialModel.prototype.createPropertiesArrays.call(this);
-        this.color_properties.push('color');
         this.three_properties.push('map');
-        this.scalar_properties.push('size');
-        this.scalar_properties.push('sizeAttenuation');
-        this.enum_properties.push('vertexColors');
+        
+        this.props_created_by_three['uuid'] = true;
+        this.props_created_by_three['type'] = true;
         this.enum_property_types['vertexColors'] = 'Colors';
+
+        this.property_converters['color'] = 'convertColor';
+        this.property_converters['map'] = 'convertThreeType';
+        this.property_converters['size'] = null;
+        this.property_converters['sizeAttenuation'] = null;
+        this.property_converters['vertexColors'] = 'convertEnum';
 
     },
 

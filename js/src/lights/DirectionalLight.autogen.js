@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Thu Oct 20 2016 15:52:38 GMT-0700 (PDT)
+// Date: Fri Oct 21 2016 15:47:51 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -27,7 +27,7 @@ var DirectionalLightModel = LightModel.extend({
     constructThreeObject: function() {
 
         return new THREE.DirectionalLight(
-            this.get('color'),
+            this.convertColorModelToThree(this.get('color'), 'color'),
             this.get('intensity')
         );
 
@@ -37,7 +37,12 @@ var DirectionalLightModel = LightModel.extend({
 
         LightModel.prototype.createPropertiesArrays.call(this);
         this.three_properties.push('target');
-        this.scalar_properties.push('castsShadow');
+        
+        this.props_created_by_three['uuid'] = true;
+        this.props_created_by_three['type'] = true;
+
+        this.property_converters['target'] = 'convertThreeType';
+        this.property_converters['castsShadow'] = null;
 
     },
 

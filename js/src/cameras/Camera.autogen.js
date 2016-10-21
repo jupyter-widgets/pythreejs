@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Thu Oct 20 2016 15:52:37 GMT-0700 (PDT)
+// Date: Fri Oct 21 2016 15:47:51 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -31,10 +31,14 @@ var CameraModel = Object3DModel.extend({
     createPropertiesArrays: function() {
 
         Object3DModel.prototype.createPropertiesArrays.call(this);
-        this.vector_properties.push('matrixWorldInverse');
-        this.vector_properties.push('projectionMatrix');
+        
         this.props_created_by_three['matrixWorldInverse'] = true;
         this.props_created_by_three['projectionMatrix'] = true;
+        this.props_created_by_three['uuid'] = true;
+        this.props_created_by_three['type'] = true;
+
+        this.property_converters['matrixWorldInverse'] = 'convertMatrix';
+        this.property_converters['projectionMatrix'] = 'convertMatrix';
 
     },
 

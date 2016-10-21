@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Thu Oct 20 2016 15:52:38 GMT-0700 (PDT)
+// Date: Fri Oct 21 2016 15:47:51 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -31,12 +31,12 @@ var FrustumModel = ThreeModel.extend({
     constructThreeObject: function() {
 
         return new THREE.Frustum(
-            this.convertThreeTypeModelToThree(this.get('p0')),
-            this.convertThreeTypeModelToThree(this.get('p1')),
-            this.convertThreeTypeModelToThree(this.get('p2')),
-            this.convertThreeTypeModelToThree(this.get('p3')),
-            this.convertThreeTypeModelToThree(this.get('p4')),
-            this.convertThreeTypeModelToThree(this.get('p5'))
+            this.convertThreeTypeModelToThree(this.get('p0'), 'p0'),
+            this.convertThreeTypeModelToThree(this.get('p1'), 'p1'),
+            this.convertThreeTypeModelToThree(this.get('p2'), 'p2'),
+            this.convertThreeTypeModelToThree(this.get('p3'), 'p3'),
+            this.convertThreeTypeModelToThree(this.get('p4'), 'p4'),
+            this.convertThreeTypeModelToThree(this.get('p5'), 'p5')
         );
 
     },
@@ -50,6 +50,14 @@ var FrustumModel = ThreeModel.extend({
         this.three_properties.push('p3');
         this.three_properties.push('p4');
         this.three_properties.push('p5');
+        
+
+        this.property_converters['p0'] = 'convertThreeType';
+        this.property_converters['p1'] = 'convertThreeType';
+        this.property_converters['p2'] = 'convertThreeType';
+        this.property_converters['p3'] = 'convertThreeType';
+        this.property_converters['p4'] = 'convertThreeType';
+        this.property_converters['p5'] = 'convertThreeType';
 
     },
 

@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Thu Oct 20 2016 15:52:38 GMT-0700 (PDT)
+// Date: Fri Oct 21 2016 15:47:51 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -59,36 +59,36 @@ var MeshStandardMaterialModel = MaterialModel.extend({
 
         return new THREE.MeshStandardMaterial(
             {
-                color: this.get('color'),
+                color: this.convertColorModelToThree(this.get('color'), 'color'),
                 roughness: this.get('roughness'),
                 metalness: this.get('metalness'),
-                map: this.convertThreeTypeModelToThree(this.get('map')),
-                lightMap: this.convertThreeTypeModelToThree(this.get('lightMap')),
+                map: this.convertThreeTypeModelToThree(this.get('map'), 'map'),
+                lightMap: this.convertThreeTypeModelToThree(this.get('lightMap'), 'lightMap'),
                 lightMapIntensity: this.get('lightMapIntensity'),
-                aoMap: this.convertThreeTypeModelToThree(this.get('aoMap')),
+                aoMap: this.convertThreeTypeModelToThree(this.get('aoMap'), 'aoMap'),
                 aoMapIntensity: this.get('aoMapIntensity'),
-                emissive: this.get('emissive'),
-                emissiveMap: this.convertThreeTypeModelToThree(this.get('emissiveMap')),
+                emissive: this.convertColorModelToThree(this.get('emissive'), 'emissive'),
+                emissiveMap: this.convertThreeTypeModelToThree(this.get('emissiveMap'), 'emissiveMap'),
                 emissiveIntensity: this.get('emissiveIntensity'),
-                bumpMap: this.convertThreeTypeModelToThree(this.get('bumpMap')),
+                bumpMap: this.convertThreeTypeModelToThree(this.get('bumpMap'), 'bumpMap'),
                 bumpScale: this.get('bumpScale'),
-                normalMap: this.convertThreeTypeModelToThree(this.get('normalMap')),
-                displacementMap: this.convertThreeTypeModelToThree(this.get('displacementMap')),
+                normalMap: this.convertThreeTypeModelToThree(this.get('normalMap'), 'normalMap'),
+                displacementMap: this.convertThreeTypeModelToThree(this.get('displacementMap'), 'displacementMap'),
                 displacementScale: this.get('displacementScale'),
                 displacementBias: this.get('displacementBias'),
-                roughnessMap: this.convertThreeTypeModelToThree(this.get('roughnessMap')),
-                metalnessMap: this.convertThreeTypeModelToThree(this.get('metalnessMap')),
-                alphaMap: this.convertThreeTypeModelToThree(this.get('alphaMap')),
-                envMap: this.convertThreeTypeModelToThree(this.get('envMap')),
+                roughnessMap: this.convertThreeTypeModelToThree(this.get('roughnessMap'), 'roughnessMap'),
+                metalnessMap: this.convertThreeTypeModelToThree(this.get('metalnessMap'), 'metalnessMap'),
+                alphaMap: this.convertThreeTypeModelToThree(this.get('alphaMap'), 'alphaMap'),
+                envMap: this.convertThreeTypeModelToThree(this.get('envMap'), 'envMap'),
                 envMapIntensity: this.get('envMapIntensity'),
                 refractionRatio: this.get('refractionRatio'),
                 fog: this.get('fog'),
-                shading: this.get('shading'),
+                shading: this.convertEnumModelToThree(this.get('shading'), 'shading'),
                 wireframe: this.get('wireframe'),
                 wireframeLinewidth: this.get('wireframeLinewidth'),
                 wireframeLinecap: this.get('wireframeLinecap'),
                 wireframeLinejoin: this.get('wireframeLinejoin'),
-                vertexColors: this.get('vertexColors'),
+                vertexColors: this.convertEnumModelToThree(this.get('vertexColors'), 'vertexColors'),
                 skinning: this.get('skinning'),
                 morphTargets: this.get('morphTargets'),
                 morphNormals: this.get('morphNormals'),
@@ -100,41 +100,56 @@ var MeshStandardMaterialModel = MaterialModel.extend({
     createPropertiesArrays: function() {
 
         MaterialModel.prototype.createPropertiesArrays.call(this);
-        this.color_properties.push('color');
-        this.scalar_properties.push('roughness');
-        this.scalar_properties.push('metalness');
         this.three_properties.push('map');
         this.three_properties.push('lightMap');
-        this.scalar_properties.push('lightMapIntensity');
         this.three_properties.push('aoMap');
-        this.scalar_properties.push('aoMapIntensity');
-        this.color_properties.push('emissive');
         this.three_properties.push('emissiveMap');
-        this.scalar_properties.push('emissiveIntensity');
         this.three_properties.push('bumpMap');
-        this.scalar_properties.push('bumpScale');
         this.three_properties.push('normalMap');
         this.three_properties.push('displacementMap');
-        this.scalar_properties.push('displacementScale');
-        this.scalar_properties.push('displacementBias');
         this.three_properties.push('roughnessMap');
         this.three_properties.push('metalnessMap');
         this.three_properties.push('alphaMap');
         this.three_properties.push('envMap');
-        this.scalar_properties.push('envMapIntensity');
-        this.scalar_properties.push('refractionRatio');
-        this.scalar_properties.push('fog');
-        this.enum_properties.push('shading');
-        this.scalar_properties.push('wireframe');
-        this.scalar_properties.push('wireframeLinewidth');
-        this.scalar_properties.push('wireframeLinecap');
-        this.scalar_properties.push('wireframeLinejoin');
-        this.enum_properties.push('vertexColors');
-        this.scalar_properties.push('skinning');
-        this.scalar_properties.push('morphTargets');
-        this.scalar_properties.push('morphNormals');
+        
+        this.props_created_by_three['uuid'] = true;
+        this.props_created_by_three['type'] = true;
         this.enum_property_types['shading'] = 'Shading';
         this.enum_property_types['vertexColors'] = 'Colors';
+
+        this.property_converters['color'] = 'convertColor';
+        this.property_converters['roughness'] = null;
+        this.property_converters['metalness'] = null;
+        this.property_converters['map'] = 'convertThreeType';
+        this.property_converters['lightMap'] = 'convertThreeType';
+        this.property_converters['lightMapIntensity'] = null;
+        this.property_converters['aoMap'] = 'convertThreeType';
+        this.property_converters['aoMapIntensity'] = null;
+        this.property_converters['emissive'] = 'convertColor';
+        this.property_converters['emissiveMap'] = 'convertThreeType';
+        this.property_converters['emissiveIntensity'] = null;
+        this.property_converters['bumpMap'] = 'convertThreeType';
+        this.property_converters['bumpScale'] = null;
+        this.property_converters['normalMap'] = 'convertThreeType';
+        this.property_converters['displacementMap'] = 'convertThreeType';
+        this.property_converters['displacementScale'] = null;
+        this.property_converters['displacementBias'] = null;
+        this.property_converters['roughnessMap'] = 'convertThreeType';
+        this.property_converters['metalnessMap'] = 'convertThreeType';
+        this.property_converters['alphaMap'] = 'convertThreeType';
+        this.property_converters['envMap'] = 'convertThreeType';
+        this.property_converters['envMapIntensity'] = null;
+        this.property_converters['refractionRatio'] = null;
+        this.property_converters['fog'] = null;
+        this.property_converters['shading'] = 'convertEnum';
+        this.property_converters['wireframe'] = null;
+        this.property_converters['wireframeLinewidth'] = null;
+        this.property_converters['wireframeLinecap'] = null;
+        this.property_converters['wireframeLinejoin'] = null;
+        this.property_converters['vertexColors'] = 'convertEnum';
+        this.property_converters['skinning'] = null;
+        this.property_converters['morphTargets'] = null;
+        this.property_converters['morphNormals'] = null;
 
     },
 

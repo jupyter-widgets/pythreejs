@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Thu Oct 20 2016 15:52:38 GMT-0700 (PDT)
+// Date: Fri Oct 21 2016 15:47:51 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -38,9 +38,13 @@ var ShaderMaterialModel = MaterialModel.extend({
     createPropertiesArrays: function() {
 
         MaterialModel.prototype.createPropertiesArrays.call(this);
-        this.dict_properties.push('uniforms');
-        this.scalar_properties.push('vertexShader');
-        this.scalar_properties.push('fragmentShader');
+        
+        this.props_created_by_three['uuid'] = true;
+        this.props_created_by_three['type'] = true;
+
+        this.property_converters['uniforms'] = null;
+        this.property_converters['vertexShader'] = null;
+        this.property_converters['fragmentShader'] = null;
 
     },
 

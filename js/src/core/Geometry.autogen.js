@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Thu Oct 20 2016 15:52:38 GMT-0700 (PDT)
+// Date: Fri Oct 21 2016 15:47:51 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -20,6 +20,8 @@ var GeometryModel = ThreeModel.extend({
         uuid: "",
         name: "",
         type: "",
+        vertices: [],
+        faces: [],
 
     }),
 
@@ -32,11 +34,15 @@ var GeometryModel = ThreeModel.extend({
     createPropertiesArrays: function() {
 
         ThreeModel.prototype.createPropertiesArrays.call(this);
-        this.scalar_properties.push('uuid');
-        this.scalar_properties.push('name');
-        this.scalar_properties.push('type');
+        
         this.props_created_by_three['uuid'] = true;
         this.props_created_by_three['type'] = true;
+
+        this.property_converters['uuid'] = null;
+        this.property_converters['name'] = null;
+        this.property_converters['type'] = null;
+        this.property_converters['vertices'] = 'convertVectorArray';
+        this.property_converters['faces'] = 'convertFaceArray';
 
     },
 

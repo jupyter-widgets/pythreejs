@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Thu Oct 20 2016 15:52:38 GMT-0700 (PDT)
+// Date: Fri Oct 21 2016 15:47:51 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -29,6 +29,10 @@ var EdgesGeometryModel = GeometryModel.extend({
     createPropertiesArrays: function() {
 
         GeometryModel.prototype.createPropertiesArrays.call(this);
+        
+        this.props_created_by_three['uuid'] = true;
+        this.props_created_by_three['type'] = true;
+
 
     },
 

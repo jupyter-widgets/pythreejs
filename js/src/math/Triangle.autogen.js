@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Thu Oct 20 2016 15:52:38 GMT-0700 (PDT)
+// Date: Fri Oct 21 2016 15:47:51 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -26,9 +26,9 @@ var TriangleModel = ThreeModel.extend({
     constructThreeObject: function() {
 
         return new THREE.Triangle(
-            this.convertVectorModelToThree(this.get('a')),
-            this.convertVectorModelToThree(this.get('b')),
-            this.convertVectorModelToThree(this.get('c'))
+            this.convertVectorModelToThree(this.get('a'), 'a'),
+            this.convertVectorModelToThree(this.get('b'), 'b'),
+            this.convertVectorModelToThree(this.get('c'), 'c')
         );
 
     },
@@ -36,9 +36,11 @@ var TriangleModel = ThreeModel.extend({
     createPropertiesArrays: function() {
 
         ThreeModel.prototype.createPropertiesArrays.call(this);
-        this.vector_properties.push('a');
-        this.vector_properties.push('b');
-        this.vector_properties.push('c');
+        
+
+        this.property_converters['a'] = 'convertVector';
+        this.property_converters['b'] = 'convertVector';
+        this.property_converters['c'] = 'convertVector';
 
     },
 

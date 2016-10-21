@@ -5,7 +5,19 @@ _.extend(BaseType.prototype, {
     getJSPropertyValue: function() {
         return JSON.stringify(this.defaultValue);
     },
-    propToValueConverterFn: function() {
+    getPropArrayName: function() {
+        return null;
+    },
+    getPythonDefaultValue: function() {
+        if (this.defaultValue === false) { return 'False'; }
+        if (this.defaultValue === true) { return 'True'; }
+        if (this.defaultValue === 0) { return '0'; }
+        if (this.defaultValue === '') { return ''; }
+        if (!this.defaultValue) { return 'None'; }
+
+        return JSON.stringify(this.defaultValue);
+    },
+    getPropertyConverterFn: function() {
         return null;
     },
 })
@@ -37,8 +49,8 @@ _.extend(ThreeType.prototype, BaseType.prototype, {
     getPropArrayName: function() {
         return 'three_properties';
     },
-    propToValueConverterFn: function() {
-        return 'convertThreeTypeModelToThree';
+    getPropertyConverterFn: function() {
+        return 'convertThreeType';
     },
 });
 
@@ -59,8 +71,8 @@ _.extend(ThreeTypeArray.prototype, BaseType.prototype, {
     getPropArrayName: function() {
         return 'three_array_properties';
     },
-    propToValueConverterFn: function() {
-        return 'convertThreeTypeArrayModelToThree';
+    getPropertyConverterFn: function() {
+        return 'convertThreeTypeArray';
     },
 });
 
@@ -79,8 +91,8 @@ _.extend(ThreeTypeDict.prototype, BaseType.prototype, {
     getPropArrayName: function() {
         return 'three_dict_properties';
     },
-    propToValueConverterFn: function() {
-        return 'convertThreeTypeDictModelToThree';
+    getPropertyConverterFn: function() {
+        return 'convertThreeTypeDict';
     },
 });
 
@@ -92,9 +104,9 @@ _.extend(Bool.prototype, BaseType.prototype, {
         var pyBoolValue = this.defaultValue ? 'True' : 'False';
         return 'Bool(' + pyBoolValue + ').tag(sync=True)';
     },
-    getPropArrayName: function() {
-        return 'scalar_properties';
-    },
+    // getPropArrayName: function() {
+    //     return 'scalar_properties';
+    // },
 });
 
 function Int(defaultValue) {
@@ -104,9 +116,9 @@ _.extend(Int.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'CInt(' + this.defaultValue + ').tag(sync=True)';
     },
-    getPropArrayName: function() {
-        return 'scalar_properties';
-    },
+    // getPropArrayName: function() {
+    //     return 'scalar_properties';
+    // },
 
 });
 
@@ -117,9 +129,9 @@ _.extend(Float.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'CFloat(' + this.defaultValue + ').tag(sync=True)';
     },
-    getPropArrayName: function() {
-        return 'scalar_properties';
-    },
+    // getPropArrayName: function() {
+    //     return 'scalar_properties';
+    // },
 
 });
 
@@ -130,9 +142,9 @@ _.extend(StringType.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Unicode("' + this.defaultValue + '").tag(sync=True)';
     },
-    getPropArrayName: function() {
-        return 'scalar_properties';
-    },
+    // getPropArrayName: function() {
+    //     return 'scalar_properties';
+    // },
 
 });
 
@@ -144,8 +156,11 @@ _.extend(Enum.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Enum(' + this.enumTypeName + ', "' + this.defaultValue + '").tag(sync=True)';
     },
-    getPropArrayName: function() {
-        return 'enum_properties';
+    // getPropArrayName: function() {
+    //     return 'enum_properties';
+    // },
+    getPropertyConverterFn: function() {
+        return 'convertEnum';
     },
 });
 
@@ -156,9 +171,12 @@ _.extend(Color.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Unicode(' + JSON.stringify(this.defaultValue) + ').tag(sync=True)'
     },
-    getPropArrayName: function() {
-        return 'color_properties';
-    }
+    // getPropArrayName: function() {
+    //     return 'color_properties';
+    // }
+    getPropertyConverterFn: function() {
+        return 'convertColor';
+    },
 });
 
 function ArrayType() {
@@ -168,9 +186,26 @@ _.extend(ArrayType.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'List().tag(sync=True)';
     },
-    getPropArrayName: function() {
-        return 'array_properties';
-    }
+    // getPropArrayName: function() {
+    //     return 'array_properties';
+    // }
+});
+
+// TODO: support more than Float32Array
+function ArrayBufferType(arrayType) {
+    // this.arrayType = arrayType || 'Float32Array';
+    this.defaultValue = [];
+}
+_.extend(ArrayBufferType.prototype, BaseType.prototype, {
+    getTraitlet: function() {
+        return 'List().tag(sync=True)';
+    },
+    // getPropArrayName: function() {
+    //     return 'array_properties';
+    // },
+    getPropertyConverterFn: function() {
+        return 'convertArrayBuffer';
+    },
 });
 
 function DictType() {
@@ -180,9 +215,9 @@ _.extend(DictType.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Dict().tag(sync=True)';
     },
-    getPropArrayName: function() {
-        return 'dict_properties';
-    }
+    // getPropArrayName: function() {
+    //     return 'dict_properties';
+    // }
 });
 
 function FunctionType(fn) {
@@ -192,14 +227,14 @@ _.extend(FunctionType.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return "Unicode('" + this.defaultValue.toString() + "').tag(sync=True)";
     },
-    getPropArrayName: function() {
-        return 'function_properties';
-    },
+    // getPropArrayName: function() {
+    //     return 'function_properties';
+    // },
     getJSPropertyValue: function() {
         return this.defaultValue.toString();
     },
-    propToValueConverterFn: function() {
-        return 'convertFunctionModelToThree';
+    getPropertyConverterFn: function() {
+        return 'convertFunction';
     },
 });
 
@@ -210,11 +245,11 @@ _.extend(Vector2.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Vector2(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
     },
-    getPropArrayName: function() {
-        return 'vector_properties';
-    },
-    propToValueConverterFn: function() {
-        return 'convertVectorModelToThree';
+    // getPropArrayName: function() {
+    //     return 'vector_properties';
+    // },
+    getPropertyConverterFn: function() {
+        return 'convertVector';
     },
 });
 
@@ -225,11 +260,11 @@ _.extend(Vector3.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Vector3(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
     },
-    getPropArrayName: function() {
-        return 'vector_properties';
-    },
-    propToValueConverterFn: function() {
-        return 'convertVectorModelToThree';
+    // getPropArrayName: function() {
+    //     return 'vector_properties';
+    // },
+    getPropertyConverterFn: function() {
+        return 'convertVector';
     },
 });
 
@@ -240,11 +275,11 @@ _.extend(Vector4.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Vector4(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
     },
-    getPropArrayName: function() {
-        return 'vector_properties';
-    },
-    propToValueConverterFn: function() {
-        return 'convertVectorModelToThree';
+    // getPropArrayName: function() {
+    //     return 'vector_properties';
+    // },
+    getPropertyConverterFn: function() {
+        return 'convertVector';
     },
 });
 
@@ -255,11 +290,56 @@ _.extend(VectorArray.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'List(trait=List()).tag(sync=True)';
     },
-    getPropArrayName: function() {
-        return 'array_properties';
+    // getPropArrayName: function() {
+    //     return 'array_properties';
+    // },
+    getPropertyConverterFn: function() {
+        return 'convertVectorArray';
     },
-    propToValueConverterFn: function() {
-        return 'convertVectorArrayModelToThree';
+});
+
+function FaceArray() {
+    this.defaultValue = [];
+}
+_.extend(FaceArray.prototype, BaseType.prototype, {
+    getTraitlet: function() {
+        return 'Tuple(trait=Face3()).tag(sync=True)';
+    },
+    // getPropArrayName: function() {
+    //     return 'array_properties';
+    // },
+    getPropertyConverterFn: function() {
+        return 'convertFaceArray';
+    },
+});
+
+function BufferAttribute() {
+    this.defaultValue = null;
+}
+_.extend(BufferAttribute.prototype, BaseType.prototype, {
+    getTraitlet: function() {
+        return 'BufferAttribute(default_value=None, allow_none=True).tag(sync=True)';
+    },
+    // getPropArrayName: function() {
+    //     return 'array_properties';
+    // },
+    getPropertyConverterFn: function() {
+        return 'convertBufferAttribute';
+    },
+});
+
+function BufferAttributeDict() {
+    this.defaultValue = {};
+}
+_.extend(BufferAttributeDict.prototype, BaseType.prototype, {
+    getTraitlet: function() {
+        return 'Tuple().tag(sync=True)';
+    },
+    // getPropArrayName: function() {
+    //     return 'array_properties';
+    // },
+    getPropertyConverterFn: function() {
+        return 'convertBufferAttributeDict';
     },
 });
 
@@ -275,11 +355,11 @@ _.extend(Matrix3.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Matrix3(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
     },
-    getPropArrayName: function() {
-        return 'vector_properties';
-    },
-    propToValueConverterFn: function() {
-        return 'convertMatrixModelToThree';
+    // getPropArrayName: function() {
+    //     return 'vector_properties';
+    // },
+    getPropertyConverterFn: function() {
+        return 'convertMatrix';
     },
 });
 
@@ -295,11 +375,11 @@ _.extend(Matrix4.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Matrix4(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
     },
-    getPropArrayName: function() {
-        return 'vector_properties';
-    },
-    propToValueConverterFn: function() {
-        return 'convertMatrixModelToThree';
+    // getPropArrayName: function() {
+    //     return 'vector_properties';
+    // },
+    getPropertyConverterFn: function() {
+        return 'convertMatrix';
     },
 });
 
@@ -315,12 +395,16 @@ module.exports = {
     Enum: Enum,
     Color: Color,
     Array: ArrayType,
+    // ArrayBuffer: ArrayBufferType,
+    BufferAttribute: BufferAttribute,
+    BufferAttributeDict: BufferAttributeDict,
     Dict: DictType,
     Function: FunctionType,
     Vector2: Vector2,
     Vector3: Vector3,
     Vector4: Vector4,
     VectorArray: VectorArray,
+    FaceArray: FaceArray,
     Matrix3: Matrix3,
     Matrix4: Matrix4,
 };

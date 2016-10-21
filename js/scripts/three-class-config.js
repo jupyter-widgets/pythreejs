@@ -97,27 +97,28 @@ module.exports = {
     StereoCamera: {
         relativePath: './cameras/StereoCamera',
     },
-    BufferAttribute: {
-        relativePath: './core/BufferAttribute',
-        properties: {
-            uuid:        new Types.String(''),
-            array:       new Types.Array(),
-            itemSize:    new Types.Int(1),
-            count:       new Types.Int(0),
-            needsUpdate: new Types.Bool(false),
-            normalized:  new Types.Bool(true),
-            version:     new Types.Int(-1),
-        },
-        constructorArgs: [ 'array', 'itemSize', 'normalized' ],
-        propsDefinedByThree: [ 'uuid', 'count', 'version' ]
-    },
+    // BufferAttribute: {
+    //     relativePath: './core/BufferAttribute',
+    //     properties: {
+    //         uuid:        new Types.String(''),
+    //         array:       new Types.ArrayBuffer(),
+    //         itemSize:    new Types.Int(1),
+    //         count:       new Types.Int(0),
+    //         needsUpdate: new Types.Bool(false),
+    //         normalized:  new Types.Bool(true),
+    //         version:     new Types.Int(-1),
+    //     },
+    //     constructorArgs: [ 'array', 'itemSize', 'normalized' ],
+    //     propsDefinedByThree: [ 'uuid', 'count', 'version' ]
+    // },
     BufferGeometry: {
         relativePath: './core/BufferGeometry',
         properties: {
-            uuid: new Types.String(''),
-            name: new Types.String(''),
-            type: new Types.String(''),
-
+            uuid:       new Types.String(''),
+            name:       new Types.String(''),
+            type:       new Types.String(''),
+            attributes: new Types.BufferAttributeDict(),
+            index:      new Types.BufferAttribute(),
         },
         propsDefinedByThree: [ 'uuid', 'type' ]
     },
@@ -153,6 +154,8 @@ module.exports = {
             type: new Types.String(''),
 
             // TODO: arrays of geometry data
+            vertices: new Types.VectorArray(),
+            faces: new Types.FaceArray(),
         },
         propsDefinedByThree: [ 'uuid', 'type' ]
     },
@@ -772,6 +775,7 @@ module.exports = {
     Mesh: {
         relativePath: './objects/Mesh',
         superClass: 'Object3D',
+        constructorArgs: [ 'geometry', 'material' ],
         properties: {
             material: new Types.ThreeType('Material'),
             geometry: new Types.ThreeType('Geometry'),
@@ -929,6 +933,7 @@ module.exports = {
             heightSegments: new Types.Int(1),
             depthSegments: new Types.Int(1),
         },
+        propsDefinedByThree: [ 'vertices', 'faces' ]
     },
     CircleBufferGeometry: {
         relativePath: './extras/geometries/CircleBufferGeometry',
@@ -1009,6 +1014,7 @@ module.exports = {
             radius: new Types.Float(1.0),
             detail: new Types.Int(0.0),
         },
+        propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     LatheBufferGeometry: {
         relativePath: './extras/geometries/LatheBufferGeometry',
@@ -1031,6 +1037,7 @@ module.exports = {
             phiStart: new Types.Float(0.0),
             phiLength: new Types.Float(Math.PI * 2.0),
         },
+        propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     OctahedronGeometry: {
         relativePath: './extras/geometries/OctahedronGeometry',
@@ -1040,6 +1047,7 @@ module.exports = {
             radius: new Types.Float(1.0),
             detail: new Types.Int(0.0),
         },
+        propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     ParametricGeometry: {
         relativePath: './extras/geometries/ParametricGeometry',
@@ -1050,6 +1058,7 @@ module.exports = {
             slices: new Types.Int(3), // NOTE: default not specified in three.js
             stacks: new Types.Int(3), // NOTE: default not specified in three.js
         },
+        propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     PlaneBufferGeometry: {
         relativePath: './extras/geometries/PlaneBufferGeometry',
@@ -1072,6 +1081,7 @@ module.exports = {
             widthSegments:  new Types.Int(1),
             heightSegments: new Types.Int(1),
         },
+        propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     PolyhedronGeometry: {
         relativePath: './extras/geometries/PolyhedronGeometry',
@@ -1084,7 +1094,7 @@ module.exports = {
             detail:   new Types.Float(0.0),
             faces:    new Types.Array(),
         },
-        propsDefinedByThree: [ 'faces' ],
+        propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     RingBufferGeometry: {
         relativePath: './extras/geometries/RingBufferGeometry',
@@ -1111,6 +1121,7 @@ module.exports = {
             thetaStart:    new Types.Float(0),
             thetaLength:   new Types.Float(Math.PI * 2),
         },
+        propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     // TODO: figure out options constructor args + UVGenerator
     ShapeGeometry: {
@@ -1136,7 +1147,8 @@ module.exports = {
             phiLength:      new Types.Float(Math.PI * 2.0),
             thetaStart:     new Types.Float(0),
             thetaLength:    new Types.Float(Math.PI),
-        }
+        },
+        propsDefinedByThree: [ 'attributes', 'index' ],
     },
     SphereGeometry: {
         relativePath: './extras/geometries/SphereGeometry',
@@ -1150,7 +1162,8 @@ module.exports = {
             phiLength:      new Types.Float(Math.PI * 2.0),
             thetaStart:     new Types.Float(0),
             thetaLength:    new Types.Float(Math.PI),
-        }
+        },
+        propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     TetrahedronGeometry: {
         relativePath: './extras/geometries/TetrahedronGeometry',
@@ -1160,6 +1173,7 @@ module.exports = {
             radius: new Types.Float(1),
             detail: new Types.Int(0),
         },
+        propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     TextGeometry: {
         relativePath: './extras/geometries/TextGeometry',
@@ -1188,6 +1202,7 @@ module.exports = {
             tubularSegments: new Types.Int(6),
             arc:             new Types.Float(Math.PI * 2.0),
         },
+        propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     TorusKnotBufferGeometry: {
         relativePath: './extras/geometries/TorusKnotBufferGeometry',
@@ -1214,6 +1229,7 @@ module.exports = {
             p:               new Types.Int(2),
             q:               new Types.Int(3),
         },
+        propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     TubeGeometry: {
         relativePath: './extras/geometries/TubeGeometry',
@@ -1226,6 +1242,7 @@ module.exports = {
             radiusSegments: new Types.Int(8),
             close:          new Types.Bool(false),
         },
+        propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     WireframeGeometry: {
         relativePath: './extras/geometries/WireframeGeometry',
@@ -1235,6 +1252,7 @@ module.exports = {
             geometry:       new Types.ThreeType(['Geometry', 'BufferGeometry']),
             // geometry:       new Types.ThreeType('Geometry'),
         },
+        propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     ArrowHelper: {
         relativePath: './extras/helpers/ArrowHelper',

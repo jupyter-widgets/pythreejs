@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Thu Oct 20 2016 15:52:38 GMT-0700 (PDT)
+// Date: Fri Oct 21 2016 15:47:51 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -53,28 +53,8 @@ var MaterialModel = ThreeModel.extend({
     createPropertiesArrays: function() {
 
         ThreeModel.prototype.createPropertiesArrays.call(this);
-        this.scalar_properties.push('uuid');
-        this.scalar_properties.push('name');
-        this.scalar_properties.push('opacity');
-        this.scalar_properties.push('transparent');
-        this.enum_properties.push('blending');
-        this.enum_properties.push('blendSrc');
-        this.enum_properties.push('blendDst');
-        this.enum_properties.push('blendEquation');
-        this.scalar_properties.push('depthTest');
-        this.enum_properties.push('depthFunc');
-        this.scalar_properties.push('depthWrite');
-        this.scalar_properties.push('polygonOffset');
-        this.scalar_properties.push('polygonOffsetFactor');
-        this.scalar_properties.push('polygonOffsetUnits');
-        this.scalar_properties.push('alphaTest');
         this.three_array_properties.push('clippingPlanes');
-        this.scalar_properties.push('clipShadows');
-        this.scalar_properties.push('overdraw');
-        this.scalar_properties.push('visible');
-        this.enum_properties.push('side');
-        this.scalar_properties.push('fog');
-        this.scalar_properties.push('lights');
+        
         this.props_created_by_three['uuid'] = true;
         this.props_created_by_three['type'] = true;
         this.enum_property_types['blending'] = 'BlendingMode';
@@ -83,6 +63,29 @@ var MaterialModel = ThreeModel.extend({
         this.enum_property_types['blendEquation'] = 'Equations';
         this.enum_property_types['depthFunc'] = 'DepthMode';
         this.enum_property_types['side'] = 'Side';
+
+        this.property_converters['uuid'] = null;
+        this.property_converters['name'] = null;
+        this.property_converters['opacity'] = null;
+        this.property_converters['transparent'] = null;
+        this.property_converters['blending'] = 'convertEnum';
+        this.property_converters['blendSrc'] = 'convertEnum';
+        this.property_converters['blendDst'] = 'convertEnum';
+        this.property_converters['blendEquation'] = 'convertEnum';
+        this.property_converters['depthTest'] = null;
+        this.property_converters['depthFunc'] = 'convertEnum';
+        this.property_converters['depthWrite'] = null;
+        this.property_converters['polygonOffset'] = null;
+        this.property_converters['polygonOffsetFactor'] = null;
+        this.property_converters['polygonOffsetUnits'] = null;
+        this.property_converters['alphaTest'] = null;
+        this.property_converters['clippingPlanes'] = 'convertThreeTypeArray';
+        this.property_converters['clipShadows'] = null;
+        this.property_converters['overdraw'] = null;
+        this.property_converters['visible'] = null;
+        this.property_converters['side'] = 'convertEnum';
+        this.property_converters['fog'] = null;
+        this.property_converters['lights'] = null;
 
     },
 
