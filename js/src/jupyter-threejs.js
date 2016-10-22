@@ -176,7 +176,6 @@ define(["jupyter-js-widgets", "underscore", "three"],
             // create an array of update handlers for each declared property
             // the update handlers depend on the type of property
 
-            var array_properties = this.array_properties;
             var updates = this.updates = {};
             // first, we create update functions for each attribute
             _.each(this.array_properties, function(p) {
@@ -357,6 +356,10 @@ define(["jupyter-js-widgets", "underscore", "three"],
             this.array_properties.push('target');
         },
 
+        new_obj: function() {
+            return new THREE.OrbitControls(this.controlled_view.obj, this.options.dom);
+        },
+
         render: function() {
             var that = this;
             return widgets.resolvePromisesDict(this.model.get('controlling').views).then(function(views) {
@@ -364,7 +367,7 @@ define(["jupyter-js-widgets", "underscore", "three"],
                 that.controlled_view = _.find(views, function(o) {
                     return o.options.renderer_id === that.options.renderer_id
                 }, that);
-                that.obj = new THREE.OrbitControls(that.controlled_view.obj, that.options.dom);
+                that.obj = that.new_obj();
                 that.register_object_parameters();
                 that.obj.noKeys = true; // turn off keyboard navigation
                 that.options.register_update(that.obj.update, that.obj);
@@ -396,7 +399,12 @@ define(["jupyter-js-widgets", "underscore", "three"],
             ThreeView.prototype.new_properties.call(this);
         },
 
+        new_obj: function() {
+            return new THREE.FlyControls(this.controlled_view.obj, this.options.dom);
+        },
+
         render: function() {
+
             var that = this;
             this.clock = new THREE.Clock();
 
@@ -405,7 +413,7 @@ define(["jupyter-js-widgets", "underscore", "three"],
                 that.controlled_view = _.find(views, function(o) {
                     return o.options.renderer_id === that.options.renderer_id
                 }, that);
-                that.obj = new THREE.FlyControls(that.controlled_view.obj, that.options.dom);
+                that.obj = that.new_obj();
                 that.register_object_parameters();
                 that.options.register_update(that._update, that);
                 that.obj.addEventListener('change', that.options.render_frame);
@@ -448,6 +456,10 @@ define(["jupyter-js-widgets", "underscore", "three"],
             this.array_properties.push('target');
         },
 
+        new_obj: function() {
+            new THREE.TrackballControls(this.controlled_view.obj, this.options.dom);
+        },
+
         render: function() {
             var that = this;
             return widgets.resolvePromisesDict(this.model.get('controlling').views).then(function(views) {
@@ -455,7 +467,7 @@ define(["jupyter-js-widgets", "underscore", "three"],
                 that.controlled_view = _.find(views, function(o) {
                     return o.options.renderer_id === that.options.renderer_id
                 }, that);
-                that.obj = new THREE.TrackballControls(that.controlled_view.obj, that.options.dom);
+                that.obj = that.new_obj();
                 that.register_object_parameters();
                 that.obj.noKeys = true; // turn off keyboard navigation
                 that.options.register_update(that.obj.update, that.obj);
@@ -501,6 +513,9 @@ define(["jupyter-js-widgets", "underscore", "three"],
 
                 vector.unproject(that.options.renderer.camera.obj);
                 var ray = vector.sub(that.options.renderer.camera.obj.position).normalize();
+
+                // TODO: how to handle new_obj case where calculations are required before creating object?
+                //       in this case, it depends on the mouse event
                 that.obj = new THREE.Raycaster(that.options.renderer.camera.obj.position, ray);
                 var objs = that.obj.intersectObject(that.root.obj, true);
                 var getinfo = function(o) {
@@ -567,11 +582,17 @@ define(["jupyter-js-widgets", "underscore", "three"],
 
 
     var SurfaceGeometryView = ThreeView.extend({
+        new_obj: function() {
+            return new THREE.PlaneGeometry(this.model.get('width'),
+                                           this.model.get('height'),
+                                           this.model.get('width_segments'),
+                                           this.model.get('height_segments'));
+
+        },
+
         update: function() {
-            var obj = new THREE.PlaneGeometry(this.model.get('width'),
-                                              this.model.get('height'),
-                                              this.model.get('width_segments'),
-                                              this.model.get('height_segments'));
+            var obj = this.new_obj();
+
             // PlaneGeometry constructs its vertices by going across x
             // coordinates, starting from the maximum y coordinate
             var z = this.model.get('z');
@@ -586,8 +607,14 @@ define(["jupyter-js-widgets", "underscore", "three"],
 
 
     var PlainGeometryView = ThreeView.extend({
+        new_obj: function() {
+            return new THREE.Geometry();
+        },
+
         update: function() {
-            var geometry = new THREE.Geometry();
+
+            var geometry = this.new_obj();
+
             var vertices = this.model.get('vertices');
             var faces = this.model.get('faces');
             var colors = this.model.get('colors');
@@ -613,15 +640,21 @@ define(["jupyter-js-widgets", "underscore", "three"],
             geometry.tangentsNeedUpdate = true;
             geometry.colorsNeedUpdate = true;
             geometry.lineDistancesNeedUpdate = true;
+
             this.replace_obj(geometry);
         },
     });
 
 
     var FaceGeometryView = ThreeView.extend({
+        new_obj: function() {
+            return new THREE.Geometry();
+        },
+
         update: function() {
+            var geometry = this.new_obj();
+
             // Construct triangles
-            var geometry = new THREE.Geometry();
             var vertices = this.model.get('vertices');
             var face3 = this.model.get('face3');
             var face4 = this.model.get('face4');
@@ -654,64 +687,74 @@ define(["jupyter-js-widgets", "underscore", "three"],
             geometry.computeFaceNormals();
             geometry.computeVertexNormals();
             geometry.computeBoundingSphere();
+
             this.replace_obj(geometry);
         }
     });
 
-    var SphereGeometryView = ThreeView.extend({
+    var ExtrasGeometryView = ThreeView.extend({
         update: function() {
-            this.replace_obj(new THREE.SphereGeometry(this.model.get('radius'), 32,16));
+            this.replace_obj(this.new_obj());
         }
     });
 
-    var CylinderGeometryView = ThreeView.extend({
-        update: function() {
-            this.replace_obj(new THREE.CylinderGeometry(this.model.get('radiusTop'),
-                                                        this.model.get('radiusBottom'),
-                                                        this.model.get('height'),
-                                                        this.model.get('radiusSegments'),
-                                                        this.model.get('heightSegments'),
-                                                        this.model.get('openEnded')));
-        }
+    var SphereGeometryView = ExtrasGeometryView.extend({
+        new_obj: function() {
+            return new THREE.SphereGeometry(this.model.get('radius'), 32, 16);
+        },
     });
 
-    var BoxGeometryView = ThreeView.extend({
-        update: function() {
-            this.replace_obj(new THREE.BoxGeometry(this.model.get('width'),
-                                                   this.model.get('height'),
-                                                   this.model.get('depth'),
-                                                   this.model.get('widthSegments'),
-                                                   this.model.get('heightSegments'),
-                                                   this.model.get('depthSegments')));
-        }
+    var CylinderGeometryView = ExtrasGeometryView.extend({
+        new_obj: function() {
+            return new THREE.CylinderGeometry(this.model.get('radiusTop'),
+                                              this.model.get('radiusBottom'),
+                                              this.model.get('height'),
+                                              this.model.get('radiusSegments'),
+                                              this.model.get('heightSegments'),
+                                              this.model.get('openEnded'));
+        },
     });
 
-    var CircleGeometryView = ThreeView.extend({
-        update: function() {
-            this.replace_obj(new THREE.CircleGeometry(this.model.get('radius'),
-                                                      this.model.get('segments'),
-                                                      this.model.get('thetaStart'),
-                                                      this.model.get('thetaLength')));
-        }
+    var BoxGeometryView = ExtrasGeometryView.extend({
+        new_obj: function() {
+            return new THREE.BoxGeometry(this.model.get('width'),
+                                         this.model.get('height'),
+                                         this.model.get('depth'),
+                                         this.model.get('widthSegments'),
+                                         this.model.get('heightSegments'),
+                                         this.model.get('depthSegments'));
+        },
     });
 
-    var LatheGeometryView = ThreeView.extend({
-        update: function() {
+    var CircleGeometryView = ExtrasGeometryView.extend({
+        new_obj: function() {
+            return new THREE.CircleGeometry(this.model.get('radius'),
+                                     this.model.get('segments'),
+                                     this.model.get('thetaStart'),
+                                     this.model.get('thetaLength'));
+        },
+    });
+
+    var LatheGeometryView = ExtrasGeometryView.extend({
+        new_obj: function() {
+
             var points = this.model.get('points');
             var pnt = [];
             for (var p_index = 0, len = points.length; p_index < len; p_index++ ) {
                 var a = new THREE.Vector3().fromArray(points[p_index]);
                 pnt.push(a);
             }
-            this.replace_obj(new THREE.LatheGeometry(pnt,
-                                                     this.model.get('segments'),
-                                                     this.model.get('phiStart'),
-                                                     this.model.get('phiLength')));
-        }
+
+            return new THREE.LatheGeometry(pnt,
+                                           this.model.get('segments'),
+                                           this.model.get('phiStart'),
+                                           this.model.get('phiLength'));
+        },
     });
 
-    var TubeGeometryView = ThreeView.extend({
-        update: function() {
+    var TubeGeometryView = ExtrasGeometryView.extend({
+        new_obj: function() {
+
             var points = this.model.get('path');
             var pnt = [];
             for (var p_index = 0, len = points.length; p_index < len; p_index++ ) {
@@ -719,92 +762,95 @@ define(["jupyter-js-widgets", "underscore", "three"],
                 pnt.push(a);
             }
             var path = new THREE.SplineCurve3(pnt);
-            this.replace_obj(new THREE.TubeGeometry(path,
-                                                    this.model.get('segments'),
-                                                    this.model.get('radius'),
-                                                    this.model.get('radialSegments'),
-                                                    this.model.get('closed')));
-        }
+
+            return new THREE.TubeGeometry(path,
+                                          this.model.get('segments'),
+                                          this.model.get('radius'),
+                                          this.model.get('radialSegments'),
+                                          this.model.get('closed'));
+
+        },
     });
 
-    var IcosahedronGeometryView = ThreeView.extend({
-        update: function() {
-            this.replace_obj(new THREE.IcosahedronGeometry(this.model.get('radius'),
-                                                           this.model.get('detail')));
-        }
+    var IcosahedronGeometryView = ExtrasGeometryView.extend({
+        new_obj: function() {
+            return new THREE.IcosahedronGeometry(this.model.get('radius'),
+                                                 this.model.get('detail'));
+        },
     });
 
-    var OctahedronGeometryView = ThreeView.extend({
-        update: function() {
-            this.replace_obj(new THREE.OctahedronGeometry(this.model.get('radius'),
-                                                          this.model.get('detail')));
-        }
+    var OctahedronGeometryView = ExtrasGeometryView.extend({
+        new_obj: function() {
+            return new THREE.OctahedronGeometry(this.model.get('radius'),
+                                                this.model.get('detail'));
+        },
     });
 
-    var PlaneGeometryView = ThreeView.extend({
-        update: function() {
-            this.replace_obj(new THREE.PlaneGeometry(this.model.get('width'),
-                                                     this.model.get('height'),
-                                                     this.model.get('widthSegments'),
-                                                     this.model.get('heightSegments')));
-        }
+    var PlaneGeometryView = ExtrasGeometryView.extend({
+        new_obj: function() {
+            return new THREE.PlaneGeometry(this.model.get('width'),
+                                           this.model.get('height'),
+                                           this.model.get('widthSegments'),
+                                           this.model.get('heightSegments'));
+        },
     });
 
-    var TetrahedronGeometryView = ThreeView.extend({
-        update: function() {
-            this.replace_obj(new THREE.TetrahedronGeometry(this.model.get('radius'),
-                                                           this.model.get('detail')));
-        }
+    var TetrahedronGeometryView = ExtrasGeometryView.extend({
+        new_obj: function() {
+            return new THREE.TetrahedronGeometry(this.model.get('radius'),
+                                                 this.model.get('detail'));
+        },
     });
 
-    var TorusGeometryView = ThreeView.extend({
-        update: function() {
-            this.replace_obj(new THREE.TorusGeometry(this.model.get('radius'),
-                                                     this.model.get('tube'),
-                                                     this.model.get('radialSegments'),
-                                                     this.model.get('tubularSegments'),
-                                                     this.model.get('arc')));
-        }
+    var TorusGeometryView = ExtrasGeometryView.extend({
+        new_obj: function() {
+            return new THREE.TorusGeometry(this.model.get('radius'),
+                                           this.model.get('tube'),
+                                           this.model.get('radialSegments'),
+                                           this.model.get('tubularSegments'),
+                                           this.model.get('arc'));
+        },
     });
 
-    var TorusKnotGeometryView = ThreeView.extend({
-        update: function() {
-            this.replace_obj(new THREE.TorusKnotGeometry(this.model.get('radius'),
-                                                        this.model.get('tube'),
-                                                        this.model.get('radialSegments'),
-                                                        this.model.get('tubularSegments'),
-                                                        this.model.get('p'),
-                                                        this.model.get('q'),
-                                                        this.model.get('heightScale')));
-        }
+    var TorusKnotGeometryView = ExtrasGeometryView.extend({
+        new_obj: function() {
+            return new THREE.TorusKnotGeometry(this.model.get('radius'),
+                                               this.model.get('tube'),
+                                               this.model.get('radialSegments'),
+                                               this.model.get('tubularSegments'),
+                                               this.model.get('p'),
+                                               this.model.get('q'),
+                                               this.model.get('heightScale'));
+        },
     });
 
-    var PolyhedronGeometryView = ThreeView.extend({
-        update: function() {
-            this.replace_obj(new THREE.PolyhedronGeometry(this.model.get('vertices'),
-                                                          this.model.get('faces'),
-                                                          this.model.get('radius'),
-                                                          this.model.get('detail')));
-        }
+    var PolyhedronGeometryView = ExtrasGeometryView.extend({
+        new_obj: function() {
+            return new THREE.PolyhedronGeometry(this.model.get('vertices'),
+                                                this.model.get('faces'),
+                                                this.model.get('radius'),
+                                                this.model.get('detail'));
+        },
     });
 
-    var RingGeometryView = ThreeView.extend({
-        update: function() {
-            this.replace_obj(new THREE.RingGeometry(this.model.get('innerRadius'),
-                                                    this.model.get('outerRadius'),
-                                                    this.model.get('thetaSegments'),
-                                                    this.model.get('phiSegments'),
-                                                    this.model.get('thetaStart'),
-                                                    this.model.get('thetaLength')));
-        }
+    var RingGeometryView = ExtrasGeometryView.extend({
+        new_obj: function() {
+            return new THREE.RingGeometry(this.model.get('innerRadius'),
+                                          this.model.get('outerRadius'),
+                                          this.model.get('thetaSegments'),
+                                          this.model.get('phiSegments'),
+                                          this.model.get('thetaStart'),
+                                          this.model.get('thetaLength'));
+        },
     });
 
-    var ParametricGeometryView = ThreeView.extend({
-        update: function() {
+    var ParametricGeometryView = ExtrasGeometryView.extend({
+        new_obj: function() {
             eval('var s='.concat(this.model.get('func')));
-            this.replace_obj(new THREE.ParametricGeometry(s,
-                                                          this.model.get('slices'),
-                                                          this.model.get('stacks')));
+            return new THREE.ParametricGeometry(s,
+                                                this.model.get('slices'),
+                                                this.model.get('stacks'));
+
         }
     });
 
@@ -958,6 +1004,8 @@ define(["jupyter-js-widgets", "underscore", "three"],
             // when we actually have a mesh created.
             this.promise = Promise.all([this.create_child_view(this.model.get('geometry')),
                                         this.create_child_view(this.model.get('material'))]).then(function(v) {
+
+                // TODO: can't this promise.then callback just be the new_obj function?
                 if(that.geometry) {
                     that.stopListening(that.geometry);
                     that.geometry.remove();
@@ -985,6 +1033,7 @@ define(["jupyter-js-widgets", "underscore", "three"],
             var that = this;
             var promise = MeshView.prototype.update.call(this);
             return promise.then(function() {
+                // TODO: can't this just call new_obj?
                 that.replace_obj(new THREE.Line(that.geometry.obj, that.material.obj,
                                                 THREE[that.model.get('type')]));
                 Object3dView.prototype.update.call(that);
@@ -993,18 +1042,24 @@ define(["jupyter-js-widgets", "underscore", "three"],
     });
 
     var ImageTextureView = ThreeView.extend({
-        update: function() {
+        new_obj: function() {
             var img = new Image();
             //img.crossOrigin='anonymous';
             img.src = this.model.get('imageuri');
             img.onload = $.proxy(this.needs_update, this);
-            this.replace_obj(new THREE.Texture(img));
+
+            return new THREE.Texture(img);
+        },
+
+        update: function() {
+            this.replace_obj(this.new_obj());
             ThreeView.prototype.update.call(this);
         },
     });
 
     var DataTextureView = ThreeView.extend({
-        update: function() {
+
+        new_obj: function() {
             var dataType = this.model.get('type');
             var dataArr;
             var data = this.model.get('data');
@@ -1037,11 +1092,18 @@ define(["jupyter-js-widgets", "underscore", "three"],
             }
             dataArr.set(data);
 
-            this.replace_obj(new THREE.DataTexture(dataArr, this.model.get('width'), this.model.get('height'),
-                            THREE[this.model.get('format')], THREE[dataType], THREE[this.model.get('mapping')],
-                            THREE[this.model.get('wrapS')], THREE[this.model.get('wrapT')],
-                            THREE[this.model.get('magFilter')], THREE[this.model.get('minFilter')],
-                            this.model.get('anisotropy')));
+            return new THREE.DataTexture(
+                dataArr,
+                this.model.get('width'), this.model.get('height'),
+                THREE[this.model.get('format')], THREE[dataType], THREE[this.model.get('mapping')],
+                THREE[this.model.get('wrapS')], THREE[this.model.get('wrapT')],
+                THREE[this.model.get('magFilter')], THREE[this.model.get('minFilter')],
+                this.model.get('anisotropy'));
+
+        },
+
+        update: function() {
+            this.replace_obj(this.new_obj());
             ThreeView.prototype.update.call(this);
         },
     });
@@ -1093,7 +1155,7 @@ define(["jupyter-js-widgets", "underscore", "three"],
     });
 
     var TextTextureView = ThreeView.extend({
-        update: function() {
+        new_obj: function() {
             var fontFace = this.model.get('fontFace');
             var size = this.model.get('size');
             var color = this.model.get('color');
@@ -1123,7 +1185,11 @@ define(["jupyter-js-widgets", "underscore", "three"],
             context.font = font;
             context.fillText(string, canvas.width / 2, canvas.height / 2);
 
-            this.replace_obj(new THREE.Texture(canvas));
+            return new THREE.Texture(canvas);
+        },
+
+        update: function() {
+            this.replace_obj(this.new_obj());
             ThreeView.prototype.update.call(this);
         }
     });
