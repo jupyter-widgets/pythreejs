@@ -1,6 +1,6 @@
 //
 // This file auto-generated with generate-wrappers.js
-// Date: Fri Oct 21 2016 15:59:18 GMT-0700 (PDT)
+// Date: Fri Oct 21 2016 17:17:07 GMT-0700 (PDT)
 //
 
 var _ = require('underscore');
@@ -17,11 +17,10 @@ var GeometryModel = ThreeModel.extend({
         _view_name: 'GeometryView',
         _model_name: 'GeometryModel',
 
+        id: "",
         uuid: "",
         name: "",
         type: "",
-        vertices: [],
-        faces: [],
 
     }),
 
@@ -38,11 +37,10 @@ var GeometryModel = ThreeModel.extend({
         this.props_created_by_three['uuid'] = true;
         this.props_created_by_three['type'] = true;
 
+        this.property_converters['id'] = null;
         this.property_converters['uuid'] = null;
         this.property_converters['name'] = null;
         this.property_converters['type'] = null;
-        this.property_converters['vertices'] = 'convertVectorArray';
-        this.property_converters['faces'] = 'convertFaceArray';
 
     },
 

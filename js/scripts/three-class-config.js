@@ -149,13 +149,16 @@ module.exports = {
     Geometry: {
         relativePath: './core/Geometry',
         properties: {
+            id:   new Types.String(''),
             uuid: new Types.String(''),
             name: new Types.String(''),
             type: new Types.String(''),
 
             // TODO: arrays of geometry data
-            vertices: new Types.VectorArray(),
-            faces: new Types.FaceArray(),
+            // vertices: new Types.VectorArray(),
+            // colors: new Types.ColorArray(),
+
+            // faces: new Types.FaceArray(),
         },
         propsDefinedByThree: [ 'uuid', 'type' ]
     },

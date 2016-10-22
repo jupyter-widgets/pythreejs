@@ -999,6 +999,8 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
         var result;
         if (cached) {
             result = cached;
+
+            // TODO: currently array and itemsize cannot be changed
             // result.array = new Float32Array(ba[0]);
             // result.itemSize = ba[1];
         } else {
