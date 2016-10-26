@@ -3,7 +3,8 @@ var loaders = [
 ];
 
 module.exports = [
-    {// Notebook extension
+    {
+        // Notebook extension
         entry: './src/extension.js',
         output: {
             filename: 'extension.js',
@@ -11,7 +12,8 @@ module.exports = [
             libraryTarget: 'amd'
         }
     },
-    {// jupyter-threejs bundle for the notebook
+    {
+        // jupyter-threejs bundle for the notebook
         entry: './src/index.js',
         output: {
             filename: 'index.js',
@@ -24,7 +26,8 @@ module.exports = [
         },
         externals: ['jupyter-js-widgets']
     },
-    {// embeddable jupyter-threejs bundle
+    {
+        // embeddable jupyter-threejs bundle
         entry: './src/index.js',
         output: {
             filename: 'index.js',
