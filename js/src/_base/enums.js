@@ -134,6 +134,19 @@ var CompressedTextureFormats = {
     2103: "RGBA_PVRTC_2BPPV1_Format",
 };
 
+// Texture Encodings
+
+var TextureEncodings = {
+    3000: "LinearEncoding",
+    3001: "sRGBEncoding",
+    3007: "GammaEncoding",
+    3002: "RGBEEncoding",
+    3003: "LogLuvEncoding",
+    3004: "RGBM7Encoding",
+    3005: "RGBM16Encoding",
+    3006: "RGBDEncoding",
+};
+
 module.exports = {
     Equations: Equations,
     BlendFactors: BlendFactors,
@@ -150,4 +163,5 @@ module.exports = {
     PixelTypes: PixelTypes,
     PixelFormats: PixelFormats,
     CompressedTextureFormats: CompressedTextureFormats,
+    TextureEncodings: TextureEncodings,
 };

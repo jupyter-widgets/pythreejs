@@ -137,3 +137,13 @@ CompressedTextureFormats = [
     'RGBA_PVRTC_2BPPV1_Format'
 ]
 
+TextureEncodings = [
+    'LinearEncoding',
+    'sRGBEncoding',
+    'GammaEncoding',
+    'RGBEEncoding',
+    'LogLuvEncoding',
+    'RGBM7Encoding',
+    'RGBM16Encoding',
+    'RGBDEncoding'
+];

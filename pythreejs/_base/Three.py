@@ -17,6 +17,13 @@ class ThreeWidget(Widget):
         Widget.__init__(self, **kwargs)
         self.on_msg(self.on_potential_ret_val)
 
+    def send_msg(self, message_type, payload={}):
+        content = {
+            "type": message_type,
+            "payload": payload
+        }
+        self.send(content=content, buffers=None)
+
     def exec_three_obj_method(self, method_name, *args, **kwargs):
         content = {
             "type": "exec_three_obj_method",

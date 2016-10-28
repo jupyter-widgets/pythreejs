@@ -35,7 +35,11 @@ var ThreeView = widgets.DOMWidgetView.extend({
     },
 
     render: function() {
+        // ensure that model is fully initialized before attempting render
+        this.model.initPromise.bind(this).then(this.doRender);
+    },
 
+    doRender: function() {
         var obj = this.model.obj;
 
         this.el.className = "jupyter-widget jupyter-threejs";
@@ -73,7 +77,6 @@ var ThreeView = widgets.DOMWidgetView.extend({
 
         this.listenTo(this.model, 'change:_width',  this.updateSize.bind(this));
         this.listenTo(this.model, 'change:_height', this.updateSize.bind(this));
-
     },
 
     tick: function() {
@@ -137,6 +140,13 @@ var ThreeView = widgets.DOMWidgetView.extend({
         
             var geometry = new THREE.SphereGeometry(15, 16, 12);
             var mesh = new THREE.Mesh(geometry, obj);
+            this.scene.add(mesh);
+
+        } else if (obj instanceof THREE.Texture) {
+
+            var geometry = new THREE.SphereGeometry(15, 16, 12);
+            var mat = new THREE.MeshStandardMaterial({ map: obj });
+            var mesh = new THREE.Mesh(geometry, mat);
             this.scene.add(mesh);
 
         }
@@ -310,14 +320,43 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
         this.createPropertiesArrays();
 
         // Instantiate Three.js object
-        this.createThreeObject();
+        this.initPromise = this.createThreeObjectAsync().bind(this).then(function() {
 
-        // pull in props created by three
-        // TODO: need to ensure changes are saved before syncing to three obj
-        this.syncToModel();
+            // pull in props created by three
+            // TODO: need to ensure changes are saved before syncing to three obj
+            this.syncToModel();
 
-        // sync the rest from the server to the model
-        this.syncToThreeObj();
+            // sync the rest from the server to the model
+            this.syncToThreeObj();
+
+            // setup msg, model, and children change listeners
+            this.setupListeners();
+
+        });
+    
+    },
+
+    createPropertiesArrays: function() {
+        // initialize properties arrays
+        this.three_properties = [];
+        this.three_array_properties = [];
+        this.three_dict_properties = [];
+        // this.scalar_properties = [];
+        // this.enum_properties = [];
+        // this.color_properties = [];
+        // this.array_properties = [];
+        // this.dict_properties = [];
+        // this.function_properties = [];
+        // this.properties_properties = [];
+        // this.vector_properties = [];
+
+        this.enum_property_types = {};
+        this.props_created_by_three = {};
+        this.property_converters = {};
+        this.property_mappers = {};
+    },
+
+    setupListeners: function() {
 
         // Handle changes in three instance props
         this.three_properties.forEach(function(propName) {
@@ -370,77 +409,53 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
 
         this.on('change', this.onChange, this);
         this.on('msg:custom', this.onCustomMessage, this);
-    
+
     },
 
-    createPropertiesArrays: function() {
-        // initialize properties arrays
-        this.three_properties = [];
-        this.three_array_properties = [];
-        this.three_dict_properties = [];
-        // this.scalar_properties = [];
-        // this.enum_properties = [];
-        // this.color_properties = [];
-        // this.array_properties = [];
-        // this.dict_properties = [];
-        // this.function_properties = [];
-        // this.properties_properties = [];
-        // this.vector_properties = [];
+    createThreeObjectAsync: function() {
 
-        this.enum_property_types = {};
-        this.props_created_by_three = {};
-        this.property_converters = {};
-    },
-
-    registerChildrenListeners: function() {
-        this.three_properties.forEach(function(propName) {
-            var childModel = this.get(propName);
-            if (childModel) {
-                childModel.on('change', this.onChildChanged, this);
-            }
-        }, this);
-        this.three_array_properties.forEach(function(propName) {
-            var childArr = this.get(propName);
-            if (childArr) {
-                childArr.forEach(function(childModel) {
-                    childModel.on('change', this.onChildChanged, this);    
-                }, this);
-            }
-        }, this);
-
-        // TODO: dict properties
-    },
-
-    createThreeObject: function() {
-
-        var obj;
+        // try cache first
         var cacheDescriptor = this.getCacheDescriptor();
         if (cacheDescriptor) {
-            obj = this.getThreeObjectFromCache(cacheDescriptor); 
+            var obj = this.getThreeObjectFromCache(cacheDescriptor); 
             if (obj) {
                 if (obj.ipymodelId != this.id) {
                     throw new Error('model id does not match three object: ' + obj.ipymodelId + ' -- ' + this.id);
                 }
 
                 this.obj = obj;
-                return obj;
+                return Promise.resolve(obj);
             }
         }
 
-        obj = this.constructThreeObject();
-        obj.ipymodelId = this.id; // brand that sucker
-        obj.ipymodel = this;
+        var objPromise;
 
-        this.putThreeObjectIntoCache(cacheDescriptor, obj);
+        // call constructor method overridden by every class
+        // check for custom async three obj creator
+        if (this.constructThreeObjectAsync) {
+            objPromise = this.constructThreeObjectAsync();
+        } else if (this.constructThreeObject) {
+            objPromise = Promise.resolve(this.constructThreeObject());
+        } else {
+            throw new Error('no THREE construct method exists: this.createThreeObjectAsync');
+        }
 
-        // pickers need access to the model from the three.js object
-        // TODO: this.obj may not exist until after the update() call above
-        // TODO: handle this now that it's in the model
-        // this.obj.ipywidget_view = this;
+        return objPromise.bind(this).then(function(obj) {
+            
+            obj.ipymodelId = this.id; // brand that sucker
+            obj.ipymodel = this;
 
-        this.obj = obj;
+            this.putThreeObjectIntoCache(cacheDescriptor, obj);
 
-        return obj;
+            // pickers need access to the model from the three.js object
+            // TODO: this.obj may not exist until after the update() call above
+            // TODO: handle this now that it's in the model
+            // this.obj.ipywidget_view = this;
+
+            this.obj = obj;
+            return obj;
+
+        });
 
     },
 
@@ -616,6 +631,22 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
             this.obj[propName] = converterFn.bind(this)(this.get(propName), propName);
         }, this);
 
+        // mappers are used for more complicated conversions between model and three props
+        // see: DataTexture
+        _.each(this.property_mappers, function(mapperName, dataKey) {
+            if (!mapperName) {
+                throw new Error('invalid mapper name: ' + mapperName);
+            }
+
+            mapperName = mapperName + "ModelToThree";
+            var mapperFn = this[mapperName];
+            if (!mapperFn) {
+                throw new Error('invalid mapper name: ' + mapperName);
+            }
+
+            mapperFn.bind(this)();
+        }, this);
+
         // _.each(arrayMappers, function(mapFn, arrayName) {
         //     this[arrayName].forEach(function(propName) {
         //         mapFn.bind(this)(propName); 
@@ -730,6 +761,22 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
             }
 
             this.set(propName, converterFn.bind(this)(this.obj[propName], propName));
+        }, this);
+
+        // mappers are used for more complicated conversions between model and three props
+        // see: DataTexture
+        _.each(this.property_mappers, function(mapperName, dataKey) {
+            if (!mapperName) {
+                throw new Error('invalid mapper name: ' + mapperName);
+            }
+
+            mapperName = mapperName + 'ThreeToModel';
+            var mapperFn = this[mapperName];
+            if (!mapperFn) {
+                throw new Error('invalid mapper name: ' + mapperName);
+            }
+
+            mapperFn.bind(this)();
         }, this);
 
         // _.each(arrayMappers, function(mapFn, arrayName) {
@@ -966,15 +1013,15 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
     },
 
     // ArrayBuffer
-    // convertArrayBufferModelToThree: function(arr, propName) {
-    //     return new Float32Array(arr);
-    // },
+    convertArrayBufferModelToThree: function(arr, propName) {
+        // TODO: support other ArrayBuffer types
+        return new Float32Array(arr);
+    },
 
-    // convertArrayBufferThreeToModel: function(arrBuffer, propName) {
-    //     // can just send arraybuffer over directly
-    //     // TODO: confirm
-    //     return arrBuffer;
-    // },
+    convertArrayBufferThreeToModel: function(arrBuffer, propName) {
+        // TODO: support other ArrayBuffer types
+        return Array.prototype.slice.call(arrBuffer);
+    },
 
     // Color
     convertColorModelToThree: function(c, propName) {

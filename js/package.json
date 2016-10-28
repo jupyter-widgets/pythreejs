@@ -10,6 +10,7 @@
     "url": "https://github.com/jovyan/pythreejs.git"
   },
   "scripts": {
+    "clean-py": "rm ../pythreejs/{__init__.py, *_autogen.py} ../pythreejs/*/{__init__.py, *_autogen.py}; ../pythreejs/*/*/{*_autogen.py, __init__.py};",
     "autogen": "./scripts/generate-wrappers.js",
     "build": "webpack",
     "prepublish": "webpack",

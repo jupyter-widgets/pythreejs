@@ -29,11 +29,12 @@ var {{ modelName }} = {{ superClass.modelName }}.extend({
 
     constructThreeObject: function() {
 
-        return new THREE.{{ className }}({{#if constructor.args}}
+        var result = new THREE.{{ className }}({{#if constructor.args}}
         {{#each constructor.args as |arg|}}
             {{{ arg }}}{{#unless @last}},{{/unless}}
         {{/each}}
         {{/if}});
+        return Promise.resolve(result);
 
     },
 
@@ -75,15 +76,6 @@ var {{ modelName }} = {{ superClass.modelName }}.extend({
 
 var {{ viewName }} = {{ superClass.viewName }}.extend({});
 
-{{#if override_class}}
-// Override auto-gen class with custom implementation
-var Override = require('{{ override_class.relativePath }}');
-_.extend({{ modelName }}.prototype, Override.{{ modelName }}.prototype);
-_.extend({{ modelName }}, Override.{{ modelName }});
-_.extend({{ viewName }}.prototype, Override.{{ viewName }}.prototype);
-_.extend({{ viewName }}, Override.{{ viewName }});
-
-{{/if}}
 module.exports = {
     {{ viewName }}: {{ viewName }},
     {{ modelName }}: {{ modelName }},

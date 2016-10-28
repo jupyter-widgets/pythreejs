@@ -15,6 +15,7 @@ module.exports = {
     // Three: {
     //     relativePath: './Three',
     // },
+    
     AnimationClip: {
         relativePath: './animation/AnimationClip',
     },
@@ -157,8 +158,9 @@ module.exports = {
             // TODO: arrays of geometry data
             // vertices: new Types.VectorArray(),
             // colors: new Types.ColorArray(),
-
             // faces: new Types.FaceArray(),
+            // faceVertexUVs
+            // ...
         },
         propsDefinedByThree: [ 'uuid', 'type' ]
     },
@@ -781,7 +783,7 @@ module.exports = {
         constructorArgs: [ 'geometry', 'material' ],
         properties: {
             material: new Types.ThreeType('Material'),
-            geometry: new Types.ThreeType('Geometry'),
+            geometry: new Types.ThreeType(['Geometry', 'BufferGeometry']),
         }
     },
     Points: {
@@ -822,6 +824,29 @@ module.exports = {
     },
     Texture: {
         relativePath: './textures/Texture',
+        properties: {
+            id:               new Types.Int(),
+            uuid:             new Types.String(''),
+            name:             new Types.String(''),
+            mapping:          new Types.Enum('MappingModes', 'UVMapping'),
+            wrapS:            new Types.Enum('WrappingModes', 'ClampToEdgeWrapping'),
+            wrapT:            new Types.Enum('WrappingModes', 'ClampToEdgeWrapping'),
+            magFilter:        new Types.Enum('Filters', 'LinearFilter'),
+            minFilter:        new Types.Enum('Filters', 'LinearMipMapLinearFilter'),
+            format:           new Types.Enum('PixelFormats', 'RGBAFormat'),
+            type:             new Types.Enum('DataTypes', 'UnsignedByteType'),
+            anisotropy:       new Types.Float(1.0),
+            repeat:           new Types.Vector2(1.0, 1.0),
+            offset:           new Types.Vector2(0.0, 0.0),
+            generateMipmaps:  new Types.Bool(true),
+            premultiplyAlpha: new Types.Bool(false),
+            flipY:            new Types.Bool(true),
+            unpackAlignment:  new Types.Int(4), // from three docs: valid values: 1, 2, 4, 8 (see http://www.khronos.org/opengles/sdk/docs/man/xhtml/glPixelStorei.xml)
+            encoding:         new Types.Enum('TextureEncodings', 'LinearEncoding'),
+            version:          new Types.Int(0),
+        },
+        construtorArgs: [ 'image', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter', 'format', 'type', 'anisotropy' ],
+        propsDefinedByThree: [ 'id', 'uuid', 'version' ],
     },
     CanvasTexture: {
         relativePath: './textures/CanvasTexture',
@@ -838,6 +863,25 @@ module.exports = {
     DataTexture: {
         relativePath: './textures/DataTexture',
         superClass: 'Texture',
+        properties: {
+            // this.image = { data: data, width: width, height: height };
+            data:            new Types.ArrayBuffer(),
+            width:           new Types.Int(0),
+            height:          new Types.Int(0),
+            minFilter:       new Types.Enum('Filters', 'NearestFilter'), // override default
+            magFilter:       new Types.Enum('Filters', 'NearestFilter'), // override default
+            flipY:           new Types.Bool(false), // override default
+            generateMipmaps: new Types.Bool(false),
+        },
+        constructorArgs: [ 'data', 'width', 'height', 'format', 'type', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter', 'anisotropy' ],
+    },
+    ImageTexture: {
+        relativePath: './textures/ImageTexture',
+        superClass: 'Texture',
+        properties: {
+            imageUri: new Types.String(''),
+        },
+        constructorArgs: [ 'imageUri', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter', 'format', 'type', 'anisotropy' ],
     },
     VideoTexture: {
         relativePath: './textures/VideoTexture',
@@ -916,12 +960,12 @@ module.exports = {
         superClass: 'BufferGeometry',
         constructorArgs: [ 'width', 'height', 'depth', 'widthSegments', 'heightSegments', 'depthSegments' ],
         properties: {
-            width: new Types.Float(10.0),
-            height: new Types.Float(10.0),
-            depth: new Types.Float(10.0),
-            widthSegments: new Types.Int(1),
+            width:          new Types.Float(10.0),
+            height:         new Types.Float(10.0),
+            depth:          new Types.Float(10.0),
+            widthSegments:  new Types.Int(1),
             heightSegments: new Types.Int(1),
-            depthSegments: new Types.Int(1),
+            depthSegments:  new Types.Int(1),
         },
         propsDefinedByThree: [ 'attributes', 'index' ],
     },
@@ -930,12 +974,12 @@ module.exports = {
         superClass: 'Geometry',
         constructorArgs: [ 'width', 'height', 'depth', 'widthSegments', 'heightSegments', 'depthSegments' ],
         properties: {
-            width: new Types.Float(10.0),
-            height: new Types.Float(10.0),
-            depth: new Types.Float(10.0),
-            widthSegments: new Types.Int(1),
+            width:          new Types.Float(10.0),
+            height:         new Types.Float(10.0),
+            depth:          new Types.Float(10.0),
+            widthSegments:  new Types.Int(1),
             heightSegments: new Types.Int(1),
-            depthSegments: new Types.Int(1),
+            depthSegments:  new Types.Int(1),
         },
         propsDefinedByThree: [ 'vertices', 'faces' ]
     },
@@ -944,9 +988,9 @@ module.exports = {
         superClass: 'BufferGeometry',
         constructorArgs: [ 'radius', 'segments', 'thetaStart', 'thetaLength' ],
         properties: {
-            radius: new Types.Float(50.0),
-            segments: new Types.Int(8), // TODO: min:3
-            thetaStart: new Types.Float(0.0),
+            radius:      new Types.Float(50.0),
+            segments:    new Types.Int(8), // TODO: min:3
+            thetaStart:  new Types.Float(0.0),
             thetaLength: new Types.Float(Math.PI * 2.0),
         },
         propsDefinedByThree: [ 'attributes', 'index' ],
@@ -956,9 +1000,9 @@ module.exports = {
         superClass: 'Geometry',
         constructorArgs: [ 'radius', 'segments', 'thetaStart', 'thetaLength' ],
         properties: {
-            radius: new Types.Float(50.0),
-            segments: new Types.Int(8), // TODO: min:3
-            thetaStart: new Types.Float(0.0),
+            radius:      new Types.Float(50.0),
+            segments:    new Types.Int(8), // TODO: min:3
+            thetaStart:  new Types.Float(0.0),
             thetaLength: new Types.Float(Math.PI * 2.0),
         },
     },
@@ -967,14 +1011,14 @@ module.exports = {
         superClass: 'BufferGeometry',
         constructorArgs: [ 'radiusTop', 'radiusBottom', 'height', 'radiusSegments', 'heightSegments', 'openEnded', 'thetaStart', 'thetaLength' ],
         properties: {
-            radiusTop: new Types.Float(20.0),
-            radiusBottom: new Types.Float(20.0),
-            height: new Types.Float(100.0),
+            radiusTop:      new Types.Float(20.0),
+            radiusBottom:   new Types.Float(20.0),
+            height:         new Types.Float(100.0),
             radiusSegments: new Types.Int(8),
             heightSegments: new Types.Int(1),
-            openEnded: new Types.Bool(false),
-            thetaStart: new Types.Float(0.0),
-            thetaLength: new Types.Float(Math.PI * 2.0),
+            openEnded:      new Types.Bool(false),
+            thetaStart:     new Types.Float(0.0),
+            thetaLength:    new Types.Float(Math.PI * 2.0),
         },
         propsDefinedByThree: [ 'attributes', 'index' ],
     },
@@ -983,14 +1027,14 @@ module.exports = {
         superClass: 'Geometry',
         constructorArgs: [ 'radiusTop', 'radiusBottom', 'height', 'radiusSegments', 'heightSegments', 'openEnded', 'thetaStart', 'thetaLength' ],
         properties: {
-            radiusTop: new Types.Float(20.0),
-            radiusBottom: new Types.Float(20.0),
-            height: new Types.Float(100.0),
+            radiusTop:      new Types.Float(20.0),
+            radiusBottom:   new Types.Float(20.0),
+            height:         new Types.Float(100.0),
             radiusSegments: new Types.Int(8),
             heightSegments: new Types.Int(1),
-            openEnded: new Types.Bool(false),
-            thetaStart: new Types.Float(0.0),
-            thetaLength: new Types.Float(Math.PI * 2.0),
+            openEnded:      new Types.Bool(false),
+            thetaStart:     new Types.Float(0.0),
+            thetaLength:    new Types.Float(Math.PI * 2.0),
         },
     },
     DodecahedronGeometry: {
@@ -1027,9 +1071,9 @@ module.exports = {
         superClass: 'BufferGeometry',
         constructorArgs: [ 'points', 'segments', 'phiStart', 'phiLength' ],
         properties: {
-            points: new Types.VectorArray(),
-            segments: new Types.Int(12),
-            phiStart: new Types.Float(0.0),
+            points:    new Types.VectorArray(),
+            segments:  new Types.Int(12),
+            phiStart:  new Types.Float(0.0),
             phiLength: new Types.Float(Math.PI * 2.0),
         },
         propsDefinedByThree: [ 'attributes', 'index' ],
@@ -1039,9 +1083,9 @@ module.exports = {
         superClass: 'Geometry',
         constructorArgs: [ 'points', 'segments', 'phiStart', 'phiLength' ],
         properties: {
-            points: new Types.VectorArray(),
-            segments: new Types.Int(12),
-            phiStart: new Types.Float(0.0),
+            points:    new Types.VectorArray(),
+            segments:  new Types.Int(12),
+            phiStart:  new Types.Float(0.0),
             phiLength: new Types.Float(Math.PI * 2.0),
         },
         propsDefinedByThree: [ 'vertices', 'faces' ],

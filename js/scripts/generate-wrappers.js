@@ -22,6 +22,7 @@ var templateDir = path.resolve(scriptDir, 'templates');
 var threeSrcDir = path.resolve(baseDir, 'node_modules', 'three', 'src');
 
 var AUTOGEN_EXT = 'autogen';
+var JS_AUTOGEN_EXT = '.' + AUTOGEN_EXT + '.js';
 
 //
 // Templates
@@ -165,6 +166,21 @@ function mapPromiseFnOverGlob(globPattern, mapFn, globOptions) {
 
     });
 
+}
+
+function mapPromiseFnOverFileList(fileList, mapFn) {
+    var promises = [];
+    
+    fileList.forEach(function(filePath) {
+        var result = mapFn(filePath);
+        if (result instanceof Array) {
+            promises = promises.concat(result);
+        } else {
+            promises.push(result);
+        }
+    }, this);
+
+    return Promise.all(promises);
 }
 
 function mapPromiseFnOverThreeModules(mapFn) {
@@ -470,22 +486,23 @@ function writeJavascriptIndexFiles() {
                     return false; 
                 }
 
-                // only load override classes if no autogen file is present
-                // e.g. for WebGLRenderer.js
-                // do not load override classes in index.js files
-                // the override functionality is pull in via the autogen classes
-                if (RE_JS_EXT.test(filePath) && !RE_AUTOGEN_EXT.test(filePath)) {
-                    var dirname = path.dirname(filePath);
-                    var basename = path.basename(filePath);
-                    var autogenName = basename + '.' + AUTOGEN_EXT + '.js';
-                    var autogenPath = path.join(dirname, autogenName);
+                // if override class exists, load it in favor of the autogen file
+                // e.g. for WebGLRenderer.js, Object3D.js, DataTexture.js
+                // override classes should extend the autogen versions
+                if (RE_AUTOGEN_EXT.test(filePath)) {
 
-                    // if autogen file exists, skip, otherwise, keep going
-                    if (dirFiles.indexOf(autogenPath) > -1) {
+                    var dirname = path.dirname(filePath);
+                    var basename = path.basename(filePath, JS_AUTOGEN_EXT);
+                    var overrideName = basename + '.js';
+                    var overridePath = './' + path.join(dirname, overrideName);
+                    console.log('checking for override: ' + overridePath);
+
+                    // override file present, so don't include autogen file in index
+                    if (dirFiles.indexOf(overridePath) > -1) {
+                        console.log('override exists for: ' + filePath);
                         return false;
                     }
-                    
-                    console.log('no autogen file exists for: ' + filePath);
+
                 }
 
                 return true;
@@ -805,32 +822,38 @@ function createTopLevelPythonModuleFile() {
 
 }
 
-function createJavascriptFiles() {
+var CUSTOM_CLASSES = [
+    'textures/ImageTexture.js',
+];
 
+function createJavascriptFiles() {
     return mapPromiseFnOverThreeModules(createJavascriptWrapper)
         .then(function() {
-        
+            return mapPromiseFnOverFileList(CUSTOM_CLASSES, createJavascriptWrapper);
+        })
+        .then(function() {
             return writeJavascriptIndexFiles();
-
         });
-
 }
 
 function createPythonFiles() {
 
     return mapPromiseFnOverThreeModules(function(relativePath) {
-
-        createPythonWrapper(relativePath);
-
-        // ensures each dir has empty __init__.py file for proper importing of sub dirs
-        createPythonModuleInitFile(relativePath);
-
-    }).then(function() {
-
-        // top level __init__.py file imports *all* pythreejs modules into namespace
-        return createTopLevelPythonModuleFile();
-
-    });
+            createPythonWrapper(relativePath);
+            // ensures each dir has empty __init__.py file for proper importing of sub dirs
+            createPythonModuleInitFile(relativePath);
+        })
+        .then(function() {
+            return mapPromiseFnOverFileList(CUSTOM_CLASSES, function(relativePath) {
+                createPythonWrapper(relativePath);
+                // ensures each dir has empty __init__.py file for proper importing of sub dirs
+                createPythonModuleInitFile(relativePath);
+            })    
+        })
+        .then(function() {
+            // top level __init__.py file imports *all* pythreejs modules into namespace
+            return createTopLevelPythonModuleFile();
+        });
 
 }
 

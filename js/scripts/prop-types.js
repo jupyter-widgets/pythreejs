@@ -12,7 +12,7 @@ _.extend(BaseType.prototype, {
         if (this.defaultValue === false) { return 'False'; }
         if (this.defaultValue === true) { return 'True'; }
         if (this.defaultValue === 0) { return '0'; }
-        if (this.defaultValue === '') { return ''; }
+        if (this.defaultValue === '') { return '""'; }
         if (!this.defaultValue) { return 'None'; }
 
         return JSON.stringify(this.defaultValue);
@@ -395,7 +395,7 @@ module.exports = {
     Enum: Enum,
     Color: Color,
     Array: ArrayType,
-    // ArrayBuffer: ArrayBufferType,
+    ArrayBuffer: ArrayBufferType,
     BufferAttribute: BufferAttribute,
     BufferAttributeDict: BufferAttributeDict,
     Dict: DictType,
