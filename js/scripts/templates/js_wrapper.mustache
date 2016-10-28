@@ -1,0 +1,82 @@
+//
+// This file auto-generated with {{ generatorScriptName }}
+// Date: {{ now }}
+//
+
+var _ = require('underscore');
+var widgets = require('jupyter-js-widgets');
+
+var {{ superClass.modelName }} = require('{{ superClass.requirePath }}').{{ superClass.modelName }};
+var {{ superClass.viewName }} = require('{{ superClass.requirePath }}').{{ superClass.viewName }};
+
+{{#each dependencies as |dep depName|}}
+var {{ dep.modelName }} = require('{{ dep.requirePath }}').{{ dep.modelName }};
+var {{ dep.viewName }} = require('{{ dep.requirePath }}').{{ dep.viewName }};
+{{/each}}
+
+var {{ modelName }} = {{ superClass.modelName }}.extend({
+
+    defaults: _.extend({}, {{ superClass.modelName }}.prototype.defaults, {
+
+        _view_name: '{{ viewName }}',
+        _model_name: '{{ modelName }}',
+
+        {{#each properties as |prop propName|}}
+        {{ propName }}: {{{ prop.defaultJson }}},
+        {{/each}}
+
+    }),
+
+    constructThreeObject: function() {
+
+        var result = new THREE.{{ className }}({{#if constructor.args}}
+        {{#each constructor.args as |arg|}}
+            {{{ arg }}}{{#unless @last}},{{/unless}}
+        {{/each}}
+        {{/if}});
+        return Promise.resolve(result);
+
+    },
+
+    createPropertiesArrays: function() {
+
+        {{ superClass.modelName }}.prototype.createPropertiesArrays.call(this);
+        {{#each properties as |prop propName|}}
+        {{#if prop.property_array_name }}
+        this.{{ prop.property_array_name }}.push('{{ propName }}');
+        {{/if}}
+        {{/each}}
+        
+        {{#each props_created_by_three as |propName|}}
+        this.props_created_by_three['{{propName}}'] = true;
+        {{/each}}
+        {{#each enum_properties as |enumTypeName propName|}}
+        this.enum_property_types['{{ propName }}'] = '{{ enumTypeName }}';
+        {{/each}}
+
+        {{#each properties as |prop propName|}}
+        {{#if prop.property_converter }}
+        this.property_converters['{{ propName }}'] = '{{ prop.property_converter }}';
+        {{else}}
+        this.property_converters['{{ propName }}'] = null;
+        {{/if}}
+        {{/each}}
+
+    },
+
+}{{#if serialized_props}}, {
+
+    serializers: _.extend({
+        {{#each serialized_props as |propName|}}
+        {{ propName }}: { deserialize: widgets.unpack_models },
+        {{/each}}
+    }, {{ superClass.modelName }}.serializers),
+    
+}{{/if}});
+
+var {{ viewName }} = {{ superClass.viewName }}.extend({});
+
+module.exports = {
+    {{ viewName }}: {{ viewName }},
+    {{ modelName }}: {{ modelName }},
+};

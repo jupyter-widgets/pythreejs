@@ -12,11 +12,13 @@ Another resource to understanding three.js decisions is the Udacity course on
 3d graphics using three.js: https://www.udacity.com/course/cs291
 """
 
+from __future__ import absolute_import
+from math import pi, sqrt
+
 from ipywidgets import Widget, DOMWidget, widget_serialization, Color
 from traitlets import (Unicode, Int, CInt, Instance, Enum, List, Dict, Float,
                        CFloat, Bool)
 from ._package import npm_pkg_name
-from math import pi, sqrt
 
 def vector3(trait_type=CFloat, default=None, **kwargs):
     if default is None:

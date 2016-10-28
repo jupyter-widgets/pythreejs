@@ -3,15 +3,20 @@ var loaders = [
 ];
 
 module.exports = [
-    {// Notebook extension
+    {
+        // Notebook extension
         entry: './src/extension.js',
         output: {
             filename: 'extension.js',
             path: '../pythreejs/static',
             libraryTarget: 'amd'
-        }
+        },
+        resolve: {
+            extensions: [ "", ".autogen.js", ".js" ]
+        },
     },
-    {// jupyter-threejs bundle for the notebook
+    {
+        // jupyter-threejs bundle for the notebook
         entry: './src/index.js',
         output: {
             filename: 'index.js',
@@ -22,9 +27,14 @@ module.exports = [
         module: {
             loaders: loaders
         },
-        externals: ['jupyter-js-widgets']
+        externals: ['jupyter-js-widgets'],
+        resolve: {
+            extensions: [ "", ".autogen.js", ".js" ]
+        },
+
     },
-    {// embeddable jupyter-threejs bundle
+    {
+        // embeddable jupyter-threejs bundle
         entry: './src/index.js',
         output: {
             filename: 'index.js',
@@ -35,6 +45,27 @@ module.exports = [
         module: {
             loaders: loaders
         },
-        externals: ['jupyter-js-widgets']
+        externals: ['jupyter-js-widgets'],
+        resolve: {
+            extensions: [ "", ".autogen.js", ".js" ]
+        },
+
+    },
+    {
+        // embeddable jupyter-threejs bundle
+        entry: './src/index.js',
+        output: {
+            filename: 'index.standalone.js',
+            path: './dist/',
+        },
+        devtool: 'source-map',
+        module: {
+            loaders: loaders
+        },
+        resolve: {
+            extensions: [ "", ".autogen.js", ".js" ]
+        },
+
     }
+
 ];
