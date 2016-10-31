@@ -7,6 +7,8 @@ define(["jupyter-js-widgets", "underscore", "three"],
     require("./examples/js/controls/OrbitControls.js");
     require("./examples/js/controls/MomentumCameraControls.js");
     require("./examples/js/controls/TrackballControls.js");
+    var $ = require("jquery");
+
     var Detector = require("./examples/js/Detector.js");
 
     var RendererView = widgets.DOMWidgetView.extend({
@@ -495,8 +497,10 @@ define(["jupyter-js-widgets", "underscore", "three"],
             this.model.on('change:root', this.change_root, this);
             this.change_root(this.model, this.model.get('root'));
             this.options.dom.addEventListener(this.model.get('event'), function(event) {
-                var mouseX = ((event.pageX - this.offsetLeft) / that.options.dom.getBoundingClientRect().width) * 2 - 1;
-                var mouseY = -((event.pageY - this.offsetTop) / that.options.dom.getBoundingClientRect().height) * 2 + 1;
+                var offset = $(this).offset();
+                var $el = $(that.options.dom);
+                var mouseX = ((event.pageX - offset.left) / $el.width()) * 2 - 1;
+                var mouseY = -((event.pageY - offset.top) / $el.height()) * 2 + 1;
                 var vector = new THREE.Vector3(mouseX, mouseY, that.options.renderer.camera.obj.near);
 
                 vector.unproject(that.options.renderer.camera.obj);
