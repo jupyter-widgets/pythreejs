@@ -33,7 +33,8 @@ define(["jupyter-js-widgets", "underscore", "three"],
                 this.renderer = new THREE.CanvasRenderer();
             }
             this.el.className = "jupyter-widget jupyter-threejs";
-            this.$el.empty().append(this.renderer.domElement);
+            this.el.innerHTML = '';
+            this.el.appendChild(this.renderer.domElement);
             var that = this;
             var view_promises = [];
             view_promises.push(this.create_child_view(this.model.get('camera'), render_loop).then(
@@ -494,9 +495,8 @@ define(["jupyter-js-widgets", "underscore", "three"],
             this.model.on('change:root', this.change_root, this);
             this.change_root(this.model, this.model.get('root'));
             this.options.dom.addEventListener(this.model.get('event'), function(event) {
-                var offset = $(this).offset();
-                var mouseX = ((event.pageX - offset.left) / $(that.options.dom).width()) * 2 - 1;
-                var mouseY = -((event.pageY - offset.top) / $(that.options.dom).height()) * 2 + 1;
+                var mouseX = ((event.pageX - this.offsetLeft) / that.options.dom.getBoundingClientRect().width) * 2 - 1;
+                var mouseY = -((event.pageY - this.offsetTop) / that.options.dom.getBoundingClientRect().height) * 2 + 1;
                 var vector = new THREE.Vector3(mouseX, mouseY, that.options.renderer.camera.obj.near);
 
                 vector.unproject(that.options.renderer.camera.obj);
@@ -997,7 +997,7 @@ define(["jupyter-js-widgets", "underscore", "three"],
             var img = new Image();
             //img.crossOrigin='anonymous';
             img.src = this.model.get('imageuri');
-            img.onload = $.proxy(this.needs_update, this);
+            img.onload = _.bind(this.needs_update, this);
             this.replace_obj(new THREE.Texture(img));
             ThreeView.prototype.update.call(this);
         },
