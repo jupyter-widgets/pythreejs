@@ -22,7 +22,7 @@
   "dependencies": {
     "jquery": "^2.1.4",
     "jupyter-js-widgets": "^2.0.4",
-    "jupyterlab" : "^0.5.1",
+    "jupyterlab" : "^0.7.0",
     "@jupyterlab/nbwidgets": "^0.4.0",
     "three": "^0.75.0",
     "underscore": "^1.8.3"
