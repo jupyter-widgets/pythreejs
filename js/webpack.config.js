@@ -8,9 +8,10 @@ buildExtension({
     name: 'jupyter-threejs',
     entry: './src/labplugin',
     outputDir: '../pythreejs/staticlab',
+    useDefaultLoaders: false,
     config: {
         module: {
-            loaders: []
+            loaders: loaders
         }
     }
 });
