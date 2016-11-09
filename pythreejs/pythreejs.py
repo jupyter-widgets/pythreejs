@@ -13,7 +13,7 @@ Another resource to understanding three.js decisions is the Udacity course on
 """
 
 from ipywidgets import Widget, DOMWidget, widget_serialization, Color
-from traitlets import (Unicode, Int, CInt, Instance, Enum, List, Dict, Float,
+from traitlets import (Unicode, CInt, Instance, Enum, List, Dict, Float,
                        CFloat, Bool)
 from ._package import npm_pkg_name
 from math import pi, sqrt
@@ -766,7 +766,7 @@ class Renderer(DOMWidget):
     controls = List(Instance(Controls)).tag(sync=True, **widget_serialization)
     effect = Instance(Effect, allow_none=True).tag(sync=True, **widget_serialization)
     background = Color('black', allow_none=True).tag(sync=True)
-    backgroud_opacity = Float(min=0.0, max=1.0).tag(sync=True)
+    background_opacity = Float(min=0.0, max=1.0).tag(sync=True)
 
 
 class Light(Object3d):
