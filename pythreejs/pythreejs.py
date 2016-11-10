@@ -451,6 +451,13 @@ class ParametricGeometry(Geometry):
     slices = CInt(105).tag(sync=True)
     stacks = CInt(105).tag(sync=True)
 
+class BufferGeometry(Geometry):
+    _view_name = Unicode('BufferGeometryView').tag(sync=True)
+    _model_name = Unicode('BufferGeometryModel').tag(sync=True)
+
+    vertices = List(CFloat).tag(sync=True)
+    faces = List(CFloat).tag(sync=True)
+
 
 class Material(Widget):
     _view_module = Unicode(npm_pkg_name).tag(sync=True)
@@ -577,9 +584,9 @@ class NormalMaterial(Material):
     wireframeLinewidth = CFloat(1.0).tag(sync=True)
 
 
-class ParticleSystemMaterial(Material):
-    _view_name = Unicode('ParticleSystemMaterialView').tag(sync=True)
-    _model_name = Unicode('ParticleSystemMaterialModel').tag(sync=True)
+class PointsMaterial(Material):
+    _view_name = Unicode('PointsMaterialView').tag(sync=True)
+    _model_name = Unicode('PointsMaterialModel').tag(sync=True)
 
     color = Color('yellow').tag(sync=True)
     map = Instance(Texture, allow_none=True).tag(sync=True, **widget_serialization)
@@ -587,6 +594,11 @@ class ParticleSystemMaterial(Material):
     sizeAttenuation = Bool().tag(sync=True)
     vertexColors = Bool().tag(sync=True)
     fog = Bool().tag(sync=True)
+
+
+class ParticleSystemMaterial(PointsMaterial):
+    """For backward compatibility"""
+    pass
 
 
 class ShaderMaterial(Material):
@@ -633,6 +645,15 @@ class Sprite(Object3d):
 class Mesh(Object3d):
     _view_name = Unicode('MeshView').tag(sync=True)
     _model_name = Unicode('MeshModel').tag(sync=True)
+
+    geometry = Instance(Geometry).tag(sync=True, **widget_serialization)
+    material = Instance(Material).tag(sync=True, **widget_serialization)
+
+
+class Points(Object3d):
+    """Points."""
+    _view_name = Unicode('PointsView').tag(sync=True)
+    _model_name = Unicode('PointsModel').tag(sync=True)
 
     geometry = Instance(Geometry).tag(sync=True, **widget_serialization)
     material = Instance(Material).tag(sync=True, **widget_serialization)

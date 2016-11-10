@@ -812,6 +812,17 @@ define(["jupyter-js-widgets", "underscore", "three"],
         }
     });
 
+    var BufferGeometryView = ThreeView.extend({
+        update: function() {
+            var geometry = new THREE.BufferGeometry();
+            var vertices = new Float32Array(this.model.get('vertices'));
+            geometry.addAttribute('position', new THREE.BufferAttribute(vertices, 3));
+            geometry.computeFaceNormals();
+            geometry.computeVertexNormals();
+            this.replace_obj(geometry);
+        }
+    });
+
     var MaterialView = ThreeView.extend({
         new_properties: function() {
             ThreeView.prototype.new_properties.call(this);
@@ -916,7 +927,7 @@ define(["jupyter-js-widgets", "underscore", "three"],
         }
     });
 
-    var ParticleSystemMaterialView = MaterialView.extend({
+    var PointsMaterialView = MaterialView.extend({
         new_properties: function() {
             MaterialView.prototype.new_properties.call(this);
             this.set_properties.push('color');
@@ -925,7 +936,7 @@ define(["jupyter-js-widgets", "underscore", "three"],
         },
 
         new_obj: function() {
-            return new THREE.ParticleSystemMaterial();
+            return new THREE.PointsMaterial();
         }
     });
 
@@ -980,6 +991,38 @@ define(["jupyter-js-widgets", "underscore", "three"],
                 Object3dView.prototype.update.call(that);
             });
             return this.promise;
+        }
+    });
+
+    var PointsView = Object3dView.extend({
+        // THREE.Points
+        render: function() {
+            return Object3dView.prototype.render.call(this);
+        },
+
+        update: function() {
+            var that = this;
+
+            this.promise = Promise.all([this.create_child_view(this.model.get('geometry')),
+                                        this.create_child_view(this.model.get('material'))]).then(function(v) {
+                if (that.geometry) {
+                    that.stopListening(that.geometry);
+                    that.geometry.remove();
+                }
+                if (that.material) {
+                    that.stopListening(that.material);
+                    that.material.remove();
+                }
+                that.geometry = v[0];
+                that.material = v[1];
+                that.listenTo(that.geometry, 'replace_obj', that.update);
+                that.listenTo(that.material, 'replace_obj', that.update);
+                that.listenTo(that.geometry, 'rerender', that.needs_update);
+                that.listenTo(that.material, 'rerender', that.needs_update);
+                that.replace_obj(new THREE.Points(that.geometry.obj, that.material.obj));
+                Object3dView.prototype.update.call(that);
+            });
+            return this.promise
         }
     });
 
@@ -1502,10 +1545,10 @@ define(["jupyter-js-widgets", "underscore", "three"],
         })
     });
 
-    var ParticleSystemMaterialModel = BasicMaterialModel.extend({
+    var PointsMaterialModel = BasicMaterialModel.extend({
         defaults: _.extend({}, BasicMaterialModel.prototype.defaults, {
-            _view_name: 'ParticleSystemMaterialView',
-            _model_name: 'ParticleSystemMaterialModel'
+            _view_name: 'PointsMaterialView',
+            _model_name: 'PointsMaterialModel'
         })
     });
 
@@ -1841,6 +1884,16 @@ define(["jupyter-js-widgets", "underscore", "three"],
         })
     });
 
+    var BufferGeometryModel = GeometryModel.extend({
+        defaults: _.extend({}, GeometryModel.prototype.defaults, {
+            _view_name: 'BufferGeometryView',
+            _model_name: 'BufferGeometryModel',
+
+            vertices: [],
+            faces: []
+        })
+    });
+
     var SpriteModel = Object3dModel.extend({
         defaults: _.extend({}, Object3dModel.prototype.defaults, {
             _view_name: 'SpriteView',
@@ -1856,6 +1909,21 @@ define(["jupyter-js-widgets", "underscore", "three"],
         defaults: _.extend({}, Object3dModel.prototype.defaults, {
             _view_name: 'MeshView',
             _model_name: 'MeshModel',
+
+            geometry: undefined,
+            material: undefined
+        })
+    }, {
+        serializers: _.extend({
+            geometry: { deserialize: widgets.unpack_models },
+            material: { deserialize: widgets.unpack_models }
+        }, Object3dModel.serializers)
+    });
+
+    var PointsModel = Object3dModel.extend({
+        defaults: _.extend({}, Object3dModel.prototype.defaults, {
+            _view_name: 'PointsView',
+            _model_name: 'PointsModel',
 
             geometry: undefined,
             material: undefined
@@ -2004,6 +2072,8 @@ define(["jupyter-js-widgets", "underscore", "three"],
         MaterialModel : MaterialModel,
         MeshView : MeshView,
         MeshModel : MeshModel,
+        PointsView : PointsView,
+        PointsModel : PointsModel,
         NormalMaterialView : NormalMaterialView,
         NormalMaterialModel : NormalMaterialModel,
         Object3dView : Object3dView,
@@ -2016,8 +2086,10 @@ define(["jupyter-js-widgets", "underscore", "three"],
         OrthographicCameraModel : OrthographicCameraModel,
         ParametricGeometryView : ParametricGeometryView,
         ParametricGeometryModel : ParametricGeometryModel,
-        ParticleSystemMaterialView : ParticleSystemMaterialView,
-        ParticleSystemMaterialModel : ParticleSystemMaterialModel,
+        BufferGeometryView : BufferGeometryView,
+        BufferGeometryModel : BufferGeometryModel,
+        PointsMaterialView : PointsMaterialView,
+        PointsMaterialModel : PointsMaterialModel,
         PerspectiveCameraView : PerspectiveCameraView,
         PerspectiveCameraModel : PerspectiveCameraModel,
         PhongMaterialView : PhongMaterialView,
