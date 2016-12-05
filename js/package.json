@@ -21,8 +21,8 @@
   },
   "dependencies": {
     "jquery": "^2.1.4",
-    "jupyter-js-widgets": "^2.0.4",
-    "@jupyterlab/nbwidgets": "^0.5.0",
+    "jupyter-js-widgets": "^2.0.12",
+    "@jupyterlab/nbwidgets": "^0.6.0",
     "three": "^0.75.0",
     "underscore": "^1.8.3"
   }
