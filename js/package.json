@@ -15,14 +15,13 @@
   },
   "devDependencies": {
     "json-loader": "^0.5.4",
-    "@jupyterlab/extension-builder": "^0.8.1",
+    "@jupyterlab/extension-builder": "^0.10.0",
     "rimraf": "^2.4.1",
     "webpack": "^1.12.14"
   },
   "dependencies": {
-    "jquery": "^2.1.4",
-    "jupyter-js-widgets": "^2.0.12",
-    "@jupyterlab/nbwidgets": "^0.6.0",
+    "jupyter-js-widgets": "^2.0.17",
+    "@jupyterlab/nbwidgets": "^0.6.4",
     "three": "^0.75.0",
     "underscore": "^1.8.3"
   }
