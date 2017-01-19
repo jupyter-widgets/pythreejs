@@ -20,8 +20,8 @@
     "webpack": "^1.12.14"
   },
   "dependencies": {
-    "jupyter-js-widgets": "^2.0.17",
-    "@jupyterlab/nbwidgets": "^0.6.4",
+    "jupyter-js-widgets": "^2.0.23",
+    "@jupyterlab/nbwidgets": "^0.6.6",
     "three": "^0.75.0",
     "underscore": "^1.8.3"
   }
