@@ -1,9 +1,9 @@
 {
   "name": "jupyter-threejs",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "jupyter - threejs bridge",
   "author": "Jupyter-Threejs development team",
-  "license": "BSD",
+  "license": "BSD-3-Clause",
   "main": "src/index.js",
   "repository": {
     "type": "git",
@@ -20,8 +20,8 @@
     "webpack": "^1.12.14"
   },
   "dependencies": {
-    "jupyter-js-widgets": "^2.0.23",
-    "@jupyterlab/nbwidgets": "^0.6.6",
+    "jupyter-js-widgets": "^2.1.4",
+    "@jupyterlab/nbwidgets": "^0.6.15",
     "three": "^0.75.0",
     "underscore": "^1.8.3"
   }
