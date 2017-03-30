@@ -13,7 +13,7 @@ Another resource to understanding three.js decisions is the Udacity course on
 """
 
 from ipywidgets import Widget, DOMWidget, widget_serialization, Color
-from traitlets import (Unicode, CInt, Instance, Enum, List, Dict, Float,
+from traitlets import (Unicode, CInt, Instance, Enum, List, Tuple, Dict, Float,
                        CFloat, Bool)
 from ._package import npm_pkg_name
 from math import pi, sqrt
@@ -271,6 +271,10 @@ class PlainGeometry(Geometry):
     vertices = List(vector3(CFloat)).tag(sync=True)
     colors = List(Color).tag(sync=True)
     faces = List(List(CFloat)).tag(sync=True)
+    # TODO: type this better. Can handle lists of string colors, or lists of lists of string colors.
+    faceColors = Tuple().tag(sync=True)
+    # TODO: type this better. Can handle lists of vector3(CFloat), or lists of lists of vector3(CFloat).
+    faceNormals = Tuple().tag(sync=True)
     # todo: faceVertexUvs = List(vector3(vector2(CFloat))).tag(sync=True)
 
 
