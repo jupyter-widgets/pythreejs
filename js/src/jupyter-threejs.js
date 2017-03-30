@@ -588,6 +588,7 @@ define(["jupyter-js-widgets", "underscore", "three"],
         },
     });
 
+    
 
     var PlainGeometryView = ThreeView.extend({
         update: function() {
@@ -595,16 +596,50 @@ define(["jupyter-js-widgets", "underscore", "three"],
             var vertices = this.model.get('vertices');
             var faces = this.model.get('faces');
             var colors = this.model.get('colors');
+            var faceColors = this.model.get('faceColors');
+            var faceNormals = this.model.get('faceNormals');
             var faceVertexUvs = this.model.get('faceVertexUvs')
+
+            if (faceNormals.length === 0) {
+                faceNormals = void 0;
+            }
+            if (faceColors.length === 0) {
+                faceColors = void 0;
+            }
+
+            var toVec = function(a) {
+                return new THREE.Vector3(a[0], a[1], a[2]);
+            }
+            var toColor = function(a) {
+                return new THREE.Color(a);
+            }
 
             var i, len;
             var f;
+            var face;
             for(i = 0, len=vertices.length; i<len; i+=1) {
-                geometry.vertices.push((new THREE.Vector3()).fromArray(vertices[i]));
+                geometry.vertices.push(toVec(vertices[i]));
             }
             for(i=0, len=faces.length; i<len; i+=1) {
                 f = faces[i];
-                geometry.faces.push(new THREE.Face3(f[0], f[1], f[2]));
+                normal = faceNormals && faceNormals[i];
+                color = faceColors && faceColors[i];
+                if (normal) {
+                    if (Array.isArray(normal[0])) {
+                        normal = normal.map(toVec);
+                    } else {
+                        normal = toVec(normal);
+                    }
+                }
+                if (color) {
+                    if (Array.isArray(color)) {
+                        color = color.map(toColor);
+                    } else {
+                        color = toColor(color);
+                    }
+                }
+                face = new THREE.Face3(f[0], f[1], f[2], normal, color);
+                geometry.faces.push(face);
             }
             for(i=0, len=colors.length; i<len; i+=1) {
                 geometry.colors.push(new THREE.Color(colors[i]));
@@ -1629,7 +1664,9 @@ define(["jupyter-js-widgets", "underscore", "three"],
 
             vertices: [],
             colors: [],
-            faces: []
+            faces: [],
+            faceColors: [],
+            faceNormals: []
             // todo: faceVertexUvs
         })
     });
