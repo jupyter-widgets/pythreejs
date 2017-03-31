@@ -271,10 +271,10 @@ class PlainGeometry(Geometry):
     _model_name = Unicode('PlainGeometryModel').tag(sync=True)
 
     # TODO: vertices: numpy shape (*, 3), dtype float32
-    vertices = Array(dtype='float32').tag(sync=True).valid(shape_constraints(None,3))
-    faces = Array(dtype='uint32').tag(sync=True).valid(shape_constraints(None,3))
+    vertices = Array(dtype='float32').tag(sync=True, **array_serialization).valid(shape_constraints(None,3))
+    faces = Array(dtype='uint32').tag(sync=True, **array_serialization).valid(shape_constraints(None,3))
     # list of [[v1_r,v1_g,v1_b], [v2_r,v2_g,v2_b], [v3_r,v3_g,v3_b]] for each face
-    faceColors = Array(dtype='uint8').tag(sync=True).valid(shape_constraints(None,3,3))
+    faceColors = Array(dtype='float32').tag(sync=True, **array_serialization).valid(shape_constraints(None,3,3))
     #vertices = List(vector3(CFloat)).tag(sync=True)
     colors = List(Color).tag(sync=True)
     #faces = List(List(CFloat)).tag(sync=True)

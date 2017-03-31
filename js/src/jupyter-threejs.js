@@ -1,5 +1,5 @@
 define(["jupyter-js-widgets", "underscore", "three", "ndarray"],
-       function(widgets, _, THREE) {
+       function(widgets, _, THREE, ndarray) {
 
     window.THREE = THREE;
     require("./examples/js/renderers/Projector.js");
@@ -607,22 +607,22 @@ define(["jupyter-js-widgets", "underscore", "three", "ndarray"],
             }
 
             var toVec = function(a) {
-                return new THREE.Vector3(a[0], a[1], a[2]);
+                return new THREE.Vector3(a.get(0), a.get(1), a.get(2));
             }
             var toColor = function(a) {
-                return new THREE.Color(a);
+                return new THREE.Color(a.get(0), a.get(1), a.get(2));
             }
 
             var i, len;
             var f;
             var face;
-            for(i = 0, len=vertices.length; i<len; i+=1) {
-                geometry.vertices.push(toVec(vertices[i]));
+            for(i = 0, len=vertices.shape[0]; i<len; i+=1) {
+                geometry.vertices.push(toVec(vertices.pick(i)));
             }
-            for(i=0, len=faces.length; i<len; i+=1) {
-                f = faces[i];
+            for(i=0, len=faces.shape[0]; i<len; i+=1) {
+                f = faces.pick(i, null);
                 normal = faceNormals && faceNormals[i];
-                color = faceColors && faceColors[i];
+                color = faceColors && faceColors.pick(i);
                 if (normal) {
                     if (Array.isArray(normal[0])) {
                         normal = normal.map(toVec);
@@ -631,13 +631,9 @@ define(["jupyter-js-widgets", "underscore", "three", "ndarray"],
                     }
                 }
                 if (color) {
-                    if (Array.isArray(color)) {
-                        color = color.map(toColor);
-                    } else {
-                        color = toColor(color);
-                    }
+                    color = [color.pick(0), color.pick(1), color.pick(2)].map(toColor);
                 }
-                face = new THREE.Face3(f[0], f[1], f[2], normal, color);
+                face = new THREE.Face3(f.get(0), f.get(1), f.get(2), normal, color);
                 geometry.faces.push(face);
             }
             for(i=0, len=colors.length; i<len; i+=1) {
@@ -1662,48 +1658,17 @@ define(["jupyter-js-widgets", "underscore", "three", "ndarray"],
         int8: Int8Array,
         int16: Int16Array,
         int32: Int32Array,
-        int64: Int64Array,
-        uint8: UInt8Array,
-        uint16: UInt16Array,
-        uint32: UInt32Array,
-        uint64: UInt64Array,
+        uint8: Uint8Array,
+        uint16: Uint16Array,
+        uint32: Uint32Array,
         float32: Float32Array,
         float64: Float64Array
     }
 
-    var arrayToTypes = {
-        'Int8Array': 'int8',
-        'Int16Array': 'int16',
-        'Int32Array': 'int32',
-        'Int64Array': 'int64',
-        'UInt8Array': 'uint8',
-        'UInt16Array': 'uint16',
-        'UInt32Array': 'uint32',
-        'UInt64Array': 'uint64',
-        'Float32Array': 'float32',
-        'Float64Array': 'float64'
-    }
-
-    var makearray = function(buffer, dtype) {
-        var types = {
-            int8: Int8Array,
-            int16: Int16Array,
-            int32: Int32Array,
-            int64: Int64Array,
-            uint8: UInt8Array,
-            uint16: UInt16Array,
-            uint32: UInt32Array,
-            uint64: UInt64Array,
-            float32: Float32Array,
-            float64: Float64Array
-        }
-        return types[dtype](buffer);
-    }
-
     var JSONToArray = function(obj, manager) {
-        // obj is {shape: list, dtype: string, array: buffer}
+        // obj is {shape: list, dtype: string, array: DataView}
         // return an ndarray object
-        return ndarray(typesToArray[obj.dtype](obj.buffer), obj.shape);
+        return ndarray(new typesToArray[obj.dtype](obj.buffer.buffer), obj.shape);
     }
 
     var arrayToJSON = function(obj, manager) {
@@ -1718,16 +1683,16 @@ define(["jupyter-js-widgets", "underscore", "three", "ndarray"],
 
             vertices: ndarray(new Float32Array(), [0,3]),
             colors: [],
-            faces: ndarray(new UInt64Array(), [0, 3]),
-            faceColors: ndarray(new UInt64(), [0,3,3]),
+            faces: ndarray(new Uint32Array(), [0, 3]),
+            faceColors: ndarray(new Uint8Array(), [0,3,3]),
             faceNormals: []
             // todo: faceVertexUvs
         })
     }, {
         serializers: _.extend({
-            vertices:  { deserialize: json_to_array, serialize: array_to_json },
-            faces:  { deserialize: json_to_array, serialize: array_to_json },
-            faceColors:  { deserialize: json_to_array, serialize: array_to_json },
+            vertices:  { deserialize: JSONToArray, serialize: arrayToJSON },
+            faces:  { deserialize: JSONToArray, serialize: arrayToJSON },
+            faceColors:  { deserialize: JSONToArray, serialize: arrayToJSON },
         }, GeometryModel.serializers)
     });
 
