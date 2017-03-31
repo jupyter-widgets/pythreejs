@@ -591,14 +591,14 @@ define(["jupyter-js-widgets", "underscore", "three", "ndarray"],
 
     var PlainGeometryView = ThreeView.extend({
         update: function() {
-            var geometry = new THREE.Geometry();
+            var geometry = new THREE.BufferGeometry();
             var vertices = this.model.get('vertices');
             var faces = this.model.get('faces');
             var colors = this.model.get('colors');
             var faceColors = this.model.get('faceColors');
             var faceNormals = this.model.get('faceNormals');
-            var faceVertexUvs = this.model.get('faceVertexUvs')
-
+            var faceVertexUvs = this.model.get('faceVertexUvs');
+/*
             if (faceNormals.length === 0) {
                 faceNormals = void 0;
             }
@@ -616,7 +616,14 @@ define(["jupyter-js-widgets", "underscore", "three", "ndarray"],
             var i, len;
             var f;
             var face;
-            for(i = 0, len=vertices.shape[0]; i<len; i+=1) {
+*/
+            geometry.addAttribute('position', new THREE.BufferAttribute(vertices.data, 3));
+            geometry.addAttribute('color', new THREE.BufferAttribute(faceColors.data, 3));
+            geometry.setIndex(new THREE.BufferAttribute(faces.data, 1));
+            geometry.computeVertexNormals();
+            geometry.computeBoundingSphere();
+
+            /*for(i = 0, len=vertices.shape[0]; i<len; i+=1) {
                 geometry.vertices.push(toVec(vertices.pick(i)));
             }
             for(i=0, len=faces.shape[0]; i<len; i+=1) {
@@ -639,14 +646,17 @@ define(["jupyter-js-widgets", "underscore", "three", "ndarray"],
             for(i=0, len=colors.length; i<len; i+=1) {
                 geometry.colors.push(new THREE.Color(colors[i]));
             }
+            */
             // TODO: faceVertexUvs
-            geometry.verticesNeedUpdate = true;
-            geometry.elementsNeedUpdate = true;
+            geometry.attributes.position.needsUpdate = true;
+            geometry.attributes.color.needsUpdate = true;
+            /*geometry.elementsNeedUpdate = true;
             geometry.uvsNeedUpdate = true;
             geometry.normalsNeedUpdate = true;
             geometry.tangentsNeedUpdate = true;
             geometry.colorsNeedUpdate = true;
             geometry.lineDistancesNeedUpdate = true;
+            */
             this.replace_obj(geometry);
         },
     });
