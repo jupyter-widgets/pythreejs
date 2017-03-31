@@ -1,4 +1,4 @@
-define(["jupyter-js-widgets", "underscore", "three"],
+define(["jupyter-js-widgets", "underscore", "three", "ndarray"],
        function(widgets, _, THREE) {
 
     window.THREE = THREE;
@@ -588,7 +588,6 @@ define(["jupyter-js-widgets", "underscore", "three"],
         },
     });
 
-    
 
     var PlainGeometryView = ThreeView.extend({
         update: function() {
@@ -1657,18 +1656,79 @@ define(["jupyter-js-widgets", "underscore", "three"],
         })
     });
 
+
+
+    var typesToArray = {
+        int8: Int8Array,
+        int16: Int16Array,
+        int32: Int32Array,
+        int64: Int64Array,
+        uint8: UInt8Array,
+        uint16: UInt16Array,
+        uint32: UInt32Array,
+        uint64: UInt64Array,
+        float32: Float32Array,
+        float64: Float64Array
+    }
+
+    var arrayToTypes = {
+        'Int8Array': 'int8',
+        'Int16Array': 'int16',
+        'Int32Array': 'int32',
+        'Int64Array': 'int64',
+        'UInt8Array': 'uint8',
+        'UInt16Array': 'uint16',
+        'UInt32Array': 'uint32',
+        'UInt64Array': 'uint64',
+        'Float32Array': 'float32',
+        'Float64Array': 'float64'
+    }
+
+    var makearray = function(buffer, dtype) {
+        var types = {
+            int8: Int8Array,
+            int16: Int16Array,
+            int32: Int32Array,
+            int64: Int64Array,
+            uint8: UInt8Array,
+            uint16: UInt16Array,
+            uint32: UInt32Array,
+            uint64: UInt64Array,
+            float32: Float32Array,
+            float64: Float64Array
+        }
+        return types[dtype](buffer);
+    }
+
+    var JSONToArray = function(obj, manager) {
+        // obj is {shape: list, dtype: string, array: buffer}
+        // return an ndarray object
+        return ndarray(typesToArray[obj.dtype](obj.buffer), obj.shape);
+    }
+
+    var arrayToJSON = function(obj, manager) {
+        // serialize to {shape: list, dtype: string, array: buffer}
+        return {shape: obj.shape, dtype: obj.dtype, buffer: obj.data}
+    }
+
     var PlainGeometryModel = GeometryModel.extend({
         defaults: _.extend({}, GeometryModel.prototype.defaults, {
             _model_name: 'PlainGeometryModel',
             _view_name: 'PlainGeometryView',
 
-            vertices: [],
+            vertices: ndarray(new Float32Array(), [0,3]),
             colors: [],
-            faces: [],
-            faceColors: [],
+            faces: ndarray(new UInt64Array(), [0, 3]),
+            faceColors: ndarray(new UInt64(), [0,3,3]),
             faceNormals: []
             // todo: faceVertexUvs
         })
+    }, {
+        serializers: _.extend({
+            vertices:  { deserialize: json_to_array, serialize: array_to_json },
+            faces:  { deserialize: json_to_array, serialize: array_to_json },
+            faceColors:  { deserialize: json_to_array, serialize: array_to_json },
+        }, GeometryModel.serializers)
     });
 
     var SphereGeometryModel = GeometryModel.extend({

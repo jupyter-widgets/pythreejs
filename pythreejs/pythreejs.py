@@ -17,6 +17,8 @@ from traitlets import (Unicode, CInt, Instance, Enum, List, Tuple, Dict, Float,
                        CFloat, Bool)
 from ._package import npm_pkg_name
 from math import pi, sqrt
+from .traits_numpy import array_serialization, shape_constraints
+from traittypes import Array
 
 def vector3(trait_type=CFloat, default=None, **kwargs):
     if default is None:
@@ -268,11 +270,16 @@ class PlainGeometry(Geometry):
     _view_name = Unicode('PlainGeometryView').tag(sync=True)
     _model_name = Unicode('PlainGeometryModel').tag(sync=True)
 
-    vertices = List(vector3(CFloat)).tag(sync=True)
+    # TODO: vertices: numpy shape (*, 3), dtype float32
+    vertices = Array(dtype='float32').tag(sync=True).valid(shape_constraints(None,3))
+    faces = Array(dtype='uint32').tag(sync=True).valid(shape_constraints(None,3))
+    # list of [[v1_r,v1_g,v1_b], [v2_r,v2_g,v2_b], [v3_r,v3_g,v3_b]] for each face
+    faceColors = Array(dtype='uint8').tag(sync=True).valid(shape_constraints(None,3,3))
+    #vertices = List(vector3(CFloat)).tag(sync=True)
     colors = List(Color).tag(sync=True)
-    faces = List(List(CFloat)).tag(sync=True)
+    #faces = List(List(CFloat)).tag(sync=True)
     # TODO: type this better. Can handle lists of string colors, or lists of lists of string colors.
-    faceColors = Tuple().tag(sync=True)
+    #faceColors = Tuple().tag(sync=True)
     # TODO: type this better. Can handle lists of vector3(CFloat), or lists of lists of vector3(CFloat).
     faceNormals = Tuple().tag(sync=True)
     # todo: faceVertexUvs = List(vector3(vector2(CFloat))).tag(sync=True)
