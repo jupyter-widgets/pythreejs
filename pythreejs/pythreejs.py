@@ -284,7 +284,7 @@ class PlainBufferGeometry(Geometry):
     _model_name = Unicode('PlainBufferGeometryModel').tag(sync=True)
 
     vertices = Array(dtype='float32').tag(sync=True, **array_serialization).valid(shape_constraints(None,3))
-    faces = Array(dtype='uint32').tag(sync=True, **array_serialization).valid(shape_constraints(None,3))
+    faces = Array(dtype='uint32', default_value=np.empty(shape=(0,3), dtype='uint32')).tag(sync=True, **array_serialization).valid(shape_constraints(None,3))
     colors = Array(dtype='float32', default_value=np.empty(shape=(0,3), dtype='float32'), help="Vertex colors").tag(sync=True, **array_serialization).valid(shape_constraints(None,3))
 
 class SphereGeometry(Geometry):
