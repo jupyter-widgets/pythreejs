@@ -1,5 +1,5 @@
-define(["jupyter-js-widgets", "underscore", "three"],
-       function(widgets, _, THREE) {
+define(["jupyter-js-widgets", "underscore", "three", "ndarray"],
+       function(widgets, _, THREE, ndarray) {
 
     window.THREE = THREE;
     require("./examples/js/renderers/Projector.js");
@@ -588,7 +588,6 @@ define(["jupyter-js-widgets", "underscore", "three"],
         },
     });
 
-    
 
     var PlainGeometryView = ThreeView.extend({
         update: function() {
@@ -598,7 +597,7 @@ define(["jupyter-js-widgets", "underscore", "three"],
             var colors = this.model.get('colors');
             var faceColors = this.model.get('faceColors');
             var faceNormals = this.model.get('faceNormals');
-            var faceVertexUvs = this.model.get('faceVertexUvs')
+            var faceVertexUvs = this.model.get('faceVertexUvs');
 
             if (faceNormals.length === 0) {
                 faceNormals = void 0;
@@ -608,22 +607,22 @@ define(["jupyter-js-widgets", "underscore", "three"],
             }
 
             var toVec = function(a) {
-                return new THREE.Vector3(a[0], a[1], a[2]);
+                return new THREE.Vector3(a.get(0), a.get(1), a.get(2));
             }
             var toColor = function(a) {
-                return new THREE.Color(a);
+                return new THREE.Color(a.get(0), a.get(1), a.get(2));
             }
 
             var i, len;
             var f;
             var face;
-            for(i = 0, len=vertices.length; i<len; i+=1) {
-                geometry.vertices.push(toVec(vertices[i]));
+            for(i = 0, len=vertices.shape[0]; i<len; i+=1) {
+                geometry.vertices.push(toVec(vertices.pick(i)));
             }
-            for(i=0, len=faces.length; i<len; i+=1) {
-                f = faces[i];
+            for(i=0, len=faces.shape[0]; i<len; i+=1) {
+                f = faces.pick(i, null);
                 normal = faceNormals && faceNormals[i];
-                color = faceColors && faceColors[i];
+                color = faceColors && faceColors.pick(i);
                 if (normal) {
                     if (Array.isArray(normal[0])) {
                         normal = normal.map(toVec);
@@ -632,30 +631,49 @@ define(["jupyter-js-widgets", "underscore", "three"],
                     }
                 }
                 if (color) {
-                    if (Array.isArray(color)) {
-                        color = color.map(toColor);
-                    } else {
-                        color = toColor(color);
-                    }
+                    color = [color.pick(0), color.pick(1), color.pick(2)].map(toColor);
                 }
-                face = new THREE.Face3(f[0], f[1], f[2], normal, color);
+                face = new THREE.Face3(f.get(0), f.get(1), f.get(2), normal, color);
                 geometry.faces.push(face);
             }
             for(i=0, len=colors.length; i<len; i+=1) {
                 geometry.colors.push(new THREE.Color(colors[i]));
             }
             // TODO: faceVertexUvs
-            geometry.verticesNeedUpdate = true;
             geometry.elementsNeedUpdate = true;
-            geometry.uvsNeedUpdate = true;
+            if (!faceNormals) {
+                geometry.computeFaceNormals();
+            }
+            geometry.computeVertexNormals();
             geometry.normalsNeedUpdate = true;
+
+            geometry.computeLineDistances();
+            geometry.lineDistancesNeedUpdate = true;
+
+            geometry.uvsNeedUpdate = true;
             geometry.tangentsNeedUpdate = true;
             geometry.colorsNeedUpdate = true;
-            geometry.lineDistancesNeedUpdate = true;
             this.replace_obj(geometry);
         },
     });
 
+
+    var PlainBufferGeometryView = ThreeView.extend({
+        update: function() {
+            var geometry = new THREE.BufferGeometry();
+            var vertices = this.model.get('vertices');
+            var faces = this.model.get('faces');
+            var colors = this.model.get('colors');
+            geometry.addAttribute('position', new THREE.BufferAttribute(vertices.data, 3));
+            geometry.addAttribute('color', new THREE.BufferAttribute(colors.data, 3));
+            geometry.setIndex(new THREE.BufferAttribute(faces.data, 1));
+            geometry.computeVertexNormals();
+            geometry.computeBoundingSphere();
+            geometry.attributes.position.needsUpdate = true;
+            geometry.attributes.color.needsUpdate = true;
+            this.replace_obj(geometry);
+        },
+    });
 
     var FaceGeometryView = ThreeView.extend({
         update: function() {
@@ -1657,18 +1675,67 @@ define(["jupyter-js-widgets", "underscore", "three"],
         })
     });
 
+
+
+    var typesToArray = {
+        int8: Int8Array,
+        int16: Int16Array,
+        int32: Int32Array,
+        uint8: Uint8Array,
+        uint16: Uint16Array,
+        uint32: Uint32Array,
+        float32: Float32Array,
+        float64: Float64Array
+    }
+
+    var JSONToArray = function(obj, manager) {
+        // obj is {shape: list, dtype: string, array: DataView}
+        // return an ndarray object
+        return ndarray(new typesToArray[obj.dtype](obj.buffer.buffer), obj.shape);
+    }
+
+    var arrayToJSON = function(obj, manager) {
+        // serialize to {shape: list, dtype: string, array: buffer}
+        return {shape: obj.shape, dtype: obj.dtype, buffer: obj.data}
+    }
+
+    var array_serialization = { deserialize: JSONToArray, serialize: arrayToJSON };
+
     var PlainGeometryModel = GeometryModel.extend({
         defaults: _.extend({}, GeometryModel.prototype.defaults, {
             _model_name: 'PlainGeometryModel',
             _view_name: 'PlainGeometryView',
 
-            vertices: [],
+            vertices: ndarray(new Float32Array(), [0,3]),
             colors: [],
-            faces: [],
-            faceColors: [],
+            faces: ndarray(new Uint32Array(), [0, 3]),
+            faceColors: ndarray(new Uint8Array(), [0,3,3]),
             faceNormals: []
             // todo: faceVertexUvs
         })
+    }, {
+        serializers: _.extend({
+            vertices:  array_serialization,
+            faces:  array_serialization,
+            faceColors:  array_serialization,
+        }, GeometryModel.serializers)
+    });
+
+    var PlainBufferGeometryModel = GeometryModel.extend({
+        defaults: _.extend({}, GeometryModel.prototype.defaults, {
+            _model_name: 'PlainBufferGeometryModel',
+            _view_name: 'PlainBufferGeometryView',
+
+            vertices: ndarray(new Float32Array(), [0,3]),
+            colors: ndarray(new Uint8Array(), [0,3,3]),
+            faces: ndarray(new Uint32Array(), [0, 3]),
+        })
+    }, {
+        serializers: _.extend({
+            vertices:  array_serialization,
+            faces:  array_serialization,
+            colors:  array_serialization,
+        }, GeometryModel.serializers)
     });
 
     var SphereGeometryModel = GeometryModel.extend({
@@ -2063,6 +2130,8 @@ define(["jupyter-js-widgets", "underscore", "three"],
         PickerModel : PickerModel,
         PlainGeometryView : PlainGeometryView,
         PlainGeometryModel : PlainGeometryModel,
+        PlainBufferGeometryView : PlainBufferGeometryView,
+        PlainBufferGeometryModel : PlainBufferGeometryModel,
         PlaneGeometryView : PlaneGeometryView,
         PlaneGeometryModel : PlaneGeometryModel,
         PointLight : PointLight,

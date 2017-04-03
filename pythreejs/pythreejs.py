@@ -23,6 +23,9 @@ from .enums import (
         Lines, Renderers)
 
 from math import pi, sqrt
+from .traits_numpy import array_serialization, shape_constraints
+from traittypes import Array
+import numpy as np
 
 
 def vector3(trait_type=CFloat, default=None, **kwargs):
@@ -272,15 +275,21 @@ class PlainGeometry(Geometry):
     _view_name = Unicode('PlainGeometryView').tag(sync=True)
     _model_name = Unicode('PlainGeometryModel').tag(sync=True)
 
-    vertices = List(vector3(CFloat)).tag(sync=True)
-    colors = List(Color).tag(sync=True)
-    faces = List(List(CFloat)).tag(sync=True)
-    # TODO: type this better. Can handle lists of string colors, or lists of lists of string colors.
-    faceColors = Tuple().tag(sync=True)
-    # TODO: type this better. Can handle lists of vector3(CFloat), or lists of lists of vector3(CFloat).
-    faceNormals = Tuple().tag(sync=True)
-    # todo: faceVertexUvs = List(vector3(vector2(CFloat))).tag(sync=True)
+    vertices = Array(dtype='float32').tag(sync=True, **array_serialization).valid(shape_constraints(None,3))
+    faces = Array(dtype='uint32', default_value=np.empty(shape=(0,3), dtype='uint32')).tag(sync=True, **array_serialization).valid(shape_constraints(None,3))
 
+    # list of [[v1_r,v1_g,v1_b], [v2_r,v2_g,v2_b], [v3_r,v3_g,v3_b]] for each face
+    faceColors = Array(dtype='float32', default_value=np.empty(shape=(0,3,3), dtype='float32')).tag(sync=True, **array_serialization).valid(shape_constraints(None, 3, 3))
+    colors = List(Color).tag(sync=True)
+    faceNormals = Tuple().tag(sync=True)
+
+class PlainBufferGeometry(Geometry):
+    _view_name = Unicode('PlainBufferGeometryView').tag(sync=True)
+    _model_name = Unicode('PlainBufferGeometryModel').tag(sync=True)
+
+    vertices = Array(dtype='float32').tag(sync=True, **array_serialization).valid(shape_constraints(None,3))
+    faces = Array(dtype='uint32', default_value=np.empty(shape=(0,3), dtype='uint32')).tag(sync=True, **array_serialization).valid(shape_constraints(None,3))
+    colors = Array(dtype='float32', default_value=np.empty(shape=(0,3), dtype='float32'), help="Vertex colors").tag(sync=True, **array_serialization).valid(shape_constraints(None,3))
 
 class SphereGeometry(Geometry):
     _view_name = Unicode('SphereGeometryView').tag(sync=True)
