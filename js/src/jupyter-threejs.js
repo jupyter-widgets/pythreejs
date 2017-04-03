@@ -641,11 +641,18 @@ define(["jupyter-js-widgets", "underscore", "three", "ndarray"],
             }
             // TODO: faceVertexUvs
             geometry.elementsNeedUpdate = true;
-            geometry.uvsNeedUpdate = true;
+            if (!faceNormals) {
+                geometry.computeFaceNormals();
+            }
+            geometry.computeVertexNormals();
             geometry.normalsNeedUpdate = true;
+
+            geometry.computeLineDistances();
+            geometry.lineDistancesNeedUpdate = true;
+
+            geometry.uvsNeedUpdate = true;
             geometry.tangentsNeedUpdate = true;
             geometry.colorsNeedUpdate = true;
-            geometry.lineDistancesNeedUpdate = true;
             this.replace_obj(geometry);
         },
     });

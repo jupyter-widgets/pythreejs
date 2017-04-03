@@ -26,6 +26,8 @@ array_serialization = dict(to_json=array_to_json, from_json=array_from_json)
 def shape_constraints(*args):
     """Example: shape_constraints(None,3) insists that the shape looks like (*,3)"""
     def validator(trait, value):
+        if trait.allow_none:
+            print(value)
         if len(value.shape) != len(args):
             raise TraitError('%s shape expected to have %s components, but got %s components'%(trait.name, len(args), (value, type(value))))
         for i, constraint in enumerate(args):
