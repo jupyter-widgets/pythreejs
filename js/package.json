@@ -23,7 +23,7 @@
     "@jupyterlab/nbwidgets": "^0.6.15",
     "jupyter-js-widgets": "^2.1.4",
     "ndarray": "^1.0.18",
-    "three": "^0.75.0",
+    "three": "^0.84.0",
     "underscore": "^1.8.3"
   }
 }
