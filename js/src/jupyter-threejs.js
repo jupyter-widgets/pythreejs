@@ -155,7 +155,7 @@ define(["jupyter-js-widgets", "underscore", "three", "ndarray"],
 
         update: function() {
             //this.replace_obj(this.new_obj());
-            //this.update_object_parameters();
+            this.update_object_parameters();
             this.needs_update();
         },
 
@@ -1185,28 +1185,14 @@ define(["jupyter-js-widgets", "underscore", "three", "ndarray"],
         }
     });
 
-
-    var Basic3dObject = Object3dView.extend({
-        render: function() {
-            this.update();
-            return this.obj;
-        },
-
-        update: function() {
-            this.replace_obj(this.new_obj());
-            Object3dView.prototype.update.call(this);
-        }
-    });
-
-
-    var AmbientLight = Basic3dObject.extend({
+    var AmbientLight = Object3dView.extend({
         new_obj: function() {
             return new THREE.AmbientLight(this.model.get('color'));
         }
     });
 
 
-    var DirectionalLight = Basic3dObject.extend({
+    var DirectionalLight = Object3dView.extend({
         new_obj: function() {
             return new THREE.DirectionalLight(this.model.get('color'),
                                               this.model.get('intensity'));
@@ -1214,7 +1200,7 @@ define(["jupyter-js-widgets", "underscore", "three", "ndarray"],
     });
 
 
-    var PointLight = Basic3dObject.extend({
+    var PointLight = Object3dView.extend({
         new_obj: function() {
             return new THREE.PointLight(this.model.get('color'),
                                         this.model.get('intensity'),
@@ -1223,7 +1209,7 @@ define(["jupyter-js-widgets", "underscore", "three", "ndarray"],
     });
 
 
-    var SpotLight = Basic3dObject.extend({
+    var SpotLight = Object3dView.extend({
         new_obj: function() {
             return new THREE.SpotLight(this.model.get('color'),
                                        this.model.get('intensity'),
@@ -1231,7 +1217,7 @@ define(["jupyter-js-widgets", "underscore", "three", "ndarray"],
         }
     });
 
-    var HemisphereLight = Basic3dObject.extend({
+    var HemisphereLight = Object3dView.extend({
         new_obj: function() {
             return new THREE.HemisphereLight(this.model.get('color'),
                                              this.model.get('ground_color'),
@@ -1277,17 +1263,21 @@ define(["jupyter-js-widgets", "underscore", "three", "ndarray"],
         }
     });
 
-    var Basic3dObjectModel = widgets.WidgetModel.extend({
+    var Object3dModel = widgets.WidgetModel.extend({
         defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
-            _model_module: 'jupyter-threejs',
             _view_module: 'jupyter-threejs',
-            _model_name: 'Basic3dObjectModel',
-            _view_name: 'Basic3dObjectView'
+            _model_module: 'jupyter-threejs',
+            _view_name: 'Object3dView',
+            _model_name: 'Object3dModel'
         })
+    }, {
+        serializers: _.extend({
+            children: { deserialize: widgets.unpack_models }
+        }, widgets.WidgetModel.serializers)
     });
 
-    var LightModel = Basic3dObjectModel.extend({
-        defaults: _.extend({}, Basic3dObjectModel.prototype.defaults, {
+    var LightModel = Object3dModel.extend({
+        defaults: _.extend({}, Object3dModel.prototype.defaults, {
             _model_name: 'LightModel',
             color: 'white'
         })
@@ -1340,18 +1330,6 @@ define(["jupyter-js-widgets", "underscore", "three", "ndarray"],
         })
     }, {}, LightModel.serializers);
 
-    var Object3dModel = widgets.WidgetModel.extend({
-        defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
-            _view_module: 'jupyter-threejs',
-            _model_module: 'jupyter-threejs',
-            _view_name: 'Object3dView',
-            _model_name: 'Object3dModel'
-        })
-    }, {
-        serializers: _.extend({
-            children: { deserialize: widgets.unpack_models }
-        }, widgets.WidgetModel.serializers)
-    });
 
     var ScaledObjectModel = Object3dModel.extend({
         defaults: _.extend({}, Object3dModel.prototype.defaults, {
@@ -2065,8 +2043,6 @@ define(["jupyter-js-widgets", "underscore", "three", "ndarray"],
         EffectModel : EffectModel,
         AnaglyphEffectView : AnaglyphEffectView,
         AnaglyphEffectModel : AnaglyphEffectModel,
-        Basic3dObject : Basic3dObject,
-        Basic3dObjectModel : Basic3dObjectModel,
         BasicMaterialView : BasicMaterialView,
         BasicMaterialModel : BasicMaterialModel,
         BoxGeometryView : BoxGeometryView,
