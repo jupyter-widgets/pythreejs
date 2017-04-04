@@ -55,6 +55,7 @@ setup_args = {
     'extras_require': {
         'test': [
             'nbval',
+            'pytest-check-links',
         ],
         'examples': [
             'scipy',

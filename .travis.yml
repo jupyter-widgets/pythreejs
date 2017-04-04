@@ -15,3 +15,4 @@ install:
   - pip install --upgrade -e ".[test, examples]"
 script:
   - py.test -l --nbval-lax --current-env examples
+  - python -m pytest_check_links
