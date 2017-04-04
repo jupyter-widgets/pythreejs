@@ -52,6 +52,16 @@ setup_args = {
         'ipywidgets>=7,<8',
         'ipydatawidgets>=1.1.1'
     ],
+    'extras_require': {
+        'test': [
+            'nbval',
+        ],
+        'examples': [
+            'scipy',
+            'matplotlib',
+            'scikit-image'
+        ],
+    },
     'packages': find_packages(),
     'zip_safe': False,
     'cmdclass': cmdclass,
