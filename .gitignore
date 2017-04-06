@@ -1,5 +1,7 @@
 *.egg-info/
 .ipynb_checkpoints/
+.tern-project
+npm-debug.log
 dist/
 build/
 *.py[cod]
