@@ -29,6 +29,9 @@ npm install
 # Generate files
 npm run autogen
 
+# Build distribution files
+npm run build
+
 # Clean out generated files
 npm run clean
 ```
