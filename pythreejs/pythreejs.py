@@ -38,12 +38,15 @@ def vector2(trait_type=CFloat, default=None, **kwargs):
         default = [0, 0]
     return List(trait_type, default_value=default, minlen=2, maxlen=2, **kwargs)
 
+PYTHREEJS_VERSION='0.3.0-alpha.0'
 
 class Texture(Widget):
     _view_module = Unicode(npm_pkg_name).tag(sync=True)
     _model_module = Unicode(npm_pkg_name).tag(sync=True)
     _view_name = Unicode('TextureView').tag(sync=True)
     _model_name = Unicode('TextureModel').tag(sync=True)
+    _model_module_version = Unicode(PYTHREEJS_VERSION).tag(sync=True)
+    _view_module_version = Unicode(PYTHREEJS_VERSION).tag(sync=True)
 
 
 class ImageTexture(Texture):
@@ -104,6 +107,8 @@ class Object3d(Widget):
     _model_module = Unicode(npm_pkg_name).tag(sync=True)
     _view_name = Unicode('Object3dView').tag(sync=True)
     _model_name = Unicode('Object3dModel').tag(sync=True)
+    _model_module_version = Unicode(PYTHREEJS_VERSION).tag(sync=True)
+    _view_module_version = Unicode(PYTHREEJS_VERSION).tag(sync=True)
 
     position = vector3(CFloat).tag(sync=True)
     quaternion = List(CFloat).tag(sync=True)  # [x,y,z,w]
@@ -217,6 +222,8 @@ class Controls(Widget):
     _model_module = Unicode(npm_pkg_name).tag(sync=True)
     _view_name = Unicode('ControlsView').tag(sync=True)
     _model_name = Unicode('ControlsModel').tag(sync=True)
+    _model_module_version = Unicode(PYTHREEJS_VERSION).tag(sync=True)
+    _view_module_version = Unicode(PYTHREEJS_VERSION).tag(sync=True)
 
     controlling = Instance(Object3d, allow_none=True).tag(sync=True, **widget_serialization)
 
@@ -269,6 +276,8 @@ class Geometry(Widget):
     _model_module = Unicode(npm_pkg_name).tag(sync=True)
     _view_name = Unicode('GeometryView').tag(sync=True)
     _model_name = Unicode('GeometryModel').tag(sync=True)
+    _model_module_version = Unicode(PYTHREEJS_VERSION).tag(sync=True)
+    _view_module_version = Unicode(PYTHREEJS_VERSION).tag(sync=True)
 
 
 class PlainGeometry(Geometry):
@@ -474,6 +483,8 @@ class Material(Widget):
     _model_module = Unicode(npm_pkg_name).tag(sync=True)
     _view_name = Unicode('MaterialView').tag(sync=True)
     _model_name = Unicode('MaterialModel').tag(sync=True)
+    _model_module_version = Unicode(PYTHREEJS_VERSION).tag(sync=True)
+    _view_module_version = Unicode(PYTHREEJS_VERSION).tag(sync=True)
 
     # id = TODO
     name = Unicode(sync=True)
@@ -753,6 +764,8 @@ class Scene(Object3d):
 class Effect(Widget):
     _view_module = Unicode(npm_pkg_name).tag(sync=True)
     _model_module = Unicode(npm_pkg_name).tag(sync=True)
+    _model_module_version = Unicode(PYTHREEJS_VERSION).tag(sync=True)
+    _view_module_version = Unicode(PYTHREEJS_VERSION).tag(sync=True)
 
 
 class AnaglyphEffect(Effect):
@@ -765,6 +778,8 @@ class Renderer(DOMWidget):
     _model_module = Unicode(npm_pkg_name).tag(sync=True)
     _view_name = Unicode('RendererView').tag(sync=True)
     _model_name = Unicode('RendererModel').tag(sync=True)
+    _model_module_version = Unicode(PYTHREEJS_VERSION).tag(sync=True)
+    _view_module_version = Unicode(PYTHREEJS_VERSION).tag(sync=True)
 
     width = Unicode('600').tag(sync=True)  # TODO: stop relying on deprecated DOMWidget attribute
     height = Unicode('400').tag(sync=True)
