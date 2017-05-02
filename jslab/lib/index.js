@@ -1,4 +1,4 @@
-var jupyter_threejs = require('./index');
+var jupyter_threejs = require('jupyter-threejs');
 
 var jupyterlab_widgets = require('@jupyterlab/nbwidgets');
 
