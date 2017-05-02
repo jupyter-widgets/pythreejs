@@ -94,7 +94,7 @@ function getClassConfig(className, doLog) {
 
 function relativePathToPythonImportPath(relativePath) {
 
-    var tokens = relativePath.split(path.sep);
+    var tokens = relativePath.split(/\\|\//);
     var firstToken = tokens[0];
     var sawFolderToken = false;
 
@@ -709,8 +709,8 @@ _.extend(PythonWrapper.prototype, {
     },
 
     processDocsUrl: function() {
-    
-        var refTokens = this.modulePath.split(path.sep);
+
+        var refTokens = this.modulePath.split(/\\|\//);
 
         // capitalize elements in url
         refTokens = refTokens.map(function(token) {
@@ -792,7 +792,7 @@ function createTopLevelPythonModuleFile() {
 
         // convert relative path to python-style import path
         if (modulePath !== '.') {
-            var importPath = '.' + modulePath.split(path.sep).join('.') + '.' + moduleName;
+            var importPath = '.' + modulePath.split(/\\|\//).join('.') + '.' + moduleName;
         } else {
             var importPath = '.' + moduleName;
         }
