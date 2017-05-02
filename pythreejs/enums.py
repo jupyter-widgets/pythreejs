@@ -15,7 +15,7 @@ Equations = [
     'MaxEquation'
 ]
 
-BlendFactors = [
+DestinationFactors = [
     'ZeroFactor',
     'OneFactor',
     'SrcColorFactor',
@@ -23,7 +23,10 @@ BlendFactors = [
     'SrcAlphaFactor',
     'OneMinusSrcAlphaFactor',
     'DstAlphaFactor',
-    'OneMinusDstAlphaFactor',
+    'OneMinusDstAlphaFactor'
+]
+
+SourceFactors = [
     'DstColorFactor',
     'OneMinusDstColorFactor',
     'SrcAlphaSaturateFactor'
@@ -147,3 +150,16 @@ TextureEncodings = [
     'RGBM16Encoding',
     'RGBDEncoding'
 ];
+# Misc
+
+Lines = [
+    'LineStrip',
+    'LinePieces'
+]
+
+Renderers = [
+    'webgl',
+    'canvas',
+    'auto'
+]
+
