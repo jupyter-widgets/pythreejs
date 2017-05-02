@@ -272,7 +272,7 @@ _.extend(JavascriptWrapper.prototype, {
         result.viewName = result.className + 'View';
 
         result.absolutePath = path.resolve(jsSrcDir, result.relativePath);
-        result.requirePath = path.relative(this.destDir, result.absolutePath);
+        result.requirePath = path.relative(this.destDir, result.absolutePath).replace(/\\/g, '/');
         if (result.requirePath.charAt(0) !== '.') {
             result.requirePath = './' + result.requirePath;
         }

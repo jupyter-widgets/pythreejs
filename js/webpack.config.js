@@ -1,5 +1,6 @@
 var loaders = [
     { test: /\.json$/, loader: "json-loader" },
+    { test: /\.css$/, loader: 'style-loader!css-loader' }
 ];
 
 var buildExtension = require('@jupyterlab/extension-builder/lib/builder').buildExtension;
