@@ -21,12 +21,10 @@
     "glob": "^7.0.6",
     "handlebars": "^4.0.5",
     "json-loader": "^0.5.4",
-    "@jupyterlab/extension-builder": "^0.10.0",
     "rimraf": "^2.4.1",
     "webpack": "^1.12.14"
   },
   "dependencies": {
-    "@jupyterlab/nbwidgets": "^0.6.15",
     "jupyter-js-widgets": "^2.1.4",
     "ndarray": "^1.0.18",
     "three": "^0.75.0",

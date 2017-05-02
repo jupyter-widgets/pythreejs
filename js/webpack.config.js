@@ -1,21 +1,6 @@
 var loaders = [
-    { test: /\.json$/, loader: "json-loader" },
-    { test: /\.css$/, loader: 'style-loader!css-loader' }
+    { test: /\.json$/, loader: "json-loader" }
 ];
-
-var buildExtension = require('@jupyterlab/extension-builder/lib/builder').buildExtension;
-
-buildExtension({
-    name: 'jupyter-threejs',
-    entry: './src/labplugin',
-    outputDir: '../pythreejs/staticlab',
-    useDefaultLoaders: false,
-    config: {
-        module: {
-            loaders: loaders
-        }
-    }
-});
 
 module.exports = [
     {
