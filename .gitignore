@@ -13,3 +13,7 @@ pythreejs/staticlab/
 
 # OS X
 .DS_Store
+
+
+*_autogen.py
+*.autogen.js
