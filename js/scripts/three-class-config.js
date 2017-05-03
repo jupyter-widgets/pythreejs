@@ -764,6 +764,7 @@ module.exports = {
     },
     Group: {
         relativePath: './objects/Group',
+        superClass: 'Object3D',
     },
     LOD: {
         relativePath: './objects/LOD',
