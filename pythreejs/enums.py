@@ -15,7 +15,7 @@ Equations = [
     'MaxEquation'
 ]
 
-DestinationFactors = [
+BlendFactors = [
     'ZeroFactor',
     'OneFactor',
     'SrcColorFactor',
@@ -23,10 +23,7 @@ DestinationFactors = [
     'SrcAlphaFactor',
     'OneMinusSrcAlphaFactor',
     'DstAlphaFactor',
-    'OneMinusDstAlphaFactor'
-]
-
-SourceFactors = [
+    'OneMinusDstAlphaFactor',
     'DstColorFactor',
     'OneMinusDstColorFactor',
     'SrcAlphaSaturateFactor'

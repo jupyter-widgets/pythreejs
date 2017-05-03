@@ -20,7 +20,7 @@ from traitlets import (Unicode, CInt, Instance, Enum, List, Tuple, Dict, Float,
                        CFloat, Bool)
 from ._package import npm_pkg_name
 from .enums import (
-        Equations, DestinationFactors, SourceFactors, Side, Shading, Colors,
+        Equations, BlendFactors, Side, Shading, Colors,
         BlendingMode, Operations, MappingModes, WrappingModes, Filters,
         DataTypes, PixelTypes, PixelFormats, CompressedTextureFormats,
         Lines, Renderers)
@@ -483,8 +483,8 @@ class Material(Widget):
     opacity = CFloat(1.0).tag(sync=True)
     transparent = Bool().tag(sync=True)
     blending = Enum(BlendingMode, 'NormalBlending').tag(sync=True)
-    blendSrc = Enum(DestinationFactors, 'SrcAlphaFactor').tag(sync=True)
-    blendDst = Enum(SourceFactors, 'OneMinusDstColorFactor').tag(sync=True)
+    blendSrc = Enum(BlendFactors, 'SrcAlphaFactor').tag(sync=True)
+    blendDst = Enum(BlendFactors, 'OneMinusDstColorFactor').tag(sync=True)
     blendEquation = Enum(Equations, 'AddEquation').tag(sync=True)
     depthTest = Bool(True).tag(sync=True)
     depthWrite = Bool(True).tag(sync=True)
