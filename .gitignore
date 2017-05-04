@@ -17,3 +17,5 @@ pythreejs/staticlab/
 
 *_autogen.py
 *.autogen.js
+js/src/**/index.js
+pythreejs/**/__init__.py
