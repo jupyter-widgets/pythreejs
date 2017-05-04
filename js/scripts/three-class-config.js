@@ -774,9 +774,19 @@ module.exports = {
     },
     Line: {
         relativePath: './objects/Line',
+        constructorArgs: [ 'geometry', 'material' ],
+        properties: {
+            material: new Types.ThreeType('Material'),
+            geometry: new Types.ThreeType(['Geometry', 'BufferGeometry']),
+        }
     },
     LineSegments: {
         relativePath: './objects/LineSegments',
+        constructorArgs: [ 'geometry', 'material' ],
+        properties: {
+            material: new Types.ThreeType('Material'),
+            geometry: new Types.ThreeType(['Geometry', 'BufferGeometry']),
+        }
     },
     Mesh: {
         relativePath: './objects/Mesh',
@@ -798,6 +808,12 @@ module.exports = {
     },
     Sprite: {
         relativePath: './objects/Sprite',
+        superClass: 'Object3D',
+        constructorArgs: [ 'material' ],
+        properties: {
+            material: new Types.ThreeType('SpriteMaterial'),
+        },
+        propsDefinedByThree: [ 'isSprite' ]
     },
     WebGLRenderTarget: {
         relativePath: './renderers/WebGLRenderTarget',
@@ -883,6 +899,18 @@ module.exports = {
             imageUri: new Types.String(''),
         },
         constructorArgs: [ 'imageUri', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter', 'format', 'type', 'anisotropy' ],
+    },
+    TextTexture: {
+        relativePath: './textures/TextTexture',
+        superClass: 'Texture',
+        properties: {
+            color: new Types.Color('white'),
+            fontFace: new Types.String('Arial'),
+            size: new Types.Int(12),
+            string: new Types.String(''),
+            squareTexture: new Types.Bool(true),
+        },
+        constructorArgs: ['string'],
     },
     VideoTexture: {
         relativePath: './textures/VideoTexture',

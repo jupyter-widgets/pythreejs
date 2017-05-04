@@ -824,6 +824,7 @@ function createTopLevelPythonModuleFile() {
 
 var CUSTOM_CLASSES = [
     'textures/ImageTexture.js',
+    'textures/TextTexture.js',
 ];
 
 function createJavascriptFiles() {
