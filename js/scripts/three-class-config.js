@@ -862,7 +862,7 @@ module.exports = {
             encoding:         new Types.Enum('TextureEncodings', 'LinearEncoding'),
             version:          new Types.Int(0),
         },
-        construtorArgs: [ 'image', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter', 'format', 'type', 'anisotropy' ],
+        //constructorArgs: [ 'image', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter', 'format', 'type', 'anisotropy' ],
         propsDefinedByThree: [ 'id', 'uuid', 'version' ],
     },
     CanvasTexture: {
