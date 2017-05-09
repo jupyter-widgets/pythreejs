@@ -41,6 +41,8 @@ var jsIndexTemplate        = compileTemplate('js_index');
 var pyWrapperTemplate      = compileTemplate('py_wrapper');
 var pyTopLevelInitTemplate = compileTemplate('py_top_level_init');
 
+const pathSep = /\\|\//;
+
 //
 // Helper Functions
 //
@@ -94,7 +96,7 @@ function getClassConfig(className, doLog) {
 
 function relativePathToPythonImportPath(relativePath) {
 
-    var tokens = relativePath.split(/\\|\//);
+    var tokens = relativePath.split(pathSep);
     var firstToken = tokens[0];
     var sawFolderToken = false;
 
@@ -710,7 +712,7 @@ _.extend(PythonWrapper.prototype, {
 
     processDocsUrl: function() {
 
-        var refTokens = this.modulePath.split(/\\|\//);
+        var refTokens = this.modulePath.split(pathSep);
 
         // capitalize elements in url
         refTokens = refTokens.map(function(token) {
@@ -792,7 +794,7 @@ function createTopLevelPythonModuleFile() {
 
         // convert relative path to python-style import path
         if (modulePath !== '.') {
-            var importPath = '.' + modulePath.split(/\\|\//).join('.') + '.' + moduleName;
+            var importPath = '.' + modulePath.split(pathSep).join('.') + '.' + moduleName;
         } else {
             var importPath = '.' + moduleName;
         }
