@@ -862,6 +862,8 @@ module.exports = {
             encoding:         new Types.Enum('TextureEncodings', 'LinearEncoding'),
             version:          new Types.Int(0),
         },
+        // As the image property is not exposed, we don't define constructorArgs.
+        // The image property is hidden, as it does not have a good corresponding python type (yet)
         //constructorArgs: [ 'image', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter', 'format', 'type', 'anisotropy' ],
         propsDefinedByThree: [ 'id', 'uuid', 'version' ],
     },

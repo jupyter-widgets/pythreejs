@@ -22,11 +22,11 @@ _.extend(BaseType.prototype, {
     },
 })
 
-function ThreeType(typeName, nullable=true) {
+function ThreeType(typeName, options={}) {
     this.typeName = typeName;
     this.defaultValue = null;
     this.serialize = true;
-    this.nullable = nullable;
+    this.nullable = bool(options.nullable);
 }
 _.extend(ThreeType.prototype, BaseType.prototype, {
     getTraitlet: function() {

@@ -67,10 +67,13 @@ pythreejs/traits.py
 # Overridden classes
 js/src/core/Object3D.js
 js/src/textures/DataTexture.js
-js/src/textures/ImageTexture.js # custom classed created to ease image texture loading
 js/src/renderers/WebGLRenderer.js
 pythreejs/core/Object3D.py
 pythreejs/renderers/WebGLRenderer.py
+
+# Custom classes
+js/src/textures/ImageTexture.js  # created to ease image texture loading
+js/src/textures/TextTexture.js  # created to ease creation of textures of rasterized text
 
 # Updated examples notesbooks
 examples/Examples.ipynb
