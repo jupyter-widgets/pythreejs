@@ -26,7 +26,7 @@ function ThreeType(typeName, options={}) {
     this.typeName = typeName;
     this.defaultValue = null;
     this.serialize = true;
-    this.nullable = bool(options.nullable);
+    this.nullable = options.nullable !== false;
 }
 _.extend(ThreeType.prototype, BaseType.prototype, {
     getTraitlet: function() {
@@ -367,12 +367,12 @@ _.extend(Matrix3.prototype, BaseType.prototype, {
 
 function Matrix4() {
     this.defaultValue = [
-        1, 0, 0, 0, 
-        0, 1, 0, 0, 
-        0, 0, 1, 0, 
-        0, 0, 0, 1 
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
     ];
-} 
+}
 _.extend(Matrix4.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Matrix4(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
