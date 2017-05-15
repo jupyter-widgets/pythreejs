@@ -10,7 +10,7 @@ var Promise = require('bluebird');
 var RendererPool = require('../_base/RendererPool');
 
 var WebGLRendererModel = widgets.DOMWidgetModel.extend({
-    
+
     defaults: _.extend({}, widgets.DOMWidgetModel.prototype.defaults, {
         _view_name: 'WebGLRendererView',
         _model_name: 'WebGLRendererModel',
@@ -34,15 +34,14 @@ var WebGLRendererModel = widgets.DOMWidgetModel.extend({
         toneMappingWhitePoint: 1.0,
         maxMorphTargets: 8,
         maxMorphNormals: 4,
-        // TODO:
-        // toneMapping: 'LinearToneMapping',
+        toneMapping: 'LinearToneMapping',
 
     }),
 
 }, {
     serializers: _.extend({
         clippingPlanes: { deserialize: widgets.unpack_models },
-    }, widgets.DOMWidgetModel.serializers) 
+    }, widgets.DOMWidgetModel.serializers)
 });
 
 
@@ -121,12 +120,12 @@ var WebGLRendererView = widgets.DOMWidgetView.extend({
         }
 
         this.log('WebGLRenderer.freeze(id=' + this.renderer.poolId + ')');
-        
+
         this.$el.empty().append('<img src="' + this.renderer.domElement.toDataURL() + '" />');
-        
+
         this.teardownViewer();
         this.isFrozen = true;
-        
+
         this.$frozenRenderer = this.$el.find('img');
     },
 
@@ -153,7 +152,7 @@ var WebGLRendererView = widgets.DOMWidgetView.extend({
     invoke: function(methodName, propNames) {
         var fn = function() {
             args = propNames.map(function(name) {
-                return this.model.get(name); 
+                return this.model.get(name);
             }, this);
             this.renderer[methodName].apply(this.renderer, args);
         };

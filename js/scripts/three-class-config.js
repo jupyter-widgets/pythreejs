@@ -793,8 +793,8 @@ module.exports = {
         superClass: 'Object3D',
         constructorArgs: [ 'geometry', 'material' ],
         properties: {
-            material: new Types.ThreeType('Material', false),
-            geometry: new Types.ThreeType(['Geometry', 'BufferGeometry'], false),
+            material: new Types.ThreeType('Material', {allowNull: false}),
+            geometry: new Types.ThreeType(['Geometry', 'BufferGeometry'], {allowNull: false}),
         }
     },
     Points: {
