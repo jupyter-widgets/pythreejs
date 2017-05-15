@@ -146,7 +146,22 @@ TextureEncodings = [
     'RGBM7Encoding',
     'RGBM16Encoding',
     'RGBDEncoding'
-];
+]
+
+ShadowMaps = [
+    'BasicShadowMap',
+    'PCFShadowMap',
+    'PCFSoftShadowMap',
+]
+
+ToneMappings = [
+    'NoToneMapping',
+    'LinearToneMapping',
+    'ReinhardToneMapping',
+    'Uncharted2ToneMapping',
+    'CineonToneMapping',
+]
+
 # Misc
 
 Lines = [

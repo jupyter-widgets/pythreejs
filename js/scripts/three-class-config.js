@@ -1450,6 +1450,12 @@ module.exports = {
     },
     WebGLShadowMap: {
         relativePath: './renderers/webgl/WebGLShadowMap',
+        properties: {
+            enabled: new Types.Bool(false),
+            type: new Types.Enum('ShadowMaps', 'PCFShadowMap'),
+            renderReverseSided: new Types.Bool(false),
+            renderSingleSided: new Types.Bool(true),
+        }
     },
     WebGLState: {
         relativePath: './renderers/webgl/WebGLState',

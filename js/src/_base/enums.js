@@ -147,6 +147,20 @@ var TextureEncodings = {
     3006: "RGBDEncoding",
 };
 
+var ShadowMaps = {
+    0: "BasicShadowMap",
+    1: "PCFShadowMap",
+    2: "PCFSoftShadowMap",
+};
+
+var ToneMappings = {
+    0: "NoToneMapping",
+    1: "LinearToneMapping",
+    2: "ReinhardToneMapping",
+    3: "Uncharted2ToneMapping",
+    4: "CineonToneMapping",
+};
+
 module.exports = {
     Equations: Equations,
     BlendFactors: BlendFactors,
@@ -164,4 +178,6 @@ module.exports = {
     PixelFormats: PixelFormats,
     CompressedTextureFormats: CompressedTextureFormats,
     TextureEncodings: TextureEncodings,
+    ShadowMaps: ShadowMaps,
+    ToneMappings: ToneMappings,
 };
