@@ -15,7 +15,7 @@ class WebGLRenderer(ThreeWidget):
     
     Author: @abelnation
     Date: Wed Aug 31 2016 23:46:30 GMT-0700 (PDT)
-    See http://threejs.org/docs/#Reference/Renderers/WebGLRenderer
+    See http://threejs.org/docs/#api/renderers/WebGLRenderer
     """
     
     _view_name = Unicode('WebGLRendererView').tag(sync=True)
