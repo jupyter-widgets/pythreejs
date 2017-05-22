@@ -332,6 +332,7 @@ _.extend(JavascriptWrapper.prototype, {
                 defaultJson: prop.getJSPropertyValue(),
                 property_array_name: prop.getPropArrayName(),
                 property_converter: prop.getPropertyConverterFn(),
+                property_assigner: prop.getPropertyAssignmentFn(),
             };
         
         }, this);

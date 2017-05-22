@@ -62,6 +62,12 @@ var {{ modelName }} = {{ superClass.modelName }}.extend({
         {{/if}}
         {{/each}}
 
+        {{#each properties as |prop propName|}}
+        {{#if prop.property_assigner }}
+        this.property_assigners['{{ propName }}'] = '{{ prop.property_assigner }}';
+        {{/if}}
+        {{/each}}
+
     },
 
 }{{#if serialized_props}}, {

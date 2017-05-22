@@ -347,6 +347,7 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
         this.enum_property_types = {};
         this.props_created_by_three = {};
         this.property_converters = {};
+        this.property_assigners = {};
         this.property_mappers = {};
     },
 
@@ -595,8 +596,9 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
     syncToThreeObj: function() {
 
         _.each(this.property_converters, function(converterName, propName) {
+            assigner = this[this.property_assigners[propName]] || this.assignDirect;
             if (!converterName) {
-                this.obj[propName] = this.get(propName);
+                assigner(this.obj, propName, this.get(propName));
                 return;
             }
 
@@ -605,8 +607,7 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
             if (!converterFn) {
                 throw new Error('invalid converter name: ' + converterName);
             }
-
-            this.obj[propName] = converterFn.bind(this)(this.get(propName), propName);
+            assigner(this.obj, propName, converterFn.bind(this)(this.get(propName), propName));
         }, this);
 
         // mappers are used for more complicated conversions between model and three props
@@ -675,6 +676,10 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
     // Conversions
     //
 
+    assignDirect: function(obj, key, value) {
+        obj[key] = value;
+    },
+
     // Enum
     convertEnumModelToThree: function(e, propName) {
         return THREE[e];
@@ -703,6 +708,10 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
 
     convertVectorThreeToModel: function(v, propName) {
         return v.toArray();
+    },
+
+    assignVector: function(obj, key, value) {
+        obj[key].copy(value);
     },
 
     // Vector Array
@@ -789,6 +798,10 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
 
     convertMatrixThreeToModel: function(m, propName) {
         return m.toArray();
+    },
+
+    assignMatrix: function(obj, key, value) {
+        obj[key].copy(value);
     },
 
     // Functions

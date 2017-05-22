@@ -20,6 +20,9 @@ _.extend(BaseType.prototype, {
     getPropertyConverterFn: function() {
         return null;
     },
+    getPropertyAssignmentFn: function() {
+        return null;
+    },
 })
 
 function ThreeType(typeName, options={}) {
@@ -253,6 +256,9 @@ _.extend(Vector2.prototype, BaseType.prototype, {
     getPropertyConverterFn: function() {
         return 'convertVector';
     },
+    getPropertyAssignmentFn: function() {
+        return 'assignVector';
+    },
 });
 
 function Vector3(x, y, z) {
@@ -268,6 +274,9 @@ _.extend(Vector3.prototype, BaseType.prototype, {
     getPropertyConverterFn: function() {
         return 'convertVector';
     },
+    getPropertyAssignmentFn: function() {
+        return 'assignVector';
+    },
 });
 
 function Vector4(x, y, z, w) {
@@ -282,6 +291,9 @@ _.extend(Vector4.prototype, BaseType.prototype, {
     // },
     getPropertyConverterFn: function() {
         return 'convertVector';
+    },
+    getPropertyAssignmentFn: function() {
+        return 'assignVector';
     },
 });
 
@@ -363,6 +375,9 @@ _.extend(Matrix3.prototype, BaseType.prototype, {
     getPropertyConverterFn: function() {
         return 'convertMatrix';
     },
+    getPropertyAssignmentFn: function() {
+        return 'assignMatrix';
+    },
 });
 
 function Matrix4() {
@@ -382,6 +397,9 @@ _.extend(Matrix4.prototype, BaseType.prototype, {
     // },
     getPropertyConverterFn: function() {
         return 'convertMatrix';
+    },
+    getPropertyAssignmentFn: function() {
+        return 'assignMatrix';
     },
 });
 
