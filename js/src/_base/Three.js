@@ -17,7 +17,7 @@ var ThreeCache = {
 var ThreeView = widgets.DOMWidgetView.extend({
 
     initialize: function () {
-        widgets.WidgetView.prototype.initialize.apply(this, arguments);
+        widgets.DOMWidgetView.prototype.initialize.apply(this, arguments);
 
         // starts as "frozen" until renderer is acquired
         this.isFrozen = true;
@@ -939,7 +939,7 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
  
 }, {
 
-    serializers: _.extend({}, widgets.WidgetModel.serializers)
+    serializers: _.extend({}, widgets.DOMWidgetModel.serializers)
 
 });
 
