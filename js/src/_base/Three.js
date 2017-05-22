@@ -120,7 +120,7 @@ var RenderableView = widgets.DOMWidgetView.extend({
         this.$renderer = null;
         this.renderer = null;
 
-        this.diableControls();
+        this.disableControls();
 
         this.$el.css('margin-bottom', 'auto');
 
@@ -188,7 +188,7 @@ var RenderableView = widgets.DOMWidgetView.extend({
         });
     },
 
-    diableControls: function() {
+    disableControls: function() {
         this.log('Disable controls');
         var that = this;
         this.controls.forEach(function(control) {
