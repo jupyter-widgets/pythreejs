@@ -239,7 +239,7 @@ module.exports = {
             children:               new Types.ThreeTypeArray('this'),
             up:                     new Types.Vector3(0, 1, 0),
             position:               new Types.Vector3(),
-            rotation:               new Types.Vector3(),
+            rotation:               new Types.ThreeType('Euler'),
             quaternion:             new Types.Vector4(0, 0, 0, 1),
             scale:                  new Types.Vector3(1, 1, 1),
             modelViewMatrix:        new Types.Matrix4(),
