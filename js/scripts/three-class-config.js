@@ -6,7 +6,7 @@
 var Types = require('./prop-types');
 
 module.exports = {
-    
+
     _defaults: require('./three-class-config-defaults'),
 
     // Three_Legacy: {
@@ -15,7 +15,7 @@ module.exports = {
     // Three: {
     //     relativePath: './Three',
     // },
-    
+
     AnimationClip: {
         relativePath: './animation/AnimationClip',
     },
@@ -231,7 +231,7 @@ module.exports = {
         relativePath: './core/Object3D',
         properties: {
             // TODO: id not supported as it conflicts with backbone's id
-            // id: new Types.String(''), 
+            // id: new Types.String(''),
             uuid:                   new Types.String(''),
             name:                   new Types.String(''),
             type:                   new Types.String(''),
@@ -634,7 +634,7 @@ module.exports = {
         properties: {
             uniforms:       new Types.Dict(),
             // TODO: no longer supported by THREE.js
-            // attributes 
+            // attributes
             vertexShader:   new Types.String(''),
             fragmentShader: new Types.String(''),
         },

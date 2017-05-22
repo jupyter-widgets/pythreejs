@@ -36,13 +36,10 @@ _.extend(ThreeType.prototype, BaseType.prototype, {
         var nullableStr = this.nullable ? 'True' : 'False';
         // allow type unions
         if (this.typeName instanceof Array) {
-            // TODO: only instan
             var instances = this.typeName.map(function(typeName) {
                 return '        Instance(' + typeName + ', allow_none=' + nullableStr +')';
             });
             return 'Union([\n' + instances.join(',\n') + '\n    ]).tag(sync=True, **widget_serialization)';
-
-            // return 'Any()';
         }
 
         if (this.typeName.toLowerCase() === 'this') {

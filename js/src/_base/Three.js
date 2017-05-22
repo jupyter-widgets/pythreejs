@@ -388,7 +388,7 @@ var ThreeModel = RenderableModel.extend({
             this.setupListeners();
 
         });
-    
+
     },
 
     createPropertiesArrays: function() {
@@ -491,7 +491,7 @@ var ThreeModel = RenderableModel.extend({
         }
 
         return objPromise.bind(this).then(function(obj) {
-            
+
             obj.ipymodelId = this.id; // brand that sucker
             obj.ipymodel = this;
 
@@ -513,7 +513,7 @@ var ThreeModel = RenderableModel.extend({
 
     constructThreeObject: function() {},
 
-    // 
+    //
     // Three.js object cache methods
     //
 
@@ -546,7 +546,7 @@ var ThreeModel = RenderableModel.extend({
         } else if (cacheDescriptor.name) {
             ThreeCache.byName[cacheDescriptor.name] = obj;
         }
-    },  
+    },
 
     //
     // Remote execution of three.js object methods
@@ -595,22 +595,22 @@ var ThreeModel = RenderableModel.extend({
                 } else {
                     return arg;
                 }
-            
+
             } else if (arg instanceof String && /IPY_MODEL_/.test(arg)) {
 
                 arg = arg.replace('IPY_MODEL_', '');
                 return this.widget_manager.get_model(arg).then(function(model) {
                     return model.obj;
                 });
-                
+
             } else {
                 return arg;
             }
-        
+
         }, this);
 
         return Promise.all(args).bind(this).then(function(args) {
-            
+
             var retVal = this.obj[methodName].apply(this.obj, args);
 
             this.syncToModel(true);
@@ -755,7 +755,7 @@ var ThreeModel = RenderableModel.extend({
             case 3: result = new THREE.Vector3(); break;
             case 4: result = new THREE.Vector4(); break;
             default:
-                throw new Error('model vector has invalid length: ' + v.length); 
+                throw new Error('model vector has invalid length: ' + v.length);
         }
         result.fromArray(v);
         return result;
@@ -803,7 +803,7 @@ var ThreeModel = RenderableModel.extend({
             f[2],                                   // c
             this.convertVectorModelToThree(f[3]),   // normal
             new THREE.Color(f[4]),                  // color
-            f[5]                                    // materialIndex    
+            f[5]                                    // materialIndex
         );
 
         result.vertexNormals = this.convertVectorArrayModelToThree(f[6]); // vertexNormals
@@ -829,13 +829,13 @@ var ThreeModel = RenderableModel.extend({
     convertFaceArrayModelToThree: function(farr, propName) {
         return farr.map(function(f) {
             return this.convertFaceModelToThree(f, propName);
-        }, this);  
+        }, this);
     },
 
     convertFaceArrayThreeToModel: function(farr, propName) {
         return farr.map(function(f) {
             return this.convertFaceThreeToModel(f, propName);
-        }, this);  
+        }, this);
     },
 
     // Matrices
@@ -872,7 +872,7 @@ var ThreeModel = RenderableModel.extend({
     // ThreeType
     convertThreeTypeModelToThree: function(model, propName) {
         if (model) {
-            return model.obj;    
+            return model.obj;
         }
         return null;
     },
@@ -929,7 +929,7 @@ var ThreeModel = RenderableModel.extend({
 
     // BufferAttribute
     convertBufferAttributeModelToThree: function(ba, propName) {
-        
+
         // null array means null attribute
         // this is necessary because plain Tuple traits cannot set allow_none=True
         if (!ba[0]) {
@@ -991,7 +991,7 @@ var ThreeModel = RenderableModel.extend({
             return [ name, this.convertBufferAttributeThreeToModel(ba, propName) ];
         }, this);
     },
- 
+
 }, {
 
     serializers: _.extend({}, widgets.DOMWidgetModel.serializers)
