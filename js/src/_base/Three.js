@@ -14,7 +14,23 @@ var ThreeCache = {
     byName: {}
 };
 
-var ThreeView = widgets.DOMWidgetView.extend({
+var RenderableModel = widgets.DOMWidgetModel.extend({
+
+    defaults: function() {
+        return _.extend(widgets.DOMWidgetModel.prototype.defaults.call(this), {
+            _model_module: pkgName,
+            _view_module: pkgName,
+            _model_name: 'RenderableModel',
+            _view_name: 'RenderableView',
+
+            _width: 200,
+            _height: 200,
+        });
+    },
+
+});
+
+var RenderableView = widgets.DOMWidgetView.extend({
 
     initialize: function () {
         widgets.DOMWidgetView.prototype.initialize.apply(this, arguments);
@@ -35,8 +51,7 @@ var ThreeView = widgets.DOMWidgetView.extend({
     },
 
     render: function() {
-        // ensure that model is fully initialized before attempting render
-        this.model.initPromise.bind(this).then(this.doRender);
+        this.doRender();
     },
 
     doRender: function() {
@@ -46,30 +61,7 @@ var ThreeView = widgets.DOMWidgetView.extend({
 
         this.acquireRenderer();
 
-        this.camera = new THREE.PerspectiveCamera(60, 1.0); // aspect is updated by this.updateSize()
-        this.camera.position.set(-40, 40, 40);
-        this.camera.lookAt(new THREE.Vector3(0,0,0));
-
-        this.updateSize();
-        
-        this.scene = new THREE.Scene();
-        // cameras need to be added to scene
-        this.scene.add(this.camera);
-
-        // Lights
-        this.pointLight = new THREE.PointLight('#ffffff', 1, 0);
-        this.pointLight.position.set(-100, 100, 100);
-        this.pointLight.lookAt(new THREE.Vector3(0,0,0));
-        this.ambLight = new THREE.AmbientLight('#ffffff', 0.5);
-        this.camera.add(this.ambLight);
-        this.camera.add(this.pointLight);
-        
-        this.setupControls();
-
-        if (this.model.obj) {
-            this.constructScene();
-            this.renderScene();
-        }
+        this.lazyRendererSetup();
 
         this.on('destroy', this.destroy, this);
         this.listenTo(this.model, 'rerender',       this.renderScene);
@@ -80,9 +72,13 @@ var ThreeView = widgets.DOMWidgetView.extend({
     },
 
     tick: function() {
+        requestAnimationFrame(this.tock.bind(this));
+    },
+
+    tock: function() {
         this.renderScene();
         if (this.animate) {
-            requestAnimationFrame(this.tick.bind(this));
+            this.tick();
         }
     },
 
@@ -101,9 +97,140 @@ var ThreeView = widgets.DOMWidgetView.extend({
         this.camera.updateProjectionMatrix();
     },
 
+    renderScene: function() {
+        this.log('renderScene');
+
+        // TODO: check renderer.domElement.isContextLost()
+
+        if (this.isFrozen) {
+            this.log('renderScene->isFrozen');
+
+            this.acquireRenderer();
+            this.updateSize();
+        }
+
+        this.renderer.render(this.scene, this.camera);
+    },
+
+    teardownViewer: function() {
+
+        this.$renderer.off('mouseenter');
+        this.$renderer.off('mouseleave');
+
+        this.$renderer = null;
+        this.renderer = null;
+
+        this.diableControls();
+
+        this.$el.css('margin-bottom', 'auto');
+
+        this.isFrozen = true;
+
+    },
+
+    acquireRenderer: function() {
+        if (!this.isFrozen) {
+            return;
+        }
+
+        this.log('ThreeView.acquiring...');
+
+        if(this.$frozenRenderer) {
+            this.$frozenRenderer.off('mouseenter');
+            this.$frozenRenderer = null;
+        }
+
+        this.renderer = RendererPool.acquire(this.onRendererReclaimed.bind(this));
+        this.renderer.setSize(this.model.get('_width'), this.model.get('_height'));
+
+        this.$renderer = $(this.renderer.domElement);
+        this.$el.empty().append(this.$renderer);
+
+        this.$el.css('margin-bottom', '-5px');
+
+        this.log('ThreeView.acquireRenderer(' + this.renderer.poolId + ')');
+
+        if (this.controls) {
+            this.enableControls();
+        }
+        this.isFrozen = false;
+    },
+
+    freeze: function() {
+        if (this.isFrozen) {
+            this.log('already frozen...');
+            return;
+        }
+
+        this.log('ThreeView.freeze(id=' + this.renderer.poolId + ')');
+
+        this.animate = false;
+        this.$el.empty().append('<img src="' + this.renderer.domElement.toDataURL() + '" />');
+
+        this.teardownViewer();
+        this.isFrozen = true;
+
+        this.$frozenRenderer = this.$el.find('img');
+        this.$frozenRenderer.on('mouseenter', _.bind(function() {
+            this.log('frozenRenderer.mouseenter');
+            this.tick(); // renderer will be acquired by renderScene
+        }, this));
+
+    },
+
+    enableControls: function() {
+        this.log('Enable controls');
+        var that = this;
+        this.controls.forEach(function(control) {
+            control.enabled = true;
+            control.connectEvents(that.$renderer[0]);
+            control.addEventListener('change', that.tick.bind(that));
+        });
+    },
+
+    diableControls: function() {
+        this.log('Disable controls');
+        var that = this;
+        this.controls.forEach(function(control) {
+            control.enabled = false;
+            control.dispose();  // Disconnect from DOM events
+            control.removeEventListener('change', that.tick.bind(that));
+        });
+    },
+
+    onCustomMessage: function(content, buffers) {
+        switch(content.type) {
+            case 'freeze':
+                this.freeze();
+                break;
+            default:
+        }
+    },
+
+    onRendererReclaimed: function() {
+        this.log('ThreeView WebGL context is being reclaimed: ' + this.renderer.poolId);
+        this.freeze();
+    },
+
+    log: function(str) {
+        console.log('TV(' + this.id + '): ' + str);
+    },
+
+    lazyRendererSetup: function() {
+        throw new Error('RenderableView should not be used directly, please subclass!');
+    }
+});
+
+var ThreeView = RenderableView.extend({
+
+    render: function() {
+        // ensure that model is fully initialized before attempting render
+        return this.model.initPromise.bind(this).then(this.doRender);
+    },
+
     constructScene: function() {
-    
-        var obj = this.model.obj; 
+
+        var obj = this.model.obj;
 
         this.clearScene();
         this.scene.add(this.camera);
@@ -137,7 +264,7 @@ var ThreeView = widgets.DOMWidgetView.extend({
             this.scene.add(mesh);
 
         } else if (obj instanceof THREE.Material) {
-        
+
             var geometry = new THREE.SphereGeometry(15, 16, 12);
             var mesh = new THREE.Mesh(geometry, obj);
             this.scene.add(mesh);
@@ -181,7 +308,7 @@ var ThreeView = widgets.DOMWidgetView.extend({
 
             this.acquireRenderer();
             this.updateSize();
-            this.setupControls();
+            this.enableControls();
 
             if (this.model.obj) {
                 this.constructScene();
@@ -191,131 +318,59 @@ var ThreeView = widgets.DOMWidgetView.extend({
         this.renderer.render(this.scene, this.camera);
     },
 
-    teardownViewer: function() {
-
-        this.$renderer.off('mouseenter');
-        this.$renderer.off('mouseleave');
-
-        this.$renderer = null;
-        this.renderer = null;
-
-        this.disposeControls();
-
-        this.$el.css('margin-bottom', 'auto');
-
-        this.isFrozen = true;
-
-    },
-
-    acquireRenderer: function() {
-        if (!this.isFrozen) {
-            return;
-        }
-
-        this.log('ThreeView.acquiring...');
-
-        if(this.$frozenRenderer) {
-            this.$frozenRenderer.off('mouseenter');
-            this.$frozenRenderer = null;
-        }
-
-        this.renderer = RendererPool.acquire(this.onRendererReclaimed.bind(this));
-        this.$renderer = $(this.renderer.domElement);
-        this.$el.empty().append(this.$renderer);
-        this.$el.css('margin-bottom', '-5px');
-
-        this.log('ThreeView.acquireRenderer(' + this.renderer.poolId + ')');
-
-        this.isFrozen = false;
-
-        this.$renderer.on('mouseenter', _.bind(function() {
-            this.animate = true;
-            this.tick();
-        }, this));
-        this.$renderer.on('mouseleave', _.bind(function() {
-            this.animate = false;
-        }, this));
-    
-    },
-
-    freeze: function() {
-        if (this.isFrozen) {
-            this.log('already frozen...');
-            return;
-        }
-
-        this.log('ThreeView.freeze(id=' + this.renderer.poolId + ')');
-        
-        this.animate = false;
-        this.$el.empty().append('<img src="' + this.renderer.domElement.toDataURL() + '" />');
-        
-        this.teardownViewer();
-        this.isFrozen = true;
-        
-        this.$frozenRenderer = this.$el.find('img');
-        this.$frozenRenderer.on('mouseenter', _.bind(function() {
-            this.log('frozenRenderer.mouseenter');
-            this.animate = true;
-            this.tick(); // renderer will be acquired by renderScene
-        }, this));
-    
-    },
-
     setupControls: function() {
         // Allow user to inspect object with mouse/scrollwheel
         this.log('setting up controls');
-        this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
-        this.controls.target.set(0, 0, 0);
-        this.controls.update();
+        var control = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+        control.target.set(0, 0, 0);
+        control.update();
+        this.controls = [control];
     },
 
-    disposeControls: function() {
-        this.log('disposing controls');
-        if (this.controls) {
-            // this.controls.reset();
-            this.controls.dispose();
-            this.controls = null;
-        } else {
-            this.log('this.controls is null');
+    lazyRendererSetup: function() {
+        this.camera = new THREE.PerspectiveCamera(60, 1.0); // aspect is updated by this.updateSize()
+        this.camera.position.set(-40, 40, 40);
+        this.camera.lookAt(new THREE.Vector3(0,0,0));
+
+        this.updateSize();
+
+        this.scene = new THREE.Scene();
+        // cameras need to be added to scene
+        this.scene.add(this.camera);
+
+        // Lights
+        this.pointLight = new THREE.PointLight('#ffffff', 1, 0);
+        this.pointLight.position.set(-100, 100, 100);
+        this.pointLight.lookAt(new THREE.Vector3(0,0,0));
+        this.ambLight = new THREE.AmbientLight('#ffffff', 0.5);
+        this.camera.add(this.ambLight);
+        this.camera.add(this.pointLight);
+
+        this.setupControls();
+        this.enableControls();
+
+        if (this.model.obj) {
+            this.constructScene();
+            this.renderScene();
         }
-    },
-
-    onCustomMessage: function(content, buffers) {
-        switch(content.type) {
-            case 'freeze':
-                this.freeze();
-                break;
-            default:
-        }
-    },
-
-    onRendererReclaimed: function() {
-        this.log('ThreeView WebGL context is being reclaimed: ' + this.renderer.poolId);
-        this.freeze();
-    },
-
-    log: function(str) {
-        console.log('TV(' + this.id + '): ' + str);
     }
 
 });
 
-var ThreeModel = widgets.DOMWidgetModel.extend({
+var ThreeModel = RenderableModel.extend({
 
-    defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
-        _model_module: pkgName,
-        _view_module: pkgName,
-        _model_name: 'ThreeModel',
-        _view_name: 'ThreeView',
+    defaults: function() {
+        return _.extend(RenderableModel.prototype.defaults.call(this), {
+            _model_name: 'ThreeModel',
+            _view_name: 'ThreeView',
 
-        _width: 200,
-        _height: 200,
-        _flat: false,
-        _wire: false,
-    }),
+            _flat: false,
+            _wire: false,
+        });
+    },
 
     initialize: function(attributes, options) {
-        widgets.WidgetModel.prototype.initialize.apply(this, arguments);
+        RenderableModel.prototype.initialize.apply(this, arguments);
 
         this.createPropertiesArrays();
 
@@ -412,7 +467,7 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
         // try cache first
         var cacheDescriptor = this.getCacheDescriptor();
         if (cacheDescriptor) {
-            var obj = this.getThreeObjectFromCache(cacheDescriptor); 
+            var obj = this.getThreeObjectFromCache(cacheDescriptor);
             if (obj) {
                 if (obj.ipymodelId != this.id) {
                     throw new Error('model id does not match three object: ' + obj.ipymodelId + ' -- ' + this.id);
@@ -944,6 +999,8 @@ var ThreeModel = widgets.DOMWidgetModel.extend({
 });
 
 module.exports = {
+    RenderableModel: RenderableModel,
+    RenderableView: RenderableView,
     ThreeView: ThreeView,
     ThreeModel: ThreeModel,
 };

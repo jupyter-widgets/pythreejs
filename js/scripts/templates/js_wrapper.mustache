@@ -16,16 +16,18 @@ var {{ dep.viewName }} = require('{{ dep.requirePath }}').{{ dep.viewName }};
 
 var {{ modelName }} = {{ superClass.modelName }}.extend({
 
-    defaults: _.extend({}, {{ superClass.modelName }}.prototype.defaults, {
+    defaults: function() {
+        return _.extend({{ superClass.modelName }}.prototype.defaults.call(this), {
 
-        _view_name: '{{ viewName }}',
-        _model_name: '{{ modelName }}',
+            _view_name: '{{ viewName }}',
+            _model_name: '{{ modelName }}',
 
-        {{#each properties as |prop propName|}}
-        {{ propName }}: {{{ prop.defaultJson }}},
-        {{/each}}
+            {{#each properties as |prop propName|}}
+            {{ propName }}: {{{ prop.defaultJson }}},
+            {{/each}}
 
-    }),
+        });
+    },
 
     constructThreeObject: function() {
 
