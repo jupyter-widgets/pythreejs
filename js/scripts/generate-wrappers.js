@@ -828,6 +828,11 @@ function createTopLevelPythonModuleFile() {
 var CUSTOM_CLASSES = [
     'textures/ImageTexture.js',
     'textures/TextTexture.js',
+    'controls/Controls.js',
+    'controls/OrbitControls.js',
+    'controls/TrackballControls.js',
+    'controls/FlyControls.js',
+    'controls/Picker.js',
 ];
 
 function createJavascriptFiles() {

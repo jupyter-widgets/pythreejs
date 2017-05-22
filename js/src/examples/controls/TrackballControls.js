@@ -149,7 +149,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 				} else {
 
 					mouseOnBall.z = .5 / length;
-					
+
 				}
 
 			} else if ( length > 1.0 ) {
@@ -357,7 +357,50 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 	};
 
+	this.connectEvents = function(element) {
+		if (element) {
+			this.domElement = element;
+		}
+		this.domElement.addEventListener( 'contextmenu', contextmenu, false );
+
+		this.domElement.addEventListener( 'mousedown', mousedown, false );
+
+		this.domElement.addEventListener( 'mousewheel', mousewheel, false );
+		this.domElement.addEventListener( 'DOMMouseScroll', mousewheel, false ); // firefox
+
+		this.domElement.addEventListener( 'touchstart', touchstart, false );
+		this.domElement.addEventListener( 'touchend', touchend, false );
+		this.domElement.addEventListener( 'touchmove', touchmove, false );
+
+		window.addEventListener( 'keydown', keydown, false );
+		window.addEventListener( 'keyup', keyup, false );
+	}
+
+	this.dispose = function() {
+
+		scope.domElement.removeEventListener( 'contextmenu', contextmenu, false );
+
+		scope.domElement.removeEventListener( 'mousedown', mousedown, false );
+
+		scope.domElement.removeEventListener( 'mousewheel', mousewheel, false );
+		scope.domElement.removeEventListener( 'DOMMouseScroll', mousewheel, false ); // firefox
+
+		scope.domElement.removeEventListener( 'touchstart', touchstart, false );
+		scope.domElement.removeEventListener( 'touchend', touchend, false );
+		scope.domElement.removeEventListener( 'touchmove', touchmove, false );
+
+		window.removeEventListener( 'keydown', keydown, false );
+		window.removeEventListener( 'keyup', keyup, false );
+
+		//scope.dispatchEvent( { type: 'dispose' } ); // should this be added here?
+
+	};
+
 	// listeners
+
+	function contextmenu( event ) {
+		event.preventDefault();
+	}
 
 	function keydown( event ) {
 
@@ -587,19 +630,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 	}
 
-	this.domElement.addEventListener( 'contextmenu', function ( event ) { event.preventDefault(); }, false );
-
-	this.domElement.addEventListener( 'mousedown', mousedown, false );
-
-	this.domElement.addEventListener( 'mousewheel', mousewheel, false );
-	this.domElement.addEventListener( 'DOMMouseScroll', mousewheel, false ); // firefox
-
-	this.domElement.addEventListener( 'touchstart', touchstart, false );
-	this.domElement.addEventListener( 'touchend', touchend, false );
-	this.domElement.addEventListener( 'touchmove', touchmove, false );
-
-	window.addEventListener( 'keydown', keydown, false );
-	window.addEventListener( 'keyup', keyup, false );
+	this.connectEvents();
 
 	this.handleResize();
 

@@ -98,6 +98,51 @@ module.exports = {
     StereoCamera: {
         relativePath: './cameras/StereoCamera',
     },
+    Controls: {
+        relativePath: './controls/Controls',
+        properties: {
+            controlling: new Types.ThreeType('Object3D', {allowNull: false}),
+        },
+    },
+    OrbitControls: {
+        relativePath: './controls/OrbitControls',
+        superClass: 'Controls',
+        properties: {
+            target: new Types.Vector3(0, 0, 0),
+        },
+        constructorArgs: ['controlling'],
+    },
+    TrackballControls: {
+        relativePath: './controls/TrackballControls',
+        superClass: 'Controls',
+        properties: {
+            target: new Types.Vector3(0, 0, 0),
+        },
+    },
+    FlyControls: {
+        relativePath: './controls/FlyControls',
+        superClass: 'Controls',
+        properties: {
+            forward_speed: new Types.Float(0),
+            lateral_speed: new Types.Float(0),
+            upward_speed: new Types.Float(0),
+            roll: new Types.Float(0),
+            pitch: new Types.Float(0),
+            yaw: new Types.Float(0),
+        },
+    },
+    Picker: {
+        relativePath: './controls/Picker',
+        superClass: 'Controls',
+        properties: {
+            event: new Types.String('click'),
+            root: new Types.ThreeType('Object3D', {allowNull: true}),
+            all: new Types.Bool(false)
+        },
+        propsDefinedByThree: [ 'distance', 'point', 'face', 'faceNormal', 'faceVertices',
+                               'faceIndex', 'object', 'picked'],
+    },
+
     // BufferAttribute: {
     //     relativePath: './core/BufferAttribute',
     //     properties: {
