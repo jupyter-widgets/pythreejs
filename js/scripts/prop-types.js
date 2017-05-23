@@ -200,6 +200,24 @@ _.extend(Color.prototype, BaseType.prototype, {
     },
 });
 
+function ColorArray(defaultValue) {
+    this.defaultValue = defaultValue || "#ffffff";
+}
+_.extend(ColorArray.prototype, BaseType.prototype, {
+    getTraitlet: function() {
+        return 'List(trait=List()).tag(sync=True)';
+    },
+    // getPropArrayName: function() {
+    //     return 'color_properties';
+    // }
+    getPropertyConverterFn: function() {
+        return 'convertColorArray';
+    },
+    getPropertyAssignmentFn: function() {
+        return 'assignArray';
+    },
+});
+
 function ArrayType() {
     this.defaultValue = [];
 }
@@ -210,6 +228,9 @@ _.extend(ArrayType.prototype, BaseType.prototype, {
     // getPropArrayName: function() {
     //     return 'array_properties';
     // }
+    getPropertyAssignmentFn: function() {
+        return 'assignArray';
+    },
 });
 
 // TODO: support more than Float32Array
@@ -326,6 +347,9 @@ _.extend(VectorArray.prototype, BaseType.prototype, {
     getPropertyConverterFn: function() {
         return 'convertVectorArray';
     },
+    getPropertyAssignmentFn: function() {
+        return 'assignArray';
+    },
 });
 
 function FaceArray() {
@@ -340,6 +364,9 @@ _.extend(FaceArray.prototype, BaseType.prototype, {
     // },
     getPropertyConverterFn: function() {
         return 'convertFaceArray';
+    },
+    getPropertyAssignmentFn: function() {
+        return 'assignArray';
     },
 });
 
@@ -431,6 +458,7 @@ module.exports = {
     Bool: Bool,
     Enum: Enum,
     Color: Color,
+    ColorArray: ColorArray,
     Array: ArrayType,
     ArrayBuffer: ArrayBufferType,
     BufferAttribute: BufferAttribute,

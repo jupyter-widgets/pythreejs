@@ -201,11 +201,15 @@ module.exports = {
             type: new Types.String(''),
 
             // TODO: arrays of geometry data
-            // vertices: new Types.VectorArray(),
-            // colors: new Types.ColorArray(),
-            // faces: new Types.FaceArray(),
-            // faceVertexUVs
-            // ...
+            vertices: new Types.VectorArray(),
+            colors: new Types.ColorArray(),
+            faces: new Types.FaceArray(),
+            faceVertexUVs: new Types.Array(),
+            lineDistances: new Types.Array(),
+            morphTargets: new Types.Array(),
+            morphNormals: new Types.Array(),
+            skinWeights: new Types.Array(),
+            skinIndices: new Types.Array(),
         },
         propsDefinedByThree: [ 'uuid', 'type' ]
     },

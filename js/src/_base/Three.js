@@ -735,6 +735,18 @@ var ThreeModel = RenderableModel.extend({
         obj[key] = value;
     },
 
+    /**
+     * Check if array exists, if so replace content. Otherwise assign value.
+     */
+    assignArray: function(obj, key, value) {
+        var existing = obj[key];
+        if (existing !== null && existing !== undefined) {
+            existing.splice(0, existing.length, ...value);
+        } else {
+            obj[key] = value;
+        }
+    },
+
     // Enum
     convertEnumModelToThree: function(e, propName) {
         return THREE[e];
