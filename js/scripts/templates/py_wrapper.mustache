@@ -23,7 +23,7 @@ class {{ className }}({{ superClass.className }}):
         {{#each constructor.args as |arg|}}
         kwargs['{{{ arg.name }}}'] = {{{ arg.name }}}
         {{/each}}
-        super({{ superClass.className }}, self).__init__(**kwargs)
+        super({{ className }}, self).__init__(**kwargs)
 
     {{/unless}}
     _view_name = Unicode('{{ viewName }}').tag(sync=True)

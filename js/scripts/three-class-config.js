@@ -1271,7 +1271,7 @@ module.exports = {
         superClass: 'BufferGeometry',
         constructorArgs: [ 'radius', 'widthSegments', 'heightSegments', 'phiStart', 'phiLength', 'thetaStart', 'thetaLength' ],
         properties: {
-            radius:         new Types.Int(50),
+            radius:         new Types.Float(50.0),
             widthSegments:  new Types.Int(8),
             heightSegments: new Types.Int(6),
             phiStart:       new Types.Float(0),
@@ -1286,7 +1286,7 @@ module.exports = {
         superClass: 'Geometry',
         constructorArgs: [ 'radius', 'widthSegments', 'heightSegments', 'phiStart', 'phiLength', 'thetaStart', 'thetaLength' ],
         properties: {
-            radius:         new Types.Int(50),
+            radius:         new Types.Float(50.0),
             widthSegments:  new Types.Int(8),
             heightSegments: new Types.Int(6),
             phiStart:       new Types.Float(0),

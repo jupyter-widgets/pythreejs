@@ -1,7 +1,7 @@
-from ipywidgets import Widget, DOMWidget, widget_serialization, Color
-from traitlets import (Unicode, Int, CInt, Instance, Enum, List, Dict, Float,
-                       CFloat, Bool)
+from ipywidgets import DOMWidget
+from traitlets import Unicode, CInt, Bool
 from .._package import npm_pkg_name
+
 
 class RenderableWidget(DOMWidget):
     _view_module = Unicode(npm_pkg_name).tag(sync=True)
@@ -11,7 +11,9 @@ class RenderableWidget(DOMWidget):
     _width = CInt(200).tag(sync=True)
     _height = CInt(200).tag(sync=True)
 
-    def send_msg(self, message_type, payload={}):
+    def send_msg(self, message_type, payload=None):
+        if payload is None:
+            payload = {}
         content = {
             "type": message_type,
             "payload": payload
@@ -38,7 +40,7 @@ class ThreeWidget(RenderableWidget):
     _wire = Bool(False).tag(sync=True)
 
     def __init__(self, **kwargs):
-        Widget.__init__(self, **kwargs)
+        super(ThreeWidget, self).__init__(**kwargs)
         self.on_msg(self.on_potential_ret_val)
 
     def exec_three_obj_method(self, method_name, *args, **kwargs):
@@ -55,4 +57,3 @@ class ThreeWidget(RenderableWidget):
 
     def on_ret_val(self, method_name, ret_val):
         self.log('%s() -> %s' % (method_name, ret_val))
-
