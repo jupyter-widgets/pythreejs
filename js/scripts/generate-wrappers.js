@@ -305,7 +305,8 @@ _.extend(JavascriptWrapper.prototype, {
         // infer dependencies from any properties that reference other Three types
         _.reduce(this.config.properties, function(result, prop, propName) {
 
-            if (prop instanceof Types.ThreeType || prop instanceof Types.ThreeTypeArray || prop instanceof Types.ThreeTypeDict) {
+            if (prop instanceof Types.ThreeType || prop instanceof Types.InitializedThreeType ||
+                    prop instanceof Types.ThreeTypeArray || prop instanceof Types.ThreeTypeDict) {
                 if (prop.typeName !== 'this') {
                     if (typeof prop.typeName === 'string') {
                         result[prop.typeName] = this.getRequireInfoFromClassDescriptor(prop.typeName);        
@@ -659,7 +660,8 @@ _.extend(PythonWrapper.prototype, {
         // infer dependencies from any properties that reference other Three types
         _.reduce(this.config.properties, function(result, prop, propName) {
 
-            if (prop instanceof Types.ThreeType || prop instanceof Types.ThreeTypeArray || prop instanceof Types.ThreeTypeDict) {
+            if (prop instanceof Types.ThreeType || prop instanceof Types.InitializedThreeType ||
+                    prop instanceof Types.ThreeTypeArray || prop instanceof Types.ThreeTypeDict) {
                 if (prop.typeName !== 'this') {
                     if (typeof prop.typeName === 'string') {
                         result[prop.typeName] = this.getRequireInfoFromClassDescriptor(prop.typeName);        

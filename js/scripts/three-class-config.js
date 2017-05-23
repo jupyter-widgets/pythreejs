@@ -289,12 +289,13 @@ module.exports = {
         relativePath: './lights/DirectionalLight',
         superClass: 'Light',
         properties: {
-            target:      new Types.ThreeType('Object3D'),
+            target:      new Types.InitializedThreeType('Object3D', {args: '()', nullable: false}),
             // TODO: shadows
             // shadow:      new Types.ThreeType('LightShadow'),
             castsShadow: new Types.Bool(false),
         },
         constructorArgs: [ 'color', 'intensity' ],
+        propsDefinedByThree: [ 'target' ]
     },
     HemisphereLight: {
         relativePath: './lights/HemisphereLight',
@@ -332,7 +333,7 @@ module.exports = {
         relativePath: './lights/SpotLight',
         superClass: 'Light',
         properties: {
-            target:   new Types.ThreeType('Object3D'),
+            target:   new Types.InitializedThreeType('Object3D', {args: '()', nullable: false}),
             distance: new Types.Float(0.0),
             angle:    new Types.Float(Math.PI / 3.0),
             penumbra: new Types.Float(0.0),
@@ -341,6 +342,7 @@ module.exports = {
             // shadow:   new Types.ThreeType('LightShadow'),
         },
         constructorArgs: [ 'color', 'intensity', 'distance', 'angle', 'penumbra', 'decay' ],
+        propsDefinedByThree: [ 'target' ]
     },
     AnimationLoader: {
         relativePath: './loaders/AnimationLoader',

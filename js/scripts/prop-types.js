@@ -30,6 +30,8 @@ function ThreeType(typeName, options={}) {
     this.defaultValue = null;
     this.serialize = true;
     this.nullable = options.nullable !== false;
+    this.args = options.args;
+    this.kwargs = options.kwargs;
 }
 _.extend(ThreeType.prototype, BaseType.prototype, {
     getTraitlet: function() {
@@ -46,13 +48,30 @@ _.extend(ThreeType.prototype, BaseType.prototype, {
             return 'This().tag(sync=True, **widget_serialization)';
         }
 
-        return 'Instance(' + this.typeName + ', allow_none=' + nullableStr +').tag(sync=True, **widget_serialization)';
+        var ret = 'Instance(' + this.typeName;
+        if (this.args !== undefined) {
+            ret += ', args=' + this.args;
+        }
+        if (this.kwargs !== undefined) {
+            ret += ', kw=' + this.kwargs;
+        }
+        ret += ', allow_none=' + nullableStr +').tag(sync=True, **widget_serialization)';
+        return ret;
     },
     getPropArrayName: function() {
         return 'three_properties';
     },
     getPropertyConverterFn: function() {
         return 'convertThreeType';
+    },
+});
+
+function InitializedThreeType(typeName, options={}) {
+    ThreeType.call(this, typeName, options);
+}
+_.extend(InitializedThreeType.prototype, ThreeType.prototype, {
+    getPropertyConverterFn: function() {
+        return 'convertInitializedThreeType';
     },
 });
 
@@ -403,6 +422,7 @@ _.extend(Matrix4.prototype, BaseType.prototype, {
 
 module.exports = {
     ThreeType: ThreeType,
+    InitializedThreeType: InitializedThreeType,
     ThreeTypeArray: ThreeTypeArray,
     ThreeTypeDict: ThreeTypeDict,
     Int: Int,

@@ -878,7 +878,29 @@ var ThreeModel = RenderableModel.extend({
     },
 
     convertThreeTypeThreeToModel: function(threeType, propName) {
-        return threeType.ipyModel;
+        if (!threeType) {
+            return threeType;
+        }
+        return threeType.ipymodel;
+    },
+
+    // InitializedThreeType
+    convertInitializedThreeTypeModelToThree: function(model, propName) {
+        if (model) {
+            return model.obj;
+        }
+        return null;
+    },
+
+    convertInitializedThreeTypeThreeToModel: function(threeType, propName) {
+        if (threeType.ipymodelId === undefined) {
+            var placeholder = this.get(propName);
+            threeType.ipymodelId = placeholder.obj.ipymodelId;
+            threeType.ipymodel = placeholder;
+            placeholder.obj = threeType;
+            placeholder.syncToModel();
+        }
+        return threeType.ipymodel;
     },
 
     // ThreeTypeArray
