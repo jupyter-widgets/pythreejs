@@ -5,6 +5,9 @@
 
 var Types = require('./prop-types');
 
+// NOTE: uuid properties are not generated, as they cannot be synced across
+// several clients.
+
 module.exports = {
 
     _defaults: require('./three-class-config-defaults'),
@@ -208,13 +211,12 @@ module.exports = {
     BufferGeometry: {
         relativePath: './core/BufferGeometry',
         properties: {
-            uuid:       new Types.String(''),
             name:       new Types.String(''),
             type:       new Types.String(''),
             attributes: new Types.BufferAttributeDict(),
             index:      new Types.BufferAttribute(),
         },
-        propsDefinedByThree: [ 'uuid', 'type' ]
+        propsDefinedByThree: [ 'type' ]
     },
     Clock: {
         relativePath: './core/Clock',
@@ -243,8 +245,8 @@ module.exports = {
     Geometry: {
         relativePath: './core/Geometry',
         properties: {
-            id:   new Types.String(''),
-            uuid: new Types.String(''),
+            // TODO: id not supported as it conflicts with backbone's id
+            // id: new Types.String(''),
             name: new Types.String(''),
             type: new Types.String(''),
 
@@ -259,7 +261,7 @@ module.exports = {
             skinWeights: new Types.Array(),
             skinIndices: new Types.Array(),
         },
-        propsDefinedByThree: [ 'uuid', 'type' ]
+        propsDefinedByThree: [ 'type' ]
     },
     InstancedBufferAttribute: {
         relativePath: './core/InstancedBufferAttribute',
@@ -284,7 +286,6 @@ module.exports = {
         properties: {
             // TODO: id not supported as it conflicts with backbone's id
             // id: new Types.String(''),
-            uuid:                   new Types.String(''),
             name:                   new Types.String(''),
             type:                   new Types.String(''),
             parent:                 new Types.ThreeType('this'),
@@ -306,7 +307,7 @@ module.exports = {
             frustumCulled:          new Types.Bool(true),
             renderOrder:            new Types.Int(0),
         },
-        propsDefinedByThree: [ 'uuid', 'type' ]
+        propsDefinedByThree: [ 'type' ]
     },
     Raycaster: {
         relativePath: './core/Raycaster',
@@ -472,7 +473,6 @@ module.exports = {
     Material: {
         relativePath: './materials/Material',
         properties: {
-            uuid:                new Types.String(''),
             name:                new Types.String(''),
             opacity:             new Types.Float(1.0),
             transparent:         new Types.Bool(false),
@@ -495,7 +495,7 @@ module.exports = {
             fog:                 new Types.Bool(true),
             lights:              new Types.Bool(true),
         },
-        propsDefinedByThree: [ 'uuid', 'type' ]
+        propsDefinedByThree: [ 'type' ]
     },
     MeshBasicMaterial: {
         relativePath: './materials/MeshBasicMaterial',
@@ -968,8 +968,8 @@ module.exports = {
     Texture: {
         relativePath: './textures/Texture',
         properties: {
-            id:               new Types.Int(),
-            uuid:             new Types.String(''),
+            // TODO: id not supported as it conflicts with backbone's id
+            // id: new Types.String(''),
             name:             new Types.String(''),
             mapping:          new Types.Enum('MappingModes', 'UVMapping'),
             wrapS:            new Types.Enum('WrappingModes', 'ClampToEdgeWrapping'),
@@ -991,7 +991,7 @@ module.exports = {
         // As the image property is not exposed, we don't define constructorArgs.
         // The image property is hidden, as it does not have a good corresponding python type (yet)
         //constructorArgs: [ 'image', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter', 'format', 'type', 'anisotropy' ],
-        propsDefinedByThree: [ 'id', 'uuid', 'version' ],
+        propsDefinedByThree: [ 'id', 'version' ],
     },
     CanvasTexture: {
         relativePath: './textures/CanvasTexture',
