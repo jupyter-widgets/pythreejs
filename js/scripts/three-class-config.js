@@ -567,6 +567,16 @@ module.exports = {
         },
         constructorArgs: [ 'parameters' ],
     },
+    MeshPhysicalMaterial: {
+        relativePath: './materials/MeshPhysicalMaterial',
+        superClass: 'MeshStandardMaterial',
+        properties: {
+            clearCoat:          new Types.Float(0.0),
+            clearCoatRoughness: new Types.Float(0.0),
+            reflectivity:       new Types.Float(0.5),
+        },
+        propsDefinedByThree: ['isMeshPhysicalMaterial'],
+    },
     MeshStandardMaterial: {
         relativePath: './materials/MeshStandardMaterial',
         superClass: 'Material',
@@ -681,6 +691,15 @@ module.exports = {
             b: new Types.Float(1.0),
         },
         constructorArgs: [ 'r', 'g', 'b' ],
+    },
+    Cylindrical: {
+        relativePath: './math/Cylindrical',
+        properties: {
+            radius: new Types.Float(1.0),
+            theta:  new Types.Float(0.),
+            y:      new Types.Float(0.),
+        },
+        constructorArgs: ['radius', 'theta', 'y'],
     },
     Euler: {
         relativePath: './math/Euler',
@@ -825,6 +844,14 @@ module.exports = {
     },
     Line: {
         relativePath: './objects/Line',
+        constructorArgs: [ 'geometry', 'material' ],
+        properties: {
+            material: new Types.ThreeType('Material'),
+            geometry: new Types.ThreeType(['Geometry', 'BufferGeometry']),
+        }
+    },
+    LineLoop: {
+        relativePath: './objects/LineLoop',
         constructorArgs: [ 'geometry', 'material' ],
         properties: {
             material: new Types.ThreeType('Material'),
@@ -1038,7 +1065,7 @@ module.exports = {
         relativePath: './extras/curves/SplineCurve3',
     },
     BoxBufferGeometry: {
-        relativePath: './extras/geometries/BoxBufferGeometry',
+        relativePath: './geometries/BoxBufferGeometry',
         superClass: 'BufferGeometry',
         constructorArgs: [ 'width', 'height', 'depth', 'widthSegments', 'heightSegments', 'depthSegments' ],
         properties: {
@@ -1052,7 +1079,7 @@ module.exports = {
         propsDefinedByThree: [ 'attributes', 'index' ],
     },
     BoxGeometry: {
-        relativePath: './extras/geometries/BoxGeometry',
+        relativePath: './geometries/BoxGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'width', 'height', 'depth', 'widthSegments', 'heightSegments', 'depthSegments' ],
         properties: {
@@ -1066,7 +1093,7 @@ module.exports = {
         propsDefinedByThree: [ 'vertices', 'faces' ]
     },
     CircleBufferGeometry: {
-        relativePath: './extras/geometries/CircleBufferGeometry',
+        relativePath: './geometries/CircleBufferGeometry',
         superClass: 'BufferGeometry',
         constructorArgs: [ 'radius', 'segments', 'thetaStart', 'thetaLength' ],
         properties: {
@@ -1078,7 +1105,7 @@ module.exports = {
         propsDefinedByThree: [ 'attributes', 'index' ],
     },
     CircleGeometry: {
-        relativePath: './extras/geometries/CircleGeometry',
+        relativePath: './geometries/CircleGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'radius', 'segments', 'thetaStart', 'thetaLength' ],
         properties: {
@@ -1088,8 +1115,22 @@ module.exports = {
             thetaLength: new Types.Float(Math.PI * 2.0),
         },
     },
+    ConeGeometry: {
+        relativePath: './geometries/ConeGeometry',
+        superClass: 'Geometry',
+        constructorArgs: ['radius', 'height', 'radialSegments', 'heightSegments', 'openEnded', 'thetaStart', 'thetaLength'],
+        properties: {
+            radius:         new Types.Float(20.0),
+            height:         new Types.Float(100.0),
+            radialSegments: new Types.Int(8),
+            heightSegments: new Types.Int(1),
+            openEnded:      new Types.Bool(false),
+            thetaStart:     new Types.Float(0.0),
+            thetaLength:    new Types.Float(Math.PI * 2.0),
+        },
+    },
     CylinderBufferGeometry: {
-        relativePath: './extras/geometries/CylinderBufferGeometry',
+        relativePath: './geometries/CylinderGeometry',
         superClass: 'BufferGeometry',
         constructorArgs: [ 'radiusTop', 'radiusBottom', 'height', 'radiusSegments', 'heightSegments', 'openEnded', 'thetaStart', 'thetaLength' ],
         properties: {
@@ -1105,7 +1146,7 @@ module.exports = {
         propsDefinedByThree: [ 'attributes', 'index' ],
     },
     CylinderGeometry: {
-        relativePath: './extras/geometries/CylinderGeometry',
+        relativePath: './geometries/CylinderGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'radiusTop', 'radiusBottom', 'height', 'radiusSegments', 'heightSegments', 'openEnded', 'thetaStart', 'thetaLength' ],
         properties: {
@@ -1120,7 +1161,7 @@ module.exports = {
         },
     },
     DodecahedronGeometry: {
-        relativePath: './extras/geometries/DodecahedronGeometry',
+        relativePath: './geometries/DodecahedronGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'radius', 'detail' ],
         properties: {
@@ -1130,16 +1171,16 @@ module.exports = {
     },
     // TODO:
     EdgesGeometry: {
-        relativePath: './extras/geometries/EdgesGeometry',
+        relativePath: './geometries/EdgesGeometry',
         superClass: 'Geometry',
     },
     // TODO: 
     ExtrudeGeometry: {
-        relativePath: './extras/geometries/ExtrudeGeometry',
+        relativePath: './geometries/ExtrudeGeometry',
         superClass: 'Geometry',
     },
     IcosahedronGeometry: {
-        relativePath: './extras/geometries/IcosahedronGeometry',
+        relativePath: './geometries/IcosahedronGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'radius', 'detail' ],
         properties: {
@@ -1149,7 +1190,7 @@ module.exports = {
         propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     LatheBufferGeometry: {
-        relativePath: './extras/geometries/LatheBufferGeometry',
+        relativePath: './geometries/LatheGeometry',
         superClass: 'BufferGeometry',
         constructorArgs: [ 'points', 'segments', 'phiStart', 'phiLength' ],
         properties: {
@@ -1161,7 +1202,7 @@ module.exports = {
         propsDefinedByThree: [ 'attributes', 'index' ],
     },
     LatheGeometry: {
-        relativePath: './extras/geometries/LatheGeometry',
+        relativePath: './geometries/LatheGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'points', 'segments', 'phiStart', 'phiLength' ],
         properties: {
@@ -1173,7 +1214,7 @@ module.exports = {
         propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     OctahedronGeometry: {
-        relativePath: './extras/geometries/OctahedronGeometry',
+        relativePath: './geometries/OctahedronGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'radius', 'detail' ],
         properties: {
@@ -1183,7 +1224,7 @@ module.exports = {
         propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     ParametricGeometry: {
-        relativePath: './extras/geometries/ParametricGeometry',
+        relativePath: './geometries/ParametricGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'func', 'slices', 'stacks' ],
         properties: {
@@ -1194,7 +1235,7 @@ module.exports = {
         propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     PlaneBufferGeometry: {
-        relativePath: './extras/geometries/PlaneBufferGeometry',
+        relativePath: './geometries/PlaneGeometry',
         superClass: 'BufferGeometry',
         constructorArgs: [ 'width', 'height', 'widthSegments', 'heightSegments' ],
         properties: {
@@ -1206,7 +1247,7 @@ module.exports = {
         propsDefinedByThree: [ 'attributes', 'index' ],
     },
     PlaneGeometry: {
-        relativePath: './extras/geometries/PlaneGeometry',
+        relativePath: './geometries/PlaneGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'width', 'height', 'widthSegments', 'heightSegments' ],
         properties: {
@@ -1218,7 +1259,7 @@ module.exports = {
         propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     PolyhedronGeometry: {
-        relativePath: './extras/geometries/PolyhedronGeometry',
+        relativePath: './geometries/PolyhedronGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'vertices', 'faces', 'radius', 'detail' ],
         properties: {
@@ -1231,7 +1272,7 @@ module.exports = {
         propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     RingBufferGeometry: {
-        relativePath: './extras/geometries/RingBufferGeometry',
+        relativePath: './geometries/RingGeometry',
         superClass: 'BufferGeometry',
         constructorArgs: [ 'innerRadius', 'outerRadius', 'thetaSegments', 'phiSegments', 'thetaStart', 'thetaLength' ],
         properties: {
@@ -1245,7 +1286,7 @@ module.exports = {
         propsDefinedByThree: [ 'attributes', 'index' ],
     },
     RingGeometry: {
-        relativePath: './extras/geometries/RingGeometry',
+        relativePath: './geometries/RingGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'innerRadius', 'outerRadius', 'thetaSegments', 'phiSegments', 'thetaStart', 'thetaLength' ],
         properties: {
@@ -1260,7 +1301,7 @@ module.exports = {
     },
     // TODO: figure out options constructor args + UVGenerator
     ShapeGeometry: {
-        relativePath: './extras/geometries/ShapeGeometry',
+        relativePath: './geometries/ShapeGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'shapes' ],
         properties: {
@@ -1271,7 +1312,7 @@ module.exports = {
         }
     },
     SphereBufferGeometry: {
-        relativePath: './extras/geometries/SphereBufferGeometry',
+        relativePath: './geometries/SphereGeometry',
         superClass: 'BufferGeometry',
         constructorArgs: [ 'radius', 'widthSegments', 'heightSegments', 'phiStart', 'phiLength', 'thetaStart', 'thetaLength' ],
         properties: {
@@ -1286,7 +1327,7 @@ module.exports = {
         propsDefinedByThree: [ 'attributes', 'index' ],
     },
     SphereGeometry: {
-        relativePath: './extras/geometries/SphereGeometry',
+        relativePath: './geometries/SphereGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'radius', 'widthSegments', 'heightSegments', 'phiStart', 'phiLength', 'thetaStart', 'thetaLength' ],
         properties: {
@@ -1301,7 +1342,7 @@ module.exports = {
         propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     TetrahedronGeometry: {
-        relativePath: './extras/geometries/TetrahedronGeometry',
+        relativePath: './geometries/TetrahedronGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'radius', 'detail' ],
         properties: {
@@ -1311,11 +1352,11 @@ module.exports = {
         propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     TextGeometry: {
-        relativePath: './extras/geometries/TextGeometry',
+        relativePath: './geometries/TextGeometry',
         superClass: 'Geometry',
     },
     TorusBufferGeometry: {
-        relativePath: './extras/geometries/TorusBufferGeometry',
+        relativePath: './geometries/TorusGeometry',
         superClass: 'BufferGeometry',
         constructorArgs: [ 'radius', 'tube', 'radialSegments', 'tubularSegments', 'arc' ],
         properties: {
@@ -1328,7 +1369,7 @@ module.exports = {
         propsDefinedByThree: [ 'attributes', 'index' ],
     },
     TorusGeometry: {
-        relativePath: './extras/geometries/TorusGeometry',
+        relativePath: './geometries/TorusGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'radius', 'tube', 'radialSegments', 'tubularSegments', 'arc' ],
         properties: {
@@ -1341,7 +1382,7 @@ module.exports = {
         propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     TorusKnotBufferGeometry: {
-        relativePath: './extras/geometries/TorusKnotBufferGeometry',
+        relativePath: './geometries/TorusKnotGeometry',
         superClass: 'BufferGeometry',
         constructorArgs: [ 'radius', 'tube', 'tubularSegments', 'radialSegments', 'p', 'q' ],
         properties: {
@@ -1355,7 +1396,7 @@ module.exports = {
         propsDefinedByThree: [ 'attributes', 'index' ],
     },
     TorusKnotGeometry: {
-        relativePath: './extras/geometries/TorusKnotGeometry',
+        relativePath: './geometries/TorusKnotGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'radius', 'tube', 'tubularSegments', 'radialSegments', 'p', 'q' ],
         properties: {
@@ -1369,7 +1410,7 @@ module.exports = {
         propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     TubeGeometry: {
-        relativePath: './extras/geometries/TubeGeometry',
+        relativePath: './geometries/TubeGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'path', 'segments', 'radius', 'radiusSegments', 'close' ],
         properties: {
@@ -1382,7 +1423,7 @@ module.exports = {
         propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     WireframeGeometry: {
-        relativePath: './extras/geometries/WireframeGeometry',
+        relativePath: './geometries/WireframeGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'geometry' ],
         properties: {
