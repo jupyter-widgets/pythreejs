@@ -194,26 +194,29 @@ module.exports = {
                                'faceIndex', 'object', 'picked'],
     },
 
-    // BufferAttribute: {
-    //     relativePath: './core/BufferAttribute',
-    //     properties: {
-    //         uuid:        new Types.String(''),
-    //         array:       new Types.ArrayBuffer(),
-    //         itemSize:    new Types.Int(1),
-    //         count:       new Types.Int(0),
-    //         needsUpdate: new Types.Bool(false),
-    //         normalized:  new Types.Bool(true),
-    //         version:     new Types.Int(-1),
-    //     },
-    //     constructorArgs: [ 'array', 'itemSize', 'normalized' ],
-    //     propsDefinedByThree: [ 'uuid', 'count', 'version' ]
-    // },
+    BufferAttribute: {
+        relativePath: './core/BufferAttribute',
+        properties: {
+            array:       new Types.ArrayBuffer(),
+            dynamic:     new Types.Bool(false),
+            itemSize:    new Types.Int(1),
+            count:       new Types.Int(0),
+            needsUpdate: new Types.Bool(false),
+            normalized:  new Types.Bool(true),
+            version:     new Types.Int(-1),
+        },
+        constructorArgs: [ 'array', 'itemSize', 'normalized' ],
+        propsDefinedByThree: [ 'count', 'version' ]
+    },
     BufferGeometry: {
         relativePath: './core/BufferGeometry',
         properties: {
             name:       new Types.String(''),
             type:       new Types.String(''),
             attributes: new Types.BufferAttributeDict(),
+            position:   new Types.BufferAttribute(),
+            normal:     new Types.BufferAttribute(),
+            color:      new Types.BufferAttribute(),
             index:      new Types.BufferAttribute(),
         },
         propsDefinedByThree: [ 'type' ]
