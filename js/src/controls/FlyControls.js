@@ -44,11 +44,13 @@ var FlyControlsModel = FlyControlsAutogen.FlyControlsModel.extend({
     },
 
     update_controlled: function() {
-        var pos = this.controlled_view.obj.position;
-        var qat = this.controlled_view.obj.quaternion;
-        this.controlled_view.model.set('position', [pos.x, pos.y, pos.z]);
-        this.controlled_view.model.set('quaternion', [qat._x, qat._y, qat._z, qat._w]);
-        this.controlled_view.touch();
+        var controlling = this.get('controlling');
+        var pos = controlling.obj.position;
+        var qat = controlling.obj.quaternion;
+        controlling.set({
+            position: [pos.x, pos.y, pos.z],
+            quaternion: [qat._x, qat._y, qat._z, qat._w],
+        });
     },
 
 });

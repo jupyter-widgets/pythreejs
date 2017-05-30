@@ -108,6 +108,37 @@ module.exports = {
         relativePath: './controls/OrbitControls',
         superClass: 'Controls',
         properties: {
+            enabled: new Types.Bool(true),
+
+            minDistance: new Types.Float(0),
+            maxDistance: new Types.Float(Infinity),
+
+            minZoom: new Types.Float(0),
+            maxZoom: new Types.Float(Infinity),
+
+            minPolarAngle: new Types.Float(0), // radians
+            maxPolarAngle: new Types.Float(Math.PI), // radians
+
+            minAzimuthAngle: new Types.Float(-Infinity), // radians
+            maxAzimuthAngle: new Types.Float(Infinity), // radians
+
+            enableDamping: new Types.Bool(false),
+            dampingFactor: new Types.Float(0.25),
+
+            enableZoom: new Types.Bool(true),
+            zoomSpeed: new Types.Float(1.0),
+
+            enableRotate: new Types.Bool(true),
+            rotateSpeed: new Types.Float(1.0),
+
+            enablePan: new Types.Bool(true),
+            keyPanSpeed: new Types.Float(7.0), // pixels moved per arrow key push
+
+            autoRotate: new Types.Bool(false),
+            autoRotateSpeed: new Types.Float(2.0), // 30 seconds per round when fps is 60
+
+            enableKeys: new Types.Bool(true),
+
             target: new Types.Vector3(0, 0, 0),
         },
         constructorArgs: ['controlling'],
@@ -116,6 +147,23 @@ module.exports = {
         relativePath: './controls/TrackballControls',
         superClass: 'Controls',
         properties: {
+            enabled: new Types.Bool(true),
+
+            minDistance: new Types.Float(0),
+            maxDistance: new Types.Float(Infinity),
+
+            rotateSpeed: new Types.Float(1.0),
+            zoomSpeed: new Types.Float(1.2),
+            panSpeed: new Types.Float(0.3),
+
+            staticMoving: new Types.Bool(false),
+            dynamicDampingFactor: new Types.Float(0.2),
+
+            noRotate: new Types.Bool(false),
+            noZoom: new Types.Bool(false),
+            noPan: new Types.Bool(false),
+            noRoll: new Types.Bool(false),
+
             target: new Types.Vector3(0, 0, 0),
         },
     },

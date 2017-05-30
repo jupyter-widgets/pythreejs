@@ -13,6 +13,8 @@ _.extend(BaseType.prototype, {
         if (this.defaultValue === true) { return 'True'; }
         if (this.defaultValue === 0) { return '0'; }
         if (this.defaultValue === '') { return '""'; }
+        if (this.defaultValue === Infinity) { return "float('inf')"; }
+        if (this.defaultValue === -Infinity) { return "-float('inf')"; }
         if (!this.defaultValue) { return 'None'; }
 
         return JSON.stringify(this.defaultValue);
@@ -148,7 +150,7 @@ function Float(defaultValue) {
 }
 _.extend(Float.prototype, BaseType.prototype, {
     getTraitlet: function() {
-        return 'CFloat(' + this.defaultValue + ').tag(sync=True)';
+        return 'CFloat(' + this.getPythonDefaultValue() + ').tag(sync=True)';
     },
     // getPropArrayName: function() {
     //     return 'scalar_properties';
