@@ -450,6 +450,7 @@ module.exports = {
         superClass: 'Material',
         properties: {
             color:        new Types.Color('#ffffff'),
+            lights:       new Types.Bool(false),
             linewidth:    new Types.Float(1.0),
             linecap:      new Types.String('round'),
             linejoin:     new Types.String('round'),

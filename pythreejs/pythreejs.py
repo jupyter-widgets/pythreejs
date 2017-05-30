@@ -13,27 +13,19 @@ Another resource to understanding three.js decisions is the Udacity course on
 """
 
 from __future__ import absolute_import
-from math import pi, sqrt
 
-from ipywidgets import Widget, DOMWidget, widget_serialization, Color
-from traitlets import (Unicode, CInt, Instance, Enum, List, Tuple, Dict, Float,
-                       CFloat, Bool)
-from ._package import npm_pkg_name
-from .enums import (
-        Equations, BlendFactors, Side, Shading, Colors,
-        BlendingMode, Operations, MappingModes, WrappingModes, Filters,
-        DataTypes, PixelTypes, PixelFormats, CompressedTextureFormats,
-        Lines, Renderers)
-
-from .traits_numpy import array_serialization, shape_constraints
-from traittypes import Array
+from ipywidgets import Widget, widget_serialization, Color
+from traitlets import Unicode, CInt, Instance, Enum, List, CFloat, Bool
 import numpy as np
 
-from .cameras.Camera_autogen import Camera
+from ._package import npm_pkg_name
+from .enums import Shading, Colors
+
+
 from .core.Object3D import Object3D
 from .core.Geometry_autogen import Geometry
-from .extras.geometries.BoxGeometry_autogen import BoxGeometry
-from .extras.geometries.SphereGeometry_autogen import SphereGeometry
+from .geometries.BoxGeometry_autogen import BoxGeometry
+from .geometries.SphereGeometry_autogen import SphereGeometry
 from .lights.AmbientLight_autogen import AmbientLight
 from .lights.DirectionalLight_autogen import DirectionalLight
 from .materials.Material_autogen import Material
@@ -41,9 +33,9 @@ from .materials.MeshLambertMaterial_autogen import MeshLambertMaterial
 from .materials.SpriteMaterial_autogen import SpriteMaterial
 from .objects.Mesh_autogen import Mesh
 from .objects.Sprite_autogen import Sprite
-from .scenes.Scene_autogen import Scene
 from .textures.Texture_autogen import Texture
 from .textures.DataTexture_autogen import DataTexture
+from .textures.TextTexture_autogen import TextTexture
 
 
 def vector3(trait_type=CFloat, default=None, **kwargs):
