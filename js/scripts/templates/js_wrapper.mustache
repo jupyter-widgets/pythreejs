@@ -48,7 +48,7 @@ var {{ modelName }} = {{ superClass.modelName }}.extend({
         this.{{ prop.property_array_name }}.push('{{ propName }}');
         {{/if}}
         {{/each}}
-        
+
         {{#each props_created_by_three as |propName|}}
         this.props_created_by_three['{{propName}}'] = true;
         {{/each}}
@@ -79,7 +79,7 @@ var {{ modelName }} = {{ superClass.modelName }}.extend({
         {{ propName }}: { deserialize: widgets.unpack_models },
         {{/each}}
     }, {{ superClass.modelName }}.serializers),
-    
+
 }{{/if}});
 
 var {{ viewName }} = {{ superClass.viewName }}.extend({});
