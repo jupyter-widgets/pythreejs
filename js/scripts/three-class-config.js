@@ -253,7 +253,15 @@ module.exports = {
             name: new Types.String(''),
             type: new Types.String(''),
 
-            // TODO: arrays of geometry data
+            // By default Geometry does not sync geometry arrays
+            // Use the custom class PlainGeometry to access those arrays
+        },
+        propsDefinedByThree: [ 'type' ]
+    },
+    PlainGeometry: {
+        relativePath: './geometries/PlainGeometry',
+        superClass: 'Geometry',
+        properties: {
             vertices: new Types.VectorArray(),
             colors: new Types.ColorArray(),
             faces: new Types.FaceArray(),
@@ -264,7 +272,6 @@ module.exports = {
             skinWeights: new Types.Array(),
             skinIndices: new Types.Array(),
         },
-        propsDefinedByThree: [ 'type' ]
     },
     InstancedBufferAttribute: {
         relativePath: './core/InstancedBufferAttribute',
@@ -578,6 +585,7 @@ module.exports = {
             wireframe: new Types.Bool(false),
             wireframeLinewidth: new Types.Float(1.0),
             morphTargets: new Types.Bool(false),
+            lights:       new Types.Bool(false),
         },
         constructorArgs: [ 'parameters' ],
     },

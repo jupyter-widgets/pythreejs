@@ -894,6 +894,7 @@ var CUSTOM_CLASSES = [
     'controls/TrackballControls.js',
     'controls/FlyControls.js',
     'controls/Picker.js',
+    'geometries/PlainGeometry.js',
 ];
 
 function createJavascriptFiles() {
