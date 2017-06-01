@@ -257,7 +257,7 @@ module.exports = {
             vertices: new Types.VectorArray(),
             colors: new Types.ColorArray(),
             faces: new Types.FaceArray(),
-            faceVertexUVs: new Types.Array(),
+            faceVertexUvs: new Types.Array(),
             lineDistances: new Types.Array(),
             morphTargets: new Types.Array(),
             morphNormals: new Types.Array(),
@@ -466,6 +466,7 @@ module.exports = {
         superClass: 'Material',
         properties: {
             color:        new Types.Color('#ffffff'),
+            lights:       new Types.Bool(false),
             linewidth:    new Types.Float(1.0),
             scale:        new Types.Float(1.0),
             dashSize:     new Types.Float(3.0),
@@ -524,6 +525,7 @@ module.exports = {
             vertexColors:       new Types.Enum('Colors', 'NoColors'),
             skinning:           new Types.Bool(false),
             morphTargets:       new Types.Bool(false),
+            lights:             new Types.Bool(false),
         },
         constructorArgs: [ 'parameters' ],
     },
@@ -534,6 +536,7 @@ module.exports = {
             morphTargets:       new Types.Bool(false),
             wireframe:          new Types.Bool(false),
             wireframeLinewidth: new Types.Float(1.0),
+            lights:             new Types.Bool(false),
         },
         constructorArgs: [ 'parameters' ],
     },
@@ -896,6 +899,7 @@ module.exports = {
     },
     Line: {
         relativePath: './objects/Line',
+        superClass: 'Object3D',
         constructorArgs: [ 'geometry', 'material' ],
         properties: {
             material: new Types.ThreeType('Material'),
@@ -904,19 +908,13 @@ module.exports = {
     },
     LineLoop: {
         relativePath: './objects/LineLoop',
+        superClass: 'Line',
         constructorArgs: [ 'geometry', 'material' ],
-        properties: {
-            material: new Types.ThreeType('Material'),
-            geometry: new Types.ThreeType(['Geometry', 'BufferGeometry']),
-        }
     },
     LineSegments: {
         relativePath: './objects/LineSegments',
+        superClass: 'Line',
         constructorArgs: [ 'geometry', 'material' ],
-        properties: {
-            material: new Types.ThreeType('Material'),
-            geometry: new Types.ThreeType(['Geometry', 'BufferGeometry']),
-        }
     },
     Mesh: {
         relativePath: './objects/Mesh',
