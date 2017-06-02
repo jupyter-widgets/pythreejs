@@ -68,6 +68,40 @@ _.extend(ThreeType.prototype, BaseType.prototype, {
     },
 });
 
+function ForwardDeclaredThreeType(typeName, modulePath, options={}) {
+    ThreeType.call(this, typeName, options);
+    this.modulePath = modulePath;
+}
+_.extend(ForwardDeclaredThreeType.prototype, ThreeType.prototype, {
+    forwardType: function() {
+        return this.modulePath + '.' + this.typeName;
+    },
+    getTraitlet: function() {
+        var nullableStr = this.nullable ? 'True' : 'False';
+        // allow type unions
+        if (this.typeName instanceof Array) {
+            var instances = this.typeName.map(function(typeName) {
+                return '        Instance(\'' + this.forwardType() + '\', allow_none=' + nullableStr +')';
+            });
+            return 'Union([\n' + instances.join(',\n') + '\n    ]).tag(sync=True, **widget_serialization)';
+        }
+
+        if (this.typeName.toLowerCase() === 'this') {
+            return 'This().tag(sync=True, **widget_serialization)';
+        }
+
+        var ret = 'Instance(\'' + this.forwardType() + '\'';
+        if (this.args !== undefined) {
+            ret += ', args=' + this.args;
+        }
+        if (this.kwargs !== undefined) {
+            ret += ', kw=' + this.kwargs;
+        }
+        ret += ', allow_none=' + nullableStr +').tag(sync=True, **widget_serialization)';
+        return ret;
+    },
+});
+
 function InitializedThreeType(typeName, options={}) {
     ThreeType.call(this, typeName, options);
 }
@@ -391,6 +425,7 @@ _.extend(Matrix4.prototype, BaseType.prototype, {
 
 module.exports = {
     ThreeType: ThreeType,
+    ForwardDeclaredThreeType: ForwardDeclaredThreeType,
     InitializedThreeType: InitializedThreeType,
     ThreeTypeArray: ThreeTypeArray,
     ThreeTypeDict: ThreeTypeDict,
