@@ -1,0 +1,19 @@
+//
+// This file auto-generated with {{ generatorScriptName }}
+// Date: {{ now }}
+//
+
+{{#each categories as |category|}}
+
+var {{ category.key }} = {
+{{#each category.enums as |enum|}}
+    {{ enum.value }}: "{{ enum.key }}",
+{{/each}}
+};
+{{/each}}
+
+module.exports = {
+{{#each categories as |category|}}
+    {{ category.key }}: {{ category.key }},
+{{/each}}
+};

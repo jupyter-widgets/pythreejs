@@ -1,4 +1,8 @@
-// BLENDING EQUATIONS
+//
+// This file auto-generated with generate-enums.js
+// Date: Fri Jun 02 2017 16:44:47 GMT+0200 (W. Europe Daylight Time)
+//
+
 
 var Equations = {
     100: "AddEquation",
@@ -22,8 +26,6 @@ var BlendFactors = {
     210: "SrcAlphaSaturateFactor",
 };
 
-// MATERIAL CONSTANTS
-
 var Side = {
     0: "FrontSide",
     1: "BackSide",
@@ -38,7 +40,7 @@ var Shading = {
 var Colors = {
     0: "NoColors",
     1: "FaceColors",
-    2: "VertexColors",	
+    2: "VertexColors",
 };
 
 var BlendingMode = {
@@ -47,7 +49,7 @@ var BlendingMode = {
     2: "AdditiveBlending",
     3: "SubtractiveBlending",
     4: "MultiplyBlending",
-    5: "CustomBlending"
+    5: "CustomBlending",
 };
 
 var DepthMode = {
@@ -61,12 +63,10 @@ var DepthMode = {
     7: "NotEqualDepth",
 };
 
-// TEXTURE CONSTANTS
-
 var Operations = {
     0: "MultiplyOperation",
     1: "MixOperation",
-    2: "AddOperation",	
+    2: "AddOperation",
 };
 
 var MappingModes = {
@@ -77,7 +77,7 @@ var MappingModes = {
     304: "EquirectangularRefractionMapping",
     305: "SphericalReflectionMapping",
     306: "CubeUVReflectionMapping",
-    307: "CubeUVRefractionMapping",	
+    307: "CubeUVRefractionMapping",
 };
 
 var WrappingModes = {
@@ -103,25 +103,30 @@ var DataTypes = {
     1013: "IntType",
     1014: "UnsignedIntType",
     1015: "FloatType",
-    1025: "HalfFloatType",
+    1016: "HalfFloatType",
 };
 
 var PixelTypes = {
-    1016: "UnsignedShort4444Type",
-    1017: "UnsignedShort5551Type",
-    1018: "UnsignedShort565Type",
+    1017: "UnsignedShort4444Type",
+    1018: "UnsignedShort5551Type",
+    1019: "UnsignedShort565Type",
+    1020: "UnsignedInt248Type",
 };
 
 var PixelFormats = {
-    1019: "AlphaFormat",
-    1020: "RGBFormat",
-    1021: "RGBAFormat",
-    1022: "LuminanceFormat",
-    1023: "LuminanceAlphaFormat",
+    1021: "AlphaFormat",
+    1022: "RGBFormat",
+    1023: "RGBAFormat",
+    1024: "LuminanceFormat",
+    1025: "LuminanceAlphaFormat",
+    1026: "DepthFormat",
+    1027: "DepthStencilFormat",
 };
 
-// TODO: how to handle this?
-// RGBEFormat: THREE.RGBAFormat, //1024;
+var DepthFormats = {
+    1026: "DepthFormat",
+    1027: "DepthStencilFormat",
+};
 
 var CompressedTextureFormats = {
     2001: "RGB_S3TC_DXT1_Format",
@@ -132,22 +137,33 @@ var CompressedTextureFormats = {
     2101: "RGB_PVRTC_2BPPV1_Format",
     2102: "RGBA_PVRTC_4BPPV1_Format",
     2103: "RGBA_PVRTC_2BPPV1_Format",
+    2151: "RGB_ETC1_Format",
 };
-
-// Texture Encodings
 
 var TextureEncodings = {
     3000: "LinearEncoding",
     3001: "sRGBEncoding",
-    3007: "GammaEncoding",
     3002: "RGBEEncoding",
     3003: "LogLuvEncoding",
     3004: "RGBM7Encoding",
     3005: "RGBM16Encoding",
     3006: "RGBDEncoding",
+    3007: "GammaEncoding",
 };
 
-var ShadowMaps = {
+var CullFaceModes = {
+    0: "CullFaceNone",
+    1: "CullFaceBack",
+    2: "CullFaceFront",
+    3: "CullFaceFrontBack",
+};
+
+var FrontFaceDirection = {
+    0: "FrontFaceDirectionCW",
+    1: "FrontFaceDirectionCCW",
+};
+
+var ShadowTypes = {
     0: "BasicShadowMap",
     1: "PCFShadowMap",
     2: "PCFSoftShadowMap",
@@ -159,6 +175,30 @@ var ToneMappings = {
     2: "ReinhardToneMapping",
     3: "Uncharted2ToneMapping",
     4: "CineonToneMapping",
+};
+
+var LoopModes = {
+    2200: "LoopOnce",
+    2201: "LoopRepeat",
+    2202: "LoopPingPong",
+};
+
+var InterpolationModes = {
+    2300: "InterpolateDiscrete",
+    2301: "InterpolateLinear",
+    2302: "InterpolateSmooth",
+};
+
+var EndingModes = {
+    2400: "ZeroCurvatureEnding",
+    2401: "ZeroSlopeEnding",
+    2402: "WrapAroundEnding",
+};
+
+var DrawModes = {
+    0: "TrianglesDrawMode",
+    1: "TriangleStripDrawMode",
+    2: "TriangleFanDrawMode",
 };
 
 module.exports = {
@@ -176,8 +216,15 @@ module.exports = {
     DataTypes: DataTypes,
     PixelTypes: PixelTypes,
     PixelFormats: PixelFormats,
+    DepthFormats: DepthFormats,
     CompressedTextureFormats: CompressedTextureFormats,
     TextureEncodings: TextureEncodings,
-    ShadowMaps: ShadowMaps,
+    CullFaceModes: CullFaceModes,
+    FrontFaceDirection: FrontFaceDirection,
+    ShadowTypes: ShadowTypes,
     ToneMappings: ToneMappings,
+    LoopModes: LoopModes,
+    InterpolationModes: InterpolationModes,
+    EndingModes: EndingModes,
+    DrawModes: DrawModes,
 };

@@ -11,6 +11,7 @@
   },
   "scripts": {
     "clean": "node ./scripts/clean-generated-files.js",
+    "enums": "node ./scripts/generate-enums.js",
     "autogen": "node ./scripts/generate-wrappers.js",
     "build": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1"

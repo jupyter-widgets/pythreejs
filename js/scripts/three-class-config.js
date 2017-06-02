@@ -931,6 +931,7 @@ module.exports = {
         properties: {
             material: new Types.ThreeType('Material', {allowNull: false}),
             geometry: new Types.ThreeType(['Geometry', 'BufferGeometry'], {allowNull: false}),
+            drawMode: new Types.Enum('DrawModes', 'TrianglesDrawMode'),
         }
     },
     Points: {
@@ -1602,7 +1603,7 @@ module.exports = {
         relativePath: './renderers/webgl/WebGLShadowMap',
         properties: {
             enabled: new Types.Bool(false),
-            type: new Types.Enum('ShadowMaps', 'PCFShadowMap'),
+            type: new Types.Enum('ShadowTypes', 'PCFShadowMap'),
             renderReverseSided: new Types.Bool(false),
             renderSingleSided: new Types.Bool(true),
         }
