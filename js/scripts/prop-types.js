@@ -127,9 +127,6 @@ _.extend(Bool.prototype, BaseType.prototype, {
         var pyBoolValue = this.defaultValue ? 'True' : 'False';
         return 'Bool(' + pyBoolValue + ').tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'scalar_properties';
-    // },
 });
 
 function Int(defaultValue) {
@@ -139,9 +136,6 @@ _.extend(Int.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'CInt(' + this.defaultValue + ').tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'scalar_properties';
-    // },
 
 });
 
@@ -152,9 +146,6 @@ _.extend(Float.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'CFloat(' + this.getPythonDefaultValue() + ').tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'scalar_properties';
-    // },
 
 });
 
@@ -165,9 +156,6 @@ _.extend(StringType.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Unicode("' + this.defaultValue + '").tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'scalar_properties';
-    // },
 
 });
 
@@ -179,9 +167,6 @@ _.extend(Enum.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Enum(' + this.enumTypeName + ', "' + this.defaultValue + '").tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'enum_properties';
-    // },
     getPropertyConverterFn: function() {
         return 'convertEnum';
     },
@@ -194,9 +179,6 @@ _.extend(Color.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Unicode(' + JSON.stringify(this.defaultValue) + ').tag(sync=True)'
     },
-    // getPropArrayName: function() {
-    //     return 'color_properties';
-    // }
     getPropertyConverterFn: function() {
         return 'convertColor';
     },
@@ -209,9 +191,6 @@ _.extend(ColorArray.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'List(trait=List()).tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'color_properties';
-    // }
     getPropertyConverterFn: function() {
         return 'convertColorArray';
     },
@@ -227,9 +206,6 @@ _.extend(ArrayType.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'List().tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'array_properties';
-    // }
     getPropertyAssignmentFn: function() {
         return 'assignArray';
     },
@@ -244,9 +220,6 @@ _.extend(ArrayBufferType.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'List().tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'array_properties';
-    // },
     getPropertyConverterFn: function() {
         return 'convertArrayBuffer';
     },
@@ -259,9 +232,6 @@ _.extend(DictType.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Dict().tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'dict_properties';
-    // }
 });
 
 function FunctionType(fn) {
@@ -271,9 +241,6 @@ _.extend(FunctionType.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return "Unicode('" + this.defaultValue.toString() + "').tag(sync=True)";
     },
-    // getPropArrayName: function() {
-    //     return 'function_properties';
-    // },
     getJSPropertyValue: function() {
         return this.defaultValue.toString();
     },
@@ -289,9 +256,6 @@ _.extend(Vector2.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Vector2(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'vector_properties';
-    // },
     getPropertyConverterFn: function() {
         return 'convertVector';
     },
@@ -307,9 +271,6 @@ _.extend(Vector3.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Vector3(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'vector_properties';
-    // },
     getPropertyConverterFn: function() {
         return 'convertVector';
     },
@@ -325,9 +286,6 @@ _.extend(Vector4.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Vector4(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'vector_properties';
-    // },
     getPropertyConverterFn: function() {
         return 'convertVector';
     },
@@ -343,9 +301,6 @@ _.extend(VectorArray.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'List(trait=List()).tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'array_properties';
-    // },
     getPropertyConverterFn: function() {
         return 'convertVectorArray';
     },
@@ -361,9 +316,6 @@ _.extend(FaceArray.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Tuple(trait=Face3()).tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'array_properties';
-    // },
     getPropertyConverterFn: function() {
         return 'convertFaceArray';
     },
@@ -379,9 +331,6 @@ _.extend(BufferAttribute.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'BufferAttribute(default_value=None, allow_none=True).tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'array_properties';
-    // },
     getPropertyConverterFn: function() {
         return 'convertBufferAttribute';
     },
@@ -394,9 +343,6 @@ _.extend(BufferAttributeDict.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Tuple().tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'array_properties';
-    // },
     getPropertyConverterFn: function() {
         return 'convertBufferAttributeDict';
     },
@@ -414,9 +360,6 @@ _.extend(Matrix3.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Matrix3(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'vector_properties';
-    // },
     getPropertyConverterFn: function() {
         return 'convertMatrix';
     },
@@ -437,9 +380,6 @@ _.extend(Matrix4.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Matrix4(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'vector_properties';
-    // },
     getPropertyConverterFn: function() {
         return 'convertMatrix';
     },
