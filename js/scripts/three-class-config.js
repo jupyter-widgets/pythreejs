@@ -12,13 +12,9 @@ module.exports = {
 
     _defaults: require('./three-class-config-defaults'),
 
-    // Three_Legacy: {
-    //     relativePath: './Three.Legacy',
-    // },
-    // Three: {
-    //     relativePath: './Three',
-    // },
-
+    AnimationAction: {
+        relativePath: './animation/AnimationAction',
+    },
     AnimationClip: {
         relativePath: './animation/AnimationClip',
     },
@@ -360,6 +356,9 @@ module.exports = {
         constructorArgs: [ 'color', 'intensity' ],
         propsDefinedByThree: [ 'target' ]
     },
+    DirectionalLightShadow: {
+        relativePath: './lights/DirectionalLightShadow',
+    },
     HemisphereLight: {
         relativePath: './lights/HemisphereLight',
         superClass: 'Light',
@@ -392,6 +391,10 @@ module.exports = {
         },
         constructorArgs: [ 'color', 'intensity', 'distance', 'decay' ],
     },
+    RectAreaLight: {
+        relativePath: './lights/RectAreaLight',
+        superClass: 'Light',
+    },
     SpotLight: {
         relativePath: './lights/SpotLight',
         superClass: 'Light',
@@ -407,8 +410,14 @@ module.exports = {
         constructorArgs: [ 'color', 'intensity', 'distance', 'angle', 'penumbra', 'decay' ],
         propsDefinedByThree: [ 'target' ]
     },
+    SpotLightShadow: {
+        relativePath: './lights/SpotLightShadow',
+    },
     AnimationLoader: {
         relativePath: './loaders/AnimationLoader',
+    },
+    AudioLoader: {
+        relativePath: './loaders/AudioLoader',
     },
     BinaryTextureLoader: {
         relativePath: './loaders/BinaryTextureLoader',
@@ -424,6 +433,12 @@ module.exports = {
     },
     CubeTextureLoader: {
         relativePath: './loaders/CubeTextureLoader',
+    },
+    DataTextureLoader: {
+        relativePath: './loaders/DataTextureLoader',
+    },
+    FileLoader: {
+        relativePath: './laoders/FileLoader',
     },
     FontLoader: {
         relativePath: './loaders/FontLoader',
@@ -682,6 +697,10 @@ module.exports = {
         },
         constructorArgs: [ 'parameters' ],
     },
+    MeshToonMaterial: {
+        relativePath: './materials/MeshToonMaterial',
+        superClass: 'Material',
+    },
     MultiMaterial: {
         relativePath: './materials/MultiMaterial',
         properties: {
@@ -718,6 +737,10 @@ module.exports = {
             fragmentShader: new Types.String(''),
         },
         constructorArgs: [ 'parameters' ],
+    },
+    ShadowMaterial: {
+        relativePath: './materials/ShadowMaterial',
+        superClass: 'Material',
     },
     SpriteMaterial: {
         relativePath: './materials/SpriteMaterial',
@@ -1031,6 +1054,10 @@ module.exports = {
         },
         constructorArgs: [ 'data', 'width', 'height', 'format', 'type', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter', 'anisotropy' ],
     },
+    DepthTexture: {
+        relativePath: './textures/DepthTexture',
+        superClass: 'Texture',
+    },
     ImageTexture: {
         relativePath: './textures/ImageTexture',
         superClass: 'Texture',
@@ -1086,6 +1113,9 @@ module.exports = {
     },
     Shape: {
         relativePath: './extras/core/Shape',
+    },
+    ShapePath: {
+        relativePath: './extras/core/ShapePath',
     },
     ArcCurve: {
         relativePath: './extras/curves/ArcCurve',
@@ -1523,6 +1553,12 @@ module.exports = {
     },
     PointLightHelper: {
         relativePath: './extras/helpers/PointLightHelper',
+    },
+    PolarGridHelper: {
+        relativePath: './helpers/PolarGridHelper',
+    },
+    RectAreaLightHelper: {
+        relativePath: './helpers/RectAreaLightHelper',
     },
     SkeletonHelper: {
         relativePath: './extras/helpers/SkeletonHelper',
