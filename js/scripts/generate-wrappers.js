@@ -226,12 +226,18 @@ function mapPromiseFnOverThreeModules(mapFn) {
             '**/Three.Legacy.js',
             '**/polyfills.js',
             '**/utils.js',
+            '**/constants.js',
+            '**/animation/KeyframeTrackConstructor.js',
+            '**/animation/KeyframeTrackPrototype.js',
+            '**/audio/AudioContext.js',
             '**/geometries/Geometries.js',
             '**/materials/Materials.js',
             '**/renderers/WebGLRenderer.js',
             '**/renderers/WebGL2Renderer.js',
             '**/renderers/webgl/**',
-            '**/renderers/shaders/**'
+            '**/renderers/shaders/**',
+            '**/extras/core/Interpolations.js',
+            '**/extras/core/PathPrototype.js',
         ],
     });
 }
