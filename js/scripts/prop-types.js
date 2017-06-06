@@ -259,8 +259,8 @@ _.extend(ArrayBufferType.prototype, BaseType.prototype, {
     },
 });
 
-function DictType() {
-    this.defaultValue = {};
+function DictType(defaultValue={}) {
+    this.defaultValue = defaultValue;
 }
 _.extend(DictType.prototype, BaseType.prototype, {
     getTraitlet: function() {
