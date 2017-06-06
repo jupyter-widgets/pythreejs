@@ -1057,6 +1057,18 @@ module.exports = {
     DepthTexture: {
         relativePath: './textures/DepthTexture',
         superClass: 'Texture',
+        properties: {
+            // this.image = { width: width, height: height };
+            width:           new Types.Int(0),
+            height:          new Types.Int(0),
+            format:          new Types.Enum('DepthFormats', 'DepthFormat'), // narrowed type
+            type:            new Types.Enum('DataTypes', 'UnsignedShortType'), // override default
+            minFilter:       new Types.Enum('Filters', 'NearestFilter'), // override default
+            magFilter:       new Types.Enum('Filters', 'NearestFilter'), // override default
+            flipY:           new Types.Bool(false), // override default
+            generateMipmaps: new Types.Bool(false),
+        },
+        constructorArgs: ['width', 'height', 'type', 'wrapS', 'wrapT', 'magFilter', 'minFilter', 'anisotropy', 'format']
     },
     ImageTexture: {
         relativePath: './textures/ImageTexture',
