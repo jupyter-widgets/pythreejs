@@ -1522,37 +1522,37 @@ module.exports = {
         propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     ArrowHelper: {
-        relativePath: './extras/helpers/ArrowHelper',
+        relativePath: './helpers/ArrowHelper',
     },
     AxisHelper: {
-        relativePath: './extras/helpers/AxisHelper',
+        relativePath: './helpers/AxisHelper',
     },
     BoundingBoxHelper: {
-        relativePath: './extras/helpers/BoundingBoxHelper',
+        relativePath: './helpers/BoundingBoxHelper',
     },
     BoxHelper: {
-        relativePath: './extras/helpers/BoxHelper',
+        relativePath: './helpers/BoxHelper',
     },
     CameraHelper: {
-        relativePath: './extras/helpers/CameraHelper',
+        relativePath: './helpers/CameraHelper',
     },
     DirectionalLightHelper: {
-        relativePath: './extras/helpers/DirectionalLightHelper',
+        relativePath: './helpers/DirectionalLightHelper',
     },
     EdgesHelper: {
-        relativePath: './extras/helpers/EdgesHelper',
+        relativePath: './helpers/EdgesHelper',
     },
     FaceNormalsHelper: {
-        relativePath: './extras/helpers/FaceNormalsHelper',
+        relativePath: './helpers/FaceNormalsHelper',
     },
     GridHelper: {
-        relativePath: './extras/helpers/GridHelper',
+        relativePath: './helpers/GridHelper',
     },
     HemisphereLightHelper: {
-        relativePath: './extras/helpers/HemisphereLightHelper',
+        relativePath: './helpers/HemisphereLightHelper',
     },
     PointLightHelper: {
-        relativePath: './extras/helpers/PointLightHelper',
+        relativePath: './helpers/PointLightHelper',
     },
     PolarGridHelper: {
         relativePath: './helpers/PolarGridHelper',
@@ -1561,16 +1561,16 @@ module.exports = {
         relativePath: './helpers/RectAreaLightHelper',
     },
     SkeletonHelper: {
-        relativePath: './extras/helpers/SkeletonHelper',
+        relativePath: './helpers/SkeletonHelper',
     },
     SpotLightHelper: {
-        relativePath: './extras/helpers/SpotLightHelper',
+        relativePath: './helpers/SpotLightHelper',
     },
     VertexNormalsHelper: {
-        relativePath: './extras/helpers/VertexNormalsHelper',
+        relativePath: './helpers/VertexNormalsHelper',
     },
     WireframeHelper: {
-        relativePath: './extras/helpers/WireframeHelper',
+        relativePath: './helpers/WireframeHelper',
     },
     ImmediateRenderObject: {
         relativePath: './extras/objects/ImmediateRenderObject',
