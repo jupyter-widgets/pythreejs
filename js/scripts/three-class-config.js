@@ -500,13 +500,19 @@ module.exports = {
         properties: {
             alphaTest:              new Types.Float(0.0),
             blendDst:               new Types.Enum('BlendFactors', 'OneMinusSrcAlphaFactor'),
+            //blendDstAlpha:          new Types.Float(null),
             blending:               new Types.Enum('BlendingMode', 'NormalBlending'),
             blendSrc:               new Types.Enum('BlendFactors', 'SrcAlphaFactor'),
+            //blendSrcAlpha:          new Types.Float(null),
             blendEquation:          new Types.Enum('Equations', 'AddEquation'),
+            //blendEquationAlpha:     new Types.Float(null),
             clipIntersection:       new Types.Bool(false),
-            clippingPlanes:         new Types.ThreeTypeArray('Plane'),
+            //clippingPlanes:         new Types.ThreeTypeArray('Plane'),  // TODO: Should default to null
             clipShadows:            new Types.Bool(false),
             colorWrite:             new Types.Bool(true),
+            //customDepthMaterial:    new Types.ForwardDeclaredThreeType('MeshDepthMaterial', 'pythreejs', {allowNull: true}),
+            //customDistanceMaterial: new Types.ForwardDeclaredThreeType('MeshDepthMaterial', 'pythreejs', {allowNull: true}),
+            //defines:                new Types.Dict(undefined),
             depthFunc:              new Types.Enum('DepthMode', 'LessEqualDepth'),
             depthTest:              new Types.Bool(true),
             depthWrite:             new Types.Bool(true),
@@ -517,6 +523,7 @@ module.exports = {
             polygonOffset:          new Types.Bool(false),
             polygonOffsetFactor:    new Types.Float(0),
             polygonOffsetUnits:     new Types.Float(0),
+            //precision:              new Types.String('lowp'),  // TODO: Needs to be undefined on JS side!
             premultipliedAlpha:     new Types.Bool(false),
             dithering:              new Types.Bool(false),
             shading:                new Types.Enum('Shading', 'SmoothShading'),
@@ -1294,7 +1301,7 @@ module.exports = {
         relativePath: './geometries/EdgesGeometry',
         superClass: 'Geometry',
     },
-    // TODO: 
+    // TODO:
     ExtrudeGeometry: {
         relativePath: './geometries/ExtrudeGeometry',
         superClass: 'Geometry',

@@ -14,6 +14,19 @@ var ThreeCache = {
     byName: {}
 };
 
+function extendedLog( object3D ) {
+    object3D.traverse(function(obj) {
+        var s = '|___';
+        var obj2 = obj;
+
+        while (obj2.parent !== null) {
+            s = '\t' + s;
+            obj2 = obj2.parent;
+        }
+        console.log(s + obj.name + ' <' + obj.type + '>');
+    });
+};
+
 var RenderableModel = widgets.DOMWidgetModel.extend({
 
     defaults: function() {
@@ -570,7 +583,7 @@ var ThreeModel = RenderableModel.extend({
     },
 
     onExecThreeObjMethod: function(methodName, args, buffers) {
-        console.log('execThreeObjMethod: ' + methodName + 
+        console.log('execThreeObjMethod: ' + methodName +
             '(' + args.map(JSON.stringify).join(',') + ')');
 
         if (!(methodName in this.obj)) {
@@ -721,7 +734,7 @@ var ThreeModel = RenderableModel.extend({
                 throw new Error('invalid mapper name: ' + mapperName);
             }
 
-            mapperFn.bind(this)();
+            mapperFn.bind(this)(dataKey);
         }, this);
 
         this.save_changes();
