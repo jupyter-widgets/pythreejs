@@ -1,8 +1,6 @@
 var _ = require('underscore');
 var DataTextureBase = require('./DataTexture.autogen');
 
-var DataTextureView = DataTextureBase.DataTextureView.extend({});
-
 var DataTextureModel = DataTextureBase.DataTextureModel.extend({
 
     createPropertiesArrays: function() {
@@ -12,7 +10,7 @@ var DataTextureModel = DataTextureBase.DataTextureModel.extend({
         this.property_mappers['DataTextureData'] = 'mapDataTextureData';
     },
 
-	
+
     mapDataTextureDataModelToThree: function() {
     	var data = new Float32Array(this.get('data'));
     	var width = this.get('width');
@@ -38,5 +36,4 @@ var DataTextureModel = DataTextureBase.DataTextureModel.extend({
 
 module.exports = {
     DataTextureModel: DataTextureModel,
-    DataTextureView: DataTextureView,
 };

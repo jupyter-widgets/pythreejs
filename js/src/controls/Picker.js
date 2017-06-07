@@ -4,6 +4,7 @@ var PickerAutogen = require('./Picker.autogen');
 
 var PickerModel = PickerAutogen.PickerModel.extend({});
 
+/*
 var PickerView = PickerAutogen.PickerView.extend({
     render: function() {
         var that = this;
@@ -70,8 +71,9 @@ var PickerView = PickerAutogen.PickerView.extend({
         }
     }
 });
+*/
 
 module.exports = {
     PickerModel: PickerModel,
-    PickerView: PickerView,
+    //PickerView: PickerView,
 };

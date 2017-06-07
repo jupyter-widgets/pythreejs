@@ -1,8 +1,6 @@
 var _ = require('underscore');
 var DepthTextureBase = require('./DepthTexture.autogen');
 
-var DepthTextureView = DepthTextureBase.DepthTextureView.extend({});
-
 var DepthTextureModel = DepthTextureBase.DepthTextureModel.extend({
 
     createPropertiesArrays: function() {
@@ -35,5 +33,4 @@ var DepthTextureModel = DepthTextureBase.DepthTextureModel.extend({
 
 module.exports = {
     DepthTextureModel: DepthTextureModel,
-    DepthTextureView: DepthTextureView,
 };

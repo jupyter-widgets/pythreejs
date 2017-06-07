@@ -2,10 +2,6 @@ var _ = require('underscore');
 require("../examples/controls/OrbitControls.js");
 var OrbitControlsAutogen = require('./OrbitControls.autogen');
 
-var OrbitControlsView = OrbitControlsAutogen.OrbitControlsView.extend({
-
-});
-
 
 var OrbitControlsModel = OrbitControlsAutogen.OrbitControlsModel.extend({
 
@@ -27,7 +23,7 @@ var OrbitControlsModel = OrbitControlsAutogen.OrbitControlsModel.extend({
     },
 
     update_controlled: function() {
-        // Since OrbitControlsView changes the position of the object, we
+        // Since OrbitControls changes the position of the object, we
         // update the position when we've stopped moving the object
         // it's probably prohibitive to update it in real-time
         var controlling = this.get('controlling');
@@ -43,5 +39,4 @@ var OrbitControlsModel = OrbitControlsAutogen.OrbitControlsModel.extend({
 
 module.exports = {
     OrbitControlsModel: OrbitControlsModel,
-    OrbitControlsView: OrbitControlsView,
 };

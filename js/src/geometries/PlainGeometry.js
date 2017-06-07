@@ -7,7 +7,6 @@ var _ = require('underscore');
 var widgets = require('jupyter-js-widgets');
 
 var AutogenPlainGeometryModel = require('../geometries/PlainGeometry').PlainGeometryModel;
-var AutogenPlainGeometryView = require('../geometries/PlainGeometry').PlainGeometryView;
 
 
 var PlainGeometryModel = AutogenPlainGeometryModel.extend({
@@ -21,9 +20,6 @@ var PlainGeometryModel = AutogenPlainGeometryModel.extend({
 
 });
 
-var PlainGeometryView = AutogenPlainGeometryView.extend({});
-
 module.exports = {
-    PlainGeometryView: PlainGeometryView,
     PlainGeometryModel: PlainGeometryModel,
 };

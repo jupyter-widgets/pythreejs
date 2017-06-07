@@ -1,5 +1,7 @@
-from ipywidgets import DOMWidget
-from traitlets import Unicode, CInt, Bool
+"""
+"""
+from ipywidgets import DOMWidget, Widget, widget_serialization
+from traitlets import Unicode, CInt, Bool, Instance
 from .._package import npm_pkg_name
 
 
@@ -34,10 +36,8 @@ class RenderableWidget(DOMWidget):
         self.send(content)
 
 
-class ThreeWidget(RenderableWidget):
-    # renderer properties
-    _flat = Bool(False).tag(sync=True)
-    _wire = Bool(False).tag(sync=True)
+class ThreeWidget(Widget):
+    _model_module = Unicode(npm_pkg_name).tag(sync=True)
 
     def __init__(self, **kwargs):
         super(ThreeWidget, self).__init__(**kwargs)
@@ -57,3 +57,20 @@ class ThreeWidget(RenderableWidget):
 
     def on_ret_val(self, method_name, ret_val):
         self.log('%s() -> %s' % (method_name, ret_val))
+
+    def _ipython_display_(self, **kwargs):
+        from IPython.display import display
+        return display(PreviewWidget(self))
+
+
+class PreviewWidget(RenderableWidget):
+    # renderer properties
+    _flat = Bool(False).tag(sync=True)
+    _wire = Bool(False).tag(sync=True)
+    _model_name = Unicode('PreviewModel').tag(sync=True)
+    _view_name = Unicode('PreviewView').tag(sync=True)
+
+    child = Instance(ThreeWidget).tag(sync=True, **widget_serialization)
+
+    def __init__(self, child, **kwargs):
+        super(PreviewWidget, self).__init__(child=child, **kwargs)

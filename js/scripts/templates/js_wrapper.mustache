@@ -7,11 +7,9 @@ var _ = require('underscore');
 var widgets = require('jupyter-js-widgets');
 
 var {{ superClass.modelName }} = require('{{ superClass.requirePath }}').{{ superClass.modelName }};
-var {{ superClass.viewName }} = require('{{ superClass.requirePath }}').{{ superClass.viewName }};
 
 {{#each dependencies as |dep depName|}}
 var {{ dep.modelName }} = require('{{ dep.requirePath }}').{{ dep.modelName }};
-var {{ dep.viewName }} = require('{{ dep.requirePath }}').{{ dep.viewName }};
 {{/each}}
 
 var {{ modelName }} = {{ superClass.modelName }}.extend({
@@ -19,7 +17,6 @@ var {{ modelName }} = {{ superClass.modelName }}.extend({
     defaults: function() {
         return _.extend({{ superClass.modelName }}.prototype.defaults.call(this), {
 
-            _view_name: '{{ viewName }}',
             _model_name: '{{ modelName }}',
 
             {{#each properties as |prop propName|}}
@@ -82,9 +79,6 @@ var {{ modelName }} = {{ superClass.modelName }}.extend({
 
 }{{/if}});
 
-var {{ viewName }} = {{ superClass.viewName }}.extend({});
-
 module.exports = {
-    {{ viewName }}: {{ viewName }},
     {{ modelName }}: {{ modelName }},
 };

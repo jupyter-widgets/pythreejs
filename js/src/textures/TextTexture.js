@@ -2,8 +2,6 @@ var _ = require('underscore');
 var Promise = require('bluebird');
 var TextTextureBase = require('./TextTexture.autogen');
 
-var TextTextureView = TextTextureBase.TextTextureView.extend({});
-
 var TextTextureModel = TextTextureBase.TextTextureModel.extend({
 
     constructThreeObjectAsync: function() {
@@ -48,5 +46,4 @@ var TextTextureModel = TextTextureBase.TextTextureModel.extend({
 
 module.exports = {
     TextTextureModel: TextTextureModel,
-    TextTextureView: TextTextureView,
 };

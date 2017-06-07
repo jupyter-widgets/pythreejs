@@ -57,5 +57,4 @@ var FlyControlsModel = FlyControlsAutogen.FlyControlsModel.extend({
 
 module.exports = {
     FlyControlsModel: FlyControlsModel,
-    FlyControlsView: FlyControlsAutogen.FlyControlsView,
 };

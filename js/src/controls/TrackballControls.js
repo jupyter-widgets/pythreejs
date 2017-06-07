@@ -2,10 +2,6 @@ var _ = require('underscore');
 require("../examples/controls/TrackballControls.js");
 var TrackballControlsAutogen = require('./TrackballControls.autogen');
 
-var TrackballControlsView = TrackballControlsAutogen.TrackballControlsView.extend({
-
-});
-
 var TrackballControlsModel = TrackballControlsAutogen.TrackballControlsModel.extend({
 
     constructThreeObject: function() {
@@ -41,5 +37,4 @@ var TrackballControlsModel = TrackballControlsAutogen.TrackballControlsModel.ext
 
 module.exports = {
     TrackballControlsModel: TrackballControlsModel,
-    TrackballControlsView: TrackballControlsView,
 };

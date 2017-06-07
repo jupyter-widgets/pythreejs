@@ -68,8 +68,6 @@ var RenderableView = widgets.DOMWidgetView.extend({
     },
 
     doRender: function() {
-        var obj = this.model.obj;
-
         this.el.className = "jupyter-widget jupyter-threejs";
 
         this.acquireRenderer();
@@ -234,7 +232,8 @@ var RenderableView = widgets.DOMWidgetView.extend({
     }
 });
 
-var ThreeView = RenderableView.extend({
+
+var PreviewView = RenderableView.extend({
 
     render: function() {
         // ensure that model is fully initialized before attempting render
@@ -243,7 +242,7 @@ var ThreeView = RenderableView.extend({
 
     constructScene: function() {
 
-        var obj = this.model.obj;
+        var obj = this.model.get('child').obj;
 
         this.clearScene();
         this.scene.add(this.camera);
@@ -302,9 +301,9 @@ var ThreeView = RenderableView.extend({
 
     update: function() {
 
-        widgets.WidgetView.prototype.update.apply(this, arguments);
+        RenderableView.prototype.update.apply(this, arguments);
 
-        if (this.model.obj) {
+        if (this.model.get('child').obj) {
             this.constructScene();
         }
         this.renderScene();
@@ -323,7 +322,7 @@ var ThreeView = RenderableView.extend({
             this.updateSize();
             this.enableControls();
 
-            if (this.model.obj) {
+            if (this.model.get('child').obj) {
                 this.constructScene();
             }
         }
@@ -362,7 +361,7 @@ var ThreeView = RenderableView.extend({
         this.setupControls();
         this.enableControls();
 
-        if (this.model.obj) {
+        if (this.model.get('child').obj) {
             this.constructScene();
             this.renderScene();
         }
@@ -370,20 +369,57 @@ var ThreeView = RenderableView.extend({
 
 });
 
-var ThreeModel = RenderableModel.extend({
+
+var PreviewModel = RenderableModel.extend({
 
     defaults: function() {
         return _.extend(RenderableModel.prototype.defaults.call(this), {
-            _model_name: 'ThreeModel',
-            _view_name: 'ThreeView',
+            _model_name: 'PreviewModel',
+            _view_name: 'PreviewView',
 
             _flat: false,
             _wire: false,
+            child: null,
         });
     },
 
     initialize: function(attributes, options) {
         RenderableModel.prototype.initialize.apply(this, arguments);
+
+        this.initPromise = this.get('child').initPromise.bind(this).then(function() {
+            this.setupListeners();
+        });
+    },
+
+    setupListeners: function() {
+
+        this.get('child').on('change', this.onChildChange, this);
+
+    },
+
+    onChange: function(model, options) {
+        this.trigger('rerender', this, {});
+    },
+
+}, {
+
+    serializers: _.extend({
+        child: { deserialize: widgets.unpack_models },
+    }, RenderableModel.serializers),
+
+});
+
+
+var ThreeModel = widgets.WidgetModel.extend({
+
+    defaults: function() {
+        return _.extend(widgets.WidgetModel.prototype.defaults.call(this), {
+            _model_name: 'ThreeModel',
+        });
+    },
+
+    initialize: function(attributes, options) {
+        widgets.WidgetModel.prototype.initialize.apply(this, arguments);
 
         this.createPropertiesArrays();
 
@@ -1039,15 +1075,12 @@ var ThreeModel = RenderableModel.extend({
         }, this);
     },
 
-}, {
-
-    serializers: _.extend({}, widgets.DOMWidgetModel.serializers)
-
 });
 
 module.exports = {
+    PreviewModel: PreviewModel,
+    PreviewView: PreviewView,
     RenderableModel: RenderableModel,
     RenderableView: RenderableView,
-    ThreeView: ThreeView,
     ThreeModel: ThreeModel,
 };
