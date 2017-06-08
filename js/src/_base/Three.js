@@ -128,6 +128,8 @@ var RenderableView = widgets.DOMWidgetView.extend({
         this.$renderer.off('mouseenter');
         this.$renderer.off('mouseleave');
 
+        RendererPool.release(this.renderer);
+
         this.$renderer = null;
         this.renderer = null;
 
@@ -179,7 +181,6 @@ var RenderableView = widgets.DOMWidgetView.extend({
         this.$el.empty().append('<img src="' + this.renderer.domElement.toDataURL() + '" />');
 
         this.teardownViewer();
-        this.isFrozen = true;
 
         this.$frozenRenderer = this.$el.find('img');
         this.$frozenRenderer.on('mouseenter', _.bind(function() {
