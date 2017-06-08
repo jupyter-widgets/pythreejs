@@ -796,6 +796,34 @@ var ThreeModel = widgets.WidgetModel.extend({
         }
     },
 
+    // Float
+    convertFloatModelToThree: function(v, propName) {
+        if (typeof v === 'string' || v instanceof String) {
+            v = v.toLowerCase();
+            if (v === 'inf') {
+                return Infinity;
+            } else if (v === '-inf') {
+                return -Infinity;
+            } else if (v === 'nan') {
+                return NaN;
+            }
+        }
+        return v;
+    },
+
+    convertFloatThreeToModel: function(v, propName) {
+        if (isFinite(v)) { // Most common first
+            return v;
+        } else if (isNaN(v)) {
+            return 'nan';
+        } else if (v === Infinity) {
+            return 'inf';
+        } else if (v === -Infinity) {
+            return '-inf';
+        }
+        return v;
+    },
+
     // Enum
     convertEnumModelToThree: function(e, propName) {
         return THREE[e];

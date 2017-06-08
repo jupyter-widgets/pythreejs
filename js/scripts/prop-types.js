@@ -180,6 +180,9 @@ _.extend(Float.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'CFloat(' + this.getPythonDefaultValue() + ').tag(sync=True)';
     },
+    getPropertyConverterFn: function() {
+        return 'convertFloat';
+    },
 
 });
 
