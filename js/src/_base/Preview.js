@@ -149,11 +149,6 @@ var PreviewView = RenderableView.extend({
         var height = this.model.get('_height');
         this.camera.aspect = width / height;
         this.camera.updateProjectionMatrix();
-        var cameraModel = this.model.get('camera');
-        cameraModel.set({
-            aspect: cameraModel.obj.aspect,
-        });
-        this.tick();
     },
 
 });

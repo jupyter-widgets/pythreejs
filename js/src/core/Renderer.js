@@ -55,11 +55,6 @@ var RendererView = RenderableView.extend({
         this.renderScene();
     },
 
-    updateSize: function() {
-        RenderableView.prototype.updateSize.call(this);
-        this.tick();
-    },
-
 });
 
 module.exports = {

@@ -59,6 +59,9 @@ var RenderableView = widgets.DOMWidgetView.extend({
 
         this.listenTo(this.model, 'change:_width',  this.updateSize.bind(this));
         this.listenTo(this.model, 'change:_height', this.updateSize.bind(this));
+        // Redraw after a size change. This is bound after updateSize (significant).
+        this.listenTo(this.model, 'change:_width',  this.tick.bind(this));
+        this.listenTo(this.model, 'change:_height', this.tick.bind(this));
     },
 
     tick: function() {
@@ -171,7 +174,7 @@ var RenderableView = widgets.DOMWidgetView.extend({
         var that = this;
         this.controls.forEach(function(control) {
             control.enabled = true;
-            control.connectEvents(that.$el[0]);
+            control.connectEvents(that.$renderer[0]);
             control.addEventListener('change', that.tick.bind(that));
         });
     },
