@@ -194,7 +194,7 @@ var RenderableView = widgets.DOMWidgetView.extend({
         var that = this;
         this.controls.forEach(function(control) {
             control.enabled = true;
-            control.connectEvents(that.$renderer[0]);
+            control.connectEvents(that.$el[0]);
             control.addEventListener('change', that.tick.bind(that));
         });
     },
