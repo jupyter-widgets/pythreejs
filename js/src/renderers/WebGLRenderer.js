@@ -4,7 +4,7 @@
 //
 
 var _ = require('underscore');
-var widgets = require('jupyter-js-widgets');
+var widgets = require('@jupyter-widgets/base');
 var Promise = require('bluebird');
 
 var RendererPool = require('../_base/RendererPool');

@@ -52,7 +52,7 @@ setup_args = {
             'pythreejs/staticlab/jupyter-threejs.bundle.js.manifest',
         ]),
     ],
-    'install_requires': ['ipywidgets>=6.0.0', 'traittypes'],
+    'install_requires': ['ipywidgets>=7.0.0', 'traittypes'],
     'packages': find_packages(),
     'zip_safe': False,
     'cmdclass': cmdclass,

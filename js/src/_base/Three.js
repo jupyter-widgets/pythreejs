@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var widgets = require("jupyter-js-widgets");
+var widgets = require("@jupyter-widgets/base");
 var pkgName = require('../../package.json').name;
 var Promise = require('bluebird');
 var $ = require('jquery');

@@ -4,7 +4,7 @@
 //
 
 var _ = require('underscore');
-var widgets = require('jupyter-js-widgets');
+var widgets = require('@jupyter-widgets/base');
 
 var RenderableModel = require('../_base/Three').RenderableModel;
 var RenderableView = require('../_base/Three').RenderableView;
