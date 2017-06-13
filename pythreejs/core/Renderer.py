@@ -1,8 +1,10 @@
 """
 """
+from inspect import Signature, Parameter
+
 from ipywidgets import widget_serialization, Color
 from traitlets import (
-    Unicode, CInt, Instance, Float, Tuple, link)
+    Unicode, CInt, Instance, Float, Tuple, Undefined, link)
 
 from ..enums import *
 from ..traits import *
@@ -33,8 +35,12 @@ class Renderer(RenderableWidget):
     background = Color('black', allow_none=True).tag(sync=True)
     background_opacity = Float(min=0.0, max=1.0).tag(sync=True)
 
-    def __init__(self, **kwargs):
-        super(Renderer, self).__init__(**kwargs)
+    def __init__(self, scene, camera, controls=None, **kwargs):
+        super(Renderer, self).__init__(
+            scene=scene,
+            camera=camera,
+            controls=controls or (),
+            **kwargs)
         link((self, 'width'), (self, '_width'))
         link((self, 'height'), (self, '_height'))
 
@@ -52,3 +58,15 @@ class Renderer(RenderableWidget):
         }
         self.send(content)
 
+# Include explicit signature since the metaclass screws it up
+parameters = [
+    Parameter('scene', Parameter.POSITIONAL_OR_KEYWORD),
+    Parameter('camera', Parameter.POSITIONAL_OR_KEYWORD),
+    Parameter('controls', Parameter.POSITIONAL_OR_KEYWORD, default=None),
+]
+for name in ('width', 'height', 'background', 'background_opacity'):
+    parameters.append(Parameter(
+        name, Parameter.KEYWORD_ONLY, default=getattr(Renderer, name).default_value))
+parameters.append(Parameter('kwargs', Parameter.VAR_KEYWORD))
+Renderer.__signature__ = Signature(parameters=tuple(parameters))
+del parameters

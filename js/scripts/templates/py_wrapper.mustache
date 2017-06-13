@@ -1,3 +1,5 @@
+import inspect
+
 from ipywidgets import Widget, DOMWidget, widget_serialization, Color
 from traitlets import (
     Unicode, Int, CInt, Instance, ForwardDeclaredInstance, This, Enum,
@@ -35,4 +37,8 @@ class {{ className }}({{ superClass.className }}):
     {{#each properties as |prop propName|}}
     {{ propName }} = {{{ prop.trait_declaration }}}
     {{/each}}
+
+
+# Include explicit signature since the metaclass screws it up
+{{ className }}.__signature__ = inspect.signature({{ className }}.__init__)
 
