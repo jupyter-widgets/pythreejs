@@ -32,6 +32,7 @@ var OrbitControlsModel = OrbitControlsAutogen.OrbitControlsModel.extend({
         controlling.set({
             position: [pos.x, pos.y, pos.z],
             quaternion: [qat._x, qat._y, qat._z, qat._w],
+            zoom: controlling.obj.zoom,
         });
     },
 
