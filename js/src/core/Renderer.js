@@ -53,7 +53,12 @@ var RendererView = RenderableView.extend({
         //this.effect = this.model.get('effect').obj;
         this.updateSize();
         this.renderScene();
-    }
+    },
+
+    updateSize: function() {
+        RenderableView.prototype.updateSize.call(this);
+        this.tick();
+    },
 
 });
 

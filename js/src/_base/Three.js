@@ -104,8 +104,6 @@ var RenderableView = widgets.DOMWidgetView.extend({
         var width = this.model.get('_width');
         var height = this.model.get('_height');
         this.renderer.setSize(width, height);
-        this.camera.aspect = width / height;
-        this.camera.updateProjectionMatrix();
     },
 
     renderScene: function() {
@@ -365,7 +363,20 @@ var PreviewView = RenderableView.extend({
             this.constructScene();
             this.renderScene();
         }
-    }
+    },
+
+    updateSize: function() {
+        RenderableView.prototype.updateSize.call(this);
+        var width = this.model.get('_width');
+        var height = this.model.get('_height');
+        this.camera.aspect = width / height;
+        this.camera.updateProjectionMatrix();
+        var cameraModel = this.model.get('camera');
+        cameraModel.set({
+            aspect: cameraModel.obj.aspect,
+        });
+        this.tick();
+    },
 
 });
 
