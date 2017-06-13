@@ -57,9 +57,9 @@ var RenderableView = widgets.DOMWidgetView.extend({
         widgets.DOMWidgetView.prototype.remove.apply(this, arguments);
 
         if (!this.isFrozen) {
+            this.isFrozen = true;
             RendererPool.release(this.renderer);
             this.renderer = null;
-            this.isFrozen = true;
         }
     },
 
@@ -128,6 +128,7 @@ var RenderableView = widgets.DOMWidgetView.extend({
         this.$renderer.off('mouseenter');
         this.$renderer.off('mouseleave');
 
+        this.isFrozen = true;
         RendererPool.release(this.renderer);
 
         this.$renderer = null;
@@ -137,14 +138,13 @@ var RenderableView = widgets.DOMWidgetView.extend({
 
         this.$el.css('margin-bottom', 'auto');
 
-        this.isFrozen = true;
-
     },
 
     acquireRenderer: function() {
         if (!this.isFrozen) {
             return;
         }
+        this.isFrozen = false;
 
         this.log('ThreeView.acquiring...');
 
@@ -166,7 +166,6 @@ var RenderableView = widgets.DOMWidgetView.extend({
         if (this.controls) {
             this.enableControls();
         }
-        this.isFrozen = false;
     },
 
     freeze: function() {
