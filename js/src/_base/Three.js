@@ -729,8 +729,6 @@ var ThreeModel = widgets.WidgetModel.extend({
 
             mapperFn.bind(this)();
         }, this);
-
-        this.obj.needsUpdate = true;
     },
 
     // push data from three object to model
