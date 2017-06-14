@@ -30,7 +30,7 @@ class Renderer(RenderableWidget):
     height = CInt(200)
     scene = Instance(Scene).tag(sync=True, **widget_serialization)
     camera = Instance(Camera).tag(sync=True, **widget_serialization)
-    controls = Tuple(Instance(Controls)).tag(sync=True, **widget_serialization)
+    controls = List(Instance(Controls)).tag(sync=True, **widget_serialization)
     #effect = Instance(Effect, allow_none=True).tag(sync=True, **widget_serialization)
     background = Color('black', allow_none=True).tag(sync=True)
     background_opacity = Float(min=0.0, max=1.0).tag(sync=True)
@@ -39,7 +39,7 @@ class Renderer(RenderableWidget):
         super(Renderer, self).__init__(
             scene=scene,
             camera=camera,
-            controls=controls or (),
+            controls=controls or None,
             **kwargs)
         link((self, 'width'), (self, '_width'))
         link((self, 'height'), (self, '_height'))
