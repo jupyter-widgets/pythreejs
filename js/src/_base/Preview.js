@@ -53,9 +53,21 @@ var PreviewView = RenderableView.extend({
 
         } else if (obj instanceof THREE.Material) {
 
-            var geometry = new THREE.SphereGeometry(15, 16, 12);
-            var mesh = new THREE.Mesh(geometry, obj);
-            this.scene.add(mesh);
+            if (obj instanceof THREE.SpriteMaterial) {
+                var sprite = new THREE.Sprite(obj);
+                var maxScale = sprite.position.distanceTo(this.camera.position);
+                var aspect = obj.map.image.width / obj.map.image.height;
+                if (aspect >= 1) {
+                    sprite.scale.set(maxScale, maxScale / aspect, maxScale);
+                } else {
+                    sprite.scale.set(maxScale * aspect, maxScale, maxScale);
+                }
+                this.scene.add(sprite);
+            } else {
+                var geometry = new THREE.SphereGeometry(15, 16, 12);
+                var mesh = new THREE.Mesh(geometry, obj);
+                this.scene.add(mesh);
+            }
 
         } else if (obj instanceof THREE.Texture) {
 

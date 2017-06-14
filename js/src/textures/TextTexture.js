@@ -4,7 +4,10 @@ var TextTextureBase = require('./TextTexture.autogen');
 
 var TextTextureModel = TextTextureBase.TextTextureModel.extend({
 
+    // TODO: Replace sync function
+
     constructThreeObjectAsync: function() {
+
         var fontFace = this.get('fontFace');
         var size = this.get('size');
         var color = this.get('color');
@@ -28,8 +31,6 @@ var TextTextureModel = TextTextureBase.TextTextureModel.extend({
                 canvas.height = canvas.width;
             }
 
-            self.aspect = canvas.width / canvas.height;
-
             context.textAlign = 'center';
             context.textBaseline = 'middle';
             context.fillStyle = color;
@@ -37,7 +38,7 @@ var TextTextureModel = TextTextureBase.TextTextureModel.extend({
             context.font = font;
             context.fillText(string, canvas.width / 2, canvas.height / 2);
 
-            return resolve(new THREE.Texture(canvas));
+            return resolve(new THREE.CanvasTexture(canvas));
         });
         return p;
     },
