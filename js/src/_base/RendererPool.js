@@ -42,7 +42,13 @@ _.extend(RendererPool.prototype, {
             // reclaim token
             var claimedRenderer = this.claimedPool.shift();
             renderer = claimedRenderer.renderer;
-            claimedRenderer.onReclaim();
+            try {
+                claimedRenderer.onReclaim();
+            } catch (e) {
+                // Ensure we do not lose the renderer:
+                this.freePool.push(renderer);
+                throw e;
+            }
 
         }
 
@@ -65,11 +71,14 @@ _.extend(RendererPool.prototype, {
         }
 
         // notify holder
-        claimedRenderer.onReclaim();
+        try {
+            claimedRenderer.onReclaim();
 
-        // remove claim token
-        this.claimedPool = _.without(this.claimedPool, claimedRenderer);
-        this.freePool.push(claimedRenderer.renderer);
+        } finally {
+            // remove claim token
+            this.claimedPool = _.without(this.claimedPool, claimedRenderer);
+            this.freePool.push(claimedRenderer.renderer);
+        }
 
     },
 
