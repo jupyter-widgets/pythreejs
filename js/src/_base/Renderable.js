@@ -30,6 +30,7 @@ var RenderableView = widgets.DOMWidgetView.extend({
         // starts as "frozen" until renderer is acquired
         this.isFrozen = true;
         this.id = Math.floor(Math.random() * 1000000);
+        this._ticking = false;
     },
 
     remove: function() {
@@ -65,10 +66,14 @@ var RenderableView = widgets.DOMWidgetView.extend({
     },
 
     tick: function() {
-        requestAnimationFrame(this.tock.bind(this));
+        if (!this._ticking) {
+            requestAnimationFrame(this.tock.bind(this));
+            this._ticking = true;
+        }
     },
 
     tock: function() {
+        this._ticking = false;
         this.renderScene();
         if (this.animate) {
             this.tick();
