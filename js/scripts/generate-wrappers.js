@@ -274,6 +274,10 @@ function JavascriptWrapper(modulePath, className) {
     this.modelName = this.className + 'Model';
     this.viewName = this.className + 'View';
 
+    // check if manual file exists
+    var customSrcPath = path.join(path.dirname(this.jsDestPath), path.basename(this.jsDestPath, '.js') + '.js');
+    this.hasOverride = fs.existsSync(customSrcPath);
+
     this.processSuperClass();
     this.processDependencies();
     this.processProperties();
@@ -330,7 +334,13 @@ _.extend(JavascriptWrapper.prototype, {
         result.viewName = result.className + 'View';
 
         result.absolutePath = path.resolve(jsSrcDir, result.relativePath);
-        result.requirePath = path.relative(this.destDir, result.absolutePath).replace(/\\/g, '/');
+        var absPath = result.absolutePath;
+        if (fs.existsSync(absPath + '.js')) {
+            absPath += '.js';
+        } else {
+            absPath += JS_AUTOGEN_EXT;
+        }
+        result.requirePath = path.relative(this.destDir, absPath).replace(/\\/g, '/');
         if (result.requirePath.charAt(0) !== '.') {
             result.requirePath = './' + result.requirePath;
         }
@@ -439,19 +449,15 @@ _.extend(JavascriptWrapper.prototype, {
 
     processOverrideClass: function() {
 
-        // check if manual file exists
-        var customSrcPath = path.join(path.dirname(this.jsDestPath), path.basename(this.jsDestPath, '.js') + '.js');
-        console.log(customSrcPath);
+        if (!this.hasOverride) {
+            return;
+        }
+
+        console.log('JS override exists for ' + this.className);
 
         var overrideModule = "Override";
         var overrideModel = overrideModule + "." + this.modelClass;
         var overrideView = overrideModule + "." + this.viewClass;
-
-        if (!fs.existsSync(customSrcPath)) {
-            return;
-        }
-
-        console.log('EXISTS');
 
         this.overrideClass = {
             relativePath: './' + this.className + '.js',
@@ -555,7 +561,6 @@ function writeJavascriptIndexFiles() {
                     var basename = path.basename(filePath, JS_AUTOGEN_EXT);
                     var overrideName = basename + '.js';
                     var overridePath = './' + path.join(dirname, overrideName);
-                    console.log('checking for override: ' + overridePath);
 
                     // override file present, so don't include autogen file in index
                     if (dirFiles.indexOf(overridePath) > -1) {
