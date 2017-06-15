@@ -35,16 +35,17 @@ var TextTextureModel = TextTextureBase.extend({
         var canvas = document.createElement('canvas');
         var context = canvas.getContext('2d');
 
-        canvas.height = size;
+        // Pad size with two to avoid edge artifacts when interpolating
+        canvas.height = size + 2;
         var font = 'Normal ' + size + 'px ' + fontFace;
         context.font = font;
 
         var metrics = context.measureText(string);
-        var textWidth = Math.ceil(metrics.width);
+        var textWidth = Math.ceil(metrics.width) + 2;
         canvas.width = textWidth;
 
         if (this.get('squareTexture')) {
-            canvas.height = canvas.width;
+            canvas.height = canvas.width = Math.max(canvas.width, canvas.height);
         }
 
         context.textAlign = 'center';
