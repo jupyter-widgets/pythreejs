@@ -215,12 +215,12 @@ THREE.OrbitControls = function ( object, domElement ) {
 		scope.domElement.addEventListener( 'contextmenu', onContextMenu, false );
 
 		scope.domElement.addEventListener( 'mousedown', onMouseDown, false );
-		scope.domElement.addEventListener( 'mousewheel', onMouseWheel, false );
-		scope.domElement.addEventListener( 'MozMousePixelScroll', onMouseWheel, false ); // firefox
+		scope.domElement.addEventListener( 'mousewheel', onMouseWheel, { passive: false } );
+		scope.domElement.addEventListener( 'MozMousePixelScroll', onMouseWheel, { passive: false } ); // firefox
 
-		scope.domElement.addEventListener( 'touchstart', onTouchStart, false );
+		scope.domElement.addEventListener( 'touchstart', onTouchStart, { passive: true } );
 		scope.domElement.addEventListener( 'touchend', onTouchEnd, false );
-		scope.domElement.addEventListener( 'touchmove', onTouchMove, false );
+		scope.domElement.addEventListener( 'touchmove', onTouchMove, { passive: false } );
 
 		scope.domElement.addEventListener( 'keydown', onKeyDown, false );
 	};
