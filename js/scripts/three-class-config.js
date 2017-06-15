@@ -1049,10 +1049,6 @@ module.exports = {
         //constructorArgs: [ 'image', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter', 'format', 'type', 'anisotropy' ],
         propsDefinedByThree: [ 'id', 'version' ],
     },
-    CanvasTexture: {
-        relativePath: './textures/CanvasTexture',
-        superClass: 'Texture',
-    },
     CompressedTexture: {
         relativePath: './textures/CompressedTexture',
         superClass: 'Texture',

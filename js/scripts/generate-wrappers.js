@@ -238,6 +238,7 @@ function mapPromiseFnOverThreeModules(mapFn) {
             '**/renderers/shaders/**',
             '**/extras/core/Interpolations.js',
             '**/extras/core/PathPrototype.js',
+            '**/textures/CanvasTexture.js'
         ],
     });
 }
