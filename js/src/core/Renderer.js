@@ -28,6 +28,26 @@ var RendererModel = RenderableModel.extend({
 
     }),
 
+    initialize: function(attributes, options) {
+        RenderableModel.prototype.initialize.apply(this, arguments);
+
+        this.initPromise = this.get('scene').initPromise.bind(this).then(function() {
+            this.setupListeners();
+        });
+    },
+
+    setupListeners: function() {
+
+        var scene = this.get('scene');
+        this.listenTo(scene, 'change', this.onChange.bind(this));
+        this.listenTo(scene, 'childchange', this.onChange.bind(this));
+
+    },
+
+    onChange: function(model, options) {
+        this.trigger('rerender', this, {});
+    },
+
 }, {
 
     serializers: _.extend({

@@ -65,6 +65,7 @@ var ThreeModel = widgets.WidgetModel.extend({
             var curValue = this.get(propName);
             if (curValue) {
                 this.listenTo(curValue, 'change', this.onChildChanged);
+                this.listenTo(curValue, 'childchange', this.onChildChanged);
             }
 
             // make sure to un/hook listeners when child points to new object
@@ -76,6 +77,7 @@ var ThreeModel = widgets.WidgetModel.extend({
                 }
                 if (currModel) {
                     this.listenTo(currModel, 'change', this.onChildChanged);
+                    this.listenTo(currModel, 'childchange', this.onChildChanged);
                 }
             }, this);
         }, this);
@@ -87,6 +89,7 @@ var ThreeModel = widgets.WidgetModel.extend({
             var currArr = this.get(propName) || [];
             currArr.forEach(function(childModel) {
                 this.listenTo(childModel, 'change', this.onChildChanged);
+                this.listenTo(childModel, 'childchange', this.onChildChanged);
             }, this);
 
             // make sure to un/hook listeners when array changes
@@ -99,6 +102,7 @@ var ThreeModel = widgets.WidgetModel.extend({
 
                 added.forEach(function(childModel) {
                     this.listenTo(childModel, 'change', this.onChildChanged);
+                    this.listenTo(childModel, 'childchange', this.onChildChanged);
                 }, this);
                 removed.forEach(function(childModel) {
                     this.stopListening(childModel);
@@ -289,13 +293,14 @@ var ThreeModel = widgets.WidgetModel.extend({
     //
 
     onChange: function(model, options) {
-        this.syncToThreeObj();
-        this.trigger('rerender', this, {});
+        if (options !== 'pushFromThree') {
+            this.syncToThreeObj();
+        }
     },
 
     onChildChanged: function(model, options) {
         console.log('child changed: ' + model.id);
-        this.trigger('rerender', this, {});
+        this.trigger('childchange', this);
     },
 
     // push data from model to three object

@@ -54,7 +54,7 @@ var RenderableView = widgets.DOMWidgetView.extend({
         this.lazyRendererSetup();
 
         this.on('destroy', this.destroy, this);
-        this.listenTo(this.model, 'rerender',       this.renderScene);
+        this.listenTo(this.model, 'rerender',       this.tick.bind(this));
         this.listenTo(this.model, 'msg:custom',     this.onCustomMessage.bind(this));
 
         this.listenTo(this.model, 'change:_width',  this.updateSize.bind(this));

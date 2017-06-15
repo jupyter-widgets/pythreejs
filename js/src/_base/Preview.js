@@ -188,8 +188,9 @@ var PreviewModel = RenderableModel.extend({
     },
 
     setupListeners: function() {
-
-        this.get('child').on('change', this.onChildChange, this);
+        var child = this.get('child');
+        this.listenTo(child, 'change', this.onChange.bind(this));
+        this.listenTo(child, 'childchange', this.onChange.bind(this));
 
     },
 
