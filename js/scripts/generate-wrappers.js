@@ -907,6 +907,7 @@ var CUSTOM_CLASSES = [
     'controls/FlyControls.js',
     'controls/Picker.js',
     'geometries/PlainGeometry.js',
+    'objects/CloneArray.js',
 ];
 
 function createJavascriptFiles() {

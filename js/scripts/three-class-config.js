@@ -997,6 +997,18 @@ module.exports = {
         },
         propsDefinedByThree: [ 'isSprite' ]
     },
+    CloneArray: {
+        relativePath: './objects/CloneArray',
+        superClass: 'Object3D',
+        properties: {
+            original: new Types.ThreeType('Object3D'),
+            positions: new Types.VectorArray(),
+            // TODO: Also scale and rotation arrays
+            merge: new Types.Bool(false),
+        },
+        constructorArgs: [ 'original', 'positions', 'merge' ],
+        // TODO: Add restriction: Source cannot use strip/fan draw modes
+    },
     WebGLRenderTarget: {
         relativePath: './renderers/WebGLRenderTarget',
     },
