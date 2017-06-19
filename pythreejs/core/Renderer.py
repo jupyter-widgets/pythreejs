@@ -33,7 +33,7 @@ class Renderer(RenderableWidget):
     controls = List(Instance(Controls)).tag(sync=True, **widget_serialization)
     #effect = Instance(Effect, allow_none=True).tag(sync=True, **widget_serialization)
     background = Color('black', allow_none=True).tag(sync=True)
-    background_opacity = Float(min=0.0, max=1.0).tag(sync=True)
+    background_opacity = Float(1.0, min=0.0, max=1.0).tag(sync=True)
 
     def __init__(self, scene, camera, controls=None, **kwargs):
         super(Renderer, self).__init__(

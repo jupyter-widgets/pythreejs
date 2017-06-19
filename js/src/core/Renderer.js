@@ -8,7 +8,7 @@ var widgets = require('@jupyter-widgets/base');
 
 var RenderableModel = require('../_base/Renderable').RenderableModel;
 var RenderableView = require('../_base/Renderable').RenderableView;
-
+var ThreeModel = require('../_base/Three').ThreeModel;
 
 var RendererModel = RenderableModel.extend({
 
@@ -17,14 +17,12 @@ var RendererModel = RenderableModel.extend({
         _view_name: 'RendererView',
         _model_name: 'RendererModel',
 
-        width: "600",
-        height: "400",
         scene: null,
         camera: null,
         controls: [],
         effect: null,
         background: "black",
-        background_opacity: 0,
+        background_opacity: 1.0,
 
     }),
 
@@ -39,10 +37,12 @@ var RendererModel = RenderableModel.extend({
     setupListeners: function() {
 
         var scene = this.get('scene');
+        this.on('change', this.onChange.bind(this));
         this.listenTo(scene, 'change', this.onChange.bind(this));
         this.listenTo(scene, 'childchange', this.onChange.bind(this));
 
     },
+
 
     onChange: function(model, options) {
         this.trigger('rerender', this, {});
@@ -74,6 +74,14 @@ var RendererView = RenderableView.extend({
         this.updateSize();
         this.renderScene();
     },
+
+    acquireRenderer: function() {
+        RenderableView.prototype.acquireRenderer.call(this);
+
+        var background = ThreeModel.prototype.convertColorModelToThree( this.model.get('background') );
+        var background_opacity = ThreeModel.prototype.convertFloatModelToThree( this.model.get('background_opacity') );
+        this.renderer.setClearColor( background, background_opacity );
+    }
 
 });
 

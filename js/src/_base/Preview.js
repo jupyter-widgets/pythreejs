@@ -9,6 +9,9 @@ var RenderableView = Renderable.RenderableView;
 var RenderableModel = Renderable.RenderableModel;
 
 
+var BLACK = new THREE.Color('black');
+
+
 var PreviewView = RenderableView.extend({
 
     render: function() {
@@ -137,6 +140,9 @@ var PreviewView = RenderableView.extend({
         this.scene = new THREE.Scene();
         // cameras need to be added to scene
         this.scene.add(this.camera);
+
+        // Overrides clear color on renderer:
+        this.scene.background = BLACK;
 
         // Lights
         this.pointLight = new THREE.PointLight('#ffffff', 1, 0);
