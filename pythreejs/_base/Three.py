@@ -56,7 +56,7 @@ class ThreeWidget(Widget):
             self.on_ret_val(content['method_name'], content['ret_val'])
 
     def on_ret_val(self, method_name, ret_val):
-        self.log('%s() -> %s' % (method_name, ret_val))
+        self.log.info('%s() -> %s' % (method_name, ret_val))
 
     def _ipython_display_(self, **kwargs):
         from IPython.display import display
