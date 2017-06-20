@@ -809,6 +809,16 @@ module.exports = {
         },
         constructorArgs: ['radius', 'theta', 'y'],
     },
+    Euler: {
+        relativePath: './math/Euler',
+        properties: {
+            x: new Types.Float(0),
+            y: new Types.Float(0),
+            z: new Types.Float(0),
+            order: new Types.String('XYZ'),
+        },
+        constructorArgs: [ 'x', 'y', 'z', 'order' ],
+    },
     Frustum: {
         relativePath: './math/Frustum',
         properties: {
