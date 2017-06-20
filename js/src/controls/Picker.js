@@ -4,6 +4,9 @@ var PickerAutogen = require('./Picker.autogen');
 
 var PickerModel = PickerAutogen.PickerModel.extend({});
 
+
+// TODO: Reimplement picker to work with updated model/view separation!
+
 /*
 var PickerView = PickerAutogen.PickerView.extend({
     render: function() {

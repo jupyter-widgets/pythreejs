@@ -223,22 +223,22 @@ function mapPromiseFnOverThreeModules(mapFn) {
         cwd: threeSrcDir,
         nodir: true ,
         ignore: [
-            '**/Three.Legacy.js',
-            '**/polyfills.js',
-            '**/utils.js',
-            '**/constants.js',
-            '**/animation/KeyframeTrackConstructor.js',
-            '**/animation/KeyframeTrackPrototype.js',
-            '**/audio/AudioContext.js',
-            '**/geometries/Geometries.js',
-            '**/materials/Materials.js',
-            '**/renderers/WebGLRenderer.js',
-            '**/renderers/WebGL2Renderer.js',
+            '**/Three.Legacy.js',   // Don't support legacy interface (deprecation should be done python side)
+            '**/polyfills.js',      // Polyfill of JS methods, nothing to export
+            '**/utils.js',          // Utility functions, no objects to export
+            '**/constants.js',      // Processed into enums in separate script
+            '**/animation/KeyframeTrackConstructor.js',     // Sub-part of one object, ignore
+            '**/animation/KeyframeTrackPrototype.js',       // Sub-part of one object, ignore
+            '**/audio/AudioContext.js',             // JS API for audio, nothing to expose
+            '**/geometries/Geometries.js',          // index.js like file, nothing new here
+            '**/materials/Materials.js',            // index.js like file, nothing new here
+            '**/renderers/WebGLRenderer.js',        // For now, the internals of the webgl
+            '**/renderers/WebGL2Renderer.js',       //   render is not exposed.
             '**/renderers/webgl/**',
             '**/renderers/shaders/**',
-            '**/extras/core/Interpolations.js',
-            '**/extras/core/PathPrototype.js',
-            '**/textures/CanvasTexture.js'
+            '**/extras/core/Interpolations.js',     // Only functions, nothing to export
+            '**/extras/core/PathPrototype.js',      // Sub-part of one object, ignore
+            '**/textures/CanvasTexture.js'          // Canvases are not referenceable from python
         ],
     });
 }
