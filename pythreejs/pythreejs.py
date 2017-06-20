@@ -143,25 +143,6 @@ class ShaderMaterial(Material):
     wireframeLinewidth = CFloat(1.0).tag(sync=True)
 
 
-# class SpriteMaterial(Material):
-#     _view_name = Unicode('SpriteMaterialView').tag(sync=True)
-#     _model_name = Unicode('SpriteMaterialModel').tag(sync=True)
-
-#     uvScale = List(CFloat).tag(sync=True)
-#     sizeAttenuation = Bool().tag(sync=True)
-#     uvOffset = List(CFloat).tag(sync=True)
-#     useScreenCoordinates = Bool().tag(sync=True)
-#     scaleByViewport = Bool().tag(sync=True)
-#     alignment = List(CFloat).tag(sync=True)
-
-
-# class Sprite(Object3D):
-#     _view_name = Unicode('SpriteView').tag(sync=True)
-#     _model_name = Unicode('SpriteModel').tag(sync=True)
-
-#     material = Instance(Material, allow_none=True).tag(sync=True, **widget_serialization)
-#     scaleToTexture = Bool().tag(sync=True)
-
 
 class PlotMesh(Mesh):
     plot = Instance('sage.plot.plot3d.base.Graphics3d')
@@ -235,14 +216,6 @@ class Effect(Widget):
 class AnaglyphEffect(Effect):
     _view_name = Unicode('AnaglyphEffectView').tag(sync=True)
     _model_name = Unicode('AnaglyphEffectModel').tag(sync=True)
-
-
-# class SpotLight(PointLight):
-#     _view_name = Unicode('SpotLight').tag(sync=True)
-#     _model_name = Unicode('SpotLightModel').tag(sync=True)
-
-#     angle = CFloat(10).tag(sync=True)
-#     exponent = CFloat(0.5).tag(sync=True)
 
 
 # Some helper classes and functions

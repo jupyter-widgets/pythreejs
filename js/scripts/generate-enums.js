@@ -51,8 +51,9 @@ var jsEnumTemplate = compileTemplate('js_enums');
 var pyEnumTemplate = compileTemplate('py_enums');
 
 
-
-
+//
+// Helper functions
+//
 
 function checkUnused() {
     return new Promise(function(resolve, reject) {
@@ -77,6 +78,11 @@ function checkUnused() {
         }
     });
 }
+
+
+//
+// Generator functions
+//
 
 function writeJavascriptFile() {
     // Here we generate a code to enum string LUT

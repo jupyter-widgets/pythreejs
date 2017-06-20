@@ -13,8 +13,7 @@ function ThreeCloneArray(original, positions, merge) {
 }
 
 
-
-ThreeCloneArray.prototype = Object.assign( Object.create( THREE.Object3D.prototype ), {
+ThreeCloneArray.prototype = Object.assign(Object.create(THREE.Object3D.prototype), {
 
 	constructor: ThreeCloneArray,
 
@@ -51,14 +50,14 @@ ThreeCloneArray.prototype = Object.assign( Object.create( THREE.Object3D.prototy
             // Attribute count per
             var merged = new THREE.BufferGeometry();
             var attributes = geom.attributes;
-            for ( var key in attributes ) {
+            for (var key in attributes) {
                 var attribute = attributes[ key ];
                 var attributeArray = attribute.array;
                 // Allocate new buffer:
-                var mergedAttributeArray = new attributeArray.constructor( attributeArray.length * N );
-                var mergedAttribute = new attribute.constructor( mergedAttributeArray, attribute.itemSize, attribute.normalized );
+                var mergedAttributeArray = new attributeArray.constructor(attributeArray.length * N);
+                var mergedAttribute = new attribute.constructor(mergedAttributeArray, attribute.itemSize, attribute.normalized);
                 mergedAttribute.dynamic = attribute.dynamic;
-                merged.addAttribute( key, mergedAttribute );
+                merged.addAttribute(key, mergedAttribute);
             }
 
             var oldIndex = geom.getIndex();

@@ -55,8 +55,8 @@ def json_texture(t):
                          polygonOffsetUnits=1)
 
 def json_box(t):
-    return BoxGeometry(width=t['size'][0], 
-                        height=t['size'][1], 
+    return BoxGeometry(width=t['size'][0],
+                        height=t['size'][1],
                         depth=t['size'][2])
 
 def json_index_face_set(t):
@@ -94,7 +94,7 @@ def json_line(t):
     mesh.append(c)
     if (tree_geometry['arrowhead']):
         height = .03*tree_geometry['thickness']
-        c = Mesh(material=m, 
+        c = Mesh(material=m,
                     geometry=CylinderGeometry(radiusTop=0,
                                                  radiusBottom=.02*tree_geometry['thickness'],
                                                  height=height,
@@ -135,7 +135,7 @@ def json_text(t):
     tree_geometry = t['geometry']
     tree_texture = t['texture']
     tt = TextTexture(string=tree_geometry['string'])
-    sm = SpriteMaterial(map=tt, opacity=tree_texture['opacity'], transparent = tree_texture['opacity'] < 1 )
+    sm = SpriteMaterial(map=tt, opacity=tree_texture['opacity'], transparent = tree_texture['opacity'] < 1)
     return Sprite(material=sm, scaleToTexture=True)
 
 def json_point(t):

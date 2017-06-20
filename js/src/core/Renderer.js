@@ -83,9 +83,9 @@ var RendererView = RenderableView.extend({
     acquireRenderer: function() {
         RenderableView.prototype.acquireRenderer.call(this);
 
-        var background = ThreeModel.prototype.convertColorModelToThree( this.model.get('background') );
-        var background_opacity = ThreeModel.prototype.convertFloatModelToThree( this.model.get('background_opacity') );
-        this.renderer.setClearColor( background, background_opacity );
+        var background = ThreeModel.prototype.convertColorModelToThree(this.model.get('background'));
+        var background_opacity = ThreeModel.prototype.convertFloatModelToThree(this.model.get('background_opacity'));
+        this.renderer.setClearColor(background, background_opacity);
     }
 
 });

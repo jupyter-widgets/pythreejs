@@ -1,5 +1,3 @@
-"""
-"""
 from ipywidgets import DOMWidget, Widget, widget_serialization
 from traitlets import Unicode, CInt, Bool, Instance
 from .._package import npm_pkg_name
