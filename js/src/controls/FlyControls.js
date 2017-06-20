@@ -48,9 +48,11 @@ var FlyControlsModel = FlyControlsAutogen.FlyControlsModel.extend({
         var pos = controlling.obj.position;
         var qat = controlling.obj.quaternion;
         controlling.set({
-            position: [pos.x, pos.y, pos.z],
-            quaternion: [qat._x, qat._y, qat._z, qat._w],
-        });
+                position: [pos.x, pos.y, pos.z],
+                quaternion: [qat._x, qat._y, qat._z, qat._w],
+            },
+            'pushFromThree'
+        );
     },
 
 });
