@@ -37,12 +37,17 @@ var RendererModel = RenderableModel.extend({
     setupListeners: function() {
 
         var scene = this.get('scene');
+        var camera = this.get('camera');
         this.on('change', this.onChange.bind(this));
         this.listenTo(scene, 'change', this.onChange.bind(this));
         this.listenTo(scene, 'childchange', this.onChange.bind(this));
+        this.listenTo(camera, 'change', this.onCameraChange.bind(this));
 
     },
 
+    onCameraChange: function(model, options) {
+        this.onChange();
+    },
 
     onChange: function(model, options) {
         this.trigger('rerender', this, {});
