@@ -80,7 +80,7 @@ var WebGLRendererView = widgets.DOMWidgetView.extend({
     render: function() {
         this.acquireRenderer();
 
-        this.el.className = "jupytr-widget jupyter-threejs";
+        this.el.className = "jupyter-widget jupyter-threejs";
         this.$el.empty().append(this.renderer.domElement);
     },
 

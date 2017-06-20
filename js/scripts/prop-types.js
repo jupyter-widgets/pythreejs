@@ -22,20 +22,22 @@ _.extend(BaseType.prototype, {
     },
 })
 
-function ThreeType(typeName) {
+function ThreeType(typeName, options={}) {
     this.typeName = typeName;
     this.defaultValue = null;
     this.serialize = true;
+    this.nullable = options.nullable !== false;
 }
 _.extend(ThreeType.prototype, BaseType.prototype, {
     getTraitlet: function() {
+        var nullableStr = this.nullable ? 'True' : 'False';
         // allow type unions
         if (this.typeName instanceof Array) {
             // TODO: only instan
             var instances = this.typeName.map(function(typeName) {
-                return '        Instance(' + typeName + ', allow_none=True).tag(sync=True, **widget_serialization)';
+                return '        Instance(' + typeName + ', allow_none=' + nullableStr +')';
             });
-            return 'Union([\n' + instances.join(',\n') + '\n    ])';
+            return 'Union([\n' + instances.join(',\n') + '\n    ]).tag(sync=True, **widget_serialization)';
 
             // return 'Any()';
         }
@@ -43,8 +45,8 @@ _.extend(ThreeType.prototype, BaseType.prototype, {
         if (this.typeName.toLowerCase() === 'this') {
             return 'This().tag(sync=True, **widget_serialization)';
         }
-        
-        return 'Instance(' + this.typeName + ', allow_none=True).tag(sync=True, **widget_serialization)';
+
+        return 'Instance(' + this.typeName + ', allow_none=' + nullableStr +').tag(sync=True, **widget_serialization)';
     },
     getPropArrayName: function() {
         return 'three_properties';
@@ -365,12 +367,12 @@ _.extend(Matrix3.prototype, BaseType.prototype, {
 
 function Matrix4() {
     this.defaultValue = [
-        1, 0, 0, 0, 
-        0, 1, 0, 0, 
-        0, 0, 1, 0, 
-        0, 0, 0, 1 
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
     ];
-} 
+}
 _.extend(Matrix4.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Matrix4(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';

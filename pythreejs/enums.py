@@ -147,3 +147,16 @@ TextureEncodings = [
     'RGBM16Encoding',
     'RGBDEncoding'
 ];
+# Misc
+
+Lines = [
+    'LineStrip',
+    'LinePieces'
+]
+
+Renderers = [
+    'webgl',
+    'canvas',
+    'auto'
+]
+

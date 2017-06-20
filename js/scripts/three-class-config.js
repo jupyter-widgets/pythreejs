@@ -764,6 +764,7 @@ module.exports = {
     },
     Group: {
         relativePath: './objects/Group',
+        superClass: 'Object3D',
     },
     LOD: {
         relativePath: './objects/LOD',
@@ -773,17 +774,27 @@ module.exports = {
     },
     Line: {
         relativePath: './objects/Line',
+        constructorArgs: [ 'geometry', 'material' ],
+        properties: {
+            material: new Types.ThreeType('Material'),
+            geometry: new Types.ThreeType(['Geometry', 'BufferGeometry']),
+        }
     },
     LineSegments: {
         relativePath: './objects/LineSegments',
+        constructorArgs: [ 'geometry', 'material' ],
+        properties: {
+            material: new Types.ThreeType('Material'),
+            geometry: new Types.ThreeType(['Geometry', 'BufferGeometry']),
+        }
     },
     Mesh: {
         relativePath: './objects/Mesh',
         superClass: 'Object3D',
         constructorArgs: [ 'geometry', 'material' ],
         properties: {
-            material: new Types.ThreeType('Material'),
-            geometry: new Types.ThreeType(['Geometry', 'BufferGeometry']),
+            material: new Types.ThreeType('Material', false),
+            geometry: new Types.ThreeType(['Geometry', 'BufferGeometry'], false),
         }
     },
     Points: {
@@ -797,6 +808,12 @@ module.exports = {
     },
     Sprite: {
         relativePath: './objects/Sprite',
+        superClass: 'Object3D',
+        constructorArgs: [ 'material' ],
+        properties: {
+            material: new Types.ThreeType('SpriteMaterial'),
+        },
+        propsDefinedByThree: [ 'isSprite' ]
     },
     WebGLRenderTarget: {
         relativePath: './renderers/WebGLRenderTarget',
@@ -845,7 +862,9 @@ module.exports = {
             encoding:         new Types.Enum('TextureEncodings', 'LinearEncoding'),
             version:          new Types.Int(0),
         },
-        construtorArgs: [ 'image', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter', 'format', 'type', 'anisotropy' ],
+        // As the image property is not exposed, we don't define constructorArgs.
+        // The image property is hidden, as it does not have a good corresponding python type (yet)
+        //constructorArgs: [ 'image', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter', 'format', 'type', 'anisotropy' ],
         propsDefinedByThree: [ 'id', 'uuid', 'version' ],
     },
     CanvasTexture: {
@@ -882,6 +901,18 @@ module.exports = {
             imageUri: new Types.String(''),
         },
         constructorArgs: [ 'imageUri', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter', 'format', 'type', 'anisotropy' ],
+    },
+    TextTexture: {
+        relativePath: './textures/TextTexture',
+        superClass: 'Texture',
+        properties: {
+            color: new Types.Color('white'),
+            fontFace: new Types.String('Arial'),
+            size: new Types.Int(12),
+            string: new Types.String(''),
+            squareTexture: new Types.Bool(true),
+        },
+        constructorArgs: ['string'],
     },
     VideoTexture: {
         relativePath: './textures/VideoTexture',

@@ -118,7 +118,7 @@ var ThreeView = widgets.DOMWidgetView.extend({
             var material;
             if (this.model.get('_flat')) {
                 material = new THREE.MeshPhongMaterial({
-                    color: '#888888',
+                    color: '#ffffff',
                     shading: THREE.FlatShading,
                 });
             } else if (this.model.get('_wire') || obj instanceof THREE.WireframeGeometry) {
@@ -129,7 +129,7 @@ var ThreeView = widgets.DOMWidgetView.extend({
                 });
             } else {
                 material = new THREE.MeshStandardMaterial({
-                    color: '#888888',
+                    color: '#ffffff',
                 });
             }
 

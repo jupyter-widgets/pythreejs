@@ -1,5 +1,5 @@
 var loaders = [
-    { test: /\.json$/, loader: "json-loader" },
+    { test: /\.json$/, loader: "json-loader" }
 ];
 
 module.exports = [
