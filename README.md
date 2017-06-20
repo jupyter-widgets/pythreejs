@@ -67,7 +67,7 @@ pythreejs/core/Object3D.py
 pythreejs/renderers/WebGLRenderer.py
 
 # Custom classes
-js/src/core/Renderer.py
+js/src/core/Renderer.js
 js/src/textures/ImageTexture.js  # created to ease image texture loading
 js/src/textures/ImageTexture.js  # created to ease image texture loading
 js/src/textures/TextTexture.js  # created to ease creation of textures of rasterized text
