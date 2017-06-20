@@ -463,6 +463,19 @@ var ThreeModel = widgets.WidgetModel.extend({
         obj[key].copy(value);
     },
 
+    // Euler
+    convertEulerModelToThree: function(v, propName) {
+        return new THREE.Euler().fromArray(v);
+    },
+
+    convertEulerThreeToModel: function(v, propName) {
+        return v.toArray();
+    },
+
+    assignEuler: function(obj, key, value) {
+        obj[key].copy(value);
+    },
+
     // Vector Array
     convertVectorArrayModelToThree: function(varr, propName) {
         return varr.map(function(v) {

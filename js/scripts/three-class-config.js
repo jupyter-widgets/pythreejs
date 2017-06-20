@@ -298,7 +298,7 @@ module.exports = {
             children:               new Types.ThreeTypeArray('this'),
             up:                     new Types.Vector3(0, 1, 0),
             position:               new Types.Vector3(),
-            rotation:               new Types.ThreeType('Euler'),
+            rotation:               new Types.Euler(),
             quaternion:             new Types.Vector4(0, 0, 0, 1),
             scale:                  new Types.Vector3(1, 1, 1),
             modelViewMatrix:        new Types.Matrix4(),
@@ -808,16 +808,6 @@ module.exports = {
             y:      new Types.Float(0.),
         },
         constructorArgs: ['radius', 'theta', 'y'],
-    },
-    Euler: {
-        relativePath: './math/Euler',
-        properties: {
-            x: new Types.Float(0),
-            y: new Types.Float(0),
-            z: new Types.Float(0),
-            order: new Types.String('XYZ'),
-        },
-        constructorArgs: [ 'x', 'y', 'z', 'order' ],
     },
     Frustum: {
         relativePath: './math/Frustum',

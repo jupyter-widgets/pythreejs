@@ -426,6 +426,23 @@ _.extend(Matrix4.prototype, BaseType.prototype, {
 });
 
 
+function Euler() {
+    this.defaultValue = [0, 0, 0, 'XYZ'];
+}
+
+_.extend(Euler.prototype, BaseType.prototype, {
+    getTraitlet: function() {
+        return 'Euler(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
+    },
+    getPropertyConverterFn: function() {
+        return 'convertEuler';
+    },
+    getPropertyAssignmentFn: function() {
+        return 'assignEuler';
+    },
+});
+
+
 module.exports = {
     ThreeType: ThreeType,
     ForwardDeclaredThreeType: ForwardDeclaredThreeType,
@@ -452,4 +469,5 @@ module.exports = {
     FaceArray: FaceArray,
     Matrix3: Matrix3,
     Matrix4: Matrix4,
+    Euler: Euler,
 };
