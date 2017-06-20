@@ -343,13 +343,16 @@ var ThreeModel = widgets.WidgetModel.extend({
 
         syncAllProps = syncAllProps == null ? false : syncAllProps;
 
+        // Collect all the keys to set in one go
+        var toSet = {};
+
         _.each(this.property_converters, function(converterName, propName) {
             if (!syncAllProps && !(propName in this.props_created_by_three)) {
                 return;
             }
 
             if (!converterName) {
-                this.set(propName, this.obj[propName]);
+                toSet[propName] = this.obj[propName];
                 return;
             }
 
@@ -359,8 +362,13 @@ var ThreeModel = widgets.WidgetModel.extend({
                 throw new Error('invalid converter name: ' + converterName);
             }
 
-            this.set(propName, converterFn.bind(this)(this.obj[propName], propName));
+            toSet[propName] = converterFn.bind(this)(this.obj[propName], propName);
         }, this);
+
+        if (toSet) {
+            // Apply all direct changes at once
+            this.set(toSet, 'pushFromThree');
+        }
 
         // mappers are used for more complicated conversions between model and three props
         // see: DataTexture
