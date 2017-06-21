@@ -120,7 +120,7 @@ var CloneArrayModel = CloneArrayAutogen.extend({
     syncToThreeObj: function() {
 
         this._needs_rebuild = false;
-        CloneArrayAutogen.prototype.createPropertiesArrays.call(this);
+        CloneArrayAutogen.prototype.syncToThreeObj.call(this);
         if (this._needs_rebuild) {
             this.obj.build();
         }

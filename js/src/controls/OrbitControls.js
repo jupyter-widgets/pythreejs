@@ -36,6 +36,7 @@ var OrbitControlsModel = OrbitControlsAutogen.OrbitControlsModel.extend({
             },
             'pushFromThree'
         );
+        controlling.save_changes();
     },
 
 });

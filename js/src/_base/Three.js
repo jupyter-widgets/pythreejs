@@ -29,7 +29,6 @@ var ThreeModel = widgets.WidgetModel.extend({
         this.initPromise = this.createThreeObjectAsync().bind(this).then(function() {
 
             // pull in props created by three
-            // TODO: need to ensure changes are saved before syncing to three obj
             this.syncToModel();
 
             // sync the rest from the server to the model
@@ -308,6 +307,7 @@ var ThreeModel = widgets.WidgetModel.extend({
 
         _.each(this.property_converters, function(converterName, propName) {
             assigner = this[this.property_assigners[propName]] || this.assignDirect;
+            assigner = assigner.bind(this);
             if (!converterName) {
                 assigner(this.obj, propName, this.get(propName));
                 return;

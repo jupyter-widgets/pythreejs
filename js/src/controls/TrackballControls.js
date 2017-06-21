@@ -33,6 +33,7 @@ var TrackballControlsModel = TrackballControlsAutogen.TrackballControlsModel.ext
             },
             'pushFromThree'
         );
+        controlling.save_changes();
     },
 
 });

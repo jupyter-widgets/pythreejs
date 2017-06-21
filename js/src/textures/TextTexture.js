@@ -24,6 +24,7 @@ var TextTextureModel = TextTextureBase.extend({
         this.obj.image = canvas;
         this.obj.needsUpdate = true;
         this.set({ version: this.obj.version }, 'pushFromThree');
+        this.save_changes();
     },
 
     buildCanvas: function() {

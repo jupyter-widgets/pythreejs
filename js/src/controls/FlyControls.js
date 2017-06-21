@@ -53,6 +53,7 @@ var FlyControlsModel = FlyControlsAutogen.FlyControlsModel.extend({
             },
             'pushFromThree'
         );
+        controlling.save_changes();
     },
 
 });
