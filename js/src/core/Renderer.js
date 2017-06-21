@@ -67,6 +67,18 @@ var RendererModel = RenderableModel.extend({
 var RendererView = RenderableView.extend({
 
     lazyRendererSetup: function() {
+        this.updateOwn();
+        this.updateSize();
+        this.renderScene();
+    },
+
+    setupEventListeners: function() {
+        RenderableView.prototype.setupEventListeners.call(this);
+
+        this.listenTo(this.model, 'change', this.updateOwn.bind(this));
+    },
+
+    updateOwn: function() {
         this.camera = this.model.get('camera').obj;
         this.scene = this.model.get('scene').obj;
         controls = [];
@@ -76,16 +88,17 @@ var RendererView = RenderableView.extend({
         this.controls = controls;
         this.enableControls();
         //this.effect = this.model.get('effect').obj;
-        this.updateSize();
-        this.renderScene();
-    },
-
-    acquireRenderer: function() {
-        RenderableView.prototype.acquireRenderer.call(this);
 
         var background = ThreeModel.prototype.convertColorModelToThree(this.model.get('background'));
         var background_opacity = ThreeModel.prototype.convertFloatModelToThree(this.model.get('background_opacity'));
         this.renderer.setClearColor(background, background_opacity);
+    },
+
+    acquireRenderer: function() {
+        RenderableView.prototype.acquireRenderer.call(this);
+        // We need to ensure that renderer properties are applied
+        // (we have no idea where the renderer has been...)
+        this.updateOwn();
     }
 
 });
