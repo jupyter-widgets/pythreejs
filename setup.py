@@ -130,12 +130,8 @@ setup_args = {
             'pythreejs/static/index.js',
             'pythreejs/static/index.js.map',
         ]),
-        ('share/jupyter/labextensions/jupyter-threejs', [
-            'pythreejs/staticlab/jupyter-threejs.bundle.js',
-            'pythreejs/staticlab/jupyter-threejs.bundle.js.manifest',
-        ]),
     ],
-    'install_requires': ['ipywidgets>=7.0.0a1', 'traittypes'],
+    'install_requires': ['ipywidgets>=7.0.0a9', 'traittypes'],
     'packages': find_packages(),
     'zip_safe': False,
     'cmdclass': {
