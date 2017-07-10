@@ -145,9 +145,3 @@ def _jupyter_nbextension_paths():
         'dest': npm_pkg_name,
         'require': npm_pkg_name + '/extension'
     }]
-
-def _jupyter_labextension_paths():
-    return [{
-        'name': npm_pkg_name,
-        'src': 'staticlab'
-    }]

@@ -1,4 +1,4 @@
-define(["jupyter-js-widgets", "underscore", "three", "ndarray"],
+define(["@jupyter-widgets/base", "underscore", "three", "ndarray"],
        function(widgets, _, THREE, ndarray) {
 
     window.THREE = THREE;

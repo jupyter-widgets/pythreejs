@@ -3,8 +3,7 @@ if (window.require) {
     window.require.config({
         map: {
             "*" : {
-                "jupyter-threejs": "nbextensions/jupyter-threejs/index",
-                "jupyter-js-widgets": "nbextensions/jupyter-js-widgets/extension"
+                "jupyter-threejs": "nbextensions/jupyter-threejs/index"
             }
         }
     });
