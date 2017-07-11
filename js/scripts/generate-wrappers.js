@@ -24,6 +24,25 @@ var threeSrcDir = path.resolve(baseDir, 'node_modules', 'three', 'src');
 var AUTOGEN_EXT = 'autogen';
 var JS_AUTOGEN_EXT = '.' + AUTOGEN_EXT + '.js';
 
+
+/**
+ * Custom classes, i.e. classes that should be included in the
+ * autogen routine but which has no *direct* counterpart in the
+ * three.js library.
+ */
+var CUSTOM_CLASSES = [
+    'textures/ImageTexture.js',
+    'textures/TextTexture.js',
+    'controls/Controls.js',
+    'controls/OrbitControls.js',
+    'controls/TrackballControls.js',
+    'controls/FlyControls.js',
+    'controls/Picker.js',
+    'geometries/PlainGeometry.js',
+    'objects/CloneArray.js',
+];
+
+
 //
 // Templates
 //
@@ -898,17 +917,6 @@ function createTopLevelPythonModuleFile() {
 
 }
 
-var CUSTOM_CLASSES = [
-    'textures/ImageTexture.js',
-    'textures/TextTexture.js',
-    'controls/Controls.js',
-    'controls/OrbitControls.js',
-    'controls/TrackballControls.js',
-    'controls/FlyControls.js',
-    'controls/Picker.js',
-    'geometries/PlainGeometry.js',
-    'objects/CloneArray.js',
-];
 
 function createJavascriptFiles() {
     return mapPromiseFnOverThreeModules(createJavascriptWrapper)
