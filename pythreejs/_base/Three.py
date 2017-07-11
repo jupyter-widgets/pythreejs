@@ -63,7 +63,7 @@ class ThreeWidget(Widget):
 
     def _ipython_display_(self, **kwargs):
         from IPython.display import display
-        return display(PreviewWidget(self))
+        return display(PreviewWidget(self), **kwargs)
 
 
 class PreviewWidget(RenderableWidget):
