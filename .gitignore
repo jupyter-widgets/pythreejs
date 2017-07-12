@@ -9,7 +9,6 @@ node_modules/
 
 # Compiled javascript
 pythreejs/static/
-pythreejs/staticlab/
 
 # OS X
 .DS_Store

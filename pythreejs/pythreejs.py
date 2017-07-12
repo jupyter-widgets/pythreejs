@@ -48,6 +48,7 @@ def vector2(trait_type=CFloat, default=None, **kwargs):
         default = [0, 0]
     return List(trait_type, default_value=default, minlen=2, maxlen=2, **kwargs)
 
+PYTHREEJS_VERSION='0.4.0-alpha.0'
 
 class ScaledObject(Object3D):
     """
@@ -211,6 +212,8 @@ class PlotMesh(Mesh):
 class Effect(Widget):
     _view_module = Unicode(npm_pkg_name).tag(sync=True)
     _model_module = Unicode(npm_pkg_name).tag(sync=True)
+    _model_module_version = Unicode(PYTHREEJS_VERSION).tag(sync=True)
+    _view_module_version = Unicode(PYTHREEJS_VERSION).tag(sync=True)
 
 
 class AnaglyphEffect(Effect):
