@@ -2,10 +2,14 @@ from ipywidgets import DOMWidget, Widget, widget_serialization
 from traitlets import Unicode, CInt, Bool, Instance
 from .._package import npm_pkg_name
 
+from .._version import EXTENSION_VERSION
+
 
 class RenderableWidget(DOMWidget):
     _view_module = Unicode(npm_pkg_name).tag(sync=True)
     _model_module = Unicode(npm_pkg_name).tag(sync=True)
+    _view_module_version = Unicode(EXTENSION_VERSION).tag(sync=True)
+    _model_module_version = Unicode(EXTENSION_VERSION).tag(sync=True)
 
     # renderer properties
     _width = CInt(200).tag(sync=True)
@@ -36,6 +40,7 @@ class RenderableWidget(DOMWidget):
 
 class ThreeWidget(Widget):
     _model_module = Unicode(npm_pkg_name).tag(sync=True)
+    _model_module_version = Unicode(EXTENSION_VERSION).tag(sync=True)
 
     def __init__(self, **kwargs):
         super(ThreeWidget, self).__init__(**kwargs)
