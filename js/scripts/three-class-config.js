@@ -5,17 +5,16 @@
 
 var Types = require('./prop-types');
 
+// NOTE: uuid properties are not generated, as they cannot be synced across
+// several clients.
+
 module.exports = {
-    
+
     _defaults: require('./three-class-config-defaults'),
 
-    // Three_Legacy: {
-    //     relativePath: './Three.Legacy',
-    // },
-    // Three: {
-    //     relativePath: './Three',
-    // },
-    
+    AnimationAction: {
+        relativePath: './animation/AnimationAction',
+    },
     AnimationClip: {
         relativePath: './animation/AnimationClip',
     },
@@ -98,30 +97,125 @@ module.exports = {
     StereoCamera: {
         relativePath: './cameras/StereoCamera',
     },
-    // BufferAttribute: {
-    //     relativePath: './core/BufferAttribute',
-    //     properties: {
-    //         uuid:        new Types.String(''),
-    //         array:       new Types.ArrayBuffer(),
-    //         itemSize:    new Types.Int(1),
-    //         count:       new Types.Int(0),
-    //         needsUpdate: new Types.Bool(false),
-    //         normalized:  new Types.Bool(true),
-    //         version:     new Types.Int(-1),
-    //     },
-    //     constructorArgs: [ 'array', 'itemSize', 'normalized' ],
-    //     propsDefinedByThree: [ 'uuid', 'count', 'version' ]
-    // },
+    Controls: {
+        relativePath: './controls/Controls',
+        properties: {
+            controlling: new Types.ThreeType('Object3D', {allowNull: false}),
+        },
+    },
+    OrbitControls: {
+        relativePath: './controls/OrbitControls',
+        superClass: 'Controls',
+        properties: {
+            enabled: new Types.Bool(true),
+
+            minDistance: new Types.Float(0),
+            maxDistance: new Types.Float(Infinity),
+
+            minZoom: new Types.Float(0),
+            maxZoom: new Types.Float(Infinity),
+
+            minPolarAngle: new Types.Float(0), // radians
+            maxPolarAngle: new Types.Float(Math.PI), // radians
+
+            minAzimuthAngle: new Types.Float(-Infinity), // radians
+            maxAzimuthAngle: new Types.Float(Infinity), // radians
+
+            enableDamping: new Types.Bool(false),
+            dampingFactor: new Types.Float(0.25),
+
+            enableZoom: new Types.Bool(true),
+            zoomSpeed: new Types.Float(1.0),
+
+            enableRotate: new Types.Bool(true),
+            rotateSpeed: new Types.Float(1.0),
+
+            enablePan: new Types.Bool(true),
+            keyPanSpeed: new Types.Float(7.0), // pixels moved per arrow key push
+
+            autoRotate: new Types.Bool(false),
+            autoRotateSpeed: new Types.Float(2.0), // 30 seconds per round when fps is 60
+
+            enableKeys: new Types.Bool(true),
+
+            target: new Types.Vector3(0, 0, 0),
+        },
+        constructorArgs: ['controlling'],
+    },
+    TrackballControls: {
+        relativePath: './controls/TrackballControls',
+        superClass: 'Controls',
+        properties: {
+            enabled: new Types.Bool(true),
+
+            minDistance: new Types.Float(0),
+            maxDistance: new Types.Float(Infinity),
+
+            rotateSpeed: new Types.Float(1.0),
+            zoomSpeed: new Types.Float(1.2),
+            panSpeed: new Types.Float(0.3),
+
+            staticMoving: new Types.Bool(false),
+            dynamicDampingFactor: new Types.Float(0.2),
+
+            noRotate: new Types.Bool(false),
+            noZoom: new Types.Bool(false),
+            noPan: new Types.Bool(false),
+            noRoll: new Types.Bool(false),
+
+            target: new Types.Vector3(0, 0, 0),
+        },
+    },
+    FlyControls: {
+        relativePath: './controls/FlyControls',
+        superClass: 'Controls',
+        properties: {
+            forward_speed: new Types.Float(0),
+            lateral_speed: new Types.Float(0),
+            upward_speed: new Types.Float(0),
+            roll: new Types.Float(0),
+            pitch: new Types.Float(0),
+            yaw: new Types.Float(0),
+        },
+    },
+    Picker: {
+        relativePath: './controls/Picker',
+        superClass: 'Controls',
+        properties: {
+            event: new Types.String('click'),
+            root: new Types.ThreeType('Object3D', {allowNull: true}),
+            all: new Types.Bool(false)
+        },
+        propsDefinedByThree: [ 'distance', 'point', 'face', 'faceNormal', 'faceVertices',
+                               'faceIndex', 'object', 'picked'],
+    },
+
+    BufferAttribute: {
+        relativePath: './core/BufferAttribute',
+        properties: {
+            array:       new Types.ArrayBuffer(),
+            dynamic:     new Types.Bool(false),
+            itemSize:    new Types.Int(1),
+            count:       new Types.Int(0),
+            needsUpdate: new Types.Bool(false),
+            normalized:  new Types.Bool(true),
+            version:     new Types.Int(-1),
+        },
+        constructorArgs: [ 'array', 'itemSize', 'normalized' ],
+        propsDefinedByThree: [ 'count', 'version' ]
+    },
     BufferGeometry: {
         relativePath: './core/BufferGeometry',
         properties: {
-            uuid:       new Types.String(''),
             name:       new Types.String(''),
             type:       new Types.String(''),
             attributes: new Types.BufferAttributeDict(),
+            position:   new Types.BufferAttribute(),
+            normal:     new Types.BufferAttribute(),
+            color:      new Types.BufferAttribute(),
             index:      new Types.BufferAttribute(),
         },
-        propsDefinedByThree: [ 'uuid', 'type' ]
+        propsDefinedByThree: [ 'type' ]
     },
     Clock: {
         relativePath: './core/Clock',
@@ -150,19 +244,30 @@ module.exports = {
     Geometry: {
         relativePath: './core/Geometry',
         properties: {
-            id:   new Types.String(''),
-            uuid: new Types.String(''),
+            // TODO: id not supported as it conflicts with backbone's id
+            // id: new Types.String(''),
             name: new Types.String(''),
             type: new Types.String(''),
 
-            // TODO: arrays of geometry data
-            // vertices: new Types.VectorArray(),
-            // colors: new Types.ColorArray(),
-            // faces: new Types.FaceArray(),
-            // faceVertexUVs
-            // ...
+            // By default Geometry does not sync geometry arrays
+            // Use the custom class PlainGeometry to access those arrays
         },
-        propsDefinedByThree: [ 'uuid', 'type' ]
+        propsDefinedByThree: [ 'type' ]
+    },
+    PlainGeometry: {
+        relativePath: './geometries/PlainGeometry',
+        superClass: 'Geometry',
+        properties: {
+            vertices: new Types.VectorArray(),
+            colors: new Types.ColorArray(),
+            faces: new Types.FaceArray(),
+            faceVertexUvs: new Types.Array(),
+            lineDistances: new Types.Array(),
+            morphTargets: new Types.Array(),
+            morphNormals: new Types.Array(),
+            skinWeights: new Types.Array(),
+            skinIndices: new Types.Array(),
+        },
     },
     InstancedBufferAttribute: {
         relativePath: './core/InstancedBufferAttribute',
@@ -186,15 +291,14 @@ module.exports = {
         relativePath: './core/Object3D',
         properties: {
             // TODO: id not supported as it conflicts with backbone's id
-            // id: new Types.String(''), 
-            uuid:                   new Types.String(''),
+            // id: new Types.String(''),
             name:                   new Types.String(''),
             type:                   new Types.String(''),
             parent:                 new Types.ThreeType('this'),
             children:               new Types.ThreeTypeArray('this'),
             up:                     new Types.Vector3(0, 1, 0),
             position:               new Types.Vector3(),
-            rotation:               new Types.Vector3(),
+            rotation:               new Types.Euler(),
             quaternion:             new Types.Vector4(0, 0, 0, 1),
             scale:                  new Types.Vector3(1, 1, 1),
             modelViewMatrix:        new Types.Matrix4(),
@@ -209,7 +313,7 @@ module.exports = {
             frustumCulled:          new Types.Bool(true),
             renderOrder:            new Types.Int(0),
         },
-        propsDefinedByThree: [ 'uuid', 'type' ]
+        propsDefinedByThree: [ 'type' ]
     },
     Raycaster: {
         relativePath: './core/Raycaster',
@@ -244,12 +348,16 @@ module.exports = {
         relativePath: './lights/DirectionalLight',
         superClass: 'Light',
         properties: {
-            target:      new Types.ThreeType('Object3D'),
+            target:      new Types.InitializedThreeType('Object3D', {args: '()', nullable: false}),
             // TODO: shadows
             // shadow:      new Types.ThreeType('LightShadow'),
             castsShadow: new Types.Bool(false),
         },
         constructorArgs: [ 'color', 'intensity' ],
+        propsDefinedByThree: [ 'target' ]
+    },
+    DirectionalLightShadow: {
+        relativePath: './lights/DirectionalLightShadow',
     },
     HemisphereLight: {
         relativePath: './lights/HemisphereLight',
@@ -283,11 +391,15 @@ module.exports = {
         },
         constructorArgs: [ 'color', 'intensity', 'distance', 'decay' ],
     },
+    RectAreaLight: {
+        relativePath: './lights/RectAreaLight',
+        superClass: 'Light',
+    },
     SpotLight: {
         relativePath: './lights/SpotLight',
         superClass: 'Light',
         properties: {
-            target:   new Types.ThreeType('Object3D'),
+            target:   new Types.InitializedThreeType('Object3D', {args: '()', nullable: false}),
             distance: new Types.Float(0.0),
             angle:    new Types.Float(Math.PI / 3.0),
             penumbra: new Types.Float(0.0),
@@ -296,9 +408,16 @@ module.exports = {
             // shadow:   new Types.ThreeType('LightShadow'),
         },
         constructorArgs: [ 'color', 'intensity', 'distance', 'angle', 'penumbra', 'decay' ],
+        propsDefinedByThree: [ 'target' ]
+    },
+    SpotLightShadow: {
+        relativePath: './lights/SpotLightShadow',
     },
     AnimationLoader: {
         relativePath: './loaders/AnimationLoader',
+    },
+    AudioLoader: {
+        relativePath: './loaders/AudioLoader',
     },
     BinaryTextureLoader: {
         relativePath: './loaders/BinaryTextureLoader',
@@ -314,6 +433,12 @@ module.exports = {
     },
     CubeTextureLoader: {
         relativePath: './loaders/CubeTextureLoader',
+    },
+    DataTextureLoader: {
+        relativePath: './loaders/DataTextureLoader',
+    },
+    FileLoader: {
+        relativePath: './laoders/FileLoader',
     },
     FontLoader: {
         relativePath: './loaders/FontLoader',
@@ -350,10 +475,10 @@ module.exports = {
         superClass: 'Material',
         properties: {
             color:        new Types.Color('#ffffff'),
+            lights:       new Types.Bool(false),
             linewidth:    new Types.Float(1.0),
             linecap:      new Types.String('round'),
             linejoin:     new Types.String('round'),
-            vertexColors: new Types.Enum('Colors', 'NoColors'),
         },
         constructorArgs: [ 'parameters' ],
     },
@@ -362,65 +487,78 @@ module.exports = {
         superClass: 'Material',
         properties: {
             color:        new Types.Color('#ffffff'),
+            lights:       new Types.Bool(false),
             linewidth:    new Types.Float(1.0),
             scale:        new Types.Float(1.0),
             dashSize:     new Types.Float(3.0),
             gapSize:      new Types.Float(1.0),
-            vertexColors: new Types.Enum('Colors', 'NoColors'),
         },
         constructorArgs: [ 'parameters' ],
     },
     Material: {
         relativePath: './materials/Material',
         properties: {
-            uuid:                new Types.String(''),
-            name:                new Types.String(''),
-            opacity:             new Types.Float(1.0),
-            transparent:         new Types.Bool(false),
-            blending:            new Types.Enum('BlendingMode', 'NormalBlending'),
-            blendSrc:            new Types.Enum('BlendFactors', 'SrcAlphaFactor'),
-            blendDst:            new Types.Enum('BlendFactors', 'OneMinusSrcAlphaFactor'),
-            blendEquation:       new Types.Enum('Equations', 'AddEquation'),
-            depthTest:           new Types.Bool(true),
-            depthFunc:           new Types.Enum('DepthMode', 'LessEqualDepth'),
-            depthWrite:          new Types.Bool(true),
-            polygonOffset:       new Types.Bool(false),
-            polygonOffsetFactor: new Types.Float(0),
-            polygonOffsetUnits:  new Types.Float(0),
-            alphaTest:           new Types.Float(0.0),
-            clippingPlanes:      new Types.ThreeTypeArray('Plane'),
-            clipShadows:         new Types.Bool(false),
-            overdraw:            new Types.Float(0),
-            visible:             new Types.Bool(true),
-            side:                new Types.Enum('Side', 'FrontSide'),
-            fog:                 new Types.Bool(true),
-            lights:              new Types.Bool(true),
+            alphaTest:              new Types.Float(0.0),
+            blendDst:               new Types.Enum('BlendFactors', 'OneMinusSrcAlphaFactor'),
+            //blendDstAlpha:          new Types.Float(null),
+            blending:               new Types.Enum('BlendingMode', 'NormalBlending'),
+            blendSrc:               new Types.Enum('BlendFactors', 'SrcAlphaFactor'),
+            //blendSrcAlpha:          new Types.Float(null),
+            blendEquation:          new Types.Enum('Equations', 'AddEquation'),
+            //blendEquationAlpha:     new Types.Float(null),
+            clipIntersection:       new Types.Bool(false),
+            //clippingPlanes:         new Types.ThreeTypeArray('Plane'),  // TODO: Should default to null
+            clipShadows:            new Types.Bool(false),
+            colorWrite:             new Types.Bool(true),
+            //customDepthMaterial:    new Types.ForwardDeclaredThreeType('MeshDepthMaterial', 'pythreejs', {allowNull: true}),
+            //customDistanceMaterial: new Types.ForwardDeclaredThreeType('MeshDepthMaterial', 'pythreejs', {allowNull: true}),
+            //defines:                new Types.Dict(undefined),
+            depthFunc:              new Types.Enum('DepthMode', 'LessEqualDepth'),
+            depthTest:              new Types.Bool(true),
+            depthWrite:             new Types.Bool(true),
+            fog:                    new Types.Bool(true),
+            lights:                 new Types.Bool(true),
+            name:                   new Types.String(''),
+            overdraw:               new Types.Float(0),
+            polygonOffset:          new Types.Bool(false),
+            polygonOffsetFactor:    new Types.Float(0),
+            polygonOffsetUnits:     new Types.Float(0),
+            //precision:              new Types.String('lowp'),  // TODO: Needs to be undefined on JS side!
+            premultipliedAlpha:     new Types.Bool(false),
+            dithering:              new Types.Bool(false),
+            shading:                new Types.Enum('Shading', 'SmoothShading'),
+            side:                   new Types.Enum('Side', 'FrontSide'),
+            transparent:            new Types.Bool(false),
+            type:                   new Types.String(''),
+            vertexColors:           new Types.Enum('Colors', 'NoColors'),
+            visible:                new Types.Bool(true),
+            opacity:                new Types.Float(1.0),
         },
-        propsDefinedByThree: [ 'uuid', 'type' ]
+        propsDefinedByThree: [ 'type' ]
     },
     MeshBasicMaterial: {
         relativePath: './materials/MeshBasicMaterial',
         superClass: 'Material',
         properties: {
-            color:              new Types.Color('#ffffff'),
-            map:                new Types.ThreeType('Texture'),
+            alphaMap:           new Types.ThreeType('Texture'),
             aoMap:              new Types.ThreeType('Texture'),
             aoMapIntensity:     new Types.Float(1),
-            specularMap:        new Types.ThreeType('Texture'),
-            alphaMap:           new Types.ThreeType('Texture'),
-            envMap:             new Types.ThreeType('Texture'),
+            color:              new Types.Color('#ffffff'),
             combine:            new Types.Enum('Operations', 'MultiplyOperation'),
+            envMap:             new Types.ThreeType('CubeTexture'),
+            lightMap:           new Types.ThreeType('Texture'),
+            lightMapIntensity:  new Types.Float(1.0),
+            lights:             new Types.Bool(false),
+            map:                new Types.ThreeType('Texture'),
+            morphTargets:       new Types.Bool(false),
             reflectivity:       new Types.Float(1),
             refractionRatio:    new Types.Float(0.98),
-            fog:                new Types.Bool(true),
-            shading:            new Types.Enum('Shading', 'SmoothShading'),
+            skinning:           new Types.Bool(false),
+            specularMap:        new Types.ThreeType('Texture'),
             wireframe:          new Types.Bool(false),
             wireframeLinewidth: new Types.Float(1),
             wireframeLinecap:   new Types.String('round'), // TODO: enum?
             wireframeLinejoin:  new Types.String('round'),
-            vertexColors:       new Types.Enum('Colors', 'NoColors'),
-            skinning:           new Types.Bool(false),
-            morphTargets:       new Types.Bool(false),
         },
         constructorArgs: [ 'parameters' ],
     },
@@ -428,7 +566,15 @@ module.exports = {
         relativePath: './materials/MeshDepthMaterial',
         superClass: 'Material',
         properties: {
+            alphaMap:           new Types.ThreeType('Texture'),
+            displacementMap:    new Types.ThreeType('Texture'),
+            displacementScale:  new Types.Float(1.0),
+            displacementBias:   new Types.Float(0.0),
+            fog:                new Types.Bool(false),
+            lights:             new Types.Bool(false),
+            map:                new Types.ThreeType('Texture'),
             morphTargets:       new Types.Bool(false),
+            skinning:           new Types.Bool(false),
             wireframe:          new Types.Bool(false),
             wireframeLinewidth: new Types.Float(1.0),
         },
@@ -438,30 +584,28 @@ module.exports = {
         relativePath: './materials/MeshLambertMaterial',
         superClass: 'Material',
         properties: {
-            color:              new Types.String('#ffffff'),
-            map:                new Types.ThreeType('Texture'),
-            lightMap:           new Types.ThreeType('Texture'),
-            lightMapIntensity:  new Types.Float(1.0),
+            alphaMap:           new Types.ThreeType('Texture'),
             aoMap:              new Types.ThreeType('Texture'),
             aoMapIntensity:     new Types.Float(1.0),
+            color:              new Types.Color('#ffffff'),
+            combine:            new Types.Enum('Operations', 'MultiplyOperation'),
             emissive:           new Types.Color('#000000'),
             emissiveMap:        new Types.ThreeType('Texture'),
             emissiveIntensity:  new Types.Float(1.0),
-            specularMap:        new Types.ThreeType('Texture'),
-            alphaMap:           new Types.ThreeType('Texture'),
-            envMap:             new Types.ThreeType('Texture'),
-            combine:            new Types.Enum('Operations', 'MultiplyOperation'),
+            envMap:             new Types.ThreeType('CubeTexture'),
+            lightMap:           new Types.ThreeType('Texture'),
+            lightMapIntensity:  new Types.Float(1.0),
+            map:                new Types.ThreeType('Texture'),
+            morphNormals:       new Types.Bool(false),
+            morphTargets:       new Types.Bool(false),
             reflectivity:       new Types.Float(1.0),
             refractionRatio:    new Types.Float(0.98),
-            fog:                new Types.Bool(false),
+            skinning:           new Types.Bool(false),
+            specularMap:        new Types.ThreeType('Texture'),
             wireframe:          new Types.Bool(false),
-            wireframeLinewidth: new Types.Float(1.0),
             wireframeLinecap:   new Types.String('round'),
             wireframeLinejoin:  new Types.String('round'),
-            vertexColors:       new Types.Enum('Colors', 'NoColors'),
-            skinning:           new Types.Bool(false),
-            morphTargets:       new Types.Bool(false),
-            morphNormals:       new Types.Bool(false),
+            wireframeLinewidth: new Types.Float(1.0),
         },
         constructorArgs: [ 'parameters' ],
     },
@@ -469,9 +613,11 @@ module.exports = {
         relativePath: './materials/MeshNormalMaterial',
         superClass: 'Material',
         properties: {
-            wireframe: new Types.Bool(false),
+            fog:                new Types.Bool(false),
+            lights:             new Types.Bool(false),
+            morphTargets:       new Types.Bool(false),
+            wireframe:          new Types.Bool(false),
             wireframeLinewidth: new Types.Float(1.0),
-            morphTargets: new Types.Bool(false),
         },
         constructorArgs: [ 'parameters' ],
     },
@@ -479,91 +625,94 @@ module.exports = {
         relativePath: './materials/MeshPhongMaterial',
         superClass: 'Material',
         properties: {
-            color:              new Types.String('#ffffff'),
-            specular:           new Types.Color('#111111'),
-            shininess:          new Types.Float(30.0),
-            map:                new Types.ThreeType('Texture'),
-            lightMap:           new Types.ThreeType('Texture'),
-            lightMapIntensity:  new Types.Float(1.0),
+            alphaMap:           new Types.ThreeType('Texture'),
             aoMap:              new Types.ThreeType('Texture'),
             aoMapIntensity:     new Types.Float(1.0),
-            emissive:           new Types.Color('#000000'),
-            emissiveMap:        new Types.ThreeType('Texture'),
-            emissiveIntensity:  new Types.Float(1.0),
             bumpMap:            new Types.ThreeType('Texture'),
             bumpScale:          new Types.Float(1.0),
-            normalMap:          new Types.ThreeType('Texture'),
-            normalScale:        new Types.Vector2(1, 1),
+            color:              new Types.Color('#ffffff'),
+            combine:            new Types.Enum('Operations', 'MultiplyOperation'),
             displacementMap:    new Types.ThreeType('Texture'),
             displacementScale:  new Types.Float(1.0),
             displacementBias:   new Types.Float(0.0),
-            specularMap:        new Types.ThreeType('Texture'),
-            alphaMap:           new Types.ThreeType('Texture'),
-            envMap:             new Types.ThreeType('Texture'),
-            combine:            new Types.Enum('Operations', 'MultiplyOperation'),
+            emissive:           new Types.Color('#000000'),
+            emissiveMap:        new Types.ThreeType('Texture'),
+            emissiveIntensity:  new Types.Float(1.0),
+            envMap:             new Types.ThreeType('CubeTexture'),
+            lightMap:           new Types.ThreeType('Texture'),
+            lightMapIntensity:  new Types.Float(1.0),
+            map:                new Types.ThreeType('Texture'),
+            morphNormals:       new Types.Bool(false),
+            morphTargets:       new Types.Bool(false),
+            normalMap:          new Types.ThreeType('Texture'),
+            normalScale:        new Types.Vector2(1, 1),
             reflectivity:       new Types.Float(1.0),
             refractionRatio:    new Types.Float(0.98),
-            fog:                new Types.Bool(false),
-            shading:            new Types.Enum('Shading', 'SmoothShading'),
+            shininess:          new Types.Float(30.0),
+            skinning:           new Types.Bool(false),
+            specular:           new Types.Color('#111111'),
+            specularMap:        new Types.ThreeType('Texture'),
             wireframe:          new Types.Bool(false),
             wireframeLinewidth: new Types.Float(1.0),
             wireframeLinecap:   new Types.String('round'),
             wireframeLinejoin:  new Types.String('round'),
-            vertexColors:       new Types.Enum('Colors', 'NoColors'),
-            skinning:           new Types.Bool(false),
-            morphTargets:       new Types.Bool(false),
-            morphNormals:       new Types.Bool(false),
         },
         constructorArgs: [ 'parameters' ],
+    },
+    MeshPhysicalMaterial: {
+        relativePath: './materials/MeshPhysicalMaterial',
+        superClass: 'MeshStandardMaterial',
+        properties: {
+            clearCoat:          new Types.Float(0.0),
+            clearCoatRoughness: new Types.Float(0.0),
+            reflectivity:       new Types.Float(0.5),
+        },
+        propsDefinedByThree: ['isMeshPhysicalMaterial'],
     },
     MeshStandardMaterial: {
         relativePath: './materials/MeshStandardMaterial',
         superClass: 'Material',
         properties: {
-            color:              new Types.Color('#ffffff'),
-            roughness:          new Types.Float(0.5),
-            metalness:          new Types.Float(0.5),
-            map:                new Types.ThreeType('Texture'),
-            lightMap:           new Types.ThreeType('Texture'),
-            lightMapIntensity:  new Types.Float(1.0),
+            alphaMap:           new Types.ThreeType('Texture'),
             aoMap:              new Types.ThreeType('Texture'),
             aoMapIntensity:     new Types.Float(1),
-            emissive:           new Types.Color('#000000'),
-            emissiveMap:        new Types.ThreeType('Texture'),
-            emissiveIntensity:  new Types.Float(1.0),
             bumpMap:            new Types.ThreeType('Texture'),
             bumpScale:          new Types.Float(1.0),
-            normalMap:          new Types.ThreeType('Texture'),
-            // TODO:
-            // normalMapScale:     new Types.Array([ 1, 1 ]),
+            color:              new Types.Color('#ffffff'),
             displacementMap:    new Types.ThreeType('Texture'),
             displacementScale:  new Types.Float(1.0),
             displacementBias:   new Types.Float(0.0),
-            roughnessMap:       new Types.ThreeType('Texture'),
-            metalnessMap:       new Types.ThreeType('Texture'),
-            alphaMap:           new Types.ThreeType('Texture'),
-            envMap:             new Types.ThreeType('Texture'),
+            emissive:           new Types.Color('#000000'),
+            emissiveMap:        new Types.ThreeType('Texture'),
+            emissiveIntensity:  new Types.Float(1.0),
+            envMap:             new Types.ThreeType('CubeTexture'),
             envMapIntensity:    new Types.Float(1.0),
-            refractionRatio:    new Types.Float(0.98),
-            fog:                new Types.Bool(true),
-            shading:            new Types.Enum('Shading', 'SmoothShading'),
-            wireframe:          new Types.Bool(false),
-            wireframeLinewidth: new Types.Float(1),
-            wireframeLinecap:   new Types.String('round'), // TODO: enum?
-            wireframeLinejoin:  new Types.String('round'),
-            vertexColors:       new Types.Enum('Colors', 'NoColors'),
-            skinning:           new Types.Bool(false),
+            lightMap:           new Types.ThreeType('Texture'),
+            lightMapIntensity:  new Types.Float(1.0),
+            map:                new Types.ThreeType('Texture'),
+            metalness:          new Types.Float(0.5),
+            metalnessMap:       new Types.ThreeType('Texture'),
             morphTargets:       new Types.Bool(false),
             morphNormals:       new Types.Bool(false),
+            normalMap:          new Types.ThreeType('Texture'),
+            normalScale:        new Types.Vector2(1, 1),
+            refractionRatio:    new Types.Float(0.98),
+            roughness:          new Types.Float(0.5),
+            roughnessMap:       new Types.ThreeType('Texture'),
+            skinning:           new Types.Bool(false),
+            wireframe:          new Types.Bool(false),
+            wireframeLinecap:   new Types.String('round'), // TODO: enum?
+            wireframeLinejoin:  new Types.String('round'),
+            wireframeLinewidth: new Types.Float(1),
         },
         constructorArgs: [ 'parameters' ],
     },
-    MultiMaterial: {
-        relativePath: './materials/MultiMaterial',
+    MeshToonMaterial: {
+        relativePath: './materials/MeshToonMaterial',
+        superClass: 'MeshPhongMaterial',
         properties: {
-            materials: new Types.ThreeTypeArray('Material')
+            gradientMap:     new Types.ThreeType('Texture'),
         },
-        constructorArgs: [ 'parameters' ],
     },
     PointsMaterial: {
         relativePath: './materials/PointsMaterial',
@@ -573,7 +722,6 @@ module.exports = {
             map:             new Types.ThreeType('Texture'),
             size:            new Types.Float(1.0),
             sizeAttenuation: new Types.Bool(true),
-            vertexColors:    new Types.Enum('Colors', 'NoColors'),
         },
         constructorArgs: [ 'parameters' ],
     },
@@ -587,19 +735,40 @@ module.exports = {
         relativePath: './materials/ShaderMaterial',
         superClass: 'Material',
         properties: {
-            uniforms:       new Types.Dict(),
-            // TODO: no longer supported by THREE.js
-            // attributes 
-            vertexShader:   new Types.String(''),
-            fragmentShader: new Types.String(''),
+            uniforms:           new Types.Dict(),
+            clipping:           new Types.Bool(false),
+            extensions:         new Types.Dict(),
+            fog:                new Types.Bool(false),
+            fragmentShader:     new Types.String(''),
+            lights:             new Types.Bool(false),
+            linewidth:          new Types.Float(1.0),
+            morphNormals:       new Types.Bool(false),
+            morphTargets:       new Types.Bool(false),
+            shading:            new Types.Enum('Shading', 'SmoothShading'),
+            skinning:           new Types.Bool(false),
+            uniforms:           new Types.Dict(),
+            vertexShader:       new Types.String(''),
+            wireframe:          new Types.Bool(false),
+            wireframeLinewidth: new Types.Float(1.0),
         },
         constructorArgs: [ 'parameters' ],
+        propsDefinedByThree: [ 'extenstions' ],
+    },
+    ShadowMaterial: {
+        relativePath: './materials/ShadowMaterial',
+        superClass: 'ShaderMaterial',
+        properties: {
+            lights: new Types.Bool(true),
+            transparent: new Types.Bool(true),
+        },
     },
     SpriteMaterial: {
         relativePath: './materials/SpriteMaterial',
         superClass: 'Material',
         properties: {
             color:    new Types.Color('#ffffff'),
+            fog:      new Types.Bool(false),
+            lights:   new Types.Bool(false),
             map:      new Types.ThreeType('Texture'),
             rotation: new Types.Float(0.0),
         },
@@ -630,6 +799,15 @@ module.exports = {
             b: new Types.Float(1.0),
         },
         constructorArgs: [ 'r', 'g', 'b' ],
+    },
+    Cylindrical: {
+        relativePath: './math/Cylindrical',
+        properties: {
+            radius: new Types.Float(1.0),
+            theta:  new Types.Float(0.),
+            y:      new Types.Float(0.),
+        },
+        constructorArgs: ['radius', 'theta', 'y'],
     },
     Euler: {
         relativePath: './math/Euler',
@@ -774,27 +952,31 @@ module.exports = {
     },
     Line: {
         relativePath: './objects/Line',
+        superClass: 'Object3D',
         constructorArgs: [ 'geometry', 'material' ],
         properties: {
             material: new Types.ThreeType('Material'),
             geometry: new Types.ThreeType(['Geometry', 'BufferGeometry']),
         }
     },
+    LineLoop: {
+        relativePath: './objects/LineLoop',
+        superClass: 'Line',
+        constructorArgs: [ 'geometry', 'material' ],
+    },
     LineSegments: {
         relativePath: './objects/LineSegments',
+        superClass: 'Line',
         constructorArgs: [ 'geometry', 'material' ],
-        properties: {
-            material: new Types.ThreeType('Material'),
-            geometry: new Types.ThreeType(['Geometry', 'BufferGeometry']),
-        }
     },
     Mesh: {
         relativePath: './objects/Mesh',
         superClass: 'Object3D',
         constructorArgs: [ 'geometry', 'material' ],
         properties: {
-            material: new Types.ThreeType('Material', false),
-            geometry: new Types.ThreeType(['Geometry', 'BufferGeometry'], false),
+            material: new Types.ThreeType('Material', {allowNull: false}),
+            geometry: new Types.ThreeType(['Geometry', 'BufferGeometry'], {allowNull: false}),
+            drawMode: new Types.Enum('DrawModes', 'TrianglesDrawMode'),
         }
     },
     Points: {
@@ -814,6 +996,18 @@ module.exports = {
             material: new Types.ThreeType('SpriteMaterial'),
         },
         propsDefinedByThree: [ 'isSprite' ]
+    },
+    CloneArray: {
+        relativePath: './objects/CloneArray',
+        superClass: 'Object3D',
+        properties: {
+            original: new Types.ThreeType('Object3D'),
+            positions: new Types.VectorArray(),
+            // TODO: Also scale and rotation arrays
+            merge: new Types.Bool(false),
+        },
+        constructorArgs: [ 'original', 'positions', 'merge' ],
+        // TODO: Add restriction: Source cannot use strip/fan draw modes
     },
     WebGLRenderTarget: {
         relativePath: './renderers/WebGLRenderTarget',
@@ -842,8 +1036,8 @@ module.exports = {
     Texture: {
         relativePath: './textures/Texture',
         properties: {
-            id:               new Types.Int(),
-            uuid:             new Types.String(''),
+            // TODO: id not supported as it conflicts with backbone's id
+            // id: new Types.String(''),
             name:             new Types.String(''),
             mapping:          new Types.Enum('MappingModes', 'UVMapping'),
             wrapS:            new Types.Enum('WrappingModes', 'ClampToEdgeWrapping'),
@@ -865,11 +1059,7 @@ module.exports = {
         // As the image property is not exposed, we don't define constructorArgs.
         // The image property is hidden, as it does not have a good corresponding python type (yet)
         //constructorArgs: [ 'image', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter', 'format', 'type', 'anisotropy' ],
-        propsDefinedByThree: [ 'id', 'uuid', 'version' ],
-    },
-    CanvasTexture: {
-        relativePath: './textures/CanvasTexture',
-        superClass: 'Texture',
+        propsDefinedByThree: [ 'id', 'version' ],
     },
     CompressedTexture: {
         relativePath: './textures/CompressedTexture',
@@ -878,6 +1068,10 @@ module.exports = {
     CubeTexture: {
         relativePath: './textures/CubeTexture',
         superClass: 'Texture',
+        properties: {
+            images: new Types.Array(),
+        },
+        constructorArgs: [ 'images', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter', 'format', 'type', 'anisotropy' ],
     },
     DataTexture: {
         relativePath: './textures/DataTexture',
@@ -893,6 +1087,22 @@ module.exports = {
             generateMipmaps: new Types.Bool(false),
         },
         constructorArgs: [ 'data', 'width', 'height', 'format', 'type', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter', 'anisotropy' ],
+    },
+    DepthTexture: {
+        relativePath: './textures/DepthTexture',
+        superClass: 'Texture',
+        properties: {
+            // this.image = { width: width, height: height };
+            width:           new Types.Int(0),
+            height:          new Types.Int(0),
+            format:          new Types.Enum('DepthFormats', 'DepthFormat'), // narrowed type
+            type:            new Types.Enum('DataTypes', 'UnsignedShortType'), // override default
+            minFilter:       new Types.Enum('Filters', 'NearestFilter'), // override default
+            magFilter:       new Types.Enum('Filters', 'NearestFilter'), // override default
+            flipY:           new Types.Bool(false), // override default
+            generateMipmaps: new Types.Bool(false),
+        },
+        constructorArgs: ['width', 'height', 'type', 'wrapS', 'wrapT', 'magFilter', 'minFilter', 'anisotropy', 'format']
     },
     ImageTexture: {
         relativePath: './textures/ImageTexture',
@@ -950,6 +1160,9 @@ module.exports = {
     Shape: {
         relativePath: './extras/core/Shape',
     },
+    ShapePath: {
+        relativePath: './extras/core/ShapePath',
+    },
     ArcCurve: {
         relativePath: './extras/curves/ArcCurve',
     },
@@ -987,7 +1200,7 @@ module.exports = {
         relativePath: './extras/curves/SplineCurve3',
     },
     BoxBufferGeometry: {
-        relativePath: './extras/geometries/BoxBufferGeometry',
+        relativePath: './geometries/BoxBufferGeometry',
         superClass: 'BufferGeometry',
         constructorArgs: [ 'width', 'height', 'depth', 'widthSegments', 'heightSegments', 'depthSegments' ],
         properties: {
@@ -1001,7 +1214,7 @@ module.exports = {
         propsDefinedByThree: [ 'attributes', 'index' ],
     },
     BoxGeometry: {
-        relativePath: './extras/geometries/BoxGeometry',
+        relativePath: './geometries/BoxGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'width', 'height', 'depth', 'widthSegments', 'heightSegments', 'depthSegments' ],
         properties: {
@@ -1015,7 +1228,7 @@ module.exports = {
         propsDefinedByThree: [ 'vertices', 'faces' ]
     },
     CircleBufferGeometry: {
-        relativePath: './extras/geometries/CircleBufferGeometry',
+        relativePath: './geometries/CircleBufferGeometry',
         superClass: 'BufferGeometry',
         constructorArgs: [ 'radius', 'segments', 'thetaStart', 'thetaLength' ],
         properties: {
@@ -1027,7 +1240,7 @@ module.exports = {
         propsDefinedByThree: [ 'attributes', 'index' ],
     },
     CircleGeometry: {
-        relativePath: './extras/geometries/CircleGeometry',
+        relativePath: './geometries/CircleGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'radius', 'segments', 'thetaStart', 'thetaLength' ],
         properties: {
@@ -1037,8 +1250,22 @@ module.exports = {
             thetaLength: new Types.Float(Math.PI * 2.0),
         },
     },
+    ConeGeometry: {
+        relativePath: './geometries/ConeGeometry',
+        superClass: 'Geometry',
+        constructorArgs: ['radius', 'height', 'radialSegments', 'heightSegments', 'openEnded', 'thetaStart', 'thetaLength'],
+        properties: {
+            radius:         new Types.Float(20.0),
+            height:         new Types.Float(100.0),
+            radialSegments: new Types.Int(8),
+            heightSegments: new Types.Int(1),
+            openEnded:      new Types.Bool(false),
+            thetaStart:     new Types.Float(0.0),
+            thetaLength:    new Types.Float(Math.PI * 2.0),
+        },
+    },
     CylinderBufferGeometry: {
-        relativePath: './extras/geometries/CylinderBufferGeometry',
+        relativePath: './geometries/CylinderGeometry',
         superClass: 'BufferGeometry',
         constructorArgs: [ 'radiusTop', 'radiusBottom', 'height', 'radiusSegments', 'heightSegments', 'openEnded', 'thetaStart', 'thetaLength' ],
         properties: {
@@ -1054,7 +1281,7 @@ module.exports = {
         propsDefinedByThree: [ 'attributes', 'index' ],
     },
     CylinderGeometry: {
-        relativePath: './extras/geometries/CylinderGeometry',
+        relativePath: './geometries/CylinderGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'radiusTop', 'radiusBottom', 'height', 'radiusSegments', 'heightSegments', 'openEnded', 'thetaStart', 'thetaLength' ],
         properties: {
@@ -1069,7 +1296,7 @@ module.exports = {
         },
     },
     DodecahedronGeometry: {
-        relativePath: './extras/geometries/DodecahedronGeometry',
+        relativePath: './geometries/DodecahedronGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'radius', 'detail' ],
         properties: {
@@ -1079,16 +1306,16 @@ module.exports = {
     },
     // TODO:
     EdgesGeometry: {
-        relativePath: './extras/geometries/EdgesGeometry',
+        relativePath: './geometries/EdgesGeometry',
         superClass: 'Geometry',
     },
-    // TODO: 
+    // TODO:
     ExtrudeGeometry: {
-        relativePath: './extras/geometries/ExtrudeGeometry',
+        relativePath: './geometries/ExtrudeGeometry',
         superClass: 'Geometry',
     },
     IcosahedronGeometry: {
-        relativePath: './extras/geometries/IcosahedronGeometry',
+        relativePath: './geometries/IcosahedronGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'radius', 'detail' ],
         properties: {
@@ -1098,7 +1325,7 @@ module.exports = {
         propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     LatheBufferGeometry: {
-        relativePath: './extras/geometries/LatheBufferGeometry',
+        relativePath: './geometries/LatheGeometry',
         superClass: 'BufferGeometry',
         constructorArgs: [ 'points', 'segments', 'phiStart', 'phiLength' ],
         properties: {
@@ -1110,7 +1337,7 @@ module.exports = {
         propsDefinedByThree: [ 'attributes', 'index' ],
     },
     LatheGeometry: {
-        relativePath: './extras/geometries/LatheGeometry',
+        relativePath: './geometries/LatheGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'points', 'segments', 'phiStart', 'phiLength' ],
         properties: {
@@ -1122,7 +1349,7 @@ module.exports = {
         propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     OctahedronGeometry: {
-        relativePath: './extras/geometries/OctahedronGeometry',
+        relativePath: './geometries/OctahedronGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'radius', 'detail' ],
         properties: {
@@ -1132,7 +1359,7 @@ module.exports = {
         propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     ParametricGeometry: {
-        relativePath: './extras/geometries/ParametricGeometry',
+        relativePath: './geometries/ParametricGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'func', 'slices', 'stacks' ],
         properties: {
@@ -1143,7 +1370,7 @@ module.exports = {
         propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     PlaneBufferGeometry: {
-        relativePath: './extras/geometries/PlaneBufferGeometry',
+        relativePath: './geometries/PlaneGeometry',
         superClass: 'BufferGeometry',
         constructorArgs: [ 'width', 'height', 'widthSegments', 'heightSegments' ],
         properties: {
@@ -1155,7 +1382,7 @@ module.exports = {
         propsDefinedByThree: [ 'attributes', 'index' ],
     },
     PlaneGeometry: {
-        relativePath: './extras/geometries/PlaneGeometry',
+        relativePath: './geometries/PlaneGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'width', 'height', 'widthSegments', 'heightSegments' ],
         properties: {
@@ -1167,7 +1394,7 @@ module.exports = {
         propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     PolyhedronGeometry: {
-        relativePath: './extras/geometries/PolyhedronGeometry',
+        relativePath: './geometries/PolyhedronGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'vertices', 'faces', 'radius', 'detail' ],
         properties: {
@@ -1180,7 +1407,7 @@ module.exports = {
         propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     RingBufferGeometry: {
-        relativePath: './extras/geometries/RingBufferGeometry',
+        relativePath: './geometries/RingGeometry',
         superClass: 'BufferGeometry',
         constructorArgs: [ 'innerRadius', 'outerRadius', 'thetaSegments', 'phiSegments', 'thetaStart', 'thetaLength' ],
         properties: {
@@ -1194,7 +1421,7 @@ module.exports = {
         propsDefinedByThree: [ 'attributes', 'index' ],
     },
     RingGeometry: {
-        relativePath: './extras/geometries/RingGeometry',
+        relativePath: './geometries/RingGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'innerRadius', 'outerRadius', 'thetaSegments', 'phiSegments', 'thetaStart', 'thetaLength' ],
         properties: {
@@ -1209,7 +1436,7 @@ module.exports = {
     },
     // TODO: figure out options constructor args + UVGenerator
     ShapeGeometry: {
-        relativePath: './extras/geometries/ShapeGeometry',
+        relativePath: './geometries/ShapeGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'shapes' ],
         properties: {
@@ -1220,11 +1447,11 @@ module.exports = {
         }
     },
     SphereBufferGeometry: {
-        relativePath: './extras/geometries/SphereBufferGeometry',
+        relativePath: './geometries/SphereGeometry',
         superClass: 'BufferGeometry',
         constructorArgs: [ 'radius', 'widthSegments', 'heightSegments', 'phiStart', 'phiLength', 'thetaStart', 'thetaLength' ],
         properties: {
-            radius:         new Types.Int(50),
+            radius:         new Types.Float(50.0),
             widthSegments:  new Types.Int(8),
             heightSegments: new Types.Int(6),
             phiStart:       new Types.Float(0),
@@ -1235,11 +1462,11 @@ module.exports = {
         propsDefinedByThree: [ 'attributes', 'index' ],
     },
     SphereGeometry: {
-        relativePath: './extras/geometries/SphereGeometry',
+        relativePath: './geometries/SphereGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'radius', 'widthSegments', 'heightSegments', 'phiStart', 'phiLength', 'thetaStart', 'thetaLength' ],
         properties: {
-            radius:         new Types.Int(50),
+            radius:         new Types.Float(50.0),
             widthSegments:  new Types.Int(8),
             heightSegments: new Types.Int(6),
             phiStart:       new Types.Float(0),
@@ -1250,7 +1477,7 @@ module.exports = {
         propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     TetrahedronGeometry: {
-        relativePath: './extras/geometries/TetrahedronGeometry',
+        relativePath: './geometries/TetrahedronGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'radius', 'detail' ],
         properties: {
@@ -1260,11 +1487,11 @@ module.exports = {
         propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     TextGeometry: {
-        relativePath: './extras/geometries/TextGeometry',
+        relativePath: './geometries/TextGeometry',
         superClass: 'Geometry',
     },
     TorusBufferGeometry: {
-        relativePath: './extras/geometries/TorusBufferGeometry',
+        relativePath: './geometries/TorusGeometry',
         superClass: 'BufferGeometry',
         constructorArgs: [ 'radius', 'tube', 'radialSegments', 'tubularSegments', 'arc' ],
         properties: {
@@ -1277,7 +1504,7 @@ module.exports = {
         propsDefinedByThree: [ 'attributes', 'index' ],
     },
     TorusGeometry: {
-        relativePath: './extras/geometries/TorusGeometry',
+        relativePath: './geometries/TorusGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'radius', 'tube', 'radialSegments', 'tubularSegments', 'arc' ],
         properties: {
@@ -1290,7 +1517,7 @@ module.exports = {
         propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     TorusKnotBufferGeometry: {
-        relativePath: './extras/geometries/TorusKnotBufferGeometry',
+        relativePath: './geometries/TorusKnotGeometry',
         superClass: 'BufferGeometry',
         constructorArgs: [ 'radius', 'tube', 'tubularSegments', 'radialSegments', 'p', 'q' ],
         properties: {
@@ -1304,7 +1531,7 @@ module.exports = {
         propsDefinedByThree: [ 'attributes', 'index' ],
     },
     TorusKnotGeometry: {
-        relativePath: './extras/geometries/TorusKnotGeometry',
+        relativePath: './geometries/TorusKnotGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'radius', 'tube', 'tubularSegments', 'radialSegments', 'p', 'q' ],
         properties: {
@@ -1318,7 +1545,7 @@ module.exports = {
         propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     TubeGeometry: {
-        relativePath: './extras/geometries/TubeGeometry',
+        relativePath: './geometries/TubeGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'path', 'segments', 'radius', 'radiusSegments', 'close' ],
         properties: {
@@ -1331,7 +1558,7 @@ module.exports = {
         propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     WireframeGeometry: {
-        relativePath: './extras/geometries/WireframeGeometry',
+        relativePath: './geometries/WireframeGeometry',
         superClass: 'Geometry',
         constructorArgs: [ 'geometry' ],
         properties: {
@@ -1341,49 +1568,55 @@ module.exports = {
         propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     ArrowHelper: {
-        relativePath: './extras/helpers/ArrowHelper',
+        relativePath: './helpers/ArrowHelper',
     },
     AxisHelper: {
-        relativePath: './extras/helpers/AxisHelper',
+        relativePath: './helpers/AxisHelper',
     },
     BoundingBoxHelper: {
-        relativePath: './extras/helpers/BoundingBoxHelper',
+        relativePath: './helpers/BoundingBoxHelper',
     },
     BoxHelper: {
-        relativePath: './extras/helpers/BoxHelper',
+        relativePath: './helpers/BoxHelper',
     },
     CameraHelper: {
-        relativePath: './extras/helpers/CameraHelper',
+        relativePath: './helpers/CameraHelper',
     },
     DirectionalLightHelper: {
-        relativePath: './extras/helpers/DirectionalLightHelper',
+        relativePath: './helpers/DirectionalLightHelper',
     },
     EdgesHelper: {
-        relativePath: './extras/helpers/EdgesHelper',
+        relativePath: './helpers/EdgesHelper',
     },
     FaceNormalsHelper: {
-        relativePath: './extras/helpers/FaceNormalsHelper',
+        relativePath: './helpers/FaceNormalsHelper',
     },
     GridHelper: {
-        relativePath: './extras/helpers/GridHelper',
+        relativePath: './helpers/GridHelper',
     },
     HemisphereLightHelper: {
-        relativePath: './extras/helpers/HemisphereLightHelper',
+        relativePath: './helpers/HemisphereLightHelper',
     },
     PointLightHelper: {
-        relativePath: './extras/helpers/PointLightHelper',
+        relativePath: './helpers/PointLightHelper',
+    },
+    PolarGridHelper: {
+        relativePath: './helpers/PolarGridHelper',
+    },
+    RectAreaLightHelper: {
+        relativePath: './helpers/RectAreaLightHelper',
     },
     SkeletonHelper: {
-        relativePath: './extras/helpers/SkeletonHelper',
+        relativePath: './helpers/SkeletonHelper',
     },
     SpotLightHelper: {
-        relativePath: './extras/helpers/SpotLightHelper',
+        relativePath: './helpers/SpotLightHelper',
     },
     VertexNormalsHelper: {
-        relativePath: './extras/helpers/VertexNormalsHelper',
+        relativePath: './helpers/VertexNormalsHelper',
     },
     WireframeHelper: {
-        relativePath: './extras/helpers/WireframeHelper',
+        relativePath: './helpers/WireframeHelper',
     },
     ImmediateRenderObject: {
         relativePath: './extras/objects/ImmediateRenderObject',
@@ -1450,6 +1683,12 @@ module.exports = {
     },
     WebGLShadowMap: {
         relativePath: './renderers/webgl/WebGLShadowMap',
+        properties: {
+            enabled: new Types.Bool(false),
+            type: new Types.Enum('ShadowTypes', 'PCFShadowMap'),
+            renderReverseSided: new Types.Bool(false),
+            renderSingleSided: new Types.Bool(true),
+        }
     },
     WebGLState: {
         relativePath: './renderers/webgl/WebGLState',

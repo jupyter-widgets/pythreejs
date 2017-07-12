@@ -4,28 +4,27 @@
 //
 
 var _ = require('underscore');
-var widgets = require('jupyter-js-widgets');
+var widgets = require('@jupyter-widgets/base');
 
 var {{ superClass.modelName }} = require('{{ superClass.requirePath }}').{{ superClass.modelName }};
-var {{ superClass.viewName }} = require('{{ superClass.requirePath }}').{{ superClass.viewName }};
 
 {{#each dependencies as |dep depName|}}
 var {{ dep.modelName }} = require('{{ dep.requirePath }}').{{ dep.modelName }};
-var {{ dep.viewName }} = require('{{ dep.requirePath }}').{{ dep.viewName }};
 {{/each}}
 
 var {{ modelName }} = {{ superClass.modelName }}.extend({
 
-    defaults: _.extend({}, {{ superClass.modelName }}.prototype.defaults, {
+    defaults: function() {
+        return _.extend({{ superClass.modelName }}.prototype.defaults.call(this), {
 
-        _view_name: '{{ viewName }}',
-        _model_name: '{{ modelName }}',
+            _model_name: '{{ modelName }}',
 
-        {{#each properties as |prop propName|}}
-        {{ propName }}: {{{ prop.defaultJson }}},
-        {{/each}}
+            {{#each properties as |prop propName|}}
+            {{ propName }}: {{{ prop.defaultJson }}},
+            {{/each}}
 
-    }),
+        });
+    },
 
     constructThreeObject: function() {
 
@@ -46,7 +45,7 @@ var {{ modelName }} = {{ superClass.modelName }}.extend({
         this.{{ prop.property_array_name }}.push('{{ propName }}');
         {{/if}}
         {{/each}}
-        
+
         {{#each props_created_by_three as |propName|}}
         this.props_created_by_three['{{propName}}'] = true;
         {{/each}}
@@ -62,6 +61,12 @@ var {{ modelName }} = {{ superClass.modelName }}.extend({
         {{/if}}
         {{/each}}
 
+        {{#each properties as |prop propName|}}
+        {{#if prop.property_assigner }}
+        this.property_assigners['{{ propName }}'] = '{{ prop.property_assigner }}';
+        {{/if}}
+        {{/each}}
+
     },
 
 }{{#if serialized_props}}, {
@@ -71,12 +76,9 @@ var {{ modelName }} = {{ superClass.modelName }}.extend({
         {{ propName }}: { deserialize: widgets.unpack_models },
         {{/each}}
     }, {{ superClass.modelName }}.serializers),
-    
+
 }{{/if}});
 
-var {{ viewName }} = {{ superClass.viewName }}.extend({});
-
 module.exports = {
-    {{ viewName }}: {{ viewName }},
     {{ modelName }}: {{ modelName }},
 };

@@ -1,6 +1,6 @@
 {
   "name": "jupyter-threejs",
-  "version": "0.2.0",
+  "version": "0.3.0-alpha.0",
   "description": "jupyter - threejs bridge",
   "author": "Jupyter-Threejs development team",
   "license": "BSD-3-Clause",
@@ -11,7 +11,9 @@
   },
   "scripts": {
     "clean": "node ./scripts/clean-generated-files.js",
-    "autogen": "node ./scripts/generate-wrappers.js",
+    "autogen-enums": "node ./scripts/generate-enums.js",
+    "autogen-wrappers": "node ./scripts/generate-wrappers.js",
+    "autogen": "npm run autogen-enums && npm run autogen-wrappers",
     "build": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -25,9 +27,9 @@
     "webpack": "^1.12.14"
   },
   "dependencies": {
-    "jupyter-js-widgets": "^2.1.4",
+    "@jupyter-widgets/base": "^0.2.0",
     "ndarray": "^1.0.18",
-    "three": "^0.75.0",
+    "three": "^0.85.2",
     "underscore": "^1.8.3"
   }
 }

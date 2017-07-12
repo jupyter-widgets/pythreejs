@@ -15,7 +15,7 @@ class WebGLRenderer(ThreeWidget):
     
     Author: @abelnation
     Date: Wed Aug 31 2016 23:46:30 GMT-0700 (PDT)
-    See http://threejs.org/docs/#Reference/Renderers/WebGLRenderer
+    See http://threejs.org/docs/#api/renderers/WebGLRenderer
     """
     
     _view_name = Unicode('WebGLRendererView').tag(sync=True)
@@ -36,8 +36,7 @@ class WebGLRenderer(ThreeWidget):
     gammaInput = Bool(False).tag(sync=True)
     gammaOutput = Bool(False).tag(sync=True)
     physicallyCorrectLights = Bool(False).tag(sync=True)
-    # TODO: 
-    # toneMapping = Enum(ToneMapping, "LinearToneMapping").tag(sync=True)
+    toneMapping = Enum(ToneMappings, 'LinearToneMapping').tag(sync=True)
     toneMappingExposure = CFloat(1.0).tag(sync=True)
     toneMappingWhitePoint = CFloat(1.0).tag(sync=True)
     maxMorphTargets = CInt(8).tag(sync=True)

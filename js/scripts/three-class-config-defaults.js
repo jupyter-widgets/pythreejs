@@ -1,20 +1,6 @@
 module.exports = {
 
-    // viewName: className + "View",
-    // modelName: className + "Model",
-
     superClass: './_base/Three',
-
-    // superClass: 'Material',
-    // superClass: './baseClasses/ListeningPropertyContainer'
-
-    // pySuperModulePath: './core/Object3D',
-    // pySuperclass: 'Object3D',
-    // pySuperModulePath: './_base',
-    // pySuperClass: 'ThreeWidget',
-
-    // superDepModuleName: 'base',
-    // superDepModulePath: './_base',
 
     // properties
     properties: { },

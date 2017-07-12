@@ -13,11 +13,16 @@ _.extend(BaseType.prototype, {
         if (this.defaultValue === true) { return 'True'; }
         if (this.defaultValue === 0) { return '0'; }
         if (this.defaultValue === '') { return '""'; }
+        if (this.defaultValue === Infinity) { return "float('inf')"; }
+        if (this.defaultValue === -Infinity) { return "-float('inf')"; }
         if (!this.defaultValue) { return 'None'; }
 
         return JSON.stringify(this.defaultValue);
     },
     getPropertyConverterFn: function() {
+        return null;
+    },
+    getPropertyAssignmentFn: function() {
         return null;
     },
 })
@@ -27,32 +32,82 @@ function ThreeType(typeName, options={}) {
     this.defaultValue = null;
     this.serialize = true;
     this.nullable = options.nullable !== false;
+    this.args = options.args;
+    this.kwargs = options.kwargs;
 }
 _.extend(ThreeType.prototype, BaseType.prototype, {
     getTraitlet: function() {
         var nullableStr = this.nullable ? 'True' : 'False';
         // allow type unions
         if (this.typeName instanceof Array) {
-            // TODO: only instan
             var instances = this.typeName.map(function(typeName) {
                 return '        Instance(' + typeName + ', allow_none=' + nullableStr +')';
             });
             return 'Union([\n' + instances.join(',\n') + '\n    ]).tag(sync=True, **widget_serialization)';
-
-            // return 'Any()';
         }
 
         if (this.typeName.toLowerCase() === 'this') {
             return 'This().tag(sync=True, **widget_serialization)';
         }
 
-        return 'Instance(' + this.typeName + ', allow_none=' + nullableStr +').tag(sync=True, **widget_serialization)';
+        var ret = 'Instance(' + this.typeName;
+        if (this.args !== undefined) {
+            ret += ', args=' + this.args;
+        }
+        if (this.kwargs !== undefined) {
+            ret += ', kw=' + this.kwargs;
+        }
+        ret += ', allow_none=' + nullableStr +').tag(sync=True, **widget_serialization)';
+        return ret;
     },
     getPropArrayName: function() {
         return 'three_properties';
     },
     getPropertyConverterFn: function() {
         return 'convertThreeType';
+    },
+});
+
+function ForwardDeclaredThreeType(typeName, modulePath, options={}) {
+    ThreeType.call(this, typeName, options);
+    this.modulePath = modulePath;
+}
+_.extend(ForwardDeclaredThreeType.prototype, ThreeType.prototype, {
+    forwardType: function() {
+        return this.modulePath + '.' + this.typeName;
+    },
+    getTraitlet: function() {
+        var nullableStr = this.nullable ? 'True' : 'False';
+        // allow type unions
+        if (this.typeName instanceof Array) {
+            var instances = this.typeName.map(function(typeName) {
+                return '        Instance(\'' + this.forwardType() + '\', allow_none=' + nullableStr +')';
+            });
+            return 'Union([\n' + instances.join(',\n') + '\n    ]).tag(sync=True, **widget_serialization)';
+        }
+
+        if (this.typeName.toLowerCase() === 'this') {
+            return 'This().tag(sync=True, **widget_serialization)';
+        }
+
+        var ret = 'Instance(\'' + this.forwardType() + '\'';
+        if (this.args !== undefined) {
+            ret += ', args=' + this.args;
+        }
+        if (this.kwargs !== undefined) {
+            ret += ', kw=' + this.kwargs;
+        }
+        ret += ', allow_none=' + nullableStr +').tag(sync=True, **widget_serialization)';
+        return ret;
+    },
+});
+
+function InitializedThreeType(typeName, options={}) {
+    ThreeType.call(this, typeName, options);
+}
+_.extend(InitializedThreeType.prototype, ThreeType.prototype, {
+    getPropertyConverterFn: function() {
+        return 'convertInitializedThreeType';
     },
 });
 
@@ -106,9 +161,6 @@ _.extend(Bool.prototype, BaseType.prototype, {
         var pyBoolValue = this.defaultValue ? 'True' : 'False';
         return 'Bool(' + pyBoolValue + ').tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'scalar_properties';
-    // },
 });
 
 function Int(defaultValue) {
@@ -118,9 +170,6 @@ _.extend(Int.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'CInt(' + this.defaultValue + ').tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'scalar_properties';
-    // },
 
 });
 
@@ -129,11 +178,11 @@ function Float(defaultValue) {
 }
 _.extend(Float.prototype, BaseType.prototype, {
     getTraitlet: function() {
-        return 'CFloat(' + this.defaultValue + ').tag(sync=True)';
+        return 'CFloat(' + this.getPythonDefaultValue() + ').tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'scalar_properties';
-    // },
+    getPropertyConverterFn: function() {
+        return 'convertFloat';
+    },
 
 });
 
@@ -144,9 +193,6 @@ _.extend(StringType.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Unicode("' + this.defaultValue + '").tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'scalar_properties';
-    // },
 
 });
 
@@ -158,9 +204,6 @@ _.extend(Enum.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Enum(' + this.enumTypeName + ', "' + this.defaultValue + '").tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'enum_properties';
-    // },
     getPropertyConverterFn: function() {
         return 'convertEnum';
     },
@@ -173,11 +216,23 @@ _.extend(Color.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Unicode(' + JSON.stringify(this.defaultValue) + ').tag(sync=True)'
     },
-    // getPropArrayName: function() {
-    //     return 'color_properties';
-    // }
     getPropertyConverterFn: function() {
         return 'convertColor';
+    },
+});
+
+function ColorArray(defaultValue) {
+    this.defaultValue = defaultValue || "#ffffff";
+}
+_.extend(ColorArray.prototype, BaseType.prototype, {
+    getTraitlet: function() {
+        return 'List(trait=List()).tag(sync=True)';
+    },
+    getPropertyConverterFn: function() {
+        return 'convertColorArray';
+    },
+    getPropertyAssignmentFn: function() {
+        return 'assignArray';
     },
 });
 
@@ -188,9 +243,9 @@ _.extend(ArrayType.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'List().tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'array_properties';
-    // }
+    getPropertyAssignmentFn: function() {
+        return 'assignArray';
+    },
 });
 
 // TODO: support more than Float32Array
@@ -202,24 +257,18 @@ _.extend(ArrayBufferType.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'List().tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'array_properties';
-    // },
     getPropertyConverterFn: function() {
         return 'convertArrayBuffer';
     },
 });
 
-function DictType() {
-    this.defaultValue = {};
+function DictType(defaultValue={}) {
+    this.defaultValue = defaultValue;
 }
 _.extend(DictType.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Dict().tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'dict_properties';
-    // }
 });
 
 function FunctionType(fn) {
@@ -229,9 +278,6 @@ _.extend(FunctionType.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return "Unicode('" + this.defaultValue.toString() + "').tag(sync=True)";
     },
-    // getPropArrayName: function() {
-    //     return 'function_properties';
-    // },
     getJSPropertyValue: function() {
         return this.defaultValue.toString();
     },
@@ -247,11 +293,11 @@ _.extend(Vector2.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Vector2(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'vector_properties';
-    // },
     getPropertyConverterFn: function() {
         return 'convertVector';
+    },
+    getPropertyAssignmentFn: function() {
+        return 'assignVector';
     },
 });
 
@@ -262,11 +308,11 @@ _.extend(Vector3.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Vector3(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'vector_properties';
-    // },
     getPropertyConverterFn: function() {
         return 'convertVector';
+    },
+    getPropertyAssignmentFn: function() {
+        return 'assignVector';
     },
 });
 
@@ -277,11 +323,11 @@ _.extend(Vector4.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Vector4(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'vector_properties';
-    // },
     getPropertyConverterFn: function() {
         return 'convertVector';
+    },
+    getPropertyAssignmentFn: function() {
+        return 'assignVector';
     },
 });
 
@@ -292,11 +338,11 @@ _.extend(VectorArray.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'List(trait=List()).tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'array_properties';
-    // },
     getPropertyConverterFn: function() {
         return 'convertVectorArray';
+    },
+    getPropertyAssignmentFn: function() {
+        return 'assignArray';
     },
 });
 
@@ -307,11 +353,11 @@ _.extend(FaceArray.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Tuple(trait=Face3()).tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'array_properties';
-    // },
     getPropertyConverterFn: function() {
         return 'convertFaceArray';
+    },
+    getPropertyAssignmentFn: function() {
+        return 'assignArray';
     },
 });
 
@@ -322,9 +368,6 @@ _.extend(BufferAttribute.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'BufferAttribute(default_value=None, allow_none=True).tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'array_properties';
-    // },
     getPropertyConverterFn: function() {
         return 'convertBufferAttribute';
     },
@@ -337,9 +380,6 @@ _.extend(BufferAttributeDict.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Tuple().tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'array_properties';
-    // },
     getPropertyConverterFn: function() {
         return 'convertBufferAttributeDict';
     },
@@ -357,11 +397,11 @@ _.extend(Matrix3.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Matrix3(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'vector_properties';
-    // },
     getPropertyConverterFn: function() {
         return 'convertMatrix';
+    },
+    getPropertyAssignmentFn: function() {
+        return 'assignMatrix';
     },
 });
 
@@ -377,17 +417,36 @@ _.extend(Matrix4.prototype, BaseType.prototype, {
     getTraitlet: function() {
         return 'Matrix4(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
     },
-    // getPropArrayName: function() {
-    //     return 'vector_properties';
-    // },
     getPropertyConverterFn: function() {
         return 'convertMatrix';
+    },
+    getPropertyAssignmentFn: function() {
+        return 'assignMatrix';
+    },
+});
+
+
+function Euler() {
+    this.defaultValue = [0, 0, 0, 'XYZ'];
+}
+
+_.extend(Euler.prototype, BaseType.prototype, {
+    getTraitlet: function() {
+        return 'Euler(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
+    },
+    getPropertyConverterFn: function() {
+        return 'convertEuler';
+    },
+    getPropertyAssignmentFn: function() {
+        return 'assignEuler';
     },
 });
 
 
 module.exports = {
     ThreeType: ThreeType,
+    ForwardDeclaredThreeType: ForwardDeclaredThreeType,
+    InitializedThreeType: InitializedThreeType,
     ThreeTypeArray: ThreeTypeArray,
     ThreeTypeDict: ThreeTypeDict,
     Int: Int,
@@ -396,6 +455,7 @@ module.exports = {
     Bool: Bool,
     Enum: Enum,
     Color: Color,
+    ColorArray: ColorArray,
     Array: ArrayType,
     ArrayBuffer: ArrayBufferType,
     BufferAttribute: BufferAttribute,
@@ -409,4 +469,5 @@ module.exports = {
     FaceArray: FaceArray,
     Matrix3: Matrix3,
     Matrix4: Matrix4,
+    Euler: Euler,
 };

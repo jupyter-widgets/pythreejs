@@ -2,8 +2,6 @@ var _ = require('underscore');
 var Promise = require('bluebird');
 var ImageTextureBase = require('./ImageTexture.autogen');
 
-var ImageTextureView = ImageTextureBase.ImageTextureView.extend({});
-
 var ImageTextureModel = ImageTextureBase.ImageTextureModel.extend({
 
     constructThreeObjectAsync: function() {
@@ -33,5 +31,4 @@ var ImageTextureModel = ImageTextureBase.ImageTextureModel.extend({
 
 module.exports = {
     ImageTextureModel: ImageTextureModel,
-    ImageTextureView: ImageTextureView,
 };

@@ -13,27 +13,19 @@ Another resource to understanding three.js decisions is the Udacity course on
 """
 
 from __future__ import absolute_import
-from math import pi, sqrt
 
-from ipywidgets import Widget, DOMWidget, widget_serialization, Color
-from traitlets import (Unicode, CInt, Instance, Enum, List, Tuple, Dict, Float,
-                       CFloat, Bool)
-from ._package import npm_pkg_name
-from .enums import (
-        Equations, BlendFactors, Side, Shading, Colors,
-        BlendingMode, Operations, MappingModes, WrappingModes, Filters,
-        DataTypes, PixelTypes, PixelFormats, CompressedTextureFormats,
-        Lines, Renderers)
-
-from .traits_numpy import array_serialization, shape_constraints
-from traittypes import Array
+from ipywidgets import Widget, widget_serialization, Color
+from traitlets import Unicode, CInt, Instance, Enum, List, CFloat, Bool
 import numpy as np
 
-from .cameras.Camera_autogen import Camera
+from ._package import npm_pkg_name
+from .enums import Shading, Colors
+
+
 from .core.Object3D import Object3D
 from .core.Geometry_autogen import Geometry
-from .extras.geometries.BoxGeometry_autogen import BoxGeometry
-from .extras.geometries.SphereGeometry_autogen import SphereGeometry
+from .geometries.BoxGeometry_autogen import BoxGeometry
+from .geometries.SphereGeometry_autogen import SphereGeometry
 from .lights.AmbientLight_autogen import AmbientLight
 from .lights.DirectionalLight_autogen import DirectionalLight
 from .materials.Material_autogen import Material
@@ -41,9 +33,9 @@ from .materials.MeshLambertMaterial_autogen import MeshLambertMaterial
 from .materials.SpriteMaterial_autogen import SpriteMaterial
 from .objects.Mesh_autogen import Mesh
 from .objects.Sprite_autogen import Sprite
-from .scenes.Scene_autogen import Scene
 from .textures.Texture_autogen import Texture
 from .textures.DataTexture_autogen import DataTexture
+from .textures.TextTexture_autogen import TextTexture
 
 
 def vector3(trait_type=CFloat, default=None, **kwargs):
@@ -68,77 +60,21 @@ class ScaledObject(Object3D):
     _model_name = Unicode('ScaledObjectModel').tag(sync=True)
 
 
-class Controls(Widget):
-    _view_module = Unicode(npm_pkg_name).tag(sync=True)
-    _model_module = Unicode(npm_pkg_name).tag(sync=True)
-    _view_name = Unicode('ControlsView').tag(sync=True)
-    _model_name = Unicode('ControlsModel').tag(sync=True)
+# class Picker(Controls):
+#     _view_name = Unicode('PickerView').tag(sync=True)
+#     _model_name = Unicode('PickerModel').tag(sync=True)
 
-    controlling = Instance(Object3D, allow_none=True).tag(sync=True, **widget_serialization)
-
-
-class OrbitControls(Controls):
-    _view_name = Unicode('OrbitControlsView').tag(sync=True)
-    _model_name = Unicode('OrbitControlsModel').tag(sync=True)
-
-    target = vector3(CFloat).tag(sync=True)
-
-
-class TrackballControls(Controls):
-    _view_name = Unicode('TrackballControlsView').tag(sync=True)
-    _model_name = Unicode('TrackballControlsModel').tag(sync=True)
-
-    target = vector3(CFloat).tag(sync=True)
-
-
-class FlyControls(Controls):
-    _view_name = Unicode('FlyControlsView').tag(sync=True)
-    _model_name = Unicode('FlyControlsModel').tag(sync=True)
-
-    forward_speed = Float().tag(sync=True)
-    lateral_speed = Float().tag(sync=True)
-    upward_speed = Float().tag(sync=True)
-    roll = Float().tag(sync=True)
-    pitch = Float().tag(sync=True)
-    yaw = Float().tag(sync=True)
-
-
-class Picker(Controls):
-    _view_name = Unicode('PickerView').tag(sync=True)
-    _model_name = Unicode('PickerModel').tag(sync=True)
-
-    event = Unicode('click').tag(sync=True)
-    root = Instance(Object3D, allow_none=True).tag(sync=True, **widget_serialization)
-    picked = List(Dict).tag(sync=True)
-    distance = CFloat().tag(sync=True)
-    point = vector3(CFloat).tag(sync=True)
-    object = Instance(Object3D, allow_none=True).tag(sync=True, **widget_serialization)
-    face = vector3(CInt).tag(sync=True)
-    faceNormal = vector3(CFloat).tag(sync=True)
-    faceVertices = List(vector3()).tag(sync=True)
-    faceIndex = CInt().tag(sync=True)
-    all = Bool().tag(sync=True)
-
-
-class PlainGeometry(Geometry):
-    _view_name = Unicode('PlainGeometryView').tag(sync=True)
-    _model_name = Unicode('PlainGeometryModel').tag(sync=True)
-
-    vertices = Array(dtype='float32').tag(sync=True, **array_serialization).valid(shape_constraints(None, 3))
-    faces = Array(dtype='uint32', default_value=np.empty(shape=(0, 3), dtype='uint32')).tag(sync=True, **array_serialization).valid(shape_constraints(None, 3))
-
-    # list of [[v1_r,v1_g,v1_b], [v2_r,v2_g,v2_b], [v3_r,v3_g,v3_b]] for each face
-    faceColors = Array(dtype='float32', default_value=np.empty(shape=(0, 3, 3), dtype='float32')).tag(sync=True, **array_serialization).valid(shape_constraints(None, 3, 3))
-    colors = List(Color).tag(sync=True)
-    faceNormals = Tuple().tag(sync=True)
-
-class PlainBufferGeometry(Geometry):
-    _view_name = Unicode('PlainBufferGeometryView').tag(sync=True)
-    _model_name = Unicode('PlainBufferGeometryModel').tag(sync=True)
-
-    vertices = Array(dtype='float32').tag(sync=True, **array_serialization).valid(shape_constraints(None, 3))
-    faces = Array(dtype='uint32', default_value=np.empty(shape=(0, 3), dtype='uint32')).tag(sync=True, **array_serialization).valid(shape_constraints(None, 3))
-    colors = Array(dtype='float32', default_value=np.empty(shape=(0, 3), dtype='float32'), help="Vertex colors").tag(sync=True, **array_serialization).valid(shape_constraints(None, 3))
+#     event = Unicode('click').tag(sync=True)
+#     root = Instance(Object3D, allow_none=True).tag(sync=True, **widget_serialization)
+#     picked = List(Dict).tag(sync=True)
+#     distance = CFloat().tag(sync=True)
+#     point = vector3(CFloat).tag(sync=True)
+#     object = Instance(Object3D, allow_none=True).tag(sync=True, **widget_serialization)
+#     face = vector3(CInt).tag(sync=True)
+#     faceNormal = vector3(CFloat).tag(sync=True)
+#     faceVertices = List(vector3()).tag(sync=True)
+#     faceIndex = CInt().tag(sync=True)
+#     all = Bool().tag(sync=True)
 
 
 class SurfaceGeometry(Geometry):
@@ -207,25 +143,6 @@ class ShaderMaterial(Material):
     wireframeLinewidth = CFloat(1.0).tag(sync=True)
 
 
-# class SpriteMaterial(Material):
-#     _view_name = Unicode('SpriteMaterialView').tag(sync=True)
-#     _model_name = Unicode('SpriteMaterialModel').tag(sync=True)
-
-#     uvScale = List(CFloat).tag(sync=True)
-#     sizeAttenuation = Bool().tag(sync=True)
-#     uvOffset = List(CFloat).tag(sync=True)
-#     useScreenCoordinates = Bool().tag(sync=True)
-#     scaleByViewport = Bool().tag(sync=True)
-#     alignment = List(CFloat).tag(sync=True)
-
-
-# class Sprite(Object3D):
-#     _view_name = Unicode('SpriteView').tag(sync=True)
-#     _model_name = Unicode('SpriteModel').tag(sync=True)
-
-#     material = Instance(Material, allow_none=True).tag(sync=True, **widget_serialization)
-#     scaleToTexture = Bool().tag(sync=True)
-
 
 class PlotMesh(Mesh):
     plot = Instance('sage.plot.plot3d.base.Graphics3d')
@@ -257,7 +174,7 @@ class PlotMesh(Mesh):
     def material_from_other(self, p):
         # TODO: do this without scenetree_json()
         t = p.scenetree_json()['children'][0]['texture']
-        m = LambertMaterial(side='DoubleSide')
+        m = MeshLambertMaterial(side='DoubleSide')
         m.color = t['color']
         m.opacity = t['opacity']
         # TODO: support other attributes
@@ -299,32 +216,6 @@ class Effect(Widget):
 class AnaglyphEffect(Effect):
     _view_name = Unicode('AnaglyphEffectView').tag(sync=True)
     _model_name = Unicode('AnaglyphEffectModel').tag(sync=True)
-
-
-class Renderer(DOMWidget):
-    _view_module = Unicode(npm_pkg_name).tag(sync=True)
-    _model_module = Unicode(npm_pkg_name).tag(sync=True)
-    _view_name = Unicode('RendererView').tag(sync=True)
-    _model_name = Unicode('RendererModel').tag(sync=True)
-
-    width = Unicode('600').tag(sync=True)  # TODO: stop relying on deprecated DOMWidget attribute
-    height = Unicode('400').tag(sync=True)
-    renderer_type = Enum(Renderers, 'auto').tag(sync=True)
-    scene = Instance(Scene).tag(sync=True, **widget_serialization)
-    camera = Instance(Camera).tag(sync=True, **widget_serialization)
-    controls = List(Instance(Controls)).tag(sync=True, **widget_serialization)
-    effect = Instance(Effect, allow_none=True).tag(sync=True, **widget_serialization)
-    background = Color('black', allow_none=True).tag(sync=True)
-    background_opacity = Float(min=0.0, max=1.0).tag(sync=True)
-
-
-
-# class SpotLight(PointLight):
-#     _view_name = Unicode('SpotLight').tag(sync=True)
-#     _model_name = Unicode('SpotLightModel').tag(sync=True)
-
-#     angle = CFloat(10).tag(sync=True)
-#     exponent = CFloat(0.5).tag(sync=True)
 
 
 # Some helper classes and functions

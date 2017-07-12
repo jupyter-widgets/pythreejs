@@ -83,6 +83,9 @@ THREE.FlyControls = function ( object, domElement ) {
 		}
 	};
 
+	this.dispose = function() {};
+	this.connectEvents = function() {};
+
 	function bind( scope, fn ) {
 		return function () {
 			fn.apply( scope, arguments );

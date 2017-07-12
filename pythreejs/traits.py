@@ -47,3 +47,8 @@ def BufferAttribute(trait_type=CFloat, **kwargs):
         CInt(),                     # 6. version
         default_value=(None, -1, False, "", -1)
     )
+
+def Euler(default=None, **kwargs):
+    if default is None:
+        default = [0, 0, 0, 'XYZ']
+    return Tuple(CFloat(), CFloat(), CFloat(), Unicode(), default_value=default, **kwargs)

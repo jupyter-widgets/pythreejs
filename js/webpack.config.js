@@ -27,7 +27,7 @@ module.exports = [
         module: {
             loaders: loaders
         },
-        externals: ['jupyter-js-widgets'],
+        externals: ['@jupyter-widgets/base'],
         resolve: {
             extensions: [ "", ".autogen.js", ".js" ]
         },
@@ -45,7 +45,7 @@ module.exports = [
         module: {
             loaders: loaders
         },
-        externals: ['jupyter-js-widgets'],
+        externals: ['@jupyter-widgets/base'],
         resolve: {
             extensions: [ "", ".autogen.js", ".js" ]
         },

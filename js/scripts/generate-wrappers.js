@@ -87,11 +87,44 @@ function getClassConfig(className, doLog) {
 
     // add defaults
     _.defaults(
-        result, 
+        result,
         classConfigs._defaults
     );
 
     return result;
+}
+
+/**
+ * Finds any extra class definitions in addition to the default one.
+ *
+ * E.g. SphereGeometry.js defines both SphereGeometry and SphereBufferGeometry.
+ * Given that both are defined in the class config with the same relativePath,
+ * this function returns an array of extra definitions for that file, i.e.
+ * ['SphereBufferGeometry'] for an input of 'SphereGeometry' in the example.
+ */
+function getExtraDefines(className) {
+
+    className = className.replace(/\./g, '_')
+    if (!(className in classConfigs)) {
+        throw new Error('invalid class name: ' + className);
+    }
+
+    var relativePath = classConfigs[className].relativePath;
+
+    var shared = [];
+    Object.keys(classConfigs).forEach(function(key) {
+        if (key[0] === '_') {
+            return; // continue
+        }
+        var config = classConfigs[key];
+        if (config.relativePath === relativePath && key !== className) {
+            shared.push(key);
+        }
+    });
+    if (shared.length > 0) {
+        console.log('extra defines found: ' + shared)
+    }
+    return shared;
 }
 
 function relativePathToPythonImportPath(relativePath) {
@@ -110,7 +143,7 @@ function relativePathToPythonImportPath(relativePath) {
         tokens = tokens.slice(1);
         result = '.';
     }
-    
+
     tokens.forEach(function(token) {
         if (token === '.') {
             return;
@@ -129,7 +162,7 @@ function relativePathToPythonImportPath(relativePath) {
 }
 
 // Execute a function for each match to a glob query
-// 
+//
 // Parameters:
 //   globPattern: String glob pattern for node-glob
 //   mapFn:       Function function(pathRelativeToCwd), should return a promise or list of promises
@@ -137,9 +170,9 @@ function relativePathToPythonImportPath(relativePath) {
 //
 // Returns: Promise that resolves with array of results from mapFn applies to all glob matches
 function mapPromiseFnOverGlob(globPattern, mapFn, globOptions) {
-    
+
     return new Promise(function(resolve, reject) {
-    
+
         var promises = [];
         var result;
 
@@ -153,7 +186,7 @@ function mapPromiseFnOverGlob(globPattern, mapFn, globOptions) {
                 } else {
                     promises.push(result);
                 }
-                
+
             })
             .on('end', function() {
                 // wait for all file ops to finish
@@ -172,7 +205,7 @@ function mapPromiseFnOverGlob(globPattern, mapFn, globOptions) {
 
 function mapPromiseFnOverFileList(fileList, mapFn) {
     var promises = [];
-    
+
     fileList.forEach(function(filePath) {
         var result = mapFn(filePath);
         if (result instanceof Array) {
@@ -186,37 +219,65 @@ function mapPromiseFnOverFileList(fileList, mapFn) {
 }
 
 function mapPromiseFnOverThreeModules(mapFn) {
-    return mapPromiseFnOverGlob('**/*.js', mapFn, { 
-        cwd: threeSrcDir, 
+    return mapPromiseFnOverGlob('**/*.js', mapFn, {
+        cwd: threeSrcDir,
         nodir: true ,
         ignore: [
-            '**/Three.Legacy.js',
-            '**/renderers/WebGLRenderer.js',
+            '**/Three.Legacy.js',   // Don't support legacy interface (deprecation should be done python side)
+            '**/polyfills.js',      // Polyfill of JS methods, nothing to export
+            '**/utils.js',          // Utility functions, no objects to export
+            '**/constants.js',      // Processed into enums in separate script
+            '**/animation/KeyframeTrackConstructor.js',     // Sub-part of one object, ignore
+            '**/animation/KeyframeTrackPrototype.js',       // Sub-part of one object, ignore
+            '**/audio/AudioContext.js',             // JS API for audio, nothing to expose
+            '**/geometries/Geometries.js',          // index.js like file, nothing new here
+            '**/materials/Materials.js',            // index.js like file, nothing new here
+            '**/renderers/WebGLRenderer.js',        // For now, the internals of the webgl
+            '**/renderers/WebGL2Renderer.js',       //   render is not exposed.
             '**/renderers/webgl/**',
-            '**/renderers/shaders/**'
+            '**/renderers/shaders/**',
+            '**/extras/core/Interpolations.js',     // Only functions, nothing to export
+            '**/extras/core/PathPrototype.js',      // Sub-part of one object, ignore
+            '**/textures/CanvasTexture.js'          // Canvases are not referenceable from python
         ],
     });
 }
 
-// 
+//
 // Javascript wrapper writer
 //
 
-function JavascriptWrapper(modulePath) {
+function JavascriptWrapper(modulePath, className) {
 
     this.jsDestPath = path.resolve(jsSrcDir, modulePath);
     this.destDir = path.dirname(this.jsDestPath);
     this.relativePathToBase = path.relative(this.destDir, jsSrcDir);
 
     this.jsAutoDestPath = path.resolve(
-        this.destDir, 
+        this.destDir,
         path.basename(this.jsDestPath, '.js') + '.' + AUTOGEN_EXT + '.js');
 
-    this.className = path.basename(modulePath, '.js').replace(/\./g, '_');
+    if (className) {
+        this.className = className;
+        this.jsAutoDestPath = path.resolve(
+            path.dirname(this.jsAutoDestPath),
+            className + '.' + AUTOGEN_EXT + '.js');
+    } else {
+        this.className = path.basename(modulePath, '.js').replace(/\./g, '_');
+        var extraDefines = getExtraDefines(this.className);
+        extraDefines.forEach(function(extraClassName) {
+            createJavascriptWrapper(modulePath, extraClassName);
+        });
+    }
+
     this.config = getClassConfig(this.className);
 
     this.modelName = this.className + 'Model';
     this.viewName = this.className + 'View';
+
+    // check if manual file exists
+    var customSrcPath = path.join(path.dirname(this.jsDestPath), path.basename(this.jsDestPath, '.js') + '.js');
+    this.hasOverride = fs.existsSync(customSrcPath);
 
     this.processSuperClass();
     this.processDependencies();
@@ -247,7 +308,7 @@ function JavascriptWrapper(modulePath) {
 
     // Render template
     this.output = this.template(this.context);
-        
+
 }
 _.extend(JavascriptWrapper.prototype, {
 
@@ -263,7 +324,7 @@ _.extend(JavascriptWrapper.prototype, {
                 result.relativePath = config.relativePath;
             } else {
                 result.className = path.basename(classDescriptor, '.js');
-                result.relativePath = classDescriptor; 
+                result.relativePath = classDescriptor;
             }
 
         } else {
@@ -274,7 +335,13 @@ _.extend(JavascriptWrapper.prototype, {
         result.viewName = result.className + 'View';
 
         result.absolutePath = path.resolve(jsSrcDir, result.relativePath);
-        result.requirePath = path.relative(this.destDir, result.absolutePath).replace(/\\/g, '/');
+        var absPath = result.absolutePath;
+        if (fs.existsSync(absPath + '.js')) {
+            absPath += '.js';
+        } else {
+            absPath += JS_AUTOGEN_EXT;
+        }
+        result.requirePath = path.relative(this.destDir, absPath).replace(/\\/g, '/');
         if (result.requirePath.charAt(0) !== '.') {
             result.requirePath = './' + result.requirePath;
         }
@@ -287,7 +354,7 @@ _.extend(JavascriptWrapper.prototype, {
 
         var superClassDescriptor = this.config.superClass;
         this.superClass = this.getRequireInfoFromClassDescriptor(this.config.superClass);
-        
+
     },
 
     processDependencies: function() {
@@ -305,21 +372,22 @@ _.extend(JavascriptWrapper.prototype, {
         // infer dependencies from any properties that reference other Three types
         _.reduce(this.config.properties, function(result, prop, propName) {
 
-            if (prop instanceof Types.ThreeType || prop instanceof Types.ThreeTypeArray || prop instanceof Types.ThreeTypeDict) {
+            if (prop instanceof Types.ThreeType || prop instanceof Types.InitializedThreeType ||
+                    prop instanceof Types.ThreeTypeArray || prop instanceof Types.ThreeTypeDict) {
                 if (prop.typeName !== 'this') {
                     if (typeof prop.typeName === 'string') {
-                        result[prop.typeName] = this.getRequireInfoFromClassDescriptor(prop.typeName);        
+                        result[prop.typeName] = this.getRequireInfoFromClassDescriptor(prop.typeName);
                     } else if (prop.typeName instanceof Array) {
                         prop.typeName.forEach(function(typeName) {
                             result[typeName] = this.getRequireInfoFromClassDescriptor(typeName);
                         }, this);
                     }
                 }
-            } 
+            }
             return result;
 
         }, dependencies, this);
-    
+
         this.dependencies = dependencies;
 
     },
@@ -332,12 +400,13 @@ _.extend(JavascriptWrapper.prototype, {
                 defaultJson: prop.getJSPropertyValue(),
                 property_array_name: prop.getPropArrayName(),
                 property_converter: prop.getPropertyConverterFn(),
+                property_assigner: prop.getPropertyAssignmentFn(),
             };
-        
+
         }, this);
 
         this.serializedProps = _.reduce(this.config.properties, function(result, prop, propName) {
-            
+
             if (prop.serialize) {
                 result.push(propName);
             }
@@ -351,7 +420,7 @@ _.extend(JavascriptWrapper.prototype, {
             }
             return result;
         }, {});
-    
+
     },
 
     processConstructorArgs: function() {
@@ -369,7 +438,7 @@ _.extend(JavascriptWrapper.prototype, {
 
         var constructorArgs = this.config.constructorArgs.map(function(propName) {
             if (propName === 'parameters') {
-                return getConstructorParametersObject.bind(this)().join('\n'); 
+                return getConstructorParametersObject.bind(this)().join('\n');
             } else {
                 return this.getModelToThreeGetter(propName);
             }
@@ -380,20 +449,16 @@ _.extend(JavascriptWrapper.prototype, {
     },
 
     processOverrideClass: function() {
-    
-        // check if manual file exists
-        var customSrcPath = path.join(path.dirname(this.jsDestPath), path.basename(this.jsDestPath, '.js') + '.js');
-        console.log(customSrcPath);
+
+        if (!this.hasOverride) {
+            return;
+        }
+
+        console.log('JS override exists for ' + this.className);
 
         var overrideModule = "Override";
         var overrideModel = overrideModule + "." + this.modelClass;
         var overrideView = overrideModule + "." + this.viewClass;
-
-        if (!fs.existsSync(customSrcPath)) {
-            return;
-        }    
-
-        console.log('EXISTS');
 
         this.overrideClass = {
             relativePath: './' + this.className + '.js',
@@ -422,14 +487,14 @@ _.extend(JavascriptWrapper.prototype, {
 
 });
 
-function createJavascriptWrapper(modulePath) {
+function createJavascriptWrapper(modulePath, className) {
 
     try {
-        var wrapper = new JavascriptWrapper(modulePath);
+        var wrapper = new JavascriptWrapper(modulePath, className);
     } catch (e) {
         console.log('error creating wrapper: ');
         console.log(e);
-        console.log('skipping: ' + modulePath);
+        console.log('skipping: ' + modulePath + (className ? ':' + className : ''));
         return Promise.resolve(false);
     }
     return fse.outputFileAsync(wrapper.getOutputFilename(), wrapper.output);
@@ -437,7 +502,7 @@ function createJavascriptWrapper(modulePath) {
     // NOTE: Old implementation
     // var wrapper = new JavascriptWrapper(modulePath);
     // return wrapper.writeOutFile();
-    
+
 }
 
 function writeJavascriptIndexFiles() {
@@ -484,8 +549,8 @@ function writeJavascriptIndexFiles() {
                         return testPattern === filePath;
                     }
                 });
-                if (shouldExclude) { 
-                    return false; 
+                if (shouldExclude) {
+                    return false;
                 }
 
                 // if override class exists, load it in favor of the autogen file
@@ -497,7 +562,6 @@ function writeJavascriptIndexFiles() {
                     var basename = path.basename(filePath, JS_AUTOGEN_EXT);
                     var overrideName = basename + '.js';
                     var overridePath = './' + path.join(dirname, overrideName);
-                    console.log('checking for override: ' + overridePath);
 
                     // override file present, so don't include autogen file in index
                     if (dirFiles.indexOf(overridePath) > -1) {
@@ -535,7 +599,7 @@ function writeJavascriptIndexFiles() {
         '**/', // trailing slash globs for dirs only
         function(dirPath) {
             return writeIndexForDir(dirPath, false);
-        }, 
+        },
         { cwd: jsSrcDir, }
     ).then(function() {
         // write top-level index (not included in above glob)
@@ -544,11 +608,11 @@ function writeJavascriptIndexFiles() {
 
 }
 
-// 
+//
 // Python wrapper writer
 //
 
-function PythonWrapper(modulePath) {
+function PythonWrapper(modulePath, className) {
 
     this.modulePath = modulePath;
     this.dirRelativePath = path.dirname(modulePath);
@@ -556,7 +620,16 @@ function PythonWrapper(modulePath) {
     this.destDirRelativeToBase = path.relative(this.destDirAbsolutePath, pySrcDir);
 
     this.basename = path.basename(modulePath, '.js');
-    this.className = this.basename.replace(/\./g, '_');
+
+    if (className) {
+        this.className = className;
+    } else {
+        this.className = this.basename.replace(/\./g, '_');
+        var extraDefines = getExtraDefines(this.className);
+        extraDefines.forEach(function(extraClassName) {
+            createPythonWrapper(modulePath, extraClassName);
+        });
+    }
 
     this.pyDestPath = path.resolve(this.destDirAbsolutePath, this.className + '.py')
     this.pyAutoDestPath = path.resolve(this.destDirAbsolutePath, this.className + '_' + AUTOGEN_EXT + '.py');
@@ -599,7 +672,7 @@ function PythonWrapper(modulePath) {
 
 }
 _.extend(PythonWrapper.prototype, {
-    
+
     getRequireInfoFromClassDescriptor: function(classDescriptor) {
 
         var result = {};
@@ -612,7 +685,7 @@ _.extend(PythonWrapper.prototype, {
                 result.relativePath = config.relativePath;
             } else {
                 result.className = path.basename(classDescriptor, '.js');
-                result.relativePath = classDescriptor; 
+                result.relativePath = classDescriptor;
             }
 
         } else {
@@ -658,21 +731,22 @@ _.extend(PythonWrapper.prototype, {
         // infer dependencies from any properties that reference other Three types
         _.reduce(this.config.properties, function(result, prop, propName) {
 
-            if (prop instanceof Types.ThreeType || prop instanceof Types.ThreeTypeArray || prop instanceof Types.ThreeTypeDict) {
+            if (prop instanceof Types.ThreeType || prop instanceof Types.InitializedThreeType ||
+                    prop instanceof Types.ThreeTypeArray || prop instanceof Types.ThreeTypeDict) {
                 if (prop.typeName !== 'this') {
                     if (typeof prop.typeName === 'string') {
-                        result[prop.typeName] = this.getRequireInfoFromClassDescriptor(prop.typeName);        
+                        result[prop.typeName] = this.getRequireInfoFromClassDescriptor(prop.typeName);
                     } else if (prop.typeName instanceof Array) {
                         prop.typeName.forEach(function(typeName) {
                             result[typeName] = this.getRequireInfoFromClassDescriptor(typeName);
                         }, this);
                     }
                 }
-            } 
+            }
             return result;
 
         }, dependencies, this);
-    
+
         this.dependencies = dependencies;
 
     },
@@ -721,7 +795,7 @@ _.extend(PythonWrapper.prototype, {
         // strip extension off filename
         refTokens[refTokens.length - 1] = path.basename(refTokens[refTokens.length - 1], '.js');
 
-        var refUrl = 'http://threejs.org/docs/#Reference/' + refTokens.join('/');
+        var refUrl = 'http://threejs.org/docs/#api/' + refTokens.join('/');
 
         // combine middle elements of url with dot
         refUrl = refUrl.replace('Renderers/WebGL/Plugins/', 'Renderers.WebGL.Plugins/');
@@ -744,13 +818,13 @@ _.extend(PythonWrapper.prototype, {
 
 });
 
-function createPythonWrapper(modulePath) {
+function createPythonWrapper(modulePath, className) {
 
     try {
-        var wrapper = new PythonWrapper(modulePath);
+        var wrapper = new PythonWrapper(modulePath, className);
     } catch (e) {
         console.log(e);
-        console.log('skipping: ' + modulePath);
+        console.log('skipping: ' + modulePath + (className ? ':' + className : ''));
         return Promise.resolve(false);
     }
     return fse.outputFileAsync(wrapper.getOutputFilename(), wrapper.output);
@@ -780,7 +854,7 @@ function createTopLevelPythonModuleFile() {
         var modulePath = path.dirname(filePath);
         var moduleName = path.basename(filePath, '.py').replace(/\./g, '_');
 
-        // check for override module.  
+        // check for override module.
         // for py files, the override subclasses the autogen class, so we should
         // only import the override in our __init__.py file
         if (/autogen/.test(moduleName)) {
@@ -827,6 +901,13 @@ function createTopLevelPythonModuleFile() {
 var CUSTOM_CLASSES = [
     'textures/ImageTexture.js',
     'textures/TextTexture.js',
+    'controls/Controls.js',
+    'controls/OrbitControls.js',
+    'controls/TrackballControls.js',
+    'controls/FlyControls.js',
+    'controls/Picker.js',
+    'geometries/PlainGeometry.js',
+    'objects/CloneArray.js',
 ];
 
 function createJavascriptFiles() {
@@ -851,7 +932,7 @@ function createPythonFiles() {
                 createPythonWrapper(relativePath);
                 // ensures each dir has empty __init__.py file for proper importing of sub dirs
                 createPythonModuleInitFile(relativePath);
-            })    
+            })
         })
         .then(function() {
             // top level __init__.py file imports *all* pythreejs modules into namespace
