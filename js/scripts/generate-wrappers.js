@@ -292,7 +292,6 @@ function JavascriptWrapper(modulePath, className) {
     this.config = getClassConfig(this.className);
 
     this.modelName = this.className + 'Model';
-    this.viewName = this.className + 'View';
 
     // check if manual file exists
     var customSrcPath = path.join(path.dirname(this.jsDestPath), path.basename(this.jsDestPath, '.js') + '.js');
@@ -351,7 +350,6 @@ _.extend(JavascriptWrapper.prototype, {
         }
 
         result.modelName = result.className + 'Model';
-        result.viewName = result.className + 'View';
 
         result.absolutePath = path.resolve(jsSrcDir, result.relativePath);
         var absPath = result.absolutePath;
@@ -477,12 +475,10 @@ _.extend(JavascriptWrapper.prototype, {
 
         var overrideModule = "Override";
         var overrideModel = overrideModule + "." + this.modelClass;
-        var overrideView = overrideModule + "." + this.viewClass;
 
         this.overrideClass = {
             relativePath: './' + this.className + '.js',
             modelName: overrideModel,
-            viewName: overrideView,
         };
 
     },
@@ -679,7 +675,6 @@ function PythonWrapper(modulePath, className) {
         },
 
         className: this.className,
-        viewName: this.className + 'View',
         modelName: this.className + 'Model',
         superClass: this.superClass,
         properties: this.properties,
