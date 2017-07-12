@@ -267,6 +267,7 @@ module.exports = {
             morphNormals: new Types.Array(),
             skinWeights: new Types.Array(),
             skinIndices: new Types.Array(),
+            _ref_geometry: new Types.ThreeType('Geometry', {allowNull: false}),
         },
     },
     InstancedBufferAttribute: {
