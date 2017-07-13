@@ -57,7 +57,7 @@ var RenderableView = widgets.DOMWidgetView.extend({
     },
 
     setupEventListeners: function() {
-        this.listenTo(this.model, 'rerender',       this.update.bind(this));
+        this.listenTo(this.model, 'rerender',       this.tick.bind(this));
         this.listenTo(this.model, 'msg:custom',     this.onCustomMessage.bind(this));
 
         this.listenTo(this.model, 'change:_width',  this.updateSize.bind(this));

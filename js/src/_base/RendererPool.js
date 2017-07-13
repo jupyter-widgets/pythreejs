@@ -70,15 +70,12 @@ _.extend(RendererPool.prototype, {
             return;
         }
 
-        // notify holder
-        try {
-            claimedRenderer.onReclaim();
+        // remove claim token
+        this.claimedPool = _.without(this.claimedPool, claimedRenderer);
+        this.freePool.push(claimedRenderer.renderer);
 
-        } finally {
-            // remove claim token
-            this.claimedPool = _.without(this.claimedPool, claimedRenderer);
-            this.freePool.push(claimedRenderer.renderer);
-        }
+        // notify holder
+        claimedRenderer.onReclaim();
 
     },
 
