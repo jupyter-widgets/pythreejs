@@ -96,10 +96,14 @@ var RenderableView = widgets.DOMWidgetView.extend({
         scene = scene || this.scene;
         camera = camera || this.camera;
 
-        // TODO: check renderer.domElement.isContextLost()
-
         if (this.isFrozen) {
             this.unfreeze();
+        }
+
+        if (this.renderer.context.isContextLost()) {
+            // Context is invalid, freeze for now (stops animation etc)
+            this.freeze();
+            return;
         }
 
         this.renderer.render(scene, camera);
@@ -119,7 +123,6 @@ var RenderableView = widgets.DOMWidgetView.extend({
         }
 
         this.acquireRenderer();
-        this.updateSize();
 
         if (this.controls) {
             this.enableControls();
@@ -136,6 +139,8 @@ var RenderableView = widgets.DOMWidgetView.extend({
         this.$el.empty().append(this.$renderer);
 
         this.$el.css('margin-bottom', '-5px');
+
+        this.updateSize();
 
         this.log('ThreeView.acquireRenderer(' + this.renderer.poolId + ')');
     },
@@ -216,6 +221,7 @@ var RenderableView = widgets.DOMWidgetView.extend({
 
     onRendererReclaimed: function() {
         this.log('ThreeView WebGL context is being reclaimed: ' + this.renderer.poolId);
+
         this.freeze();
     },
 

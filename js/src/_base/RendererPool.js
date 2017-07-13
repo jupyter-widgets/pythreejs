@@ -33,6 +33,7 @@ _.extend(RendererPool.prototype, {
                 // required for converting canvas to png
                 preserveDrawingBuffer: true,
             });
+            renderer.context.canvas.addEventListener("webglcontextlost", this.onContextLost.bind(this), false);
             renderer.poolId = this.numCreated;
             this.numCreated++;
 
@@ -77,6 +78,24 @@ _.extend(RendererPool.prototype, {
         // notify holder
         claimedRenderer.onReclaim();
 
+    },
+
+    onContextLost: function(event) {
+        // Find the relevant renderer:
+        var claim = _.find(this.claimedPool, function(claimToken) {
+            return claimToken.renderer.domElement === event.target;
+        });
+        if (!claim) {
+            console.warn('Could not find lost context');
+            return;
+        }
+
+        // remove claim token
+        this.claimedPool = _.without(this.claimedPool, claim);
+        this.freePool.push(renderer);
+
+        // notify holder
+        claim.onReclaim();
     },
 
 });

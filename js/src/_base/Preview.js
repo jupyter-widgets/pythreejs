@@ -157,11 +157,16 @@ var PreviewView = RenderableView.extend({
     renderScene: function() {
         this.log('renderScene');
 
-        // TODO: check renderer.domElement.isContextLost()
-
         if (this.isFrozen) {
             this.unfreeze();
         }
+
+        if (this.renderer.context.isContextLost()) {
+            // Context is invalid, freeze for now (stops animation etc)
+            this.freeze();
+            return;
+        }
+
         if (this._rebuildNeeded) {
             this.constructScene();
         }

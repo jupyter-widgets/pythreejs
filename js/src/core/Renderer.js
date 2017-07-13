@@ -128,8 +128,8 @@ var RendererView = RenderableView.extend({
         this.tick();
     },
 
-    unfreeze: function() {
-        RenderableView.prototype.unfreeze.call(this);
+    acquireRenderer: function() {
+        RenderableView.prototype.acquireRenderer.call(this);
 
         // We need to ensure that renderer properties are applied
         // (we have no idea where the renderer has been...)

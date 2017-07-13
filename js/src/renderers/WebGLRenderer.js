@@ -9,6 +9,7 @@ var Promise = require('bluebird');
 
 var RenderableModel = require('../_base/Renderable').RenderableModel;
 var RenderableView = require('../_base/Renderable').RenderableView;
+var ThreeModel = require('../_base/Three').ThreeModel;
 
 var WebGLRendererModel = RenderableModel.extend({
 
@@ -67,6 +68,17 @@ var WebGLRendererView = RenderableView.extend({
 
     log: function(str) {
         console.log('WGLR(' + this.id + '): ' + str);
+    },
+
+    acquireRenderer: function() {
+        RenderableView.prototype.acquireRenderer.call(this);
+
+        // We need to ensure that renderer properties are applied
+        // (we have no idea where the renderer has been...)
+        var clearColor = ThreeModel.prototype.convertColorModelToThree(this.model.get('clearColor'));
+        var clearOpacity = ThreeModel.prototype.convertFloatModelToThree(this.model.get('clearOpacity'));
+        this.renderer.setClearColor(clearColor, clearOpacity);
+        // TODO: Apply other model attributes
     },
 
     //
