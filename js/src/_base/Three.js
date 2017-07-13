@@ -299,6 +299,7 @@ var ThreeModel = widgets.WidgetModel.extend({
 
     onChildChanged: function(model, options) {
         console.log('child changed: ' + model.id);
+        // Propagate up hierarchy:
         this.trigger('childchange', this);
     },
 
