@@ -1,6 +1,7 @@
 var _ = require('underscore');
 
-var MAX_RENDERERS = 1;
+// This should be available for most devices:
+var MAX_RENDERERS = 8;
 
 function makeRendererClaimToken(renderer, onReclaim) {
     return {
