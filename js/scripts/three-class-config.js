@@ -1201,7 +1201,7 @@ module.exports = {
         relativePath: './extras/curves/SplineCurve3',
     },
     BoxBufferGeometry: {
-        relativePath: './geometries/BoxBufferGeometry',
+        relativePath: './geometries/BoxGeometry',
         superClass: 'BufferGeometry',
         constructorArgs: [ 'width', 'height', 'depth', 'widthSegments', 'heightSegments', 'depthSegments' ],
         properties: {
@@ -1229,7 +1229,7 @@ module.exports = {
         propsDefinedByThree: [ 'vertices', 'faces' ]
     },
     CircleBufferGeometry: {
-        relativePath: './geometries/CircleBufferGeometry',
+        relativePath: './geometries/CircleGeometry',
         superClass: 'BufferGeometry',
         constructorArgs: [ 'radius', 'segments', 'thetaStart', 'thetaLength' ],
         properties: {
