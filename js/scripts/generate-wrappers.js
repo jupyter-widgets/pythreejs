@@ -39,6 +39,7 @@ var CUSTOM_CLASSES = [
     'controls/FlyControls.js',
     'controls/Picker.js',
     'geometries/PlainGeometry.js',
+    'geometries/PlainBufferGeometry.js',
     'objects/CloneArray.js',
 ];
 

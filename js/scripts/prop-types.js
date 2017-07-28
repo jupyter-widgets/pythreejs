@@ -264,7 +264,7 @@ function ArrayBufferType(arrayType) {
 }
 _.extend(ArrayBufferType.prototype, BaseType.prototype, {
     getTraitlet: function() {
-        return 'List().tag(sync=True)';
+        return 'Array().tag(sync=True, **array_serialization)';
     },
     getPropertyConverterFn: function() {
         return 'convertArrayBuffer';
@@ -372,30 +372,6 @@ _.extend(FaceArray.prototype, BaseType.prototype, {
     },
 });
 
-function BufferAttribute() {
-    this.defaultValue = null;
-}
-_.extend(BufferAttribute.prototype, BaseType.prototype, {
-    getTraitlet: function() {
-        return 'BufferAttribute(default_value=None, allow_none=True).tag(sync=True)';
-    },
-    getPropertyConverterFn: function() {
-        return 'convertBufferAttribute';
-    },
-});
-
-function BufferAttributeDict() {
-    this.defaultValue = {};
-}
-_.extend(BufferAttributeDict.prototype, BaseType.prototype, {
-    getTraitlet: function() {
-        return 'Tuple().tag(sync=True)';
-    },
-    getPropertyConverterFn: function() {
-        return 'convertBufferAttributeDict';
-    },
-});
-
 function Matrix3() {
     this.defaultValue = [
         1, 0, 0,
@@ -469,8 +445,6 @@ module.exports = {
     ColorArray: ColorArray,
     Array: ArrayType,
     ArrayBuffer: ArrayBufferType,
-    BufferAttribute: BufferAttribute,
-    BufferAttributeDict: BufferAttributeDict,
     Dict: DictType,
     Function: FunctionType,
     Vector2: Vector2,

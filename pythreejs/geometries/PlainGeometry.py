@@ -9,7 +9,7 @@ class PlainGeometry(PlainGeometryBase):
         """Creates a PlainGeometry of another geometry.
 
         NOTE:
-        The PlainGeometry will copy the arrays from the source geometry.abs
+        The PlainGeometry will copy the arrays from the source geometry.
         To avoid this, use PlainBufferGeometry (TODO).
         """
         return cls(_ref_geometry=geometry)

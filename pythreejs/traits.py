@@ -37,15 +37,6 @@ def Matrix4(trait_type=CFloat, default=None, **kwargs):
 
 def Face3(**kwargs):
     return Tuple(CInt(), CInt(), CInt(), Vector3(), Unicode(), CInt(), Tuple(), Tuple())
-
-def BufferAttribute(trait_type=CFloat, **kwargs):
-    return Tuple(
-        List(allow_none=True),      # 0. array
-        CInt(allow_none=False),     # 1. itemSize
-        Bool(default_value=False),  # 2. dynamic
-        Unicode(),                  # 3. uuid
-        CInt(),                     # 6. version
-        default_value=(None, -1, False, "", -1)
     )
 
 def Euler(default=None, **kwargs):
