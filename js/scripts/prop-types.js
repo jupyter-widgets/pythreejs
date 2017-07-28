@@ -153,32 +153,38 @@ _.extend(ThreeTypeDict.prototype, BaseType.prototype, {
     },
 });
 
-function Bool(defaultValue) {
+function Bool(defaultValue, nullable) {
+    this.nullable = nullable === true;
     this.defaultValue = defaultValue;
 }
 _.extend(Bool.prototype, BaseType.prototype, {
     getTraitlet: function() {
         var pyBoolValue = this.defaultValue ? 'True' : 'False';
-        return 'Bool(' + pyBoolValue + ').tag(sync=True)';
+        var nullableStr = this.nullable ? 'True' : 'False';
+        return 'Bool(' + pyBoolValue + ', allow_none=' + nullableStr + ').tag(sync=True)';
     },
 });
 
-function Int(defaultValue) {
-    this.defaultValue = defaultValue == null ? 0 : defaultValue;
+function Int(defaultValue, nullable) {
+    this.nullable = nullable === true;
+    this.defaultValue = defaultValue == null && !this.nullable ? 0 : defaultValue;
 }
 _.extend(Int.prototype, BaseType.prototype, {
     getTraitlet: function() {
-        return 'CInt(' + this.defaultValue + ').tag(sync=True)';
+        var nullableStr = this.nullable ? 'True' : 'False';
+        return 'CInt(' + this.defaultValue + ', allow_none=' + nullableStr + ').tag(sync=True)';
     },
 
 });
 
-function Float(defaultValue) {
-    this.defaultValue = defaultValue == null ? 0.0 : defaultValue;
+function Float(defaultValue, nullable) {
+    this.nullable = nullable === true;
+    this.defaultValue = defaultValue == null && !this.nullable ? 0.0 : defaultValue;
 }
 _.extend(Float.prototype, BaseType.prototype, {
     getTraitlet: function() {
-        return 'CFloat(' + this.getPythonDefaultValue() + ').tag(sync=True)';
+        var nullableStr = this.nullable ? 'True' : 'False';
+        return 'CFloat(' + this.getPythonDefaultValue() + ', allow_none=' + nullableStr + ').tag(sync=True)';
     },
     getPropertyConverterFn: function() {
         return 'convertFloat';
@@ -186,23 +192,27 @@ _.extend(Float.prototype, BaseType.prototype, {
 
 });
 
-function StringType(defaultValue) {
+function StringType(defaultValue, nullable) {
+    this.nullable = nullable === true;
     this.defaultValue = defaultValue;
 }
 _.extend(StringType.prototype, BaseType.prototype, {
     getTraitlet: function() {
-        return 'Unicode("' + this.defaultValue + '").tag(sync=True)';
+        var nullableStr = this.nullable ? 'True' : 'False';
+        return 'Unicode(' + JSON.stringify(this.defaultValue) + ', allow_none=' + nullableStr + ').tag(sync=True)';
     },
 
 });
 
-function Enum(enumTypeName, defaultValue) {
+function Enum(enumTypeName, defaultValue, nullable) {
     this.enumTypeName = enumTypeName;
     this.defaultValue = defaultValue;
+    this.nullable = nullable === true;
 }
 _.extend(Enum.prototype, BaseType.prototype, {
     getTraitlet: function() {
-        return 'Enum(' + this.enumTypeName + ', "' + this.defaultValue + '").tag(sync=True)';
+        var nullableStr = this.nullable ? 'True' : 'False';
+        return 'Enum(' + this.enumTypeName + ', "' + this.defaultValue + ', allow_none=' + nullableStr + '").tag(sync=True)';
     },
     getPropertyConverterFn: function() {
         return 'convertEnum';
@@ -262,12 +272,14 @@ _.extend(ArrayBufferType.prototype, BaseType.prototype, {
     },
 });
 
-function DictType(defaultValue={}) {
+function DictType(defaultValue={}, nullable) {
     this.defaultValue = defaultValue;
+    this.nullable = nullable === true;
 }
 _.extend(DictType.prototype, BaseType.prototype, {
     getTraitlet: function() {
-        return 'Dict().tag(sync=True)';
+        var nullableStr = this.nullable ? 'True' : 'False';
+        return 'Dict(default_value=' + this.defaultValue + ', allow_none=' + nullableStr + ').tag(sync=True)';
     },
 });
 
