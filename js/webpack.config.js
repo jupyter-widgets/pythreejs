@@ -22,10 +22,10 @@ module.exports = [
         module: {
             loaders: loaders
         },
-        externals: ['@jupyter-widgets/base']
+        externals: ['@jupyter-widgets/base', 'three']
     },
     {// embeddable jupyter-threejs bundle
-        entry: './src/index.js',
+        entry: './src/embed.js',
         output: {
             filename: 'index.js',
             path: './dist/',
@@ -35,6 +35,18 @@ module.exports = [
         module: {
             loaders: loaders
         },
-        externals: ['@jupyter-widgets/base']
-    }
+        externals: ['@jupyter-widgets/base', 'three']
+    },
+    {//standalone threejs module
+        entry: 'three',
+        output: {
+            filename: 'three.js',
+            path: '../pythreejs/static',
+            libraryTarget: 'amd'
+        },
+        devtool: 'source-map',
+        module: {
+            loaders: loaders
+        }
+    },
 ];
