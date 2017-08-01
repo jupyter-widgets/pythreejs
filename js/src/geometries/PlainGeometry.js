@@ -1,4 +1,4 @@
-var AutogenPlainGeometryModel = require('../geometries/PlainGeometry').PlainGeometryModel;
+var AutogenPlainGeometryModel = require('../geometries/PlainGeometry.autogen').PlainGeometryModel;
 
 
 var PlainGeometryModel = AutogenPlainGeometryModel.extend({
@@ -13,7 +13,7 @@ var PlainGeometryModel = AutogenPlainGeometryModel.extend({
                 result.copy(ref.obj);
 
                 // A bit of a hack:
-                // Sync out all copied properties before returning
+                // Sync out all copied properties before restoring
                 this.obj = result;
                 var old_three = this.props_created_by_three;
                 this.props_created_by_three = {};

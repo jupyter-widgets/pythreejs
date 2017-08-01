@@ -37,7 +37,6 @@ def Matrix4(trait_type=CFloat, default=None, **kwargs):
 
 def Face3(**kwargs):
     return Tuple(CInt(), CInt(), CInt(), Vector3(), Unicode(), CInt(), Tuple(), Tuple())
-    )
 
 def Euler(default=None, **kwargs):
     if default is None:

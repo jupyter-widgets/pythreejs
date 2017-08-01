@@ -258,13 +258,21 @@ _.extend(ArrayType.prototype, BaseType.prototype, {
 });
 
 // TODO: support more than Float32Array
-function ArrayBufferType(arrayType) {
-    // this.arrayType = arrayType || 'Float32Array';
+function ArrayBufferType(arrayType, shape_constraint) {
+    this.arrayType = arrayType;
+    this.shape_constraint = shape_constraint;
     this.defaultValue = [];
 }
 _.extend(ArrayBufferType.prototype, BaseType.prototype, {
     getTraitlet: function() {
-        return 'Array().tag(sync=True, **array_serialization)';
+        var r = `NDArray(dtype=${this.arrayType || 'None'}).tag(sync=True, **array_serialization)`;
+        if (this.shape_constraint) {
+            var constraint = this.shape_constraint.reduce(function(wip, element) {
+                return wip + `, ${element === null ? 'None' : element}`;
+            }, this);
+            r += `.valid(shape_constraint([${this.shape_constraint}]))`
+        }
+        return r;
     },
     getPropertyConverterFn: function() {
         return 'convertArrayBuffer';

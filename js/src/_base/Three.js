@@ -2,6 +2,7 @@ var _ = require('underscore');
 var widgets = require("@jupyter-widgets/base");
 var Promise = require('bluebird');
 var $ = require('jquery');
+var ndarray = require('ndarray');
 
 var Enums = require('./enums');
 
@@ -186,7 +187,6 @@ var ThreeModel = widgets.WidgetModel.extend({
         if (id != null) {
             return { id: id };
         }
-
         return;
 
     },
@@ -656,13 +656,11 @@ var ThreeModel = widgets.WidgetModel.extend({
 
     // ArrayBuffer
     convertArrayBufferModelToThree: function(arr, propName) {
-        // TODO: support other ArrayBuffer types
-        return new Float32Array(arr);
+        return arr.data;
     },
 
     convertArrayBufferThreeToModel: function(arrBuffer, propName) {
-        // TODO: support other ArrayBuffer types
-        return Array.prototype.slice.call(arrBuffer);
+        return ndarray(arrBuffer);
     },
 
     // Color

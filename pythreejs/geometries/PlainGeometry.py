@@ -10,7 +10,7 @@ class PlainGeometry(PlainGeometryBase):
 
         NOTE:
         The PlainGeometry will copy the arrays from the source geometry.
-        To avoid this, use PlainBufferGeometry (TODO).
+        To avoid this, use PlainBufferGeometry.
         """
         return cls(_ref_geometry=geometry)
 

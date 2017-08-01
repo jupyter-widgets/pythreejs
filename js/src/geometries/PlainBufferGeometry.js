@@ -1,4 +1,4 @@
-var AutogenPlainBufferGeometryModel = require('../geometries/PlainGeometry').PlainBufferGeometryModel;
+var AutogenPlainBufferGeometryModel = require('../geometries/PlainBufferGeometry.autogen').PlainBufferGeometryModel;
 
 
 var PlainBufferGeometryModel = AutogenPlainBufferGeometryModel.extend({
@@ -13,13 +13,12 @@ var PlainBufferGeometryModel = AutogenPlainBufferGeometryModel.extend({
                 result.copy(ref.obj);
 
                 // A bit of a hack:
-                // Sync out all copied properties before returning
+                // Sync out all copied properties before restoring
                 this.obj = result;
                 var old_three = this.props_created_by_three;
                 this.props_created_by_three = {};
                 [
-                    'name', 'colors', 'faces', 'vertices', 'faceVertexUvs', 'morphTargets',
-                    'morphNormals', 'skinWeights', 'skinIndices', 'lineDistances',
+                    'name', 'attributes', 'morphAttributes',
                     'boundingBox', 'boundingSphere'
                 ].forEach(key => {
                     this.props_created_by_three[key] = true;

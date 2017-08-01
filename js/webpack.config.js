@@ -2,6 +2,8 @@ var loaders = [
     { test: /\.json$/, loader: "json-loader" }
 ];
 
+var externals = ['@jupyter-widgets/base', 'jupyter-datawidgets'];
+
 module.exports = [
     {
         // Notebook extension
@@ -27,7 +29,7 @@ module.exports = [
         module: {
             loaders: loaders
         },
-        externals: ['@jupyter-widgets/base'],
+        externals: externals,
         resolve: {
             extensions: [ "", ".autogen.js", ".js" ]
         },
@@ -45,7 +47,7 @@ module.exports = [
         module: {
             loaders: loaders
         },
-        externals: ['@jupyter-widgets/base'],
+        externals: externals,
         resolve: {
             extensions: [ "", ".autogen.js", ".js" ]
         },

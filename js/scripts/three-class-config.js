@@ -196,12 +196,12 @@ module.exports = {
             array:       new Types.ArrayBuffer(),
             count:       new Types.Int(0),
             dynamic:     new Types.Bool(false),
-            itemSize:    new Types.Int(1),
+            //itemSize:    new Types.Int(1),   // Item size is inferred from array
             needsUpdate: new Types.Bool(false),
             normalized:  new Types.Bool(true),
             version:     new Types.Int(-1),
         },
-        constructorArgs: [ 'array', 'itemSize', 'normalized' ],
+        constructorArgs: [ 'array', 'normalized' ],
         propsDefinedByThree: [ 'count', 'version' ]
     },
     BufferGeometry: {
@@ -266,17 +266,13 @@ module.exports = {
         },
     },
     PlainBufferGeometry: {
-        relativePath: './geometries/PlainGeometry',
-        superClass: 'Geometry',
+        relativePath: './geometries/PlainBufferGeometry',
+        superClass: 'BufferGeometry',
         properties: {
             attributes: new Types.ThreeTypeDict('BufferAttribute'),
-            position:   new Types.ThreeType('BufferAttribute'),
-            normal:     new Types.ThreeType('BufferAttribute'),
-            color:      new Types.ThreeType('BufferAttribute'),
-            index:      new Types.ThreeType('BufferAttribute'),
             morphAttributes: new Types.ThreeTypeDict('BufferAttribute'),
             MaxIndex:   new Types.Int(65535),
-            //groups:     new Types.Group(),
+            //groups:     new Types.GeometryGroup(),
             //drawRange:  new Types.DrawRange(),
             _ref_geometry: new Types.ThreeType('Geometry', {allowNull: false}),
         },
