@@ -925,6 +925,11 @@ function createJavascriptFiles() {
 
 function createPythonFiles() {
 
+    // Prevent python file generation when outside dir (e.g. npm install in dependent)
+    if (!fs.existsSync(pySrcDir)) {
+        return Promise.resolve();
+    }
+
     return mapPromiseFnOverThreeModules(function(relativePath) {
             createPythonWrapper(relativePath);
             // ensures each dir has empty __init__.py file for proper importing of sub dirs
