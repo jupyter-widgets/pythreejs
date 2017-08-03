@@ -40,6 +40,7 @@ var CUSTOM_CLASSES = [
     'controls/Picker.js',
     'geometries/PlainGeometry.js',
     'objects/CloneArray.js',
+    'objects/Blackbox.js',
 ];
 
 
