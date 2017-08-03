@@ -14,6 +14,7 @@
     "autogen-enums": "node ./scripts/generate-enums.js",
     "autogen-wrappers": "node ./scripts/generate-wrappers.js",
     "autogen": "npm run autogen-enums && npm run autogen-wrappers",
+    "postinstall": "npm run autogen-wrappers",
     "build": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
