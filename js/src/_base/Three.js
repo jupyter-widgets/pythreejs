@@ -17,6 +17,7 @@ var ThreeModel = widgets.WidgetModel.extend({
     defaults: function() {
         return _.extend(widgets.WidgetModel.prototype.defaults.call(this), {
             _model_name: 'ThreeModel',
+            _model_module: 'jupyter-threejs',
         });
     },
 
@@ -123,8 +124,8 @@ var ThreeModel = widgets.WidgetModel.extend({
         if (cacheDescriptor) {
             var obj = this.getThreeObjectFromCache(cacheDescriptor);
             if (obj) {
-                if (obj.ipymodelId != this.id) {
-                    throw new Error('model id does not match three object: ' + obj.ipymodelId + ' -- ' + this.id);
+                if (obj.ipymodelId != this.model_id) {
+                    throw new Error('model id does not match three object: ' + obj.ipymodelId + ' -- ' + this.model_id);
                 }
 
                 this.obj = obj;
@@ -146,8 +147,16 @@ var ThreeModel = widgets.WidgetModel.extend({
 
         return objPromise.bind(this).then(function(obj) {
 
-            obj.ipymodelId = this.id; // brand that sucker
+            obj.ipymodelId = this.model_id; // brand that sucker
             obj.ipymodel = this;
+
+            if (!cacheDescriptor) {
+                cacheDescriptor = this.getCacheDescriptor();
+                if (!cacheDescriptor) {
+                    console.error('Model missing ID:', this);
+                    throw new Error('Model missing ID!');
+                }
+            }
 
             this.putThreeObjectIntoCache(cacheDescriptor, obj);
 
@@ -173,7 +182,7 @@ var ThreeModel = widgets.WidgetModel.extend({
 
     getCacheDescriptor: function() {
 
-        var id = this.id;
+        var id = this.model_id;
         if (id != null) {
             return { id: id };
         }
@@ -298,7 +307,7 @@ var ThreeModel = widgets.WidgetModel.extend({
     },
 
     onChildChanged: function(model, options) {
-        console.log('child changed: ' + model.id);
+        console.log('child changed: ' + model.model_id);
         // Propagate up hierarchy:
         this.trigger('childchange', this);
     },
