@@ -1086,14 +1086,14 @@ module.exports = {
         properties: {
             // this.image = { data: data, width: width, height: height };
             data:            new Types.ArrayBuffer(),
-            width:           new Types.Int(0),
-            height:          new Types.Int(0),
+            // width:           new Types.Int(0),   // inferred from data
+            // height:          new Types.Int(0),   // inferred from data
             minFilter:       new Types.Enum('Filters', 'NearestFilter'), // override default
             magFilter:       new Types.Enum('Filters', 'NearestFilter'), // override default
             flipY:           new Types.Bool(false), // override default
             generateMipmaps: new Types.Bool(false),
         },
-        constructorArgs: [ 'data', 'width', 'height', 'format', 'type', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter', 'anisotropy' ],
+        constructorArgs: [ 'data', 'format', 'type', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter', 'anisotropy' ],
     },
     DepthTexture: {
         relativePath: './textures/DepthTexture',
