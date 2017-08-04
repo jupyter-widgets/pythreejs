@@ -19,8 +19,6 @@ var DataTextureModel = DataTextureBase.extend({
             throw Error('DataTexture data dimensions need to be 2 or 3, got:', rawData.dimension)
         }
         var data = this.convertArrayBufferModelToThree(rawData, 'data');
-        var width = rawData.shape[0];
-        var height = rawData.shape[1];
 
         return {
             data: data,

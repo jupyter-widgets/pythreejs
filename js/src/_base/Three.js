@@ -69,7 +69,7 @@ var ThreeModel = widgets.WidgetModel.extend({
                 this.listenTo(curValue, 'childchange', this.onChildChanged);
             }
 
-            // make sure to un/hook listeners when child points to new object
+            // make sure to (un)hook listeners when child points to new object
             this.on('change:' + propName, function(model, value, options) {
                 var prevModel = this.previous(propName);
                 var currModel = value;
@@ -93,7 +93,7 @@ var ThreeModel = widgets.WidgetModel.extend({
                 this.listenTo(childModel, 'childchange', this.onChildChanged);
             }, this);
 
-            // make sure to un/hook listeners when array changes
+            // make sure to (un)hook listeners when array changes
             this.on('change:' + propName, function(model, value, options) {
                 var prevArr = this.previous(propName) || [];
                 var currArr = value || [];
@@ -111,7 +111,42 @@ var ThreeModel = widgets.WidgetModel.extend({
             }, this);
         }, this);
 
-        // TODO: handle dicts of children via this.three_dict_properties
+        // Handle changes in three instance dict props
+        this.three_dict_properties.forEach(function(propName) {
+
+            var currDict = this.get(propName) || {};
+
+            // listen to current values in dict
+            var childModel;
+            Object.keys(currDict).forEach(function(childModelKey) {
+                childModel = currDict[childModelKey];
+                this.listenTo(childModel, 'change', this.onChildChanged);
+                this.listenTo(childModel, 'childchange', this.onChildChanged);
+            }, this);
+
+            // make sure to (un)hook listeners when dict changes
+            this.on('change:' + propName, function(model, value, options) {
+                var prevDict = this.previous(propName) || {};
+                var currDict = value || {};
+
+                var prevKeys = Object.keys(prevDict);
+                var currKeys = Object.keys(currDict);
+
+                var added = _.difference(currKeys, prevKeys);
+                var removed = _.difference(prevKeys, currKeys);
+
+                added.forEach(function(childModelKey) {
+                    childModel = currDict[childModelKey];
+                    this.listenTo(childModel, 'change', this.onChildChanged);
+                    this.listenTo(childModel, 'childchange', this.onChildChanged);
+                }, this);
+                removed.forEach(function(childModelKey) {
+                    childModel = prevDict[childModelKey];
+                    this.stopListening(childModel);
+                }, this);
+            }, this);
+
+        }, this);
 
         this.on('change', this.onChange, this);
         this.on('msg:custom', this.onCustomMessage, this);
