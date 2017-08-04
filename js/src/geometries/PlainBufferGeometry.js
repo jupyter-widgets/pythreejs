@@ -1,7 +1,13 @@
+var _ = require('underscore');
 var AutogenPlainBufferGeometryModel = require('../geometries/PlainBufferGeometry.autogen').PlainBufferGeometryModel;
 
 
 var PlainBufferGeometryModel = AutogenPlainBufferGeometryModel.extend({
+
+    createPropertiesArrays: function() {
+        AutogenPlainBufferGeometryModel.prototype.createPropertiesArrays.call(this);
+        this.property_assigners['attributes'] = 'assignAttributesMap';
+    },
 
     constructThreeObject: function() {
 
@@ -30,6 +36,34 @@ var PlainBufferGeometryModel = AutogenPlainBufferGeometryModel.extend({
         }
 
         return Promise.resolve(result);
+
+    },
+
+    assignAttributesMap: function(obj, key, value) {
+
+        var three = obj[key];
+        var oldKeys = three ? Object.keys(three).sort() : [];
+        var newKeys = value ? Object.keys(value).sort() : [];
+
+        var added = _.difference(newKeys, oldKeys);
+        var removed = _.difference(oldKeys, newKeys);
+        var common = _.intersection(oldKeys, newKeys);
+
+        if (removed.length > 0) {
+            console.warn('Cannot remove buffer geometry attributes:', removed);
+        }
+        added.forEach(key => {
+            obj.addAttribute(key, value[key]);
+        });
+
+        var current;
+        common.forEach(key => {
+            current = obj.getAttribute(key);
+            if (current !== value[key]) {
+                console.warn('Cannot reassign buffer geometry attribute:', key);
+                return;  // continue
+            }
+        });
 
     },
 

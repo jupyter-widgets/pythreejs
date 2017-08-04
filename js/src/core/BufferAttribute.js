@@ -4,25 +4,51 @@ var BufferAttributeAutogen = require('./BufferAttribute.autogen').BufferAttribut
 
 var BufferAttributeModel = BufferAttributeAutogen.extend({
 
-    constructThreeObject: function() {
+    createPropertiesArrays: function() {
+        BufferAttributeAutogen.prototype.createPropertiesArrays.call(this);
 
-        var array = this.get('array');
-        if (array.dimension > 2) {
+        // three.js DataTexture stores the data, width, and height props together in a dict called 'image'
+        this.property_mappers['BufferAttributeArray'] = 'mapBufferAttributeArray';
+        delete this.property_converters['array'];
+    },
+
+    decodeData() {
+        var rawData = this.get('array');
+        if (rawData.dimension > 2) {
             throw Error('Array has too many dimensions:', array)
         }
-        var itemSize = array.dimension === 1 ? 1 : array.shape[1];
+        var itemSize = rawData.dimension === 1 ? 1 : rawData.shape[1];
 
+        var data = this.convertArrayBufferModelToThree(rawData, 'array');
+        return {
+            array: data,
+            itemSize: itemSize,
+        }
+    },
+
+    constructThreeObject: function() {
+        var data = this.decodeData();
         var result = new THREE.BufferAttribute(
-            this.convertArrayBufferModelToThree(array, 'array'),
-            itemSize,
+            data.array,
+            data.itemSize,
             this.get('normalized')
         );
+        result.needsUpdate = true;
         return Promise.resolve(result);
 
     },
 
-    assignAttributeMap: function() {
+    mapBufferAttributeArrayModelToThree: function() {
+        var data = this.decodeData();
+        this.obj.setArray(data.array);
+        this.obj.needsUpdate = true;
+        this.set({ version: this.obj.version }, 'pushFromThree');
+    },
 
+    mapBufferAttributeArrayThreeToModel: function() {
+        var attributeData = this.obj.array;
+        var modelNDArray = this.get('array');
+        modelNDArray.data.set(attributeData);
     },
 
 }, {
