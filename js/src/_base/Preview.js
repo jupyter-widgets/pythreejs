@@ -113,9 +113,7 @@ var PreviewView = RenderableView.extend({
 
     clearScene: function() {
         // this.controls.reset();
-        this.scene.children.forEach(function(child) {
-            this.scene.remove(child);
-        }, this);
+        this.scene.remove.apply(this.scene, this.scene.children.slice());
     },
 
     setupControls: function() {
