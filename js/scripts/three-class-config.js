@@ -1218,7 +1218,6 @@ module.exports = {
             heightSegments: new Types.Int(1),
             depthSegments:  new Types.Int(1),
         },
-        propsDefinedByThree: [ 'attributes', 'index' ],
     },
     BoxGeometry: {
         relativePath: './geometries/BoxGeometry',
@@ -1232,7 +1231,6 @@ module.exports = {
             heightSegments: new Types.Int(1),
             depthSegments:  new Types.Int(1),
         },
-        propsDefinedByThree: [ 'vertices', 'faces' ]
     },
     CircleBufferGeometry: {
         relativePath: './geometries/CircleGeometry',
@@ -1244,7 +1242,6 @@ module.exports = {
             thetaStart:  new Types.Float(0.0),
             thetaLength: new Types.Float(Math.PI * 2.0),
         },
-        propsDefinedByThree: [ 'attributes', 'index' ],
     },
     CircleGeometry: {
         relativePath: './geometries/CircleGeometry',
@@ -1285,7 +1282,6 @@ module.exports = {
             thetaStart:     new Types.Float(0.0),
             thetaLength:    new Types.Float(Math.PI * 2.0),
         },
-        propsDefinedByThree: [ 'attributes', 'index' ],
     },
     CylinderGeometry: {
         relativePath: './geometries/CylinderGeometry',
@@ -1329,7 +1325,6 @@ module.exports = {
             radius: new Types.Float(1.0),
             detail: new Types.Int(0.0),
         },
-        propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     LatheBufferGeometry: {
         relativePath: './geometries/LatheGeometry',
@@ -1341,7 +1336,6 @@ module.exports = {
             phiStart:  new Types.Float(0.0),
             phiLength: new Types.Float(Math.PI * 2.0),
         },
-        propsDefinedByThree: [ 'attributes', 'index' ],
     },
     LatheGeometry: {
         relativePath: './geometries/LatheGeometry',
@@ -1353,7 +1347,6 @@ module.exports = {
             phiStart:  new Types.Float(0.0),
             phiLength: new Types.Float(Math.PI * 2.0),
         },
-        propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     OctahedronGeometry: {
         relativePath: './geometries/OctahedronGeometry',
@@ -1363,7 +1356,6 @@ module.exports = {
             radius: new Types.Float(1.0),
             detail: new Types.Int(0.0),
         },
-        propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     ParametricGeometry: {
         relativePath: './geometries/ParametricGeometry',
@@ -1374,7 +1366,6 @@ module.exports = {
             slices: new Types.Int(3), // NOTE: default not specified in three.js
             stacks: new Types.Int(3), // NOTE: default not specified in three.js
         },
-        propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     PlaneBufferGeometry: {
         relativePath: './geometries/PlaneGeometry',
@@ -1386,7 +1377,6 @@ module.exports = {
             widthSegments:  new Types.Int(1),
             heightSegments: new Types.Int(1),
         },
-        propsDefinedByThree: [ 'attributes', 'index' ],
     },
     PlaneGeometry: {
         relativePath: './geometries/PlaneGeometry',
@@ -1398,7 +1388,6 @@ module.exports = {
             widthSegments:  new Types.Int(1),
             heightSegments: new Types.Int(1),
         },
-        propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     PolyhedronGeometry: {
         relativePath: './geometries/PolyhedronGeometry',
@@ -1411,7 +1400,6 @@ module.exports = {
             detail:   new Types.Float(0.0),
             faces:    new Types.Array(),
         },
-        propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     RingBufferGeometry: {
         relativePath: './geometries/RingGeometry',
@@ -1425,7 +1413,6 @@ module.exports = {
             thetaStart:    new Types.Float(0),
             thetaLength:   new Types.Float(Math.PI * 2),
         },
-        propsDefinedByThree: [ 'attributes', 'index' ],
     },
     RingGeometry: {
         relativePath: './geometries/RingGeometry',
@@ -1439,7 +1426,6 @@ module.exports = {
             thetaStart:    new Types.Float(0),
             thetaLength:   new Types.Float(Math.PI * 2),
         },
-        propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     // TODO: figure out options constructor args + UVGenerator
     ShapeGeometry: {
@@ -1466,7 +1452,6 @@ module.exports = {
             thetaStart:     new Types.Float(0),
             thetaLength:    new Types.Float(Math.PI),
         },
-        propsDefinedByThree: [ 'attributes', 'index' ],
     },
     SphereGeometry: {
         relativePath: './geometries/SphereGeometry',
@@ -1481,7 +1466,6 @@ module.exports = {
             thetaStart:     new Types.Float(0),
             thetaLength:    new Types.Float(Math.PI),
         },
-        propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     TetrahedronGeometry: {
         relativePath: './geometries/TetrahedronGeometry',
@@ -1491,7 +1475,6 @@ module.exports = {
             radius: new Types.Float(1),
             detail: new Types.Int(0),
         },
-        propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     TextGeometry: {
         relativePath: './geometries/TextGeometry',
@@ -1508,7 +1491,6 @@ module.exports = {
             tubularSegments: new Types.Int(6),
             arc:             new Types.Float(Math.PI * 2.0),
         },
-        propsDefinedByThree: [ 'attributes', 'index' ],
     },
     TorusGeometry: {
         relativePath: './geometries/TorusGeometry',
@@ -1521,7 +1503,6 @@ module.exports = {
             tubularSegments: new Types.Int(6),
             arc:             new Types.Float(Math.PI * 2.0),
         },
-        propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     TorusKnotBufferGeometry: {
         relativePath: './geometries/TorusKnotGeometry',
@@ -1535,7 +1516,6 @@ module.exports = {
             p:               new Types.Int(2),
             q:               new Types.Int(3),
         },
-        propsDefinedByThree: [ 'attributes', 'index' ],
     },
     TorusKnotGeometry: {
         relativePath: './geometries/TorusKnotGeometry',
@@ -1549,7 +1529,6 @@ module.exports = {
             p:               new Types.Int(2),
             q:               new Types.Int(3),
         },
-        propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     TubeGeometry: {
         relativePath: './geometries/TubeGeometry',
@@ -1562,7 +1541,6 @@ module.exports = {
             radiusSegments: new Types.Int(8),
             close:          new Types.Bool(false),
         },
-        propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     WireframeGeometry: {
         relativePath: './geometries/WireframeGeometry',
@@ -1572,7 +1550,6 @@ module.exports = {
             geometry:       new Types.ThreeType(['Geometry', 'BufferGeometry']),
             // geometry:       new Types.ThreeType('Geometry'),
         },
-        propsDefinedByThree: [ 'vertices', 'faces' ],
     },
     ArrowHelper: {
         relativePath: './helpers/ArrowHelper',
