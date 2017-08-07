@@ -1,9 +1,11 @@
 import numpy as np
+from ipywidgets import register
 from traitlets import validate, TraitError
 
 from .BufferAttribute_autogen import BufferAttribute as BaseBufferAttribute
 
 
+@register
 class BufferAttribute(BaseBufferAttribute):
 
     @validate('array')

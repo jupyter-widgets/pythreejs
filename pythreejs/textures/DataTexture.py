@@ -1,9 +1,11 @@
 import numpy as np
+from ipywidgets import register
 from traitlets import validate, TraitError
 
 from .DataTexture_autogen import DataTexture as BaseDataTexture
 
 
+@register
 class DataTexture(BaseDataTexture):
 
     @validate('data')

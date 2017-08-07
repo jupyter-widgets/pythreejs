@@ -653,6 +653,9 @@ function PythonWrapper(modulePath, className) {
     this.pyBaseRelativePath = path.relative(this.destDirAbsolutePath, pySrcDir);
     this.pyBaseRelativePath = relativePathToPythonImportPath(this.pyBaseRelativePath);
 
+    // check if manual file exists
+    this.hasOverride = fs.existsSync(this.pyDestPath);
+
     this.hasParameters = false;
 
     this.config = getClassConfig(this.className);
@@ -680,6 +683,7 @@ function PythonWrapper(modulePath, className) {
         superClass: this.superClass,
         properties: this.properties,
         dependencies: this.dependencies,
+        hasOverride: this.hasOverride,
     };
 
     // Render template

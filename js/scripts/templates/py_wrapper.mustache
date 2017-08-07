@@ -1,6 +1,6 @@
 import inspect
 
-from ipywidgets import Widget, DOMWidget, widget_serialization, Color
+from ipywidgets import Widget, DOMWidget, widget_serialization, Color, register
 from traitlets import (
     Unicode, Int, CInt, Instance, ForwardDeclaredInstance, This, Enum,
     Tuple, List, Dict, Float, CFloat, Bool, Union, Any,
@@ -17,6 +17,9 @@ from {{ superClass.pyRelativePath }} import {{ superClass.className }}
 from {{ dep.pyRelativePath }} import {{ dep.className }}
 {{/each}}
 
+{{#unless hasOverride}}
+@register
+{{/unless}}
 class {{ className }}({{ superClass.className }}):
     """{{ className }}
 

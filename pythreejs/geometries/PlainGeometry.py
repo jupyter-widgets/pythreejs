@@ -1,7 +1,8 @@
-
+from ipywidgets import register
 from .PlainGeometry_autogen import PlainGeometry as PlainGeometryBase
 
 
+@register
 class PlainGeometry(PlainGeometryBase):
 
     @classmethod

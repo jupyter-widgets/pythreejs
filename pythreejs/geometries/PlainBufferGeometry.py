@@ -1,7 +1,9 @@
 
+from ipywidgets import register
 from .PlainBufferGeometry_autogen import PlainBufferGeometry as PlainBufferGeometryBase
 
 
+@register
 class PlainBufferGeometry(PlainBufferGeometryBase):
 
     @classmethod
