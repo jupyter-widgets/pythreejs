@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var datawidgets = require('jupyter-datawidgets');
+var ndarray = require('ndarray');
 var BufferAttributeAutogen = require('./BufferAttribute.autogen').BufferAttributeModel;
 
 var BufferAttributeModel = BufferAttributeAutogen.extend({
@@ -48,7 +49,11 @@ var BufferAttributeModel = BufferAttributeAutogen.extend({
     mapBufferAttributeArrayThreeToModel: function() {
         var attributeData = this.obj.array;
         var modelNDArray = this.get('array');
-        modelNDArray.data.set(attributeData);
+        if (modelNDArray) {
+            modelNDArray.data.set(attributeData);
+        } else {
+            this.set('array', ndarray(attributeData, [this.obj.count, this.obj.itemSize]));
+        }
     },
 
 }, {

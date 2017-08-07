@@ -65,9 +65,13 @@ var DataTextureModel = DataTextureBase.extend({
     },
 
     mapDataTextureDataThreeToModel: function() {
-        var textureData = this.obj.image.data;
+        var imageRecord = this.obj.image;
         var modelNDArray = this.get('data');
-        modelNDArray.data.set(textureData);
+        if (modelNDArray) {
+            modelNDArray.data.set(imageRecord.data);
+        } else {
+            this.set('data', ndarray(imageRecord.data, [imageRecord.width, imageRecord.height]));
+        }
     },
 
 }, {

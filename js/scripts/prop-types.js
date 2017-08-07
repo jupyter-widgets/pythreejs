@@ -264,7 +264,7 @@ _.extend(ArrayType.prototype, BaseType.prototype, {
 function ArrayBufferType(arrayType, shape_constraint) {
     this.arrayType = arrayType;
     this.shape_constraint = shape_constraint;
-    this.defaultValue = [];
+    this.defaultValue = null;
 }
 _.extend(ArrayBufferType.prototype, BaseType.prototype, {
     getTraitlet: function() {

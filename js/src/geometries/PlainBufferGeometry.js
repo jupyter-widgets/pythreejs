@@ -1,5 +1,11 @@
 var _ = require('underscore');
+var createModel = require('../_base/utils').createModel;
+
 var AutogenPlainBufferGeometryModel = require('../geometries/PlainBufferGeometry.autogen').PlainBufferGeometryModel;
+
+var core = require('../core')
+var BufferGeometryModel = core.BufferGeometryModel;
+var BufferAttributeModel = core.BufferAttributeModel;
 
 
 var PlainBufferGeometryModel = AutogenPlainBufferGeometryModel.extend({
@@ -9,34 +15,80 @@ var PlainBufferGeometryModel = AutogenPlainBufferGeometryModel.extend({
         this.property_assigners['attributes'] = 'assignAttributesMap';
     },
 
-    constructThreeObject: function() {
-
+    constructFromRef: function(ref) {
         var result = new THREE.BufferGeometry();
+        // Copy ref. This will create new buffers!
+        result.copy(ref.obj);
 
-        var ref = this.get('_ref_geometry');
-        if (ref) {
-            return ref.initPromise.bind(this).then(function() {
+        var chain = ref.initPromise.bind(this);
+        var toSet = {};
+        if (ref instanceof PlainBufferGeometryModel) {
+            // TODO: Review this!
+            chain = chain.then(
+                // Wait for all attributes
+                Promise.all(_.map(_.values(ref.get('attributes')), attr => {
+                    return attr.initPromise;
+                }))
+            ).then(
+                // Wait for all morphAttributes
+                Promise.all(_.map(_.values(ref.get('morphAttributes')), attr => {
+                    return attr.initPromise;
+                }))
+            ).then(() => {
+                // Copy ref. This will create new buffers!
+                result.copy(ref.obj);
+            });
+        } else if (ref instanceof BufferGeometryModel) {
+            // We have a ref that is some other kind of buffergeometry
+            // This ref will then not have 'attributes' as models
+            // We need to:
+            // - Create models for each bufferattribute
+            // - Set attribute dicts on model
+            // Create models for all attributes:
+            chain = chain.then(function() {
+                // Copy ref. This will create new buffers!
                 result.copy(ref.obj);
 
-                // A bit of a hack:
-                // Sync out all copied properties before restoring
-                this.obj = result;
-                var old_three = this.props_created_by_three;
-                this.props_created_by_three = {};
-                [
-                    'name', 'attributes', 'morphAttributes',
-                    'boundingBox', 'boundingSphere'
-                ].forEach(key => {
-                    this.props_created_by_three[key] = true;
+                return Promise.all(_.map(_.pairs(result.attributes), kv => {
+                    return createModel(BufferAttributeModel, this.widget_manager, kv[1]).then(model => {
+                        return [kv[0], model];
+                    });
+                }));
+            }).then((attribModelKVs) => {
+                toSet.attributes = _.object(attribModelKVs);
+
+            // Then create models for all morphAttributes:
+            }).then(Promise.all(_.map(_.pairs(result.morphAttributes), kv => {
+                return createModel(BufferAttributeModel, this.widget_manager, kv[1]).then(model => {
+                    return [kv[0], model];
                 });
-                this.syncToModel();
-                this.props_created_by_three = old_three;
-                return result;
+            }))).then((attribModelKVs) => {
+                toSet.morphAttributes = _.object(attribModelKVs);
             });
+        } else {
+            // Assume ref is GeometryModel
+            throw new Error('Geometry -> PlainBufferGeometry not yet supported!');
         }
 
-        return Promise.resolve(result);
+        return chain.then(function() {
 
+            // Sync out all copied properties not yet dealt with
+            toSet.name = result.name;
+            this.set(toSet, 'pushFromThree');
+            this.save_changes();
+
+            return result;
+        });
+    },
+
+    constructThreeObject: function() {
+        var ref = this.get('_ref_geometry');
+        if (ref) {
+            return this.constructFromRef(ref);
+        }
+
+        var result = new THREE.BufferGeometry();
+        return Promise.resolve(result);
     },
 
     assignAttributesMap: function(obj, key, value) {
@@ -56,14 +108,10 @@ var PlainBufferGeometryModel = AutogenPlainBufferGeometryModel.extend({
             obj.addAttribute(key, value[key]);
         });
 
-        var current;
-        common.forEach(key => {
-            current = obj.getAttribute(key);
-            if (current !== value[key]) {
-                console.warn('Cannot reassign buffer geometry attribute:', key);
-                return;  // continue
-            }
-        });
+        var commonChanged = _.filter(common, key => { return obj.getAttribute(key) !== value[key]});
+        if (commonChanged.length > 0) {
+            console.warn('Cannot reassign buffer geometry attribute:', commonChanged);
+        }
 
     },
 

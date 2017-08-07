@@ -274,7 +274,7 @@ module.exports = {
             MaxIndex:   new Types.Int(65535),
             //groups:     new Types.GeometryGroup(),
             //drawRange:  new Types.DrawRange(),
-            _ref_geometry: new Types.ThreeType('Geometry', {allowNull: false}),
+            _ref_geometry: new Types.ThreeType(['Geometry', 'BufferGeometry'], {allowNull: false}),
         },
     },
     InstancedBufferAttribute: {
