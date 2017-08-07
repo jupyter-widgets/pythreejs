@@ -6,6 +6,8 @@ var ndarray = require('ndarray');
 
 var Enums = require('./enums');
 
+var version = require('../../package.json').version;
+
 var ThreeCache = {
     byId: {},
     byUuid: {},
@@ -17,7 +19,7 @@ var ThreeModel = widgets.WidgetModel.extend({
 
     defaults: function() {
         return _.extend(widgets.WidgetModel.prototype.defaults.call(this), {
-            _model_name: 'ThreeModel',
+            _model_name: this.constructor.model_name,
             _model_module: 'jupyter-threejs',
         });
     },
@@ -26,6 +28,29 @@ var ThreeModel = widgets.WidgetModel.extend({
         widgets.WidgetModel.prototype.initialize.apply(this, arguments);
 
         this.createPropertiesArrays();
+
+        if (options.three_obj) {
+            // We are defining the object from a given THREE object!
+
+            // We need to push a default state first, as comm open does
+            // not support buffers!
+            this.save_changes();
+
+            var obj = options.three_obj;
+            delete options.three_obj;
+
+            this.initPromise = Promise.resolve(obj).bind(this).then(this.processNewObj
+            ).then(function (obj) {
+
+                // sync in all the properties from the THREE object
+                this.syncToModel(true);
+
+                // setup msg, model, and children change listeners
+                this.setupListeners();
+
+            });
+            return;
+        }
 
         // Instantiate Three.js object
         this.initPromise = this.createThreeObjectAsync().bind(this).then(function() {
@@ -153,6 +178,24 @@ var ThreeModel = widgets.WidgetModel.extend({
 
     },
 
+    processNewObj: function(obj) {
+
+        obj.ipymodelId = this.model_id; // brand that sucker
+        obj.ipymodel = this;
+
+        var cacheDescriptor = this.getCacheDescriptor();
+        if (!cacheDescriptor) {
+            console.error('Model missing ID:', this);
+            throw new Error('Model missing ID!');
+        }
+
+        this.putThreeObjectIntoCache(cacheDescriptor, obj);
+
+        this.obj = obj;
+        return obj;
+
+    },
+
     createThreeObjectAsync: function() {
 
         // try cache first
@@ -181,30 +224,7 @@ var ThreeModel = widgets.WidgetModel.extend({
             throw new Error('no THREE construct method exists: this.createThreeObjectAsync');
         }
 
-        return objPromise.bind(this).then(function(obj) {
-
-            obj.ipymodelId = this.model_id; // brand that sucker
-            obj.ipymodel = this;
-
-            if (!cacheDescriptor) {
-                cacheDescriptor = this.getCacheDescriptor();
-                if (!cacheDescriptor) {
-                    console.error('Model missing ID:', this);
-                    throw new Error('Model missing ID!');
-                }
-            }
-
-            this.putThreeObjectIntoCache(cacheDescriptor, obj);
-
-            // pickers need access to the model from the three.js object
-            // TODO: this.obj may not exist until after the update() call above
-            // TODO: handle this now that it's in the model
-            // this.obj.ipywidget_view = this;
-
-            this.obj = obj;
-            return obj;
-
-        });
+        return objPromise.bind(this).then(this.processNewObj);
 
     },
 
@@ -717,6 +737,10 @@ var ThreeModel = widgets.WidgetModel.extend({
         return "#" + c.getHexString();
     },
 
+}, {
+    model_module: 'jupyter-threejs',
+    model_name: 'ThreeModel',
+    model_module_version: version,
 });
 
 module.exports = {

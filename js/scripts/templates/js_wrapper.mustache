@@ -18,8 +18,6 @@ var {{ modelName }} = {{ superClass.modelName }}.extend({
     defaults: function() {
         return _.extend({{ superClass.modelName }}.prototype.defaults.call(this), {
 
-            _model_name: '{{ modelName }}',
-
             {{#each properties as |prop propName|}}
             {{ propName }}: {{{ prop.defaultJson }}},
             {{/each}}
@@ -70,15 +68,18 @@ var {{ modelName }} = {{ superClass.modelName }}.extend({
 
     },
 
-}{{#if serialized_props}}, {
+}, {
 
+    model_name: '{{ modelName }}',
+
+    {{#if serialized_props}}
     serializers: _.extend({
         {{#each serialized_props as |propName|}}
         {{ propName }}: { deserialize: widgets.unpack_models },
         {{/each}}
     }, {{ superClass.modelName }}.serializers),
-
-}{{/if}});
+    {{/if}}
+});
 
 module.exports = {
     {{ modelName }}: {{ modelName }},
