@@ -162,6 +162,9 @@ _.extend(Bool.prototype, BaseType.prototype, {
         var nullableStr = this.nullable ? 'True' : 'False';
         return `Bool(${this.getPythonDefaultValue()}, allow_none=${nullableStr}).tag(sync=True)`;
     },
+    getPropertyConverterFn: function() {
+        return 'convertBool';
+    },
 });
 
 function Int(defaultValue, nullable) {

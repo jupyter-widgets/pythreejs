@@ -482,6 +482,16 @@ var ThreeModel = widgets.WidgetModel.extend({
         return v;
     },
 
+    // Bool
+    convertBoolModelToThree: function(v, propName) {
+        return v;
+    },
+
+    convertBoolThreeToModel: function(v, propName) {
+        // Coerce falsy/truthy:
+        return !!v;
+    },
+
     // Enum
     convertEnumModelToThree: function(e, propName) {
         return THREE[e];

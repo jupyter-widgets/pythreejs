@@ -20,7 +20,6 @@ var PlainGeometryModel = AutogenPlainGeometryModel.extend({
                 [
                     'name', 'colors', 'faces', 'vertices', 'faceVertexUvs', 'morphTargets',
                     'morphNormals', 'skinWeights', 'skinIndices', 'lineDistances',
-                    'boundingBox', 'boundingSphere'
                 ].forEach(key => {
                     this.props_created_by_three[key] = true;
                 });

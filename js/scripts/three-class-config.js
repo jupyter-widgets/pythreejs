@@ -194,15 +194,15 @@ module.exports = {
         relativePath: './core/BufferAttribute',
         properties: {
             array:       new Types.ArrayBuffer(),
-            count:       new Types.Int(0),
+            // count:       new Types.Int(0),   // inferred from array
             dynamic:     new Types.Bool(false),
-            //itemSize:    new Types.Int(1),   // Item size is inferred from array
+            //itemSize:    new Types.Int(1),   // inferred from array
             needsUpdate: new Types.Bool(false),
             normalized:  new Types.Bool(true),
             version:     new Types.Int(-1),
         },
         constructorArgs: [ 'array', 'normalized' ],
-        propsDefinedByThree: [ 'count', 'version' ]
+        propsDefinedByThree: [ 'version' ]
     },
     BufferGeometry: {
         relativePath: './core/BufferGeometry',
