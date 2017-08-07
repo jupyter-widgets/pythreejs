@@ -15,6 +15,7 @@ class BufferAttribute(BaseBufferAttribute):
             # This is needed for remote initialization
             kwargs['array'] = array
         kwargs['normalized'] = normalized
+        # NOTE: skip init of direct parent class on purpose:
         super(BaseBufferAttribute, self).__init__(**kwargs)
 
     @validate('array')
