@@ -6,6 +6,7 @@ var AutogenPlainBufferGeometryModel = require('../geometries/PlainBufferGeometry
 var core = require('../core')
 var BufferGeometryModel = core.BufferGeometryModel;
 var BufferAttributeModel = core.BufferAttributeModel;
+var GeometryModel = core.GeometryModel;
 
 
 var PlainBufferGeometryModel = AutogenPlainBufferGeometryModel.extend({
@@ -17,13 +18,11 @@ var PlainBufferGeometryModel = AutogenPlainBufferGeometryModel.extend({
 
     constructFromRef: function(ref) {
         var result = new THREE.BufferGeometry();
-        // Copy ref. This will create new buffers!
-        result.copy(ref.obj);
 
         var chain = ref.initPromise.bind(this);
         var toSet = {};
         if (ref instanceof PlainBufferGeometryModel) {
-            // TODO: Review this!
+            // Ensure ref three obj attributes are actually created:
             chain = chain.then(
                 // Wait for all attributes
                 Promise.all(_.map(_.values(ref.get('attributes')), attr => {
@@ -34,46 +33,53 @@ var PlainBufferGeometryModel = AutogenPlainBufferGeometryModel.extend({
                 Promise.all(_.map(_.values(ref.get('morphAttributes')), attr => {
                     return attr.initPromise;
                 }))
-            ).then(() => {
-                // Copy ref. This will create new buffers!
-                result.copy(ref.obj);
-            });
-        } else if (ref instanceof BufferGeometryModel) {
-            // We have a ref that is some other kind of buffergeometry
-            // This ref will then not have 'attributes' as models
-            // We need to:
-            // - Create models for each bufferattribute
-            // - Set attribute dicts on model
-            // Create models for all attributes:
+            );
+        }
+
+        // Create three.js BufferAttributes from ref.
+        if (ref instanceof BufferGeometryModel) {
             chain = chain.then(function() {
                 // Copy ref. This will create new buffers!
                 result.copy(ref.obj);
+            });
+        } else if (ref instanceof GeometryModel) {
+            // Copy from geometry. This will create new buffers.
+            chain = chain.then(function() {
+                result.fromGeometry(ref.obj);
+            });
+        } else {
+            throw new Error('Invalid reference geometry:', ref);
+        }
 
-                return Promise.all(_.map(_.pairs(result.attributes), kv => {
-                    return createModel(BufferAttributeModel, this.widget_manager, kv[1]).then(model => {
-                        return [kv[0], model];
-                    });
-                }));
-            }).then((attribModelKVs) => {
-                toSet.attributes = _.object(attribModelKVs);
-
-            // Then create models for all morphAttributes:
-            }).then(Promise.all(_.map(_.pairs(result.morphAttributes), kv => {
+        // Result now has all the attributes, but they do not
+        // currently have corresponding pythreejs models.
+        // We need to:
+        // - Create models for each buffer attribute
+        // - Set attribute dicts on model
+        return chain.then(() => {
+        // Create models for all attributes:
+            return Promise.all(_.map(_.pairs(result.attributes), kv => {
                 return createModel(BufferAttributeModel, this.widget_manager, kv[1]).then(model => {
                     return [kv[0], model];
                 });
-            }))).then((attribModelKVs) => {
-                toSet.morphAttributes = _.object(attribModelKVs);
+            }));
+        }).then((attribModelKVs) => {
+            toSet.attributes = _.object(attribModelKVs);
+
+        // Then create models for all morphAttributes:
+        }).then(Promise.all(_.map(_.pairs(result.morphAttributes), kv => {
+            return createModel(BufferAttributeModel, this.widget_manager, kv[1]).then(model => {
+                return [kv[0], model];
             });
-        } else {
-            // Assume ref is GeometryModel
-            throw new Error('Geometry -> PlainBufferGeometry not yet supported!');
-        }
+        }))).then((attribModelKVs) => {
+            toSet.morphAttributes = _.object(attribModelKVs);
 
-        return chain.then(function() {
-
-            // Sync out all copied properties not yet dealt with
+        // Sync out all properties that have been set:
+        }).then(() => {
+            // Add other fields that needs to be synced out:
             toSet.name = result.name;
+
+            // Perform actual sync to kernel side:
             this.set(toSet, 'pushFromThree');
             this.save_changes();
 
