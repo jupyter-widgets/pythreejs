@@ -1,5 +1,7 @@
 var _ = require('underscore');
 
+var WIDGET_SERIALIZER = '{ deserialize: widgets.unpack_models }';
+
 function BaseType() {}
 _.extend(BaseType.prototype, {
     getJSPropertyValue: function() {
@@ -30,7 +32,7 @@ _.extend(BaseType.prototype, {
 function ThreeType(typeName, options={}) {
     this.typeName = typeName;
     this.defaultValue = null;
-    this.serialize = true;
+    this.serializer = WIDGET_SERIALIZER;
     this.nullable = options.nullable !== false;
     this.args = options.args;
     this.kwargs = options.kwargs;
@@ -114,7 +116,7 @@ _.extend(InitializedThreeType.prototype, ThreeType.prototype, {
 function ThreeTypeArray(typeName) {
     this.typeName = typeName;
     this.defaultValue = [];
-    this.serialize = true;
+    this.serializer = WIDGET_SERIALIZER;
 }
 _.extend(ThreeTypeArray.prototype, BaseType.prototype, {
     getTraitlet: function() {
@@ -136,7 +138,7 @@ _.extend(ThreeTypeArray.prototype, BaseType.prototype, {
 function ThreeTypeDict(typeName) {
     this.typeName = typeName;
     this.defaultValue = {};
-    this.serialize = true;
+    this.serializer = WIDGET_SERIALIZER;
 }
 _.extend(ThreeTypeDict.prototype, BaseType.prototype, {
     getTraitlet: function() {
@@ -260,22 +262,24 @@ _.extend(ArrayType.prototype, BaseType.prototype, {
     },
 });
 
-// TODO: support more than Float32Array
-function ArrayBufferType(arrayType, shape_constraint) {
+
+function ArrayBufferType(arrayType, shapeConstraint) {
     this.arrayType = arrayType;
-    this.shape_constraint = shape_constraint;
+    this.shapeConstraint = shapeConstraint;
     this.defaultValue = null;
+    this.serializer = 'datawidgets.data_union_serialization';
 }
 _.extend(ArrayBufferType.prototype, BaseType.prototype, {
     getTraitlet: function() {
-        var r = `NDArray(dtype=${this.arrayType || 'None'}).tag(sync=True, **array_serialization)`;
-        if (this.shape_constraint) {
-            var constraint = this.shape_constraint.reduce(function(wip, element) {
-                return wip + `, ${element === null ? 'None' : element}`;
-            }, this);
-            r += `.valid(shape_constraint([${this.shape_constraint}]))`
+        var args = [];
+        if (this.arrayType) {
+            args.push(`dtype=${this.arrayType}`);
         }
-        return r;
+        if (this.shapeConstraint) {
+            args.push(`shape_constraint=${this.shapeConstraint}`);
+        }
+
+        return `DataUnion(${args.join(', ')}).tag(sync=True)`;
     },
     getPropertyConverterFn: function() {
         return 'convertArrayBuffer';

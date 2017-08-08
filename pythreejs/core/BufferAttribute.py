@@ -1,7 +1,7 @@
 import numpy as np
 from ipywidgets import register
 from traitlets import validate, TraitError, Undefined
-from ipydatawidgets import NDArray, array_serialization, NDArrayWidget
+from ipydatawidgets import NDArrayWidget
 
 from .BufferAttribute_autogen import BufferAttribute as BaseBufferAttribute
 
@@ -20,11 +20,14 @@ class BufferAttribute(BaseBufferAttribute):
 
     @validate('array')
     def _valid_array(self, proposal):
-        # Validate shape
-        if np.ndim(proposal) > 2:
-            raise TraitError('Array needs to have at most two dimensions. Given shape was: %r'
-                % np.shape(proposal))
         value = proposal['value']
+        if isinstance(value, NDArrayWidget):
+            value = value.array
+
+        if isinstance(proposal['value'], NDArrayWidget):
+            if value is not Undefined and value.dtype == np.float64:
+                raise TraitError('Cannot use a float64 data widget as a BufferAttribute source.')
+            return proposal['value']
         if value is not Undefined and value.dtype == np.float64:
             # 64-bit not supported, coerce to 32-bit
             value = value.astype(np.float32)

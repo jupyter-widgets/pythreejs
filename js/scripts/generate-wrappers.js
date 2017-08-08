@@ -423,14 +423,13 @@ _.extend(JavascriptWrapper.prototype, {
 
         }, this);
 
-        this.serializedProps = _.reduce(this.config.properties, function(result, prop, propName) {
-
-            if (prop.serialize) {
-                result.push(propName);
-            }
-            return result;
-
-        }, []);
+        this.serializedProps = _.mapObject(_.pick(this.config.properties,
+            function(prop, propName) {
+                return !!prop.serializer;
+            }),
+            function(prop, propName) {
+                return prop.serializer;
+            }, {});
 
         this.enum_properties = _.reduce(this.config.properties, function(result, prop, propName) {
             if (prop.enumTypeName) {

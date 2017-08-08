@@ -72,12 +72,12 @@ var {{ modelName }} = {{ superClass.modelName }}.extend({
 
     model_name: '{{ modelName }}',
 
-    {{#if serialized_props}}
+    {{#if serialized_props }}
     serializers: _.extend({
-        {{#each serialized_props as |propName|}}
-        {{ propName }}: { deserialize: widgets.unpack_models },
+        {{#each serialized_props as |serializer propName|}}
+        {{ propName }}: {{ serializer }},
         {{/each}}
-    }, {{ superClass.modelName }}.serializers),
+    }{{#if superClass }},  {{ superClass.modelName }}.serializers){{/if}},
     {{/if}}
 });
 

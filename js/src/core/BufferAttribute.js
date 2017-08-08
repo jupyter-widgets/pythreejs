@@ -15,16 +15,13 @@ var BufferAttributeModel = BufferAttributeAutogen.extend({
 
     decodeData() {
         var rawData = this.get('array');
-        if (rawData.dimension > 2) {
-            throw Error('Array has too many dimensions:', array)
-        }
-        var itemSize = rawData.dimension === 1 ? 1 : rawData.shape[1];
+        var itemSize = rawData.dimension === 1 ? 1 : rawData.shape[rawData.dimension - 1];
 
         var data = this.convertArrayBufferModelToThree(rawData, 'array');
         return {
             array: data,
             itemSize: itemSize,
-        }
+        };
     },
 
     constructThreeObject: function() {
@@ -56,10 +53,6 @@ var BufferAttributeModel = BufferAttributeAutogen.extend({
         }
     },
 
-}, {
-    serializers: _.extend({
-        array: datawidgets.array_serialization,
-    }, BufferAttributeAutogen.serializers),
 });
 
 module.exports = {
