@@ -4,6 +4,7 @@ var createModel = require('../_base/utils').createModel;
 var AutogenPlainBufferGeometryModel = require('../geometries/PlainBufferGeometry.autogen').PlainBufferGeometryModel;
 
 var BufferAttributeModel = require('../core/BufferAttribute.js').BufferAttributeModel;
+var InterleavedBufferAttributeModel = require('../core/InterleavedBufferAttribute.autogen.js').InterleavedBufferAttributeModel;
 var GeometryModel = require('../core/Geometry.autogen.js').GeometryModel;
 var BufferGeometryModel = require('../core/BufferGeometry.autogen.js').BufferGeometryModel;
 
@@ -58,7 +59,8 @@ var PlainBufferGeometryModel = AutogenPlainBufferGeometryModel.extend({
         return chain.then(() => {
         // Create models for all attributes:
             return Promise.all(_.map(_.pairs(result.attributes), kv => {
-                return createModel(BufferAttributeModel, this.widget_manager, kv[1]).then(model => {
+                var modelCtor = kv[1].isInterleavedBufferAttribute ? InterleavedBufferAttributeModel : BufferAttributeModel;
+                return createModel(modelCtor, this.widget_manager, kv[1]).then(model => {
                     return [kv[0], model];
                 });
             }));
@@ -67,7 +69,8 @@ var PlainBufferGeometryModel = AutogenPlainBufferGeometryModel.extend({
 
         // Then create models for all morphAttributes:
         }).then(Promise.all(_.map(_.pairs(result.morphAttributes), kv => {
-            return createModel(BufferAttributeModel, this.widget_manager, kv[1]).then(model => {
+            var modelCtor = kv[1].isInterleavedBufferAttribute ? InterleavedBufferAttributeModel : BufferAttributeModel;
+            return createModel(modelCtor, this.widget_manager, kv[1]).then(model => {
                 return [kv[0], model];
             });
         }))).then((attribModelKVs) => {

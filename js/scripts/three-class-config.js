@@ -269,8 +269,8 @@ module.exports = {
         relativePath: './geometries/PlainBufferGeometry',
         superClass: 'BufferGeometry',
         properties: {
-            attributes: new Types.ThreeTypeDict('BufferAttribute'),
-            morphAttributes: new Types.ThreeTypeDict('BufferAttribute'),
+            attributes: new Types.ThreeTypeDict(['BufferAttribute', 'InterleavedBufferAttribute']),
+            morphAttributes: new Types.ThreeTypeDict(['BufferAttribute', 'InterleavedBufferAttribute']),
             MaxIndex:   new Types.Int(65535),
             //groups:     new Types.GeometryGroup(),
             //drawRange:  new Types.DrawRange(),
@@ -279,18 +279,49 @@ module.exports = {
     },
     InstancedBufferAttribute: {
         relativePath: './core/InstancedBufferAttribute',
+        superClass: 'BufferAttribute',
+        properties: {
+            meshPerAttribute: new Types.Int(1),
+        },
+        constructorArgs: ['array', 'meshPerAttribute'],
     },
     InstancedBufferGeometry: {
         relativePath: './core/InstancedBufferGeometry',
+        superClass: 'PlainBufferGeometry',
+        properties: {
+            maxInstancedCount: new Types.Int(null, true),
+        },
     },
     InstancedInterleavedBuffer: {
         relativePath: './core/InstancedInterleavedBuffer',
+        superClass: 'InterleavedBuffer',
+        properties: {
+            meshPerAttribute: new Types.Int(1),
+        },
+        constructorArgs: ['array', 'meshPerAttribute'],
     },
     InterleavedBuffer: {
         relativePath: './core/InterleavedBuffer',
+        properties: {
+            array:          new Types.ArrayBuffer(),
+            stride:         new Types.Int(null),
+            dynamic:        new Types.Bool(false),
+            // updateRange: new Types.UpdateRange(),
+            version:        new Types.Int(0),
+            needsUpdate:    new Types.Bool(false),
+        },
+        propsDefinedByThree: ['version'],
+        constructorArgs: ['array', 'stride'],
     },
     InterleavedBufferAttribute: {
         relativePath: './core/InterleavedBufferAttribute',
+        properties: {
+            data:           new Types.ThreeType('InterleavedBuffer'),
+            itemSize:       new Types.Int(0),
+            offset:         new Types.Int(0),
+            normalized:     new Types.Bool(true),
+        },
+        constructorArgs: ['data', 'itemSize', 'offset', 'normalized']
     },
     Layers: {
         relativePath: './core/Layers',
