@@ -3,10 +3,9 @@ var createModel = require('../_base/utils').createModel;
 
 var AutogenPlainBufferGeometryModel = require('../geometries/PlainBufferGeometry.autogen').PlainBufferGeometryModel;
 
-var core = require('../core')
-var BufferGeometryModel = core.BufferGeometryModel;
-var BufferAttributeModel = core.BufferAttributeModel;
-var GeometryModel = core.GeometryModel;
+var BufferAttributeModel = require('../core/BufferAttribute.js').BufferAttributeModel;
+var GeometryModel = require('../core/Geometry.autogen.js').GeometryModel;
+var BufferGeometryModel = require('../core/BufferGeometry.autogen.js').BufferGeometryModel;
 
 
 var PlainBufferGeometryModel = AutogenPlainBufferGeometryModel.extend({
@@ -111,7 +110,11 @@ var PlainBufferGeometryModel = AutogenPlainBufferGeometryModel.extend({
             console.warn('Cannot remove buffer geometry attributes:', removed);
         }
         added.forEach(key => {
-            obj.addAttribute(key, value[key]);
+            if (key === 'index') {
+                obj.setIndex(value[key]);
+            } else {
+                obj.addAttribute(key, value[key]);
+            }
         });
 
         var commonChanged = _.filter(common, key => { return obj.getAttribute(key) !== value[key]});
