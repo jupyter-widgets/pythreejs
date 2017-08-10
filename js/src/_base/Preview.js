@@ -75,6 +75,9 @@ var PreviewView = RenderableView.extend({
                     color: '#ffffff',
                 });
             }
+            if (obj instanceof THREE.BufferGeometry && 'color' in obj.attributes) {
+                material.vertexColors = THREE.VertexColors;
+            }
 
             var mesh = new THREE.Mesh(obj, material);
             this.scene.add(mesh);
