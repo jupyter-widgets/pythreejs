@@ -142,6 +142,12 @@ function ThreeTypeDict(typeName) {
 }
 _.extend(ThreeTypeDict.prototype, BaseType.prototype, {
     getTraitlet: function() {
+        if (this.typeName instanceof Array) {
+            var instances = this.typeName.map(function(typeName) {
+                return `        Instance(${typeName})`;
+            });
+            return 'Dict(Union([\n' + instances.join(',\n') + '\n    ])).tag(sync=True, **widget_serialization)';
+        }
         if (this.typeName === 'this') {
             return 'Dict(This()).tag(sync=True, **widget_serialization)';
         }
