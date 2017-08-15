@@ -22,13 +22,13 @@ var createModel = function(constructor, widget_manager, obj) {
 
     var id = widgets.uuid();
 
-    let modelOptions = {
+    var modelOptions = {
         widget_manager: widget_manager,
         model_id: id,
         three_obj: obj,
     }
     var attributes = { };
-    let widget_model = new constructor(attributes, modelOptions);
+    var widget_model = new constructor(attributes, modelOptions);
 
     widget_model.once('comm:close', () => {
         delete widget_manager._models[id];
