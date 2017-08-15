@@ -285,7 +285,7 @@ _.extend(ArrayBufferType.prototype, BaseType.prototype, {
             args.push(`shape_constraint=${this.shapeConstraint}`);
         }
 
-        return `DataUnion(${args.join(', ')}).tag(sync=True)`;
+        return `WebGLDataUnion(${args.join(', ')}).tag(sync=True)`;
     },
     getPropertyConverterFn: function() {
         return 'convertArrayBuffer';
