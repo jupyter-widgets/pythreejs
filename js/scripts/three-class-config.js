@@ -354,6 +354,10 @@ module.exports = {
         },
         propsDefinedByThree: [ 'type' ]
     },
+    Blackbox: {
+        superClass: 'Object3D',
+        relativePath: './objects/Blackbox'
+    },
     Raycaster: {
         relativePath: './core/Raycaster',
         properties: {

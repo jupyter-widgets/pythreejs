@@ -41,6 +41,7 @@ var CUSTOM_CLASSES = [
     'geometries/PlainGeometry.js',
     'geometries/PlainBufferGeometry.js',
     'objects/CloneArray.js',
+    'objects/Blackbox.js',
 ];
 
 
