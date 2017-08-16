@@ -587,17 +587,34 @@ var ThreeModel = widgets.WidgetModel.extend({
 
     // Faces
     convertFaceModelToThree: function(f, propName) {
+        var normal = f[3];
+        if (normal !== undefined && normal !== null) {
+            if (Array.isArray(normal) && normal.length > 0 && Array.isArray(normal[0])) {
+                normal = normal.map(function (value) {
+                    return this.convertVectorModelToThree(value);
+                }, this);
+            } else {
+                normal = this.convertVectorModelToThree(normal);
+            }
+        }
+        var color = f[4];
+        if (color !== undefined && color !== null) {
+            if (Array.isArray(color)) {
+                color = color.map(function (value) {
+                    return new THREE.Color(value);
+                }, this);
+            } else {
+                color = new THREE.Color(color);
+            }
+        }
         var result = new THREE.Face3(
-            f[0],                                   // a
-            f[1],                                   // b
-            f[2],                                   // c
-            this.convertVectorModelToThree(f[3]),   // normal
-            new THREE.Color(f[4]),                  // color
-            f[5]                                    // materialIndex
+            f[0],                                           // a
+            f[1],                                           // b
+            f[2],                                           // c
+            normal,                                         // normal
+            color,                                          // color
+            f[5]                                            // materialIndex
         );
-
-        result.vertexNormals = this.convertVectorArrayModelToThree(f[6]); // vertexNormals
-        result.vertexColors = this.convertColorArrayModelToThree(f[7]);   // vertexColors
 
         return result;
     },

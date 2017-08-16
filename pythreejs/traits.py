@@ -1,7 +1,7 @@
 
 from traitlets import (
     Unicode, Int, CInt, Instance, Enum, List, Dict, Float, CFloat,
-    Bool, Tuple, Undefined, TraitError,
+    Bool, Tuple, Undefined, TraitError, Union,
 )
 
 from ipydatawidgets import DataUnion, NDArrayWidget
@@ -41,7 +41,18 @@ def Matrix4(trait_type=CFloat, default=None, **kwargs):
     return List(trait_type, default_value=default, minlen=16, maxlen=16, **kwargs)
 
 def Face3(**kwargs):
-    return Tuple(CInt(), CInt(), CInt(), Vector3(), Unicode(), CInt(), Tuple(), Tuple())
+    return Tuple(
+        CInt(),     # a — Vertex A index.
+        CInt(),     # b — Vertex B index.
+        CInt(),     # c — Vertex C index.
+        Union([     # normal — (optional) Face normal (Vector3) or array of 3 vertex normals.
+            Vector3(),
+            List(Vector3(), minlen=3, maxlen=3)]),
+        Union([     # color — (optional) Face color or array of vertex colors.
+            Unicode(),
+            List(Unicode(), minlen=3, maxlen=3)]),
+        CInt(),     # materialIndex — (optional) which index of an array of materials to associate with the face.
+        )
 
 def Euler(default=None, **kwargs):
     if default is None:
