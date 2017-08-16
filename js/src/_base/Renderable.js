@@ -36,10 +36,9 @@ var RenderableView = widgets.DOMWidgetView.extend({
     remove: function() {
         widgets.DOMWidgetView.prototype.remove.apply(this, arguments);
 
+        this.$el.empty();
         if (!this.isFrozen) {
-            this.isFrozen = true;
-            RendererPool.release(this.renderer);
-            this.renderer = null;
+            this.teardownViewer();
         }
     },
 
@@ -50,7 +49,7 @@ var RenderableView = widgets.DOMWidgetView.extend({
     doRender: function() {
         this.el.className = "jupyter-widget jupyter-threejs";
 
-        this.acquireRenderer();
+        this.unfreeze();
 
         this.lazyRendererSetup();
 
@@ -58,15 +57,11 @@ var RenderableView = widgets.DOMWidgetView.extend({
     },
 
     setupEventListeners: function() {
-        this.on('destroy', this.destroy, this);
         this.listenTo(this.model, 'rerender',       this.tick.bind(this));
         this.listenTo(this.model, 'msg:custom',     this.onCustomMessage.bind(this));
 
         this.listenTo(this.model, 'change:_width',  this.updateSize.bind(this));
         this.listenTo(this.model, 'change:_height', this.updateSize.bind(this));
-        // Redraw after a size change. This is bound after updateSize (significant).
-        this.listenTo(this.model, 'change:_width',  this.tick.bind(this));
-        this.listenTo(this.model, 'change:_height', this.tick.bind(this));
     },
 
     tick: function() {
@@ -84,77 +79,70 @@ var RenderableView = widgets.DOMWidgetView.extend({
         }
     },
 
-    destroy: function() {
-        this.$el.empty();
-        if (!this.isFrozen) {
-            this.teardownViewer();
-        }
-    },
-
     updateSize: function() {
         var width = this.model.get('_width');
         var height = this.model.get('_height');
-        this.renderer.setSize(width, height);
+        if (this.isFrozen) {
+            // Set size of frozen element
+            this.$frozenRenderer.width(width).height(height);
+        } else {
+            this.renderer.setSize(width, height);
+        }
     },
 
-    renderScene: function() {
+    renderScene: function(scene, camera) {
         this.log('renderScene');
 
-        // TODO: check renderer.domElement.isContextLost()
+        scene = scene || this.scene;
+        camera = camera || this.camera;
 
         if (this.isFrozen) {
-            this.log('renderScene->isFrozen');
-
-            this.acquireRenderer();
-            this.updateSize();
+            this.unfreeze();
         }
 
-        this.renderer.render(this.scene, this.camera);
+        if (this.renderer.context.isContextLost()) {
+            // Context is invalid, freeze for now (stops animation etc)
+            this.freeze();
+            return;
+        }
+
+        this.renderer.render(scene, camera);
     },
 
-    teardownViewer: function() {
-
-        this.$renderer.off('mouseenter');
-        this.$renderer.off('mouseleave');
-
-        this.isFrozen = true;
-        RendererPool.release(this.renderer);
-
-        this.$renderer = null;
-        this.renderer = null;
-
-        this.disableControls();
-
-        this.$el.css('margin-bottom', 'auto');
-
-    },
-
-    acquireRenderer: function() {
+    unfreeze: function() {
         if (!this.isFrozen) {
             return;
         }
-        this.isFrozen = false;
+        this.log('unfreeze');
 
-        this.log('ThreeView.acquiring...');
+        this.isFrozen = false;
 
         if(this.$frozenRenderer) {
             this.$frozenRenderer.off('mouseenter');
             this.$frozenRenderer = null;
         }
 
+        this.acquireRenderer();
+
+        if (this.controls) {
+            this.enableControls();
+        }
+    },
+
+    acquireRenderer: function() {
+
+        this.log('ThreeView.acquiring...');
+
         this.renderer = RendererPool.acquire(this.onRendererReclaimed.bind(this));
-        this.renderer.setSize(this.model.get('_width'), this.model.get('_height'));
 
         this.$renderer = $(this.renderer.domElement);
         this.$el.empty().append(this.$renderer);
 
         this.$el.css('margin-bottom', '-5px');
 
-        this.log('ThreeView.acquireRenderer(' + this.renderer.poolId + ')');
+        this.updateSize();
 
-        if (this.controls) {
-            this.enableControls();
-        }
+        this.log('ThreeView.acquireRenderer(' + this.renderer.poolId + ')');
     },
 
     freeze: function() {
@@ -169,12 +157,36 @@ var RenderableView = widgets.DOMWidgetView.extend({
         this.$el.empty().append('<img src="' + this.renderer.domElement.toDataURL() + '" />');
 
         this.teardownViewer();
-
         this.$frozenRenderer = this.$el.find('img');
-        this.$frozenRenderer.on('mouseenter', _.bind(function() {
-            this.log('frozenRenderer.mouseenter');
-            this.tick(); // renderer will be acquired by renderScene
-        }, this));
+
+        // Ensure the image gets set the right size:
+        this.updateSize();
+
+        if (this.controls) {
+            this.$frozenRenderer.on('mouseenter', _.bind(function() {
+                this.log('frozenRenderer.mouseenter');
+                this.tick(); // renderer will be acquired by renderScene
+            }, this));
+        }
+
+    },
+
+    teardownViewer: function() {
+
+        this.$renderer.off('mouseenter');
+        this.$renderer.off('mouseleave');
+
+        this.isFrozen = true;
+        RendererPool.release(this.renderer);
+
+        this.$renderer = null;
+        this.renderer = null;
+
+        if (this.controls) {
+            this.disableControls();
+        }
+
+        this.$el.css('margin-bottom', 'auto');
 
     },
 
@@ -209,6 +221,7 @@ var RenderableView = widgets.DOMWidgetView.extend({
 
     onRendererReclaimed: function() {
         this.log('ThreeView WebGL context is being reclaimed: ' + this.renderer.poolId);
+
         this.freeze();
     },
 

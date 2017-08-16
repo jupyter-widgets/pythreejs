@@ -14,9 +14,32 @@ var BLACK = new THREE.Color('black');
 
 var PreviewView = RenderableView.extend({
 
+    initialize: function() {
+        RenderableView.prototype.initialize.apply(this, arguments);
+
+        this._rebuildNeeded = true;
+
+    },
+
     render: function() {
         // ensure that model is fully initialized before attempting render
         return this.model.initPromise.bind(this).then(this.doRender);
+    },
+
+
+    setupEventListeners: function() {
+        RenderableView.prototype.setupEventListeners.call(this);
+        var child = this.model.get('child');
+        this.listenTo(child, 'change', this.onChildChange.bind(this));
+        if (child.obj instanceof THREE.Object3D) {
+            // Since we use clone for objects, we need to rebuild for
+            // any nested change instead of just rerendering.
+            this.listenTo(child, 'childchange', this.onChildChange.bind(this));
+        }
+    },
+
+    onChildChange: function() {
+        this._rebuildNeeded = true;
     },
 
     constructScene: function() {
@@ -24,12 +47,14 @@ var PreviewView = RenderableView.extend({
         var obj = this.model.get('child').obj;
 
         this.clearScene();
+        // cameras need to be added to scene
         this.scene.add(this.camera);
 
         if (obj instanceof THREE.Object3D) {
 
             this.log('render Object3D');
-            this.scene.add(obj);
+            // Use a clone to not change `parent` attribute
+            this.scene.add(obj.clone());
 
         } else if (obj instanceof THREE.Geometry || obj instanceof THREE.BufferGeometry) {
 
@@ -49,6 +74,9 @@ var PreviewView = RenderableView.extend({
                 material = new THREE.MeshStandardMaterial({
                     color: '#ffffff',
                 });
+            }
+            if (obj instanceof THREE.BufferGeometry && 'color' in obj.attributes) {
+                material.vertexColors = THREE.VertexColors;
             }
 
             var mesh = new THREE.Mesh(obj, material);
@@ -81,44 +109,14 @@ var PreviewView = RenderableView.extend({
 
         }
 
+        // Clear at end to ensure that any changes to obj does not
+        // cause infinite rebuild chain.
+        this._rebuildNeeded = false;
     },
 
     clearScene: function() {
         // this.controls.reset();
-        this.scene.children.forEach(function(child) {
-            this.scene.remove(child);
-        }, this);
-    },
-
-    update: function() {
-
-        RenderableView.prototype.update.apply(this, arguments);
-
-        if (this.model.get('child').obj) {
-            this.constructScene();
-        }
-        this.renderScene();
-
-    },
-
-    renderScene: function() {
-        this.log('renderScene');
-
-        // TODO: check renderer.domElement.isContextLost()
-
-        if (this.isFrozen) {
-            this.log('renderScene->isFrozen');
-
-            this.acquireRenderer();
-            this.updateSize();
-            this.enableControls();
-
-            if (this.model.get('child').obj) {
-                this.constructScene();
-            }
-        }
-
-        this.renderer.render(this.scene, this.camera);
+        this.scene.remove.apply(this.scene, this.scene.children.slice());
     },
 
     setupControls: function() {
@@ -135,13 +133,12 @@ var PreviewView = RenderableView.extend({
         this.camera.position.set(-40, 40, 40);
         this.camera.lookAt(new THREE.Vector3(0,0,0));
 
+        // Update aspect ratio of camera:
         this.updateSize();
 
         this.scene = new THREE.Scene();
-        // cameras need to be added to scene
-        this.scene.add(this.camera);
 
-        // Overrides clear color on renderer:
+        // Overrides clear color of renderer:
         this.scene.background = BLACK;
 
         // Lights
@@ -155,18 +152,37 @@ var PreviewView = RenderableView.extend({
         this.setupControls();
         this.enableControls();
 
-        if (this.model.get('child').obj) {
-            this.constructScene();
-            this.renderScene();
+        this.renderScene();
+    },
+
+    renderScene: function() {
+        this.log('renderScene');
+
+        if (this.isFrozen) {
+            this.unfreeze();
         }
+
+        if (this.renderer.context.isContextLost()) {
+            // Context is invalid, freeze for now (stops animation etc)
+            this.freeze();
+            return;
+        }
+
+        if (this._rebuildNeeded) {
+            this.constructScene();
+        }
+
+        this.renderer.render(this.scene, this.camera);
     },
 
     updateSize: function() {
         RenderableView.prototype.updateSize.call(this);
-        var width = this.model.get('_width');
-        var height = this.model.get('_height');
-        this.camera.aspect = width / height;
-        this.camera.updateProjectionMatrix();
+        if (this.camera) {
+            var width = this.model.get('_width');
+            var height = this.model.get('_height');
+            this.camera.aspect = width / height;
+            this.camera.updateProjectionMatrix();
+        }
     },
 
 });
@@ -188,6 +204,7 @@ var PreviewModel = RenderableModel.extend({
     initialize: function(attributes, options) {
         RenderableModel.prototype.initialize.apply(this, arguments);
 
+        // Don't listen to child until it is finished it's setup
         this.initPromise = this.get('child').initPromise.bind(this).then(function() {
             this.setupListeners();
         });
@@ -195,12 +212,11 @@ var PreviewModel = RenderableModel.extend({
 
     setupListeners: function() {
         var child = this.get('child');
-        this.listenTo(child, 'change', this.onChange.bind(this));
-        this.listenTo(child, 'childchange', this.onChange.bind(this));
-
+        this.listenTo(child, 'change', this.onChildChange.bind(this));
+        this.listenTo(child, 'childchange', this.onChildChange.bind(this));
     },
 
-    onChange: function(model, options) {
+    onChildChange: function(model, options) {
         this.trigger('rerender', this, {});
     },
 

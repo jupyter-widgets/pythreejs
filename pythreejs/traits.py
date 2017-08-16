@@ -1,5 +1,10 @@
 
-from traitlets import Unicode, Int, CInt, Instance, Enum, List, Dict, Float, CFloat, Bool, Tuple
+from traitlets import (
+    Unicode, Int, CInt, Instance, Enum, List, Dict, Float, CFloat,
+    Bool, Tuple, Undefined, TraitError,
+)
+
+from ipydatawidgets import DataUnion, NDArrayWidget
 
 def Vector2(trait_type=CFloat, default=None, **kwargs):
     if default is None:
@@ -38,17 +43,21 @@ def Matrix4(trait_type=CFloat, default=None, **kwargs):
 def Face3(**kwargs):
     return Tuple(CInt(), CInt(), CInt(), Vector3(), Unicode(), CInt(), Tuple(), Tuple())
 
-def BufferAttribute(trait_type=CFloat, **kwargs):
-    return Tuple(
-        List(allow_none=True),      # 0. array
-        CInt(allow_none=False),     # 1. itemSize
-        Bool(default_value=False),  # 2. dynamic
-        Unicode(),                  # 3. uuid
-        CInt(),                     # 6. version
-        default_value=(None, -1, False, "", -1)
-    )
-
 def Euler(default=None, **kwargs):
     if default is None:
         default = [0, 0, 0, 'XYZ']
     return Tuple(CFloat(), CFloat(), CFloat(), Unicode(), default_value=default, **kwargs)
+
+
+class WebGLDataUnion(DataUnion):
+    def validate(self, obj, value):
+        value = super(WebGLDataUnion, self).validate(obj, value)
+        array = value.array if isinstance(value, NDArrayWidget) else value
+
+        if array is not Undefined and str(array.dtype) == 'float64':
+            if isinstance(value, NDArrayWidget):
+                raise TraitError('Cannot use a float64 data widget as a BufferAttribute source.')
+            else:
+                # 64-bit not supported, coerce to 32-bit
+                value = value.astype('float32')
+        return value

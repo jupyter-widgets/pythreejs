@@ -1,28 +1,27 @@
 from ipywidgets import Widget, DOMWidget, widget_serialization, Color
-from traitlets import Unicode, Int, CInt, Instance, This, Enum, List, Dict, Float, CFloat, Bool
+from traitlets import Unicode, Int, CInt, Enum, Instance, List, Float, CFloat, Bool, link
 
-from ..enums import *
-from ..traits import *
+from ..enums import ToneMappings
 
-from .._base.Three import ThreeWidget
+from .._base.Three import RenderableWidget
 from ..math.Plane_autogen import Plane
 
 to_json = widget_serialization['to_json']
 from_json = widget_serialization['from_json']
 
-class WebGLRenderer(ThreeWidget):
+class WebGLRenderer(RenderableWidget):
     """WebGLRenderer
-    
+
     Author: @abelnation
     Date: Wed Aug 31 2016 23:46:30 GMT-0700 (PDT)
     See http://threejs.org/docs/#api/renderers/WebGLRenderer
     """
-    
+
     _view_name = Unicode('WebGLRendererView').tag(sync=True)
     _model_name = Unicode('WebGLRendererModel').tag(sync=True)
 
-    width = CInt(200).tag(sync=True)
-    height = CInt(200).tag(sync=True)
+    width = CInt(200)
+    height = CInt(200)
     autoClear = Bool(True).tag(sync=True)
     autoClearColor = Bool(True).tag(sync=True)
     clearColor = Unicode('#000000').tag(sync=True)
@@ -41,6 +40,11 @@ class WebGLRenderer(ThreeWidget):
     toneMappingWhitePoint = CFloat(1.0).tag(sync=True)
     maxMorphTargets = CInt(8).tag(sync=True)
     maxMorphNormals = CInt(4).tag(sync=True)
+
+    def __init__(self, **kwargs):
+        super(WebGLRenderer, self).__init__(**kwargs)
+        link((self, 'width'), (self, '_width'))
+        link((self, 'height'), (self, '_height'))
 
     def render(self, scene, camera):
         content = {

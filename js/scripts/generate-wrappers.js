@@ -24,6 +24,26 @@ var threeSrcDir = path.resolve(baseDir, 'node_modules', 'three', 'src');
 var AUTOGEN_EXT = 'autogen';
 var JS_AUTOGEN_EXT = '.' + AUTOGEN_EXT + '.js';
 
+
+/**
+ * Custom classes, i.e. classes that should be included in the
+ * autogen routine but which has no *direct* counterpart in the
+ * three.js library.
+ */
+var CUSTOM_CLASSES = [
+    'textures/ImageTexture.js',
+    'textures/TextTexture.js',
+    'controls/Controls.js',
+    'controls/OrbitControls.js',
+    'controls/TrackballControls.js',
+    'controls/FlyControls.js',
+    'controls/Picker.js',
+    'geometries/PlainGeometry.js',
+    'geometries/PlainBufferGeometry.js',
+    'objects/CloneArray.js',
+];
+
+
 //
 // Templates
 //
@@ -273,7 +293,6 @@ function JavascriptWrapper(modulePath, className) {
     this.config = getClassConfig(this.className);
 
     this.modelName = this.className + 'Model';
-    this.viewName = this.className + 'View';
 
     // check if manual file exists
     var customSrcPath = path.join(path.dirname(this.jsDestPath), path.basename(this.jsDestPath, '.js') + '.js');
@@ -332,7 +351,6 @@ _.extend(JavascriptWrapper.prototype, {
         }
 
         result.modelName = result.className + 'Model';
-        result.viewName = result.className + 'View';
 
         result.absolutePath = path.resolve(jsSrcDir, result.relativePath);
         var absPath = result.absolutePath;
@@ -405,14 +423,13 @@ _.extend(JavascriptWrapper.prototype, {
 
         }, this);
 
-        this.serializedProps = _.reduce(this.config.properties, function(result, prop, propName) {
-
-            if (prop.serialize) {
-                result.push(propName);
-            }
-            return result;
-
-        }, []);
+        this.serializedProps = _.mapObject(_.pick(this.config.properties,
+            function(prop, propName) {
+                return !!prop.serializer;
+            }),
+            function(prop, propName) {
+                return prop.serializer;
+            }, {});
 
         this.enum_properties = _.reduce(this.config.properties, function(result, prop, propName) {
             if (prop.enumTypeName) {
@@ -458,12 +475,10 @@ _.extend(JavascriptWrapper.prototype, {
 
         var overrideModule = "Override";
         var overrideModel = overrideModule + "." + this.modelClass;
-        var overrideView = overrideModule + "." + this.viewClass;
 
         this.overrideClass = {
             relativePath: './' + this.className + '.js',
             modelName: overrideModel,
-            viewName: overrideView,
         };
 
     },
@@ -637,6 +652,9 @@ function PythonWrapper(modulePath, className) {
     this.pyBaseRelativePath = path.relative(this.destDirAbsolutePath, pySrcDir);
     this.pyBaseRelativePath = relativePathToPythonImportPath(this.pyBaseRelativePath);
 
+    // check if manual file exists
+    this.hasOverride = fs.existsSync(this.pyDestPath);
+
     this.hasParameters = false;
 
     this.config = getClassConfig(this.className);
@@ -660,11 +678,11 @@ function PythonWrapper(modulePath, className) {
         },
 
         className: this.className,
-        viewName: this.className + 'View',
         modelName: this.className + 'Model',
         superClass: this.superClass,
         properties: this.properties,
         dependencies: this.dependencies,
+        hasOverride: this.hasOverride,
     };
 
     // Render template
@@ -898,17 +916,6 @@ function createTopLevelPythonModuleFile() {
 
 }
 
-var CUSTOM_CLASSES = [
-    'textures/ImageTexture.js',
-    'textures/TextTexture.js',
-    'controls/Controls.js',
-    'controls/OrbitControls.js',
-    'controls/TrackballControls.js',
-    'controls/FlyControls.js',
-    'controls/Picker.js',
-    'geometries/PlainGeometry.js',
-    'objects/CloneArray.js',
-];
 
 function createJavascriptFiles() {
     return mapPromiseFnOverThreeModules(createJavascriptWrapper)
@@ -921,6 +928,11 @@ function createJavascriptFiles() {
 }
 
 function createPythonFiles() {
+
+    // Prevent python file generation when outside dir (e.g. npm install in dependent)
+    if (!fs.existsSync(pySrcDir)) {
+        return Promise.resolve();
+    }
 
     return mapPromiseFnOverThreeModules(function(relativePath) {
             createPythonWrapper(relativePath);

@@ -5,6 +5,7 @@
 
 var _ = require('underscore');
 var widgets = require('@jupyter-widgets/base');
+var datawidgets = require('jupyter-datawidgets');
 
 var {{ superClass.modelName }} = require('{{ superClass.requirePath }}').{{ superClass.modelName }};
 
@@ -16,8 +17,6 @@ var {{ modelName }} = {{ superClass.modelName }}.extend({
 
     defaults: function() {
         return _.extend({{ superClass.modelName }}.prototype.defaults.call(this), {
-
-            _model_name: '{{ modelName }}',
 
             {{#each properties as |prop propName|}}
             {{ propName }}: {{{ prop.defaultJson }}},
@@ -69,15 +68,18 @@ var {{ modelName }} = {{ superClass.modelName }}.extend({
 
     },
 
-}{{#if serialized_props}}, {
+}, {
 
+    model_name: '{{ modelName }}',
+
+    {{#if serialized_props }}
     serializers: _.extend({
-        {{#each serialized_props as |propName|}}
-        {{ propName }}: { deserialize: widgets.unpack_models },
+        {{#each serialized_props as |serializer propName|}}
+        {{ propName }}: {{ serializer }},
         {{/each}}
-    }, {{ superClass.modelName }}.serializers),
-
-}{{/if}});
+    }{{#if superClass }},  {{ superClass.modelName }}.serializers){{/if}},
+    {{/if}}
+});
 
 module.exports = {
     {{ modelName }}: {{ modelName }},

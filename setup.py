@@ -48,7 +48,10 @@ setup_args = {
             'pythreejs/static/index.js.map',
         ]),
     ],
-    'install_requires': ['ipywidgets>=7.0.0a9', 'traittypes'],
+    'install_requires': [
+        'ipywidgets>=7.0.0a9',
+        'ipydatawidgets'
+    ],
     'packages': find_packages(),
     'zip_safe': False,
     'cmdclass': cmdclass,

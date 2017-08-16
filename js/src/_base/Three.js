@@ -2,8 +2,11 @@ var _ = require('underscore');
 var widgets = require("@jupyter-widgets/base");
 var Promise = require('bluebird');
 var $ = require('jquery');
+var ndarray = require('ndarray');
 
 var Enums = require('./enums');
+
+var version = require('../../package.json').version;
 
 var ThreeCache = {
     byId: {},
@@ -16,7 +19,8 @@ var ThreeModel = widgets.WidgetModel.extend({
 
     defaults: function() {
         return _.extend(widgets.WidgetModel.prototype.defaults.call(this), {
-            _model_name: 'ThreeModel',
+            _model_name: this.constructor.model_name,
+            _model_module: 'jupyter-threejs',
         });
     },
 
@@ -24,6 +28,29 @@ var ThreeModel = widgets.WidgetModel.extend({
         widgets.WidgetModel.prototype.initialize.apply(this, arguments);
 
         this.createPropertiesArrays();
+
+        if (options.three_obj) {
+            // We are defining the object from a given THREE object!
+
+            // We need to push a default state first, as comm open does
+            // not support buffers!
+            this.save_changes();
+
+            var obj = options.three_obj;
+            delete options.three_obj;
+
+            this.initPromise = Promise.resolve(obj).bind(this).then(this.processNewObj
+            ).then(function (obj) {
+
+                // sync in all the properties from the THREE object
+                this.syncToModel(true);
+
+                // setup msg, model, and children change listeners
+                this.setupListeners();
+
+            });
+            return;
+        }
 
         // Instantiate Three.js object
         this.initPromise = this.createThreeObjectAsync().bind(this).then(function() {
@@ -67,7 +94,7 @@ var ThreeModel = widgets.WidgetModel.extend({
                 this.listenTo(curValue, 'childchange', this.onChildChanged);
             }
 
-            // make sure to un/hook listeners when child points to new object
+            // make sure to (un)hook listeners when child points to new object
             this.on('change:' + propName, function(model, value, options) {
                 var prevModel = this.previous(propName);
                 var currModel = value;
@@ -91,7 +118,7 @@ var ThreeModel = widgets.WidgetModel.extend({
                 this.listenTo(childModel, 'childchange', this.onChildChanged);
             }, this);
 
-            // make sure to un/hook listeners when array changes
+            // make sure to (un)hook listeners when array changes
             this.on('change:' + propName, function(model, value, options) {
                 var prevArr = this.previous(propName) || [];
                 var currArr = value || [];
@@ -109,10 +136,63 @@ var ThreeModel = widgets.WidgetModel.extend({
             }, this);
         }, this);
 
-        // TODO: handle dicts of children via this.three_dict_properties
+        // Handle changes in three instance dict props
+        this.three_dict_properties.forEach(function(propName) {
+
+            var currDict = this.get(propName) || {};
+
+            // listen to current values in dict
+            var childModel;
+            Object.keys(currDict).forEach(function(childModelKey) {
+                childModel = currDict[childModelKey];
+                this.listenTo(childModel, 'change', this.onChildChanged);
+                this.listenTo(childModel, 'childchange', this.onChildChanged);
+            }, this);
+
+            // make sure to (un)hook listeners when dict changes
+            this.on('change:' + propName, function(model, value, options) {
+                var prevDict = this.previous(propName) || {};
+                var currDict = value || {};
+
+                var prevKeys = Object.keys(prevDict);
+                var currKeys = Object.keys(currDict);
+
+                var added = _.difference(currKeys, prevKeys);
+                var removed = _.difference(prevKeys, currKeys);
+
+                added.forEach(function(childModelKey) {
+                    childModel = currDict[childModelKey];
+                    this.listenTo(childModel, 'change', this.onChildChanged);
+                    this.listenTo(childModel, 'childchange', this.onChildChanged);
+                }, this);
+                removed.forEach(function(childModelKey) {
+                    childModel = prevDict[childModelKey];
+                    this.stopListening(childModel);
+                }, this);
+            }, this);
+
+        }, this);
 
         this.on('change', this.onChange, this);
         this.on('msg:custom', this.onCustomMessage, this);
+
+    },
+
+    processNewObj: function(obj) {
+
+        obj.ipymodelId = this.model_id; // brand that sucker
+        obj.ipymodel = this;
+
+        var cacheDescriptor = this.getCacheDescriptor();
+        if (!cacheDescriptor) {
+            console.error('Model missing ID:', this);
+            throw new Error('Model missing ID!');
+        }
+
+        this.putThreeObjectIntoCache(cacheDescriptor, obj);
+
+        this.obj = obj;
+        return obj;
 
     },
 
@@ -123,8 +203,8 @@ var ThreeModel = widgets.WidgetModel.extend({
         if (cacheDescriptor) {
             var obj = this.getThreeObjectFromCache(cacheDescriptor);
             if (obj) {
-                if (obj.ipymodelId != this.id) {
-                    throw new Error('model id does not match three object: ' + obj.ipymodelId + ' -- ' + this.id);
+                if (obj.ipymodelId != this.model_id) {
+                    throw new Error('model id does not match three object: ' + obj.ipymodelId + ' -- ' + this.model_id);
                 }
 
                 this.obj = obj;
@@ -144,22 +224,7 @@ var ThreeModel = widgets.WidgetModel.extend({
             throw new Error('no THREE construct method exists: this.createThreeObjectAsync');
         }
 
-        return objPromise.bind(this).then(function(obj) {
-
-            obj.ipymodelId = this.id; // brand that sucker
-            obj.ipymodel = this;
-
-            this.putThreeObjectIntoCache(cacheDescriptor, obj);
-
-            // pickers need access to the model from the three.js object
-            // TODO: this.obj may not exist until after the update() call above
-            // TODO: handle this now that it's in the model
-            // this.obj.ipywidget_view = this;
-
-            this.obj = obj;
-            return obj;
-
-        });
+        return objPromise.bind(this).then(this.processNewObj);
 
     },
 
@@ -173,11 +238,10 @@ var ThreeModel = widgets.WidgetModel.extend({
 
     getCacheDescriptor: function() {
 
-        var id = this.id;
+        var id = this.model_id;
         if (id != null) {
             return { id: id };
         }
-
         return;
 
     },
@@ -298,7 +362,8 @@ var ThreeModel = widgets.WidgetModel.extend({
     },
 
     onChildChanged: function(model, options) {
-        console.log('child changed: ' + model.id);
+        console.log('child changed: ' + model.model_id);
+        // Propagate up hierarchy:
         this.trigger('childchange', this);
     },
 
@@ -435,6 +500,16 @@ var ThreeModel = widgets.WidgetModel.extend({
             return '-inf';
         }
         return v;
+    },
+
+    // Bool
+    convertBoolModelToThree: function(v, propName) {
+        return v;
+    },
+
+    convertBoolThreeToModel: function(v, propName) {
+        // Coerce falsy/truthy:
+        return !!v;
     },
 
     // Enum
@@ -646,13 +721,11 @@ var ThreeModel = widgets.WidgetModel.extend({
 
     // ArrayBuffer
     convertArrayBufferModelToThree: function(arr, propName) {
-        // TODO: support other ArrayBuffer types
-        return new Float32Array(arr);
+        return arr.data;
     },
 
     convertArrayBufferThreeToModel: function(arrBuffer, propName) {
-        // TODO: support other ArrayBuffer types
-        return Array.prototype.slice.call(arrBuffer);
+        return ndarray(arrBuffer);
     },
 
     // Color
@@ -664,71 +737,10 @@ var ThreeModel = widgets.WidgetModel.extend({
         return "#" + c.getHexString();
     },
 
-    // BufferAttribute
-    convertBufferAttributeModelToThree: function(ba, propName) {
-
-        // null array means null attribute
-        // this is necessary because plain Tuple traits cannot set allow_none=True
-        if (!ba[0]) {
-            return null;
-        }
-
-        var uuid = ba[3];
-        var cached = this.getThreeObjectFromCache({ uuid: uuid });
-        var result;
-        if (cached) {
-            result = cached;
-
-            // TODO: currently array and itemsize cannot be changed
-            // result.array = new Float32Array(ba[0]);
-            // result.itemSize = ba[1];
-        } else {
-            result = new THREE.BufferAttribute(
-                ba[0], // array
-                ba[1]  // itemSize
-            );
-            this.putThreeObjectIntoCache({ uuid: result.uuid }, result);
-        }
-
-        result.dynamic = ba[2];
-        result.uuid = ba[3];
-        result.version = ba[4];
-        result.needsUpdate = true;
-
-        return result;
-    },
-
-    convertBufferAttributeThreeToModel: function(ba, propName) {
-        if (!ba || !ba.array) {
-            return [ null, -1, false, '', -1 ];
-        }
-
-        // make sure buffer attributes are cached before sending on
-        this.putThreeObjectIntoCache({ uuid: ba.uuid }, ba);
-
-        return [
-            Array.prototype.slice.call(ba.array),
-            ba.itemSize,
-            ba.dynamic,
-            ba.uuid,
-            ba.version
-        ];
-    },
-
-    // BufferAttributeDict
-    convertBufferAttributeDictModelToThree: function(baList, propName) {
-        return _.reduce(baList, function(result, ba, name) {
-            result[ba[0]] = this.convertBufferAttributeModelToThree(ba[1], propName);
-            return result;
-        }, {}, this);
-    },
-
-    convertBufferAttributeDictThreeToModel: function(baDict, propName) {
-        return _.map(baDict, function(ba, name) {
-            return [ name, this.convertBufferAttributeThreeToModel(ba, propName) ];
-        }, this);
-    },
-
+}, {
+    model_module: 'jupyter-threejs',
+    model_name: 'ThreeModel',
+    model_module_version: version,
 });
 
 module.exports = {

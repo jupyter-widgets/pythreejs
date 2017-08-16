@@ -38,18 +38,17 @@ var RendererModel = RenderableModel.extend({
 
         var scene = this.get('scene');
         var camera = this.get('camera');
-        this.on('change', this.onChange.bind(this));
-        this.listenTo(scene, 'change', this.onChange.bind(this));
-        this.listenTo(scene, 'childchange', this.onChange.bind(this));
+        this.listenTo(scene, 'change', this.onChildChange.bind(this));
+        this.listenTo(scene, 'childchange', this.onChildChange.bind(this));
         this.listenTo(camera, 'change', this.onCameraChange.bind(this));
 
     },
 
     onCameraChange: function(model, options) {
-        this.onChange();
+        this.onChildChange();
     },
 
-    onChange: function(model, options) {
+    onChildChange: function(model, options) {
         this.trigger('rerender', this, {});
     },
 
@@ -60,46 +59,82 @@ var RendererModel = RenderableModel.extend({
         camera: { deserialize: widgets.unpack_models },
         controls: { deserialize: widgets.unpack_models },
         effect: { deserialize: widgets.unpack_models },
-    }, widgets.DOMWidgetModel.serializers),
+    }, RenderableModel.serializers),
 
 });
 
 var RendererView = RenderableView.extend({
 
+    render: function() {
+        // ensure that model is fully initialized before attempting render
+        return this.model.initPromise.bind(this).then(this.doRender);
+    },
+
     lazyRendererSetup: function() {
-        this.updateOwn();
-        this.updateSize();
+        this.scene = this.model.get('scene').obj;
+        this.camera = this.model.get('camera').obj;
+        controls = [];
+        this.model.get('controls').forEach(function (controlModel) {
+            controls.push(controlModel.obj);
+        });
+        this.controls = controls;
+        if (this.controls) {
+            this.enableControls();
+        }
         this.renderScene();
     },
 
     setupEventListeners: function() {
         RenderableView.prototype.setupEventListeners.call(this);
 
-        this.listenTo(this.model, 'change', this.updateOwn.bind(this));
+        this.listenTo(this.model, 'change:camera', this.onCameraSwitched.bind(this));
+        this.listenTo(this.model, 'change:scene', this.onSceneSwitched.bind(this));
+        this.listenTo(this.model, 'change:controls', this.onControlsSwitched.bind(this));
+        this.listenTo(this.model, 'change:background change:background_opacity', this.applyBackground.bind(this));
     },
 
-    updateOwn: function() {
+    onCameraSwitched: function() {
         this.camera = this.model.get('camera').obj;
+    },
+
+    onSceneSwitched: function() {
         this.scene = this.model.get('scene').obj;
+    },
+
+    onControlsSwitched: function() {
+        if (!this.isFrozen) {
+            this.disableControls();
+        }
+
         controls = [];
         this.model.get('controls').forEach(function (controlModel) {
             controls.push(controlModel.obj);
         });
-        this.controls = controls;
-        this.enableControls();
-        //this.effect = this.model.get('effect').obj;
 
-        var background = ThreeModel.prototype.convertColorModelToThree(this.model.get('background'));
-        var background_opacity = ThreeModel.prototype.convertFloatModelToThree(this.model.get('background_opacity'));
-        this.renderer.setClearColor(background, background_opacity);
+        if (!this.isFrozen) {
+            this.enableControls();
+        }
+    },
+
+    applyBackground: function() {
+        if (!this.isFrozen) {
+            var background = ThreeModel.prototype.convertColorModelToThree(this.model.get('background'));
+            var background_opacity = ThreeModel.prototype.convertFloatModelToThree(this.model.get('background_opacity'));
+            this.renderer.setClearColor(background, background_opacity);
+        }
+    },
+
+    update: function() {
+        this.tick();
     },
 
     acquireRenderer: function() {
         RenderableView.prototype.acquireRenderer.call(this);
+
         // We need to ensure that renderer properties are applied
         // (we have no idea where the renderer has been...)
-        this.updateOwn();
-    }
+        this.applyBackground();
+    },
 
 });
 
