@@ -242,11 +242,11 @@ _.extend(Color.prototype, BaseType.prototype, {
 });
 
 function ColorArray(defaultValue) {
-    this.defaultValue = defaultValue || "#ffffff";
+    this.defaultValue = defaultValue || ["#ffffff"];
 }
 _.extend(ColorArray.prototype, BaseType.prototype, {
     getTraitlet: function() {
-        return 'List(trait=List()).tag(sync=True)';
+        return `List(trait=Unicode(), default_value=${this.getPythonDefaultValue()}).tag(sync=True)`;
     },
     getPropertyConverterFn: function() {
         return 'convertColorArray';
