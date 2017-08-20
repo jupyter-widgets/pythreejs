@@ -39,3 +39,7 @@ var BlackboxModel = BlackboxAutogen.extend({
     }
 
 });
+
+module.exports = {
+    BlackboxModel: BlackboxModel,
+};

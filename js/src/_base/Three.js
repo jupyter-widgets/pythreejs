@@ -72,6 +72,7 @@ var ThreeModel = widgets.WidgetModel.extend({
         // initialize properties arrays
         this.three_properties = [];
         this.three_array_properties = [];
+        this.datawidget_properties = [];
 
         // TODO: not currently integrated
         this.three_dict_properties = [];
@@ -169,6 +170,33 @@ var ThreeModel = widgets.WidgetModel.extend({
                     childModel = prevDict[childModelKey];
                     this.stopListening(childModel);
                 }, this);
+            }, this);
+
+        }, this);
+
+        // Handle changes in data widgets/union properties
+        this.datawidget_properties.forEach(function(propName) {
+
+            var curr = this.get(propName) || [];
+            if (curr instanceof widgets.WidgetModel) {
+                // listen to changes in current model
+                this.listenTo(curr, 'change', this.onChildChanged);
+                this.listenTo(curr, 'childchange', this.onChildChanged);
+            }
+
+            // make sure to (un)hook listeners when property changes
+            this.on('change:' + propName, function(model, value, options) {
+                var prev = this.previous(propName) || [];
+                var curr = value || [];
+
+                if (prev instanceof widgets.WidgetModel) {
+                    this.stopListening(prev);
+                }
+                if (curr instanceof widgets.WidgetModel) {
+                    // listen to changes in current model
+                    this.listenTo(curr, 'change', this.onChildChanged);
+                    this.listenTo(curr, 'childchange', this.onChildChanged);
+                }
             }, this);
 
         }, this);
@@ -738,10 +766,14 @@ var ThreeModel = widgets.WidgetModel.extend({
 
     // ArrayBuffer
     convertArrayBufferModelToThree: function(arr, propName) {
+        if (arr instanceof widgets.WidgetModel) {
+            return arr.get('array').data
+        }
         return arr.data;
     },
 
     convertArrayBufferThreeToModel: function(arrBuffer, propName) {
+        // Never back-convert to a new widget
         return ndarray(arrBuffer);
     },
 

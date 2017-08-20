@@ -290,6 +290,9 @@ _.extend(ArrayBufferType.prototype, BaseType.prototype, {
     getPropertyConverterFn: function() {
         return 'convertArrayBuffer';
     },
+    getPropArrayName: function() {
+        return 'datawidget_properties';
+    },
 });
 
 function DictType(defaultValue={}, nullable) {

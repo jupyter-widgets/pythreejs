@@ -14,7 +14,7 @@ var BufferAttributeModel = BufferAttributeAutogen.extend({
     },
 
     decodeData() {
-        var rawData = this.get('array');
+        var rawData = datawidgets.getArrayFromUnion(this.get('array'));
         var itemSize = rawData.dimension === 1 ? 1 : rawData.shape[rawData.dimension - 1];
 
         var data = this.convertArrayBufferModelToThree(rawData, 'array');
@@ -44,12 +44,33 @@ var BufferAttributeModel = BufferAttributeAutogen.extend({
     },
 
     mapBufferAttributeArrayThreeToModel: function() {
+        /*
+         * There are a few different cases to take into account here:
+         * 1. We are during initial setup of a normal creation, with a widget ref
+         * 2. We are during initial setup of a normal creation, with an array
+         * 3. We are during initial setup from an existing three obj (nothing in model yet)
+         * 4. We are syncing something back (e.g. after change event), possibly this data.
+         *    The model should already have something defined then (possibly null).
+         */
         var attributeData = this.obj.array;
         var modelNDArray = this.get('array');
         if (modelNDArray) {
-            modelNDArray.data.set(attributeData);
-        } else {
+            // 1. / 2.
+            if (modelNDArray instanceof datawidgets.NDArrayModel) {
+                modelNDArray.get('array').data.set(attributeData);
+            } else {
+                modelNDArray.data.set(attributeData);
+            }
+        } else if (modelNDArray) {
+            // 3. / 4.
             this.set('array', ndarray(attributeData, [this.obj.count, this.obj.itemSize]));
+        }
+    },
+
+    onChildChanged: function(model, options) {
+        if (model === this.get('array')) {
+            // We need to update data
+            this.mapBufferAttributeArrayModelToThree();
         }
     },
 
