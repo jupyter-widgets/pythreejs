@@ -4,6 +4,8 @@ var Promise = require('bluebird');
 var $ = require('jquery');
 var ndarray = require('ndarray');
 
+var THREE = require('three');
+
 var Enums = require('./enums');
 
 var version = require('../../package.json').version;

@@ -1,3 +1,4 @@
+var THREE = require('three');
 var AutogenPlainGeometryModel = require('../geometries/PlainGeometry.autogen').PlainGeometryModel;
 
 

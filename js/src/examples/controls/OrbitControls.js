@@ -6,6 +6,8 @@
  * @author erich666 / http://erichaines.com
  */
 
+var THREE = require('three');
+
 // This set of controls performs orbiting, dollying (zooming), and panning.
 // Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
 //
@@ -13,7 +15,7 @@
 //    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
 //    Pan - right mouse, or arrow keys / touch: three finter swipe
 
-THREE.OrbitControls = function ( object, domElement ) {
+var OrbitControls = function ( object, domElement ) {
 
 	this.object = object;
 
@@ -345,7 +347,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 			var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
 
-			if ( scope.object instanceof THREE.PerspectiveCamera ) {
+			if ( scope.object.type == 'PerspectiveCamera' ) {
 
 				// perspective
 				var position = scope.object.position;
@@ -359,7 +361,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 				panLeft( 2 * deltaX * targetDistance / element.clientHeight, scope.object.matrix );
 				panUp( 2 * deltaY * targetDistance / element.clientHeight, scope.object.matrix );
 
-			} else if ( scope.object instanceof THREE.OrthographicCamera ) {
+			} else if ( scope.object.type == 'OrthographicCamera' ) {
 
 				// orthographic
 				panLeft( deltaX * ( scope.object.right - scope.object.left ) / scope.object.zoom / element.clientWidth, scope.object.matrix );
@@ -379,11 +381,11 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	function dollyIn( dollyScale ) {
 
-		if ( scope.object instanceof THREE.PerspectiveCamera ) {
+		if ( scope.object.type == 'PerspectiveCamera' ) {
 
 			scale /= dollyScale;
 
-		} else if ( scope.object instanceof THREE.OrthographicCamera ) {
+		} else if ( scope.object.type == 'OrthographicCamera' ) {
 
 			scope.object.zoom = Math.max( scope.minZoom, Math.min( scope.maxZoom, scope.object.zoom * dollyScale ) );
 			scope.object.updateProjectionMatrix();
@@ -400,11 +402,11 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	function dollyOut( dollyScale ) {
 
-		if ( scope.object instanceof THREE.PerspectiveCamera ) {
+		if ( scope.object.type == 'PerspectiveCamera' ) {
 
 			scale *= dollyScale;
 
-		} else if ( scope.object instanceof THREE.OrthographicCamera ) {
+		} else if ( scope.object.type == 'OrthographicCamera' ) {
 
 			scope.object.zoom = Math.max( scope.minZoom, Math.min( scope.maxZoom, scope.object.zoom / dollyScale ) );
 			scope.object.updateProjectionMatrix();
@@ -915,10 +917,10 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 };
 
-THREE.OrbitControls.prototype = Object.create( THREE.EventDispatcher.prototype );
-THREE.OrbitControls.prototype.constructor = THREE.OrbitControls;
+OrbitControls.prototype = Object.create( THREE.EventDispatcher.prototype );
+OrbitControls.prototype.constructor = OrbitControls;
 
-Object.defineProperties( THREE.OrbitControls.prototype, {
+Object.defineProperties( OrbitControls.prototype, {
 
 	center: {
 
@@ -1042,3 +1044,8 @@ Object.defineProperties( THREE.OrbitControls.prototype, {
 	}
 
 } );
+
+
+module.exports = {
+	OrbitControls: OrbitControls
+};

@@ -2,7 +2,7 @@ var loaders = [
     { test: /\.json$/, loader: "json-loader" }
 ];
 
-var externals = ['@jupyter-widgets/base', 'jupyter-datawidgets'];
+var externals = ['@jupyter-widgets/base', 'jupyter-datawidgets', 'three'];
 
 module.exports = [
     {
@@ -37,7 +37,7 @@ module.exports = [
     },
     {
         // embeddable jupyter-threejs bundle
-        entry: './src/index.js',
+        entry: './src/embed.js',
         output: {
             filename: 'index.js',
             path: './dist/',

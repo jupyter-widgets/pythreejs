@@ -1,12 +1,12 @@
 var _ = require('underscore');
-require("../examples/controls/TrackballControls.js");
+var TrackballControls = require("../examples/controls/TrackballControls.js").TrackballControls;
 var TrackballControlsAutogen = require('./TrackballControls.autogen');
 
 var TrackballControlsModel = TrackballControlsAutogen.TrackballControlsModel.extend({
 
     constructThreeObject: function() {
         var controlling = this.get('controlling');
-        obj = new THREE.TrackballControls(controlling);
+        obj = new TrackballControls(controlling);
         obj.dispose();  // Disconnect events, we need to (dis-)connect on freeze/thaw
         obj.noKeys = true; // turn off keyboard navigation
 

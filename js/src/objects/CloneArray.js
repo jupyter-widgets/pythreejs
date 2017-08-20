@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var THREE = require('three');
 var CloneArrayAutogen = require('./CloneArray.autogen').CloneArrayModel;
 
 

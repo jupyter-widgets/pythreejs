@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var THREE = require('three');
 var createModel = require('../_base/utils').createModel;
 
 var AutogenPlainBufferGeometryModel = require('../geometries/PlainBufferGeometry.autogen').PlainBufferGeometryModel;

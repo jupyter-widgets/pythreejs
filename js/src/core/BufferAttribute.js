@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var datawidgets = require('jupyter-datawidgets');
 var ndarray = require('ndarray');
+var THREE = require('three');
 var BufferAttributeAutogen = require('./BufferAttribute.autogen').BufferAttributeModel;
 
 var BufferAttributeModel = BufferAttributeAutogen.extend({
