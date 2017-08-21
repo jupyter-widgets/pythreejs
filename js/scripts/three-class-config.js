@@ -94,8 +94,21 @@ module.exports = {
         },
         constructorArgs: [ 'fov', 'aspect', 'near', 'far' ],
     },
+    ArrayCamera: {
+        relativePath: './cameras/ArrayCamera',
+        superClass: 'PerspectiveCamera',
+        properties: {
+        },
+        constructorArgs: [ 'fov', 'aspect', 'near', 'far' ],
+    },
     StereoCamera: {
         relativePath: './cameras/StereoCamera',
+        properties: {
+            aspect:     new Types.Float(1),
+            eyeSep:     new Types.Float(0.064),
+            cameraL:    new Types.ThreeType('PerspectiveCamera'),
+            cameraR:    new Types.ThreeType('PerspectiveCamera'),
+        },
     },
     Controls: {
         relativePath: './controls/Controls',
