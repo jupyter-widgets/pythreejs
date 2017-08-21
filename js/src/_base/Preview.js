@@ -9,6 +9,7 @@ var Renderable = require('./Renderable');
 var RenderableView = Renderable.RenderableView;
 var RenderableModel = Renderable.RenderableModel;
 var OrbitControls = require("../examples/controls/OrbitControls.js").OrbitControls;
+var utils = require('./utils.js');
 
 
 var BLACK = new THREE.Color('black');
@@ -78,14 +79,6 @@ function lookAtSphere(camera, center, radius) {
 }
 
 // TODO: Make this available as a general utility somewhere?
-function computeSceneBoundingSphere(scene) {
-    // FIXME: The Box3.setFromObject implementation is not great,
-    // replace with something that reuses bounding box computations
-    // of the underlying objects
-    const box = new THREE.Box3();
-    box.setFromObject(scene);
-    return box.getBoundingSphere();
-}
 
 
 var PreviewView = RenderableView.extend({
@@ -208,7 +201,7 @@ var PreviewView = RenderableView.extend({
 
     resetCamera: function() {
         // Compute bounding sphere for entire scene
-        const sphere = computeSceneBoundingSphere(this.scene);
+        const sphere = utils.computeBoundingSphere(this.scene);
 
         // Update camera to include bounding sphere
         lookAtSphere(this.camera, sphere.center, sphere.radius);

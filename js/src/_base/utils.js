@@ -1,7 +1,89 @@
 
 var widgets = require("@jupyter-widgets/base");
+var THREE = require('three');
 
 
+/**
+ * Compute the box bounding all objects in a scene graph.
+ *
+ * Returns a unity box if no relevant objects were found.
+ */
+var computeBoundingBox = function() {
+    var objectBoundingBox = new THREE.Box3();
+
+    return function computeBoundingBox(scene) {
+        var boundingBox = new THREE.Box3();
+        scene.traverseVisible(function (object) {
+            if (object.geometry) {
+                object.geometry.computeBoundingBox();
+                objectBoundingBox.copy(object.geometry.boundingBox);
+                objectBoundingBox.applyMatrix4(object.matrixWorld);
+                boundingBox.union(objectBoundingBox);
+            }
+        });
+        if (boundingBox.isEmpty()) {
+            boundingBox.min.set(-1, -1, -1);
+            boundingBox.max.set(1, 1, 1);
+        }
+        return boundingBox;
+    }
+}();
+
+
+/**
+ * Compute the sphere bounding all objects in a scene graph.
+ *
+ * Note: This is based on the bounding spheres of the individual objects
+ * in the scene, and not the set of all points in the scene, and will
+ * therefore not be optimal.
+ *
+ * Returns a unity sphere if no relevant objects were found.
+ */
+var computeBoundingSphere = function() {
+    var objectBoundingSphere = new THREE.Sphere();
+    var vAB = new THREE.Vector3();
+    var d, rmin, rmax, rA, rB;
+    return function computeBoundingSphere(scene) {
+        // Current bounding sphere:
+        var boundingSphere = null;
+        scene.traverseVisible(function (object) {
+            if (object.geometry) {
+                object.geometry.computeBoundingSphere();
+                if (boundingSphere === null) {
+                    // First sphere found, store it
+                    boundingSphere = object.geometry.boundingSphere.clone();
+                    boundingSphere.applyMatrix4(object.matrixWorld);
+                    return;  // continue traverse
+                }
+                objectBoundingSphere.copy(object.geometry.boundingSphere);
+                objectBoundingSphere.applyMatrix4(object.matrixWorld);
+
+                rA = boundingSphere.radius;
+                rB = objectBoundingSphere.radius;
+                rmin = Math.min(rA, rB);
+                rmax = Math.max(rA, rB);
+
+                vAB.subVectors(objectBoundingSphere.center, boundingSphere.center);
+                d = vAB.length();
+                if (d + rmin < rmax) {
+                    // Smallest sphere contained within largest
+                    if (rB > rA) {
+                        boundingSphere.copy(objectBoundingSphere);
+                    }
+                    return;  // continue traverse
+                }
+
+                // Calculate new bounding-sphere:
+                boundingSphere.radius = 0.5 * (rA + rB + d);
+                boundingSphere.center.addScaledVector(vAB, 0.5 + rB);
+            }
+        });
+        if (boundingSphere === null) {
+            return new THREE.Sphere(new THREE.Vector3(), 1);
+        }
+        return boundingSphere;
+    }
+}();
 
 /**
  * Work around for notebook issue #2730.
@@ -81,4 +163,6 @@ var createModel = function(constructor, widget_manager, obj) {
 
 module.exports = {
     createModel: createModel,
+    computeBoundingSphere: computeBoundingSphere,
+    computeBoundingBox: computeBoundingBox,
 }
