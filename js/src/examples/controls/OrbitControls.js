@@ -354,7 +354,7 @@ var OrbitControls = function ( object, domElement ) {
 
 			var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
 
-			if ( scope.object.type == 'PerspectiveCamera' ) {
+			if ( scope.object.type === 'PerspectiveCamera' ) {
 
 				// perspective
 				var position = scope.object.position;
@@ -368,7 +368,7 @@ var OrbitControls = function ( object, domElement ) {
 				panLeft( 2 * deltaX * targetDistance / element.clientHeight, scope.object.matrix );
 				panUp( 2 * deltaY * targetDistance / element.clientHeight, scope.object.matrix );
 
-			} else if ( scope.object.type == 'OrthographicCamera' ) {
+			} else if ( scope.object.type === 'OrthographicCamera' ) {
 
 				// orthographic
 				panLeft( deltaX * ( scope.object.right - scope.object.left ) / scope.object.zoom / element.clientWidth, scope.object.matrix );
@@ -388,11 +388,11 @@ var OrbitControls = function ( object, domElement ) {
 
 	function dollyIn( dollyScale ) {
 
-		if ( scope.object.type == 'PerspectiveCamera' ) {
+		if ( scope.object.type === 'PerspectiveCamera' ) {
 
 			scale /= dollyScale;
 
-		} else if ( scope.object.type == 'OrthographicCamera' ) {
+		} else if ( scope.object.type === 'OrthographicCamera' ) {
 
 			scope.object.zoom = Math.max( scope.minZoom, Math.min( scope.maxZoom, scope.object.zoom * dollyScale ) );
 			scope.object.updateProjectionMatrix();
@@ -409,11 +409,11 @@ var OrbitControls = function ( object, domElement ) {
 
 	function dollyOut( dollyScale ) {
 
-		if ( scope.object.type == 'PerspectiveCamera' ) {
+		if ( scope.object.type === 'PerspectiveCamera' ) {
 
 			scale *= dollyScale;
 
-		} else if ( scope.object.type == 'OrthographicCamera' ) {
+		} else if ( scope.object.type === 'OrthographicCamera' ) {
 
 			scope.object.zoom = Math.max( scope.minZoom, Math.min( scope.maxZoom, scope.object.zoom / dollyScale ) );
 			scope.object.updateProjectionMatrix();

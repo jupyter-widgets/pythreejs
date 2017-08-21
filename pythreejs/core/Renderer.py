@@ -39,7 +39,7 @@ class Renderer(RenderableWidget):
         super(Renderer, self).__init__(
             scene=scene,
             camera=camera,
-            controls=controls or None,
+            controls=controls or [],
             **kwargs)
         link((self, 'width'), (self, '_width'))
         link((self, 'height'), (self, '_height'))
