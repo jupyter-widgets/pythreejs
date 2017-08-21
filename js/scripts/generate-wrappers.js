@@ -33,6 +33,7 @@ var JS_AUTOGEN_EXT = '.' + AUTOGEN_EXT + '.js';
 var CUSTOM_CLASSES = [
     'textures/ImageTexture.js',
     'textures/TextTexture.js',
+    'cameras/CombinedCamera.js',
     'controls/Controls.js',
     'controls/OrbitControls.js',
     'controls/TrackballControls.js',

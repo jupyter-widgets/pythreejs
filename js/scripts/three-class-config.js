@@ -110,6 +110,25 @@ module.exports = {
             cameraR:    new Types.ThreeType('PerspectiveCamera'),
         },
     },
+    CombinedCamera: {
+        relativePath: './cameras/CombinedCamera',
+        superClass: 'Camera',
+        properties: {
+            fov: new Types.Float(),
+
+            far: new Types.Float(),
+            near: new Types.Float(),
+            orthoFar: new Types.Float(),
+            orthoNear: new Types.Float(),
+
+            width: new Types.Float(),
+            height: new Types.Float(),
+
+            zoom: new Types.Float(1),
+            // view: new Types.ViewOffset()
+        },
+        constructorArgs: [ 'width', 'height', 'fov', 'near', 'far', 'orthoNear', 'orthoFar' ],
+    },
     Controls: {
         relativePath: './controls/Controls',
         properties: {
