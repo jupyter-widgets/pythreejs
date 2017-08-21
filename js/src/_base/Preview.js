@@ -246,7 +246,7 @@ var PreviewView = RenderableView.extend({
         this.scene.background = BLACK;
 
         // Lights
-        this.pointLight = new THREE.PointLight('#ffffff', 1, 0, 0);
+        this.pointLight = new THREE.PointLight('#ffffff', 0.5, 0, 0);
         this.ambLight = new THREE.AmbientLight('#ffffff', 0.5);
         this.camera.add(this.ambLight);
         this.camera.add(this.pointLight);
