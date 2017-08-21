@@ -21,6 +21,9 @@ var CombinedCamera = function ( width, height, fov, near, far, orthoNear, orthoF
 	this.far = far;
 	this.near = near;
 
+	// The default focus is the mid plane of the viewing frustum
+	this.focus = ( near + far ) / 2;
+
 	this.left = - width / 2;
 	this.right = width / 2;
 	this.top = height / 2;
@@ -72,11 +75,9 @@ CombinedCamera.prototype.toOrthographic = function () {
 	var near = this.cameraP.near;
 	var far = this.cameraP.far;
 
-	// The size that we set is the mid plane of the viewing frustum
+	// The size that we set is the plane of the viewing frustum at the focus
 
-	var hyperfocus = ( near + far ) / 2;
-
-	var halfHeight = Math.tan( fov * Math.PI / 180 / 2 ) * hyperfocus;
+	var halfHeight = Math.tan( fov * Math.PI / 180 / 2 ) * this.focus;
 	var halfWidth = halfHeight * aspect;
 
 	halfHeight /= this.zoom;

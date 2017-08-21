@@ -172,6 +172,13 @@ var OrbitControls = function ( object, domElement ) {
 
 			scope.object.lookAt( scope.target );
 
+			if ( scope.object.focus !== undefined ) {
+
+				// Set focus for those cameras that support it
+				scope.object.focus = scope.object.position.distanceTo( scope.target );
+
+			}
+
 			if ( scope.enableDamping === true ) {
 
 				sphericalDelta.theta *= ( 1 - scope.dampingFactor );

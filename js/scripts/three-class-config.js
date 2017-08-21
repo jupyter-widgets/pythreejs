@@ -114,17 +114,17 @@ module.exports = {
         relativePath: './cameras/CombinedCamera',
         superClass: 'Camera',
         properties: {
-            fov: new Types.Float(),
+            fov:        new Types.Float(50.0),
+            zoom:       new Types.Float(1.0),
+            near:       new Types.Float(0.1),
+            far:        new Types.Float(2000),
+            orthoNear:  new Types.Float(0.1),
+            orthoFar:   new Types.Float(2000),
 
-            far: new Types.Float(),
-            near: new Types.Float(),
-            orthoFar: new Types.Float(),
-            orthoNear: new Types.Float(),
+            width:      new Types.Float(),
+            height:     new Types.Float(),
 
-            width: new Types.Float(),
-            height: new Types.Float(),
-
-            zoom: new Types.Float(1),
+            mode:       new Types.Enum("['perspective', 'orthographic']", 'perspective'),
             // view: new Types.ViewOffset()
         },
         constructorArgs: [ 'width', 'height', 'fov', 'near', 'far', 'orthoNear', 'orthoFar' ],
