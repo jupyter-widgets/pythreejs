@@ -12,15 +12,14 @@
   "scripts": {
     "clean": "node ./scripts/clean-generated-files.js",
     "autogen-enums": "node ./scripts/generate-enums.js",
-    "autogen-wrappers": "node ./scripts/generate-wrappers.js",
-    "autogen": "npm run autogen-enums && npm run autogen-wrappers",
+    "autogen": "node ./scripts/generate-wrappers.js",
     "postinstall": "npm run autogen-wrappers",
-    "build": "webpack",
+    "build": "webpack && node ./scripts/copy-three.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
     "bluebird": "^3.4.3",
-    "fs-extra": "^0.30.0",
+    "fs-extra": "^4.0.1",
     "glob": "^7.0.6",
     "handlebars": "^4.0.5",
     "json-loader": "^0.5.4",
