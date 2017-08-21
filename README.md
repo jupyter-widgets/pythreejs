@@ -42,77 +42,20 @@ The autogen script relies on a json-like config file (`three-class-config.js`) t
 
 #### Setup
 
-```bash
-# Initial setup
-cd js
-npm install
+The relevant commands while working on the repository are included below. These are not meant to be run sequentially, but rather as a list of useful commands:
 
-# Generate files
-npm run autogen
+```bash
+# To perform initial dev setup, run:
 pip install -e .
 
-# Build distribution files
+# To re-generate autogen files, run:
+npm run autogen
+
+# To build and install distribution files, run:
 npm run build
 jupyter nbextension install --py --symlink --sys-prefix pythreejs
 
-# Clean out generated files
+# To clean out generated files, run:
 npm run clean
 
-```
-
-List of relevant files:
-
-```bash
-js/package.json
-js/webpack.config.js
-
-# Files for auto-generation
-js/scripts/*
-
-# New bases classes for supporting wrapper classes
-js/src/_base/*
-pythreejs/_base/Three.py
-pythreejs/enums.py
-pythreejs/traits.py
-
-# Overridden classes
-js/src/core/Object3D.js
-js/src/cameras/OrthographicCamera.js
-js/src/cameras/PerspectiveCamera.js
-js/src/controls/OrbitControls.js
-js/src/controls/TrackballControls.js
-js/src/controls/FlyControls.js
-js/src/controls/Picker.js
-js/src/textures/DataTexture.js
-js/src/textures/DepthTexture.js
-js/src/renderers/WebGLRenderer.js
-
-pythreejs/core/Object3D.py
-pythreejs/renderers/WebGLRenderer.py
-
-# Custom classes
-js/src/core/Renderer.js
-js/src/textures/ImageTexture.js  # created to ease image texture loading
-js/src/textures/ImageTexture.js  # created to ease image texture loading
-js/src/textures/TextTexture.js  # created to ease creation of textures of rasterized text
-js/src/geometry/PlainGeometry.js  # created to not auto-sync geometry data of generated geometry
-pythreejs/core/Renderer.py
-
-
-# Updated examples notesbooks
-examples/Examples.ipynb
-examples/Geometries.ipynb
-examples/Textures.ipynb
-examples/renderer_limit.ipynb
-examples/test.ipynb
-examples/img/checkerboard.png
-examples/img/earth.jpg
-
-# Pulled in latest version of examples files from three.js source
-js/src/examples/Detector.js
-js/src/examples/controls/MomentumCameraControls.js
-js/src/examples/controls/OrbitControls.js
-js/src/examples/controls/TrackballControls.js
-js/src/examples/renderers/CanvasRenderer.js
-js/src/examples/renderers/Projector.js
 ```
