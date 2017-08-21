@@ -94,8 +94,40 @@ module.exports = {
         },
         constructorArgs: [ 'fov', 'aspect', 'near', 'far' ],
     },
+    ArrayCamera: {
+        relativePath: './cameras/ArrayCamera',
+        superClass: 'PerspectiveCamera',
+        properties: {
+        },
+        constructorArgs: [ 'fov', 'aspect', 'near', 'far' ],
+    },
     StereoCamera: {
         relativePath: './cameras/StereoCamera',
+        properties: {
+            aspect:     new Types.Float(1),
+            eyeSep:     new Types.Float(0.064),
+            cameraL:    new Types.ThreeType('PerspectiveCamera'),
+            cameraR:    new Types.ThreeType('PerspectiveCamera'),
+        },
+    },
+    CombinedCamera: {
+        relativePath: './cameras/CombinedCamera',
+        superClass: 'Camera',
+        properties: {
+            fov:        new Types.Float(50.0),
+            zoom:       new Types.Float(1.0),
+            near:       new Types.Float(0.1),
+            far:        new Types.Float(2000),
+            orthoNear:  new Types.Float(0.1),
+            orthoFar:   new Types.Float(2000),
+
+            width:      new Types.Float(),
+            height:     new Types.Float(),
+
+            mode:       new Types.Enum("['perspective', 'orthographic']", 'perspective'),
+            // view: new Types.ViewOffset()
+        },
+        constructorArgs: [ 'width', 'height', 'fov', 'near', 'far', 'orthoNear', 'orthoFar' ],
     },
     Controls: {
         relativePath: './controls/Controls',
@@ -708,9 +740,9 @@ module.exports = {
         properties: {
             clearCoat:          new Types.Float(0.0),
             clearCoatRoughness: new Types.Float(0.0),
+            defines:            new Types.Dict({ 'PHYSICAL': '' }, true),
             reflectivity:       new Types.Float(0.5),
         },
-        propsDefinedByThree: ['isMeshPhysicalMaterial'],
     },
     MeshStandardMaterial: {
         relativePath: './materials/MeshStandardMaterial',
@@ -722,6 +754,7 @@ module.exports = {
             bumpMap:            new Types.ThreeType('Texture'),
             bumpScale:          new Types.Float(1.0),
             color:              new Types.Color('#ffffff'),
+            defines:            new Types.Dict({ 'STANDARD': '' }, true),
             displacementMap:    new Types.ThreeType('Texture'),
             displacementScale:  new Types.Float(1.0),
             displacementBias:   new Types.Float(0.0),
@@ -1037,7 +1070,6 @@ module.exports = {
         properties: {
             material: new Types.ThreeType('SpriteMaterial'),
         },
-        propsDefinedByThree: [ 'isSprite' ]
     },
     CloneArray: {
         relativePath: './objects/CloneArray',

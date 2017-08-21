@@ -3,10 +3,12 @@ var widgets = require("@jupyter-widgets/base");
 var Promise = require('bluebird');
 var $ = require('jquery');
 
+var THREE = require('three');
 
 var Renderable = require('./Renderable');
 var RenderableView = Renderable.RenderableView;
 var RenderableModel = Renderable.RenderableModel;
+var OrbitControls = require("../examples/controls/OrbitControls.js").OrbitControls;
 
 
 var BLACK = new THREE.Color('black');
@@ -31,7 +33,7 @@ var PreviewView = RenderableView.extend({
         RenderableView.prototype.setupEventListeners.call(this);
         var child = this.model.get('child');
         this.listenTo(child, 'change', this.onChildChange.bind(this));
-        if (child.obj instanceof THREE.Object3D) {
+        if (child.obj.isObject3D) {
             // Since we use clone for objects, we need to rebuild for
             // any nested change instead of just rerendering.
             this.listenTo(child, 'childchange', this.onChildChange.bind(this));
@@ -50,13 +52,13 @@ var PreviewView = RenderableView.extend({
         // cameras need to be added to scene
         this.scene.add(this.camera);
 
-        if (obj instanceof THREE.Object3D) {
+        if (obj.isObject3D) {
 
             this.log('render Object3D');
             // Use a clone to not change `parent` attribute
             this.scene.add(obj.clone());
 
-        } else if (obj instanceof THREE.Geometry || obj instanceof THREE.BufferGeometry) {
+        } else if (obj.isGeometry || obj.isBufferGeometry) {
 
             var material;
             if (this.model.get('_flat')) {
@@ -64,7 +66,7 @@ var PreviewView = RenderableView.extend({
                     color: '#ffffff',
                     shading: THREE.FlatShading,
                 });
-            } else if (this.model.get('_wire') || obj instanceof THREE.WireframeGeometry) {
+            } else if (this.model.get('_wire') || obj.type === 'WireframeGeometry') {
                 material = new THREE.MeshBasicMaterial({
                     color: '#888888',
                     wireframe: true,
@@ -75,16 +77,16 @@ var PreviewView = RenderableView.extend({
                     color: '#ffffff',
                 });
             }
-            if (obj instanceof THREE.BufferGeometry && 'color' in obj.attributes) {
+            if (obj.isBufferGeometry && 'color' in obj.attributes) {
                 material.vertexColors = THREE.VertexColors;
             }
 
             var mesh = new THREE.Mesh(obj, material);
             this.scene.add(mesh);
 
-        } else if (obj instanceof THREE.Material) {
+        } else if (obj.isMaterial) {
 
-            if (obj instanceof THREE.SpriteMaterial) {
+            if (obj.type === 'SpriteMaterial') {
                 var sprite = new THREE.Sprite(obj);
                 var maxScale = sprite.position.distanceTo(this.camera.position);
                 var aspect = obj.map.image.width / obj.map.image.height;
@@ -100,7 +102,7 @@ var PreviewView = RenderableView.extend({
                 this.scene.add(mesh);
             }
 
-        } else if (obj instanceof THREE.Texture) {
+        } else if (obj.isTexture) {
 
             var geometry = new THREE.SphereGeometry(15, 16, 12);
             var mat = new THREE.MeshStandardMaterial({ map: obj });
@@ -122,7 +124,7 @@ var PreviewView = RenderableView.extend({
     setupControls: function() {
         // Allow user to inspect object with mouse/scrollwheel
         this.log('setting up controls');
-        var control = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+        var control = new OrbitControls(this.camera, this.renderer.domElement);
         control.target.set(0, 0, 0);
         control.update();
         this.controls = [control];

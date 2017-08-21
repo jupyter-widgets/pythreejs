@@ -1,5 +1,5 @@
 var _ = require('underscore');
-require("../examples/controls/OrbitControls.js");
+var OrbitControls = require("../examples/controls/OrbitControls.js").OrbitControls;
 var OrbitControlsAutogen = require('./OrbitControls.autogen');
 
 
@@ -7,7 +7,7 @@ var OrbitControlsModel = OrbitControlsAutogen.OrbitControlsModel.extend({
 
     constructThreeObject: function() {
         var controlling = this.get('controlling');
-        obj = new THREE.OrbitControls(controlling.obj);
+        obj = new OrbitControls(controlling.obj);
         obj.dispose();  // Disconnect events, we need to (dis-)connect on freeze/thaw
         obj.enableKeys = false; // turn off keyboard navigation
 

@@ -1,8 +1,9 @@
 /**
  * @author mrdoob / http://mrdoob.com/
  */
+var THREE = require('three');
 
-THREE.SpriteCanvasMaterial = function ( parameters ) {
+SpriteCanvasMaterial = function ( parameters ) {
 
 	THREE.Material.call( this );
 
@@ -15,12 +16,12 @@ THREE.SpriteCanvasMaterial = function ( parameters ) {
 
 };
 
-THREE.SpriteCanvasMaterial.prototype = Object.create( THREE.Material.prototype );
-THREE.SpriteCanvasMaterial.prototype.constructor = THREE.SpriteCanvasMaterial;
+SpriteCanvasMaterial.prototype = Object.create( THREE.Material.prototype );
+SpriteCanvasMaterial.prototype.constructor = SpriteCanvasMaterial;
 
-THREE.SpriteCanvasMaterial.prototype.clone = function () {
+SpriteCanvasMaterial.prototype.clone = function () {
 
-	var material = new THREE.SpriteCanvasMaterial();
+	var material = new SpriteCanvasMaterial();
 
 	THREE.Material.prototype.clone.call( this, material );
 
@@ -33,9 +34,9 @@ THREE.SpriteCanvasMaterial.prototype.clone = function () {
 
 //
 
-THREE.CanvasRenderer = function ( parameters ) {
+CanvasRenderer = function ( parameters ) {
 
-	console.log( 'THREE.CanvasRenderer', THREE.REVISION );
+	console.log( 'CanvasRenderer', THREE.REVISION );
 
 	var smoothstep = THREE.Math.smoothstep;
 
@@ -220,7 +221,7 @@ THREE.CanvasRenderer = function ( parameters ) {
 
 	this.setClearColorHex = function ( hex, alpha ) {
 
-		console.warn( 'THREE.CanvasRenderer: .setClearColorHex() is being removed. Use .setClearColor() instead.' );
+		console.warn( 'CanvasRenderer: .setClearColorHex() is being removed. Use .setClearColor() instead.' );
 		this.setClearColor( hex, alpha );
 
 	};
@@ -298,7 +299,7 @@ THREE.CanvasRenderer = function ( parameters ) {
 
 		if ( camera instanceof THREE.Camera === false ) {
 
-			console.error( 'THREE.CanvasRenderer.render: camera is not an instance of THREE.Camera.' );
+			console.error( 'CanvasRenderer.render: camera is not an instance of THREE.Camera.' );
 			return;
 
 		}
@@ -570,7 +571,7 @@ THREE.CanvasRenderer = function ( parameters ) {
 
 			}
 
-		} else if ( material instanceof THREE.SpriteCanvasMaterial ) {
+		} else if ( material instanceof SpriteCanvasMaterial ) {
 
 			setStrokeStyle( material.color.getStyle() );
 			setFillStyle( material.color.getStyle() );
@@ -1096,3 +1097,7 @@ THREE.CanvasRenderer = function ( parameters ) {
 	}
 
 };
+module.exports = {
+	CanvasRenderer: CanvasRenderer,
+	SpriteCanvasMaterial: SpriteCanvasMaterial,
+}

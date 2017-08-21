@@ -4,15 +4,11 @@ var Promise = require('bluebird');
 var $ = require('jquery');
 var ndarray = require('ndarray');
 
+var THREE = require('three');
+
 var Enums = require('./enums');
 
 var version = require('../../package.json').version;
-
-var ThreeCache = {
-    byId: {},
-    byUuid: {},
-    byName: {}
-};
 
 
 var ThreeModel = widgets.WidgetModel.extend({
@@ -72,6 +68,7 @@ var ThreeModel = widgets.WidgetModel.extend({
         // initialize properties arrays
         this.three_properties = [];
         this.three_array_properties = [];
+        this.datawidget_properties = [];
 
         // TODO: not currently integrated
         this.three_dict_properties = [];
@@ -173,6 +170,33 @@ var ThreeModel = widgets.WidgetModel.extend({
 
         }, this);
 
+        // Handle changes in data widgets/union properties
+        this.datawidget_properties.forEach(function(propName) {
+
+            var curr = this.get(propName) || [];
+            if (curr instanceof widgets.WidgetModel) {
+                // listen to changes in current model
+                this.listenTo(curr, 'change', this.onChildChanged);
+                this.listenTo(curr, 'childchange', this.onChildChanged);
+            }
+
+            // make sure to (un)hook listeners when property changes
+            this.on('change:' + propName, function(model, value, options) {
+                var prev = this.previous(propName) || [];
+                var curr = value || [];
+
+                if (prev instanceof widgets.WidgetModel) {
+                    this.stopListening(prev);
+                }
+                if (curr instanceof widgets.WidgetModel) {
+                    // listen to changes in current model
+                    this.listenTo(curr, 'change', this.onChildChanged);
+                    this.listenTo(curr, 'childchange', this.onChildChanged);
+                }
+            }, this);
+
+        }, this);
+
         this.on('change', this.onChange, this);
         this.on('msg:custom', this.onCustomMessage, this);
 
@@ -183,34 +207,12 @@ var ThreeModel = widgets.WidgetModel.extend({
         obj.ipymodelId = this.model_id; // brand that sucker
         obj.ipymodel = this;
 
-        var cacheDescriptor = this.getCacheDescriptor();
-        if (!cacheDescriptor) {
-            console.error('Model missing ID:', this);
-            throw new Error('Model missing ID!');
-        }
-
-        this.putThreeObjectIntoCache(cacheDescriptor, obj);
-
         this.obj = obj;
         return obj;
 
     },
 
     createThreeObjectAsync: function() {
-
-        // try cache first
-        var cacheDescriptor = this.getCacheDescriptor();
-        if (cacheDescriptor) {
-            var obj = this.getThreeObjectFromCache(cacheDescriptor);
-            if (obj) {
-                if (obj.ipymodelId != this.model_id) {
-                    throw new Error('model id does not match three object: ' + obj.ipymodelId + ' -- ' + this.model_id);
-                }
-
-                this.obj = obj;
-                return Promise.resolve(obj);
-            }
-        }
 
         var objPromise;
 
@@ -232,39 +234,6 @@ var ThreeModel = widgets.WidgetModel.extend({
 
     constructThreeObject: function() {},
 
-    //
-    // Three.js object cache methods
-    //
-
-    getCacheDescriptor: function() {
-
-        var id = this.model_id;
-        if (id != null) {
-            return { id: id };
-        }
-        return;
-
-    },
-
-    getThreeObjectFromCache: function(cacheDescriptor) {
-        if (cacheDescriptor.id) {
-            return ThreeCache.byId[cacheDescriptor.id];
-        } else if (cacheDescriptor.uuid) {
-            return ThreeCache.byUuid[cacheDescriptor.uuid];
-        } else if (cacheDescriptor.name) {
-            return ThreeCache.byName[cacheDescriptor.name];
-        }
-    },
-
-    putThreeObjectIntoCache: function(cacheDescriptor, obj) {
-        if (cacheDescriptor.id) {
-            ThreeCache.byId[cacheDescriptor.id] = obj;
-        } else if (cacheDescriptor.uuid) {
-            ThreeCache.byUuid[cacheDescriptor.uuid] = obj;
-        } else if (cacheDescriptor.name) {
-            ThreeCache.byName[cacheDescriptor.name] = obj;
-        }
-    },
 
     //
     // Remote execution of three.js object methods
@@ -406,7 +375,7 @@ var ThreeModel = widgets.WidgetModel.extend({
     // push data from three object to model
     syncToModel: function(syncAllProps) {
 
-        syncAllProps = syncAllProps == null ? false : syncAllProps;
+        syncAllProps = syncAllProps === null ? false : syncAllProps;
 
         // Collect all the keys to set in one go
         var toSet = {};
@@ -587,17 +556,34 @@ var ThreeModel = widgets.WidgetModel.extend({
 
     // Faces
     convertFaceModelToThree: function(f, propName) {
+        var normal = f[3];
+        if (normal !== undefined && normal !== null) {
+            if (Array.isArray(normal) && normal.length > 0 && Array.isArray(normal[0])) {
+                normal = normal.map(function (value) {
+                    return this.convertVectorModelToThree(value);
+                }, this);
+            } else {
+                normal = this.convertVectorModelToThree(normal);
+            }
+        }
+        var color = f[4];
+        if (color !== undefined && color !== null) {
+            if (Array.isArray(color)) {
+                color = color.map(function (value) {
+                    return new THREE.Color(value);
+                }, this);
+            } else {
+                color = new THREE.Color(color);
+            }
+        }
         var result = new THREE.Face3(
-            f[0],                                   // a
-            f[1],                                   // b
-            f[2],                                   // c
-            this.convertVectorModelToThree(f[3]),   // normal
-            new THREE.Color(f[4]),                  // color
-            f[5]                                    // materialIndex
+            f[0],                                           // a
+            f[1],                                           // b
+            f[2],                                           // c
+            normal,                                         // normal
+            color,                                          // color
+            f[5]                                            // materialIndex
         );
-
-        result.vertexNormals = this.convertVectorArrayModelToThree(f[6]); // vertexNormals
-        result.vertexColors = this.convertColorArrayModelToThree(f[7]);   // vertexColors
 
         return result;
     },
@@ -721,10 +707,14 @@ var ThreeModel = widgets.WidgetModel.extend({
 
     // ArrayBuffer
     convertArrayBufferModelToThree: function(arr, propName) {
+        if (arr instanceof widgets.WidgetModel) {
+            return arr.get('array').data
+        }
         return arr.data;
     },
 
     convertArrayBufferThreeToModel: function(arrBuffer, propName) {
+        // Never back-convert to a new widget
         return ndarray(arrBuffer);
     },
 

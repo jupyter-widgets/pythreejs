@@ -1,5 +1,6 @@
 var _ = require('underscore');
-require("../examples/controls/MomentumCameraControls.js");
+var THREE = require('three');
+var FlyControls = require("../examples/controls/MomentumCameraControls.js").FlyControls;
 var FlyControlsAutogen = require('./FlyControls.autogen');
 
 
@@ -14,7 +15,7 @@ var FlyControlsModel = FlyControlsAutogen.FlyControlsModel.extend({
                 that.controlled_view = _.find(views, function(o) {
                     return o.options.renderer_id === that.options.renderer_id
                 }, that);
-                obj = new THREE.FlyControls(that.controlled_view.obj, that.options.dom);
+                obj = new FlyControls(that.controlled_view.obj, that.options.dom);
                 that.register_object_parameters();
                 that.options.register_update(that._update, that);
                 obj.addEventListener('change', that.options.render_frame);

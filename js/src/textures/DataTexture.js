@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var datawidgets = require('jupyter-datawidgets');
 var ndarray = require('ndarray');
+var THREE = require('three');
 var DataTextureBase = require('./DataTexture.autogen').DataTextureModel;
 
 var DataTextureModel = DataTextureBase.extend({
@@ -14,7 +15,7 @@ var DataTextureModel = DataTextureBase.extend({
     },
 
     decodeData() {
-        var rawData = this.get('data');
+        var rawData = datawidgets.getArrayFromUnion(this.get('data'));
         if (rawData.dimension < 2 || rawData.dimension > 3) {
             throw Error('DataTexture data dimensions need to be 2 or 3, got:', rawData.dimension)
         }

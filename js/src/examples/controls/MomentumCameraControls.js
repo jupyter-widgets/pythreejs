@@ -2,7 +2,9 @@
  * @author James Baicoianu / http://www.baicoianu.com/
  */
 
-THREE.FlyControls = function ( object, domElement ) {
+var THREE = require('three');
+
+var FlyControls = function ( object, domElement ) {
 
 	this.object = object;
 
@@ -101,5 +103,9 @@ THREE.FlyControls = function ( object, domElement ) {
 
 };
 
-THREE.FlyControls.prototype = Object.create( THREE.EventDispatcher.prototype );
-THREE.FlyControls.prototype.constructor = THREE.FlyControls;
+FlyControls.prototype = Object.create( THREE.EventDispatcher.prototype );
+FlyControls.prototype.constructor = FlyControls;
+
+module.exports = {
+	FlyControls: FlyControls
+};

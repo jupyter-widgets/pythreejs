@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var Promise = require('bluebird');
+var THREE = require('three');
 var TextTextureBase = require('./TextTexture.autogen').TextTextureModel;
 
 var TextTextureModel = TextTextureBase.extend({

@@ -33,6 +33,7 @@ var JS_AUTOGEN_EXT = '.' + AUTOGEN_EXT + '.js';
 var CUSTOM_CLASSES = [
     'textures/ImageTexture.js',
     'textures/TextTexture.js',
+    'cameras/CombinedCamera.js',
     'controls/Controls.js',
     'controls/OrbitControls.js',
     'controls/TrackballControls.js',
@@ -43,6 +44,26 @@ var CUSTOM_CLASSES = [
     'objects/CloneArray.js',
     'objects/Blackbox.js',
 ];
+
+var IGNORE_FILES = [
+    '**/Three.Legacy.js',   // Don't support legacy interface (deprecation should be done python side)
+    '**/Three.js',          // Don't process aggregrate file
+    '**/polyfills.js',      // Polyfill of JS methods, nothing to export
+    '**/utils.js',          // Utility functions, no objects to export
+    '**/constants.js',      // Processed into enums in separate script
+    '**/animation/KeyframeTrackConstructor.js',     // Sub-part of one object, ignore
+    '**/animation/KeyframeTrackPrototype.js',       // Sub-part of one object, ignore
+    '**/audio/AudioContext.js',             // JS API for audio, nothing to expose
+    '**/geometries/Geometries.js',          // index.js like file, nothing new here
+    '**/materials/Materials.js',            // index.js like file, nothing new here
+    '**/renderers/WebGLRenderer.js',        // For now, the internals of the webgl
+    '**/renderers/WebGL2Renderer.js',       //   render is not exposed.
+    '**/renderers/webgl/**',
+    '**/renderers/shaders/**',
+    '**/extras/core/Interpolations.js',     // Only functions, nothing to export
+    '**/extras/core/PathPrototype.js',      // Sub-part of one object, ignore
+    '**/textures/CanvasTexture.js'          // Canvases are not referenceable from python
+]
 
 
 //
@@ -157,10 +178,10 @@ function relativePathToPythonImportPath(relativePath) {
     if (tokens.length <= 0) { return '.'; }
 
     var result = '';
-    if (firstToken == '.') {
+    if (firstToken === '.') {
         tokens = tokens.slice(1);
         result = '';
-    } else if (firstToken == '..') {
+    } else if (firstToken === '..') {
         tokens = tokens.slice(1);
         result = '.';
     }
@@ -243,24 +264,7 @@ function mapPromiseFnOverThreeModules(mapFn) {
     return mapPromiseFnOverGlob('**/*.js', mapFn, {
         cwd: threeSrcDir,
         nodir: true ,
-        ignore: [
-            '**/Three.Legacy.js',   // Don't support legacy interface (deprecation should be done python side)
-            '**/polyfills.js',      // Polyfill of JS methods, nothing to export
-            '**/utils.js',          // Utility functions, no objects to export
-            '**/constants.js',      // Processed into enums in separate script
-            '**/animation/KeyframeTrackConstructor.js',     // Sub-part of one object, ignore
-            '**/animation/KeyframeTrackPrototype.js',       // Sub-part of one object, ignore
-            '**/audio/AudioContext.js',             // JS API for audio, nothing to expose
-            '**/geometries/Geometries.js',          // index.js like file, nothing new here
-            '**/materials/Materials.js',            // index.js like file, nothing new here
-            '**/renderers/WebGLRenderer.js',        // For now, the internals of the webgl
-            '**/renderers/WebGL2Renderer.js',       //   render is not exposed.
-            '**/renderers/webgl/**',
-            '**/renderers/shaders/**',
-            '**/extras/core/Interpolations.js',     // Only functions, nothing to export
-            '**/extras/core/PathPrototype.js',      // Sub-part of one object, ignore
-            '**/textures/CanvasTexture.js'          // Canvases are not referenceable from python
-        ],
+        ignore: IGNORE_FILES,
     });
 }
 

@@ -3,6 +3,8 @@ var widgets = require("@jupyter-widgets/base");
 var Promise = require('bluebird');
 var $ = require('jquery');
 
+var THREE = require('three');
+
 var pkgName = require('../../package.json').name;
 var RendererPool = require('./RendererPool');
 

@@ -12,24 +12,23 @@
   "scripts": {
     "clean": "node ./scripts/clean-generated-files.js",
     "autogen-enums": "node ./scripts/generate-enums.js",
-    "autogen-wrappers": "node ./scripts/generate-wrappers.js",
-    "autogen": "npm run autogen-enums && npm run autogen-wrappers",
+    "autogen": "node ./scripts/generate-wrappers.js",
     "postinstall": "npm run autogen-wrappers",
-    "build": "webpack",
+    "build": "webpack && node ./scripts/copy-three.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
     "bluebird": "^3.4.3",
-    "fs-extra": "^0.30.0",
+    "fs-extra": "^4.0.1",
     "glob": "^7.0.6",
     "handlebars": "^4.0.5",
     "json-loader": "^0.5.4",
     "rimraf": "^2.4.1",
-    "webpack": "^1.12.14"
+    "webpack": "^3.5.5"
   },
   "dependencies": {
-    "@jupyter-widgets/base": "0.5.1",
-    "jupyter-datawidgets": "^1.0.0",
+    "@jupyter-widgets/base": "^1.0.0",
+    "jupyter-datawidgets": "^2.0.0",
     "three": "^0.85.2",
     "underscore": "^1.8.3"
   }

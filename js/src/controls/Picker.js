@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var THREE = require('three');
 var PickerAutogen = require('./Picker.autogen');
 
 

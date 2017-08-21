@@ -1,7 +1,4 @@
-import numpy as np
 from ipywidgets import register
-from traitlets import validate, TraitError, Undefined
-from ipydatawidgets import NDArrayWidget
 
 from .BufferAttribute_autogen import BufferAttribute as BaseBufferAttribute
 

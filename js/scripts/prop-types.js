@@ -189,7 +189,7 @@ _.extend(Int.prototype, BaseType.prototype, {
 
 function Float(defaultValue, nullable) {
     this.nullable = nullable === true;
-    this.defaultValue = defaultValue == null ? !this.nullable ? 0.0 : 'None' : defaultValue;
+    this.defaultValue = (defaultValue === null || defaultValue === undefined) ? !this.nullable ? 0.0 : 'None' : defaultValue;
 }
 _.extend(Float.prototype, BaseType.prototype, {
     getTraitlet: function() {
@@ -242,11 +242,11 @@ _.extend(Color.prototype, BaseType.prototype, {
 });
 
 function ColorArray(defaultValue) {
-    this.defaultValue = defaultValue || "#ffffff";
+    this.defaultValue = defaultValue || ["#ffffff"];
 }
 _.extend(ColorArray.prototype, BaseType.prototype, {
     getTraitlet: function() {
-        return 'List(trait=List()).tag(sync=True)';
+        return `List(trait=Unicode(), default_value=${this.getPythonDefaultValue()}).tag(sync=True)`;
     },
     getPropertyConverterFn: function() {
         return 'convertColorArray';
@@ -289,6 +289,9 @@ _.extend(ArrayBufferType.prototype, BaseType.prototype, {
     },
     getPropertyConverterFn: function() {
         return 'convertArrayBuffer';
+    },
+    getPropArrayName: function() {
+        return 'datawidget_properties';
     },
 });
 

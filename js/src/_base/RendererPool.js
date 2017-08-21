@@ -1,5 +1,7 @@
 var _ = require('underscore');
 
+var THREE = require('three');
+
 // This should be available for most devices:
 var MAX_RENDERERS = 8;
 
