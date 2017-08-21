@@ -1105,6 +1105,7 @@ module.exports = {
             fog: new Types.ThreeType('Fog'),
             overrideMaterial: new Types.ThreeType('Material'),
             autoUpdate: new Types.Bool(true),
+            background: new Types.Color(null, true),
         },
     },
     Texture: {

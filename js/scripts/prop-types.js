@@ -229,12 +229,14 @@ _.extend(Enum.prototype, BaseType.prototype, {
     },
 });
 
-function Color(defaultValue) {
+function Color(defaultValue, nullable) {
     this.defaultValue = defaultValue || "#ffffff";
+    this.nullable = nullable === true;
 }
 _.extend(Color.prototype, BaseType.prototype, {
     getTraitlet: function() {
-        return `Unicode(${this.getPythonDefaultValue()}).tag(sync=True)`;
+        var nullableStr = this.nullable ? 'True' : 'False';
+        return `Unicode(${this.getPythonDefaultValue()}, allow_none=${nullableStr}).tag(sync=True)`;
     },
     getPropertyConverterFn: function() {
         return 'convertColor';
