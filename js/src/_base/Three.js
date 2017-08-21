@@ -10,12 +10,6 @@ var Enums = require('./enums');
 
 var version = require('../../package.json').version;
 
-var ThreeCache = {
-    byId: {},
-    byUuid: {},
-    byName: {}
-};
-
 
 var ThreeModel = widgets.WidgetModel.extend({
 
@@ -213,34 +207,12 @@ var ThreeModel = widgets.WidgetModel.extend({
         obj.ipymodelId = this.model_id; // brand that sucker
         obj.ipymodel = this;
 
-        var cacheDescriptor = this.getCacheDescriptor();
-        if (!cacheDescriptor) {
-            console.error('Model missing ID:', this);
-            throw new Error('Model missing ID!');
-        }
-
-        this.putThreeObjectIntoCache(cacheDescriptor, obj);
-
         this.obj = obj;
         return obj;
 
     },
 
     createThreeObjectAsync: function() {
-
-        // try cache first
-        var cacheDescriptor = this.getCacheDescriptor();
-        if (cacheDescriptor) {
-            var obj = this.getThreeObjectFromCache(cacheDescriptor);
-            if (obj) {
-                if (obj.ipymodelId != this.model_id) {
-                    throw new Error('model id does not match three object: ' + obj.ipymodelId + ' -- ' + this.model_id);
-                }
-
-                this.obj = obj;
-                return Promise.resolve(obj);
-            }
-        }
 
         var objPromise;
 
@@ -262,39 +234,6 @@ var ThreeModel = widgets.WidgetModel.extend({
 
     constructThreeObject: function() {},
 
-    //
-    // Three.js object cache methods
-    //
-
-    getCacheDescriptor: function() {
-
-        var id = this.model_id;
-        if (id != null) {
-            return { id: id };
-        }
-        return;
-
-    },
-
-    getThreeObjectFromCache: function(cacheDescriptor) {
-        if (cacheDescriptor.id) {
-            return ThreeCache.byId[cacheDescriptor.id];
-        } else if (cacheDescriptor.uuid) {
-            return ThreeCache.byUuid[cacheDescriptor.uuid];
-        } else if (cacheDescriptor.name) {
-            return ThreeCache.byName[cacheDescriptor.name];
-        }
-    },
-
-    putThreeObjectIntoCache: function(cacheDescriptor, obj) {
-        if (cacheDescriptor.id) {
-            ThreeCache.byId[cacheDescriptor.id] = obj;
-        } else if (cacheDescriptor.uuid) {
-            ThreeCache.byUuid[cacheDescriptor.uuid] = obj;
-        } else if (cacheDescriptor.name) {
-            ThreeCache.byName[cacheDescriptor.name] = obj;
-        }
-    },
 
     //
     // Remote execution of three.js object methods
@@ -436,7 +375,7 @@ var ThreeModel = widgets.WidgetModel.extend({
     // push data from three object to model
     syncToModel: function(syncAllProps) {
 
-        syncAllProps = syncAllProps == null ? false : syncAllProps;
+        syncAllProps = syncAllProps === null ? false : syncAllProps;
 
         // Collect all the keys to set in one go
         var toSet = {};
