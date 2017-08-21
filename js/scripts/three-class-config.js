@@ -708,9 +708,9 @@ module.exports = {
         properties: {
             clearCoat:          new Types.Float(0.0),
             clearCoatRoughness: new Types.Float(0.0),
+            defines:            new Types.Dict({ 'PHYSICAL': '' }, true),
             reflectivity:       new Types.Float(0.5),
         },
-        propsDefinedByThree: ['isMeshPhysicalMaterial'],
     },
     MeshStandardMaterial: {
         relativePath: './materials/MeshStandardMaterial',
@@ -722,6 +722,7 @@ module.exports = {
             bumpMap:            new Types.ThreeType('Texture'),
             bumpScale:          new Types.Float(1.0),
             color:              new Types.Color('#ffffff'),
+            defines:            new Types.Dict({ 'STANDARD': '' }, true),
             displacementMap:    new Types.ThreeType('Texture'),
             displacementScale:  new Types.Float(1.0),
             displacementBias:   new Types.Float(0.0),
@@ -1037,7 +1038,6 @@ module.exports = {
         properties: {
             material: new Types.ThreeType('SpriteMaterial'),
         },
-        propsDefinedByThree: [ 'isSprite' ]
     },
     CloneArray: {
         relativePath: './objects/CloneArray',

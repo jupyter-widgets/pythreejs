@@ -69,12 +69,14 @@ var PlainBufferGeometryModel = AutogenPlainBufferGeometryModel.extend({
             toSet.attributes = _.object(attribModelKVs);
 
         // Then create models for all morphAttributes:
-        }).then(Promise.all(_.map(_.pairs(result.morphAttributes), kv => {
-            var modelCtor = kv[1].isInterleavedBufferAttribute ? InterleavedBufferAttributeModel : BufferAttributeModel;
-            return createModel(modelCtor, this.widget_manager, kv[1]).then(model => {
-                return [kv[0], model];
-            });
-        }))).then((attribModelKVs) => {
+        }).then(() => {
+            return Promise.all(_.map(_.pairs(result.morphAttributes), kv => {
+                var modelCtor = kv[1].isInterleavedBufferAttribute ? InterleavedBufferAttributeModel : BufferAttributeModel;
+                return createModel(modelCtor, this.widget_manager, kv[1]).then(model => {
+                    return [kv[0], model];
+                });
+            })
+        )}).then((attribModelKVs) => {
             toSet.morphAttributes = _.object(attribModelKVs);
 
         // Sync out all properties that have been set:

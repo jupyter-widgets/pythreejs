@@ -189,7 +189,7 @@ _.extend(Int.prototype, BaseType.prototype, {
 
 function Float(defaultValue, nullable) {
     this.nullable = nullable === true;
-    this.defaultValue = defaultValue == null ? !this.nullable ? 0.0 : 'None' : defaultValue;
+    this.defaultValue = (defaultValue === null || defaultValue === undefined) ? !this.nullable ? 0.0 : 'None' : defaultValue;
 }
 _.extend(Float.prototype, BaseType.prototype, {
     getTraitlet: function() {
