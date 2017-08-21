@@ -12,11 +12,86 @@ var RenderableModel = Renderable.RenderableModel;
 var BLACK = new THREE.Color('black');
 
 
+// Set camera near and far planes close to sphere with given center
+// and radius, assuming the camera is already oriented to look at this
+// sphere.
+function shrinkFrustumPlanes(camera, center, radius, distOffset=0.1) {
+    // distOffset = 0.1  -->  10% of radius
+
+    // Find distance from camera to edges of sphere
+    const dist = camera.position.distanceTo(center);
+    const nearEdge = dist - radius;
+    const farEdge = dist + radius;
+
+    // Set near/far sufficiently close to edges of sphere
+    camera.near = (1 - distOffset) * nearEdge,
+    camera.far = (1 + distOffset) * farEdge;
+
+    // Bound near plane away from zero
+    camera.near = Math.max(camera.near, 0.01 * radius);
+}
+
+// Set camera near and far planes with some headroom around sphere
+// with given center and radius, assuming the camera is already
+// oriented to look at this sphere.
+function safeFrustumPlanes(camera, center, radius, allowZoom=20) {
+    // Find distance from camera to edges of sphere
+    const dist = camera.position.distanceTo(center);
+    const nearEdge = dist - radius;
+    const farEdge = dist + radius;
+
+    // Set near/far sufficiently far from edge of sphere to allow some zooming
+    camera.near = (1 / allowZoom) * nearEdge;
+    camera.far = allowZoom * farEdge;
+
+    // Bound near plane away from zero
+    camera.near = Math.max(camera.near, 0.001 * radius);
+}
+
+function lookAtSphere(camera, center, radius) {
+    if (!camera.isPerspectiveCamera) {
+        console.error("Expecting a perspective camera.");
+    }
+
+    // Compute distance based on FOV
+    const radScale = 1.5;  // Include this much more than the sphere
+    const distance = (radScale * radius) / Math.tan(0.5 * camera.fov * Math.PI / 180);
+
+    // Place camera such that the model is in the -z direction from the camera
+    camera.position.setX(center.x);
+    camera.position.setY(center.y);
+    camera.position.setZ(center.z + distance);
+
+    // Look at scene center
+    camera.lookAt(center.clone());
+
+    // Set near and far planes to include sphere with a narrow margin
+    //shrinkFrustumPlanes(camera, center, radius);
+
+    // Set near and far planes to include sphere with a wide margin for zooming
+    safeFrustumPlanes(camera, center, radius);
+
+    // Update matrix
+    camera.updateProjectionMatrix();
+}
+
+// TODO: Make this available as a general utility somewhere?
+function computeSceneBoundingSphere(scene) {
+    // FIXME: The Box3.setFromObject implementation is not great,
+    // replace with something that reuses bounding box computations
+    // of the underlying objects
+    const box = new THREE.Box3();
+    box.setFromObject(scene);
+    return box.getBoundingSphere();
+}
+
+
 var PreviewView = RenderableView.extend({
 
     initialize: function() {
         RenderableView.prototype.initialize.apply(this, arguments);
 
+        this._resetCameraNeeded = true;
         this._rebuildNeeded = true;
 
     },
@@ -39,6 +114,10 @@ var PreviewView = RenderableView.extend({
     },
 
     onChildChange: function() {
+        // Enabling this line will reset the camera
+        // when any changes are made to the child
+        //this._resetCameraNeeded = true;
+
         this._rebuildNeeded = true;
     },
 
@@ -47,8 +126,6 @@ var PreviewView = RenderableView.extend({
         var obj = this.model.get('child').obj;
 
         this.clearScene();
-        // cameras need to be added to scene
-        this.scene.add(this.camera);
 
         if (obj instanceof THREE.Object3D) {
 
@@ -71,7 +148,7 @@ var PreviewView = RenderableView.extend({
                     shading: THREE.FlatShading,
                 });
             } else {
-                material = new THREE.MeshStandardMaterial({
+                material = new THREE.MeshLambertMaterial({
                     color: '#ffffff',
                 });
             }
@@ -107,11 +184,42 @@ var PreviewView = RenderableView.extend({
             var mesh = new THREE.Mesh(geometry, mat);
             this.scene.add(mesh);
 
+        } else {
+
+            console.log("Unexpected object in preview, scene will be empty:", obj);
+
         }
+
+        // Reset camera initially and on later requests
+        if (this._resetCameraNeeded) {
+            this.resetCamera();  // Depends on this.scene to be correctly set up
+            this._resetCameraNeeded = false;
+        }
+
+        // Cameras need to be added to scene
+        this.scene.add(this.camera);
 
         // Clear at end to ensure that any changes to obj does not
         // cause infinite rebuild chain.
         this._rebuildNeeded = false;
+    },
+
+    resetCamera: function() {
+        // Compute bounding sphere for entire scene
+        const sphere = computeSceneBoundingSphere(this.scene);
+
+        // Update camera to include bounding sphere
+        lookAtSphere(this.camera, sphere.center, sphere.radius);
+
+        // Update controls with new target
+        const control = this.controls[0];
+        control.target.copy(sphere.center);
+        control.target0.copy(sphere.center);
+        control.update();
+
+        // Position light up to the left and behind camera
+        const dist = 2.5 * (this.camera.position.z - sphere.center.z);
+        this.pointLight.position.set(-dist, dist, dist);
     },
 
     clearScene: function() {
@@ -129,9 +237,10 @@ var PreviewView = RenderableView.extend({
     },
 
     lazyRendererSetup: function() {
-        this.camera = new THREE.PerspectiveCamera(60, 1.0); // aspect is updated by this.updateSize()
-        this.camera.position.set(-40, 40, 40);
-        this.camera.lookAt(new THREE.Vector3(0,0,0));
+        this.camera = new THREE.PerspectiveCamera(60, 1.0);
+        // aspect is updated by this.updateSize()
+        // position and lookat target is updated to fit scene
+        // by this.resetCamera() via constructScene()
 
         // Update aspect ratio of camera:
         this.updateSize();
@@ -142,9 +251,7 @@ var PreviewView = RenderableView.extend({
         this.scene.background = BLACK;
 
         // Lights
-        this.pointLight = new THREE.PointLight('#ffffff', 1, 0);
-        this.pointLight.position.set(-100, 100, 100);
-        this.pointLight.lookAt(new THREE.Vector3(0,0,0));
+        this.pointLight = new THREE.PointLight('#ffffff', 1, 0, 0);
         this.ambLight = new THREE.AmbientLight('#ffffff', 0.5);
         this.camera.add(this.ambLight);
         this.camera.add(this.pointLight);
