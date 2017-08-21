@@ -24,7 +24,7 @@
     "handlebars": "^4.0.5",
     "json-loader": "^0.5.4",
     "rimraf": "^2.4.1",
-    "webpack": "^1.12.14"
+    "webpack": "^3.5.5"
   },
   "dependencies": {
     "@jupyter-widgets/base": "0.5.1",

@@ -1,3 +1,5 @@
+const path = require('path');
+
 var loaders = [
     { test: /\.json$/, loader: "json-loader" }
 ];
@@ -10,11 +12,11 @@ module.exports = [
         entry: './src/extension.js',
         output: {
             filename: 'extension.js',
-            path: '../pythreejs/static',
+            path: path.resolve('../pythreejs/static'),
             libraryTarget: 'amd'
         },
         resolve: {
-            extensions: [ "", ".autogen.js", ".js" ]
+            extensions: [ ".autogen.js", ".js" ]
         },
     },
     {
@@ -22,16 +24,16 @@ module.exports = [
         entry: './src/index.js',
         output: {
             filename: 'index.js',
-            path: '../pythreejs/static',
+            path: path.resolve('../pythreejs/static'),
             libraryTarget: 'amd'
         },
         devtool: 'source-map',
         module: {
-            loaders: loaders
+            rules: loaders
         },
         externals: externals,
         resolve: {
-            extensions: [ "", ".autogen.js", ".js" ]
+            extensions: [ ".autogen.js", ".js" ]
         },
 
     },
@@ -40,16 +42,16 @@ module.exports = [
         entry: './src/embed.js',
         output: {
             filename: 'index.js',
-            path: './dist/',
+            path: path.resolve('./dist/'),
             libraryTarget: 'amd'
         },
         devtool: 'source-map',
         module: {
-            loaders: loaders
+            rules: loaders
         },
         externals: externals,
         resolve: {
-            extensions: [ "", ".autogen.js", ".js" ]
+            extensions: [ ".autogen.js", ".js" ]
         },
 
     },
@@ -58,14 +60,14 @@ module.exports = [
         entry: './src/index.js',
         output: {
             filename: 'index.standalone.js',
-            path: './dist/',
+            path: path.resolve('./dist/'),
         },
         devtool: 'source-map',
         module: {
-            loaders: loaders
+            rules: loaders
         },
         resolve: {
-            extensions: [ "", ".autogen.js", ".js" ]
+            extensions: [ ".autogen.js", ".js" ]
         },
 
     }
