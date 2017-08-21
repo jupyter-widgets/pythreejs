@@ -39,7 +39,7 @@ setup_args = {
     'version': version_ns['__version__'],
     'description': 'Interactive 3d graphics for the Jupyter notebook, using Three.js from Jupyter interactive widgets.',
     'long_description': LONG_DESCRIPTION,
-    'License': 'BSD',
+    'license': 'BSD',
     'include_package_data': True,
     'data_files': [
         ('share/jupyter/nbextensions/jupyter-threejs', [
