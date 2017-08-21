@@ -27,7 +27,7 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "@jupyter-widgets/base": "0.5.1",
+    "@jupyter-widgets/base": "^1.0.0",
     "jupyter-datawidgets": "^1.0.0",
     "three": "^0.85.2",
     "underscore": "^1.8.3"
