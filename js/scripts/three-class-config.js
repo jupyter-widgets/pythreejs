@@ -805,6 +805,7 @@ module.exports = {
         superClass: 'Material',
         properties: {
             color:           new Types.Color('#ffffff'),
+            lights:          new Types.Bool(false),
             map:             new Types.ThreeType('Texture'),
             size:            new Types.Float(1.0),
             sizeAttenuation: new Types.Bool(true),

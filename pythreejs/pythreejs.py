@@ -41,18 +41,10 @@ from .textures.DataTexture import DataTexture
 from .textures.TextTexture_autogen import TextTexture
 
 
-def vector3(trait_type=CFloat, default=None, **kwargs):
-    if default is None:
-        default = [0, 0, 0]
-    return List(trait_type, default_value=default, minlen=3, maxlen=3, **kwargs)
-
-def vector2(trait_type=CFloat, default=None, **kwargs):
-    if default is None:
-        default = [0, 0]
-    return List(trait_type, default_value=default, minlen=2, maxlen=2, **kwargs)
-
 
 def grid_indices_gen(nx, ny):
+    """A generator for grid vertex indices.
+    """
     for x in range(nx - 1):
         for y in range(ny - 1):
             root = x + y * ny
@@ -88,9 +80,11 @@ class SurfaceGeometry(PlainBufferGeometry):
         vrange = np.max(positions, 0) - vmin
         uvs = ((positions - vmin) / vrange)[:, :2]
 
+        indices = np.array(tuple(grid_indices_gen(nx, ny)), dtype=np.uint16).ravel()
+
         self.attributes = {
             'position': BufferAttribute(positions),
-            'index': BufferAttribute(np.array(tuple(grid_indices_gen(nx, ny)), dtype=np.uint16).ravel()),
+            'index': BufferAttribute(indices),
             'normal': BufferAttribute(normals),
             'uv': BufferAttribute(uvs),
         }
@@ -114,18 +108,6 @@ def SurfaceGrid(geometry, material, **kwargs):
         lines.append(Line(g, material))
 
     return Group(children=lines, **kwargs)
-
-
-class ParticleSystemMaterial(Material):
-    _view_name = Unicode('ParticleSystemMaterialView').tag(sync=True)
-    _model_name = Unicode('ParticleSystemMaterialModel').tag(sync=True)
-
-    color = Color('yellow').tag(sync=True)
-    map = Instance(Texture, allow_none=True).tag(sync=True, **widget_serialization)
-    size = CFloat(1.0).tag(sync=True)
-    sizeAttenuation = Bool().tag(sync=True)
-    vertexColors = Bool().tag(sync=True)
-    fog = Bool().tag(sync=True)
 
 
 class PlotMesh(Mesh):
@@ -192,18 +174,6 @@ class PlotMesh(Mesh):
         return g
 
 
-class Effect(Widget):
-    _view_module = Unicode(npm_pkg_name).tag(sync=True)
-    _model_module = Unicode(npm_pkg_name).tag(sync=True)
-    _model_module_version = Unicode(EXTENSION_VERSION).tag(sync=True)
-    _view_module_version = Unicode(EXTENSION_VERSION).tag(sync=True)
-
-
-class AnaglyphEffect(Effect):
-    _view_name = Unicode('AnaglyphEffectView').tag(sync=True)
-    _model_name = Unicode('AnaglyphEffectModel').tag(sync=True)
-
-
 # Some helper classes and functions
 def lights_color():
     return [
@@ -233,7 +203,7 @@ def make_text(text, position=(0, 0, 0), height=1):
     return Sprite(material=sm, position=position, scaleToTexture=True, scale=[1, height, 1])
 
 
-def height_texture(z, colormap = 'viridis'):
+def height_texture(z, colormap='viridis'):
     """Create a texture corresponding to the heights in z and the given colormap."""
     from matplotlib import cm
     from skimage import img_as_ubyte
