@@ -1630,51 +1630,156 @@ module.exports = {
     },
     ArrowHelper: {
         relativePath: './helpers/ArrowHelper',
+        superClass: 'Object3D',
+        properties: {
+            dir: new Types.Vector3(1, 0, 0),
+            origin: new Types.Vector3(0, 0, 0),
+            length: new Types.Float(1.0),
+            hex: new Types.Int(0),
+            headLength: new Types.Float(null, true),
+            headWidth: new Types.Float(null, true),
+        },
     },
     AxisHelper: {
         relativePath: './helpers/AxisHelper',
+        superClass: 'Object3D',  // Should really be LineSegments, but we don't want to sync geometry/material
+        properties: {
+            size:       new Types.Float(1.0),
+        },
+        constructorArgs: ['size'],
     },
     BoundingBoxHelper: {
         relativePath: './helpers/BoundingBoxHelper',
     },
     BoxHelper: {
         relativePath: './helpers/BoxHelper',
+        superClass: 'Object3D',  // Should really be LineSegments, but we don't want to sync geometry/material
+        properties: {
+            object:      new Types.ThreeType('Object3D'),
+            color:       new Types.Color(null, true),
+        },
+        constructorArgs: ['object', 'color'],
+        propsDefinedByThree: ['matrixAutoUpdate']
     },
     CameraHelper: {
         relativePath: './helpers/CameraHelper',
+        superClass: 'Object3D',  // Should really be LineSegments, but we don't want to sync geometry/material
+        properties: {
+            camera:         new Types.ThreeType('Camera'),
+        },
+        constructorArgs: ['camera'],
+        propsDefinedByThree: ['matrixAutoUpdate']
     },
     DirectionalLightHelper: {
         relativePath: './helpers/DirectionalLightHelper',
+        superClass: 'Object3D',
+        properties: {
+            light:      new Types.ThreeType('DirectionalLight'),
+            size:       new Types.Float(1.0),
+            color:      new Types.Color(null, true),
+        },
+        constructorArgs: ['light', 'size', 'color'],
+        propsDefinedByThree: ['matrixAutoUpdate']
     },
     EdgesHelper: {
         relativePath: './helpers/EdgesHelper',
     },
     FaceNormalsHelper: {
         relativePath: './helpers/FaceNormalsHelper',
+        superClass: 'Object3D',  // Should really be LineSegments, but we don't want to sync geometry/material
+        properties: {
+            object:         new Types.ThreeType('Object3D'),
+            size:           new Types.Float(1.0),
+            color:          new Types.Color('0xffff00'),
+            linewidth:      new Types.Float(1.0),
+        },
+        constructorArgs: ['object', 'size', 'color', 'linewidth'],
+        propsDefinedByThree: ['matrixAutoUpdate']
     },
     GridHelper: {
         relativePath: './helpers/GridHelper',
+        superClass: 'Object3D',  // Should really be Line, but we don't want to sync geometry/material
+        properties: {
+            size:               new Types.Float(10),
+            divisions:          new Types.Int(10),
+            colorCenterLine:    new Types.Color('0x444444'),
+            colorGrid:          new Types.Color('0x888888'),
+        },
+        constructorArgs: ['size', 'divisions', 'colorCenterLine', 'colorGrid'],
     },
     HemisphereLightHelper: {
         relativePath: './helpers/HemisphereLightHelper',
+        superClass: 'Object3D',
+        properties: {
+            light:      new Types.ThreeType('HemisphereLight'),
+            size:       new Types.Float(1.0),
+            color:      new Types.Color(null, true),
+        },
+        constructorArgs: ['light', 'size', 'color'],
+        propsDefinedByThree: ['matrixAutoUpdate']
     },
     PointLightHelper: {
         relativePath: './helpers/PointLightHelper',
+        superClass: 'Object3D',  // Should really be Mesh, but we don't want to sync geometry/material
+        properties: {
+            light:          new Types.ThreeType('PointLight'),
+            sphereSize:     new Types.Float(1.0),
+            color:          new Types.Color(null, true),
+        },
+        constructorArgs: ['light', 'sphereSize', 'color'],
+        propsDefinedByThree: ['matrixAutoUpdate']
     },
     PolarGridHelper: {
         relativePath: './helpers/PolarGridHelper',
+        superClass: 'Object3D',  // Should really be Line, but we don't want to sync geometry/material
+        properties: {
+            radius:     new Types.Int(10),
+            radials:    new Types.Int(16),
+            circles:    new Types.Int(8),
+            divisions:  new Types.Int(64),
+            color1:     new Types.Color('0x444444'),
+            color2:     new Types.Color('0x888888'),
+        },
+        constructorArgs: ['radius', 'radials', 'circles', 'divisions', 'color1', 'color2'],
     },
     RectAreaLightHelper: {
         relativePath: './helpers/RectAreaLightHelper',
+        superClass: 'Object3D',
+        properties: {
+            light:      new Types.ThreeType('RectAreaLight'),
+            color:      new Types.Color(null, true),
+        },
+        constructorArgs: ['light', 'color'],
     },
     SkeletonHelper: {
         relativePath: './helpers/SkeletonHelper',
+        superClass: 'Object3D',  // Should really be LineSegments, but we don't want to sync geometry/material
+        properties: {
+            root:         new Types.ThreeType('Object3D'),
+        },
+        constructorArgs: ['root'],
     },
     SpotLightHelper: {
         relativePath: './helpers/SpotLightHelper',
+        superClass: 'Object3D',
+        properties: {
+            light:      new Types.ThreeType('SpotLight'),
+            color:      new Types.Color(null, true),
+        },
+        constructorArgs: ['light', 'color'],
+        propsDefinedByThree: ['matrixAutoUpdate']
     },
     VertexNormalsHelper: {
         relativePath: './helpers/VertexNormalsHelper',
+        superClass: 'Object3D',  // Should really be Line, but we don't want to sync geometry/material
+        properties: {
+            object:         new Types.ThreeType('Object3D'),
+            size:           new Types.Float(1.0),
+            color:          new Types.Color('0xffff00'),
+            linewidth:      new Types.Float(1.0),
+        },
+        constructorArgs: ['object', 'size', 'color', 'linewidth'],
+        propsDefinedByThree: ['matrixAutoUpdate']
     },
     WireframeHelper: {
         relativePath: './helpers/WireframeHelper',
