@@ -96,7 +96,7 @@ class SurfaceGeometry(PlainBufferGeometry):
         }
 
 
-def SurfaceGrid(geometry, material):
+def SurfaceGrid(geometry, material, **kwargs):
     """A grid covering a surface.
 
     This will draw a line mesh overlaying the SurfaceGeometry.
@@ -113,7 +113,7 @@ def SurfaceGrid(geometry, material):
         g = PlainGeometry(vertices=[vertices[y * nx + x, :].tolist() for x in range(nx)])
         lines.append(Line(g, material))
 
-    return Group(children=lines)
+    return Group(children=lines, **kwargs)
 
 
 class ParticleSystemMaterial(Material):
