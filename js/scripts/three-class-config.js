@@ -214,12 +214,22 @@ module.exports = {
         relativePath: './controls/Picker',
         superClass: 'Controls',
         properties: {
-            event: new Types.String('click'),
-            root: new Types.ThreeType('Object3D', {allowNull: true}),
-            all: new Types.Bool(false)
+            event:          new Types.String('click'),
+            root:           new Types.ThreeType('Object3D', {allowNull: true}),
+            all:            new Types.Bool(false),
+            distance:       new Types.Float(null, true),
+            point:          new Types.Vector3(0, 0, 0),
+            face:           new Types.Vector3(0, 0, 0),
+            faceNormal:     new Types.Vector3(0, 0, 0),
+            faceVertices:   new Types.VectorArray(),
+            faceIndex:      new Types.Int(null, true),
+            object:         new Types.ThreeType('Object3D', {nullable: true}),
+            picked:         new Types.Array(),
+            uv:             new Types.Vector2(0, 0),
+            indices:        new Types.Array(),
         },
         propsDefinedByThree: [ 'distance', 'point', 'face', 'faceNormal', 'faceVertices',
-                               'faceIndex', 'object', 'picked'],
+                               'faceIndex', 'object', 'picked', 'uv', 'indices'],
     },
 
     BufferAttribute: {
@@ -1616,7 +1626,6 @@ module.exports = {
         constructorArgs: [ 'geometry' ],
         properties: {
             geometry:       new Types.ThreeType(['Geometry', 'BufferGeometry']),
-            // geometry:       new Types.ThreeType('Geometry'),
         },
     },
     ArrowHelper: {
