@@ -50,32 +50,6 @@ def vector2(trait_type=CFloat, default=None, **kwargs):
     return List(trait_type, default_value=default, minlen=2, maxlen=2, **kwargs)
 
 
-class ScaledObject(Object3D):
-    """
-    This object's matrix will be scaled every time the camera is adjusted, so
-    that the object is always the same size in the viewport.
-
-    The idea is that it is the parent for objects you want to maintain the same scale.
-    """
-    _view_name = Unicode('ScaledObjectView').tag(sync=True)
-    _model_name = Unicode('ScaledObjectModel').tag(sync=True)
-
-
-# class Picker(Controls):
-#     _view_name = Unicode('PickerView').tag(sync=True)
-#     _model_name = Unicode('PickerModel').tag(sync=True)
-
-#     event = Unicode('click').tag(sync=True)
-#     root = Instance(Object3D, allow_none=True).tag(sync=True, **widget_serialization)
-#     picked = List(Dict).tag(sync=True)
-#     distance = CFloat().tag(sync=True)
-#     point = vector3(CFloat).tag(sync=True)
-#     object = Instance(Object3D, allow_none=True).tag(sync=True, **widget_serialization)
-#     face = vector3(CInt).tag(sync=True)
-#     faceNormal = vector3(CFloat).tag(sync=True)
-#     faceVertices = List(vector3()).tag(sync=True)
-#     faceIndex = CInt().tag(sync=True)
-#     all = Bool().tag(sync=True)
 
 
 class SurfaceGeometry(Geometry):
@@ -92,26 +66,6 @@ class SurfaceGeometry(Geometry):
     height_segments = CInt(10).tag(sync=True)
 
 
-class FaceGeometry(Geometry):
-    """
-    List of vertices and faces
-    """
-    _view_name = Unicode('FaceGeometryView').tag(sync=True)
-    _model_name = Unicode('FaceGeometryModel').tag(sync=True)
-
-    vertices = List(CFloat).tag(sync=True)  # [x0, y0, z0, x1, y1, z1, x2, y2, z2, ...]
-    face3 = List(CInt).tag(sync=True)  # [v0,v1,v2, v0,v1,v2, v0,v1,v2, ...]
-    face4 = List(CInt).tag(sync=True)  # [v0,v1,v2,v3, v0,v1,v2,v3, v0,v1,v2,v3, ...]
-    facen = List(List(CInt)).tag(sync=True)  # [[v0,v1,v2,...,vn], [v0,v1,v2,...,vn], [v0,v1,v2,...,vn], ...]
-
-
-# class ParametricGeometry(Geometry):
-#     _view_name = Unicode('ParametricGeometryView').tag(sync=True)
-#     _model_name = Unicode('ParametricGeometryModel').tag(sync=True)
-
-#     func = Unicode(sync=True)
-#     slices = CInt(105).tag(sync=True)
-#     stacks = CInt(105).tag(sync=True)
 
 
 class ParticleSystemMaterial(Material):
@@ -124,25 +78,6 @@ class ParticleSystemMaterial(Material):
     sizeAttenuation = Bool().tag(sync=True)
     vertexColors = Bool().tag(sync=True)
     fog = Bool().tag(sync=True)
-
-
-class ShaderMaterial(Material):
-    _view_name = Unicode('ShaderMaterialView').tag(sync=True)
-    _model_name = Unicode('ShaderMaterialModel').tag(sync=True)
-
-    fragmentShader = Unicode('void main(){ }').tag(sync=True)
-    vertexShader = Unicode('void main(){ }').tag(sync=True)
-    morphTargets = Bool().tag(sync=True)
-    lights = Bool().tag(sync=True)
-    morphNormals = Bool().tag(sync=True)
-    wireframe = Bool().tag(sync=True)
-    vertexColors = Enum(Colors, 'NoColors').tag(sync=True)
-    skinning = Bool().tag(sync=True)
-    fog = Bool().tag(sync=True)
-    shading = Enum(Shading, 'SmoothShading').tag(sync=True)
-    linewidth = CFloat(1.0).tag(sync=True)
-    wireframeLinewidth = CFloat(1.0).tag(sync=True)
-
 
 
 class PlotMesh(Mesh):
@@ -283,6 +218,4 @@ def height_texture(z, colormap = 'viridis'):
                                 module='skimage.util.dtype')
         rgba_im = img_as_ubyte(colormap(im))  # convert the values to rgba image using the colormap
 
-    rgba_list = list(rgba_im.flat)  # make a flat list
-
-    return DataTexture(data=rgba_list, format='RGBAFormat', width=z.shape[1], height=z.shape[0])
+    return DataTexture(data=rgba_im, format='RGBAFormat')
