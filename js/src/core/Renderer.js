@@ -116,6 +116,20 @@ var RendererView = RenderableView.extend({
         }
     },
 
+    enableControls: function() {
+        RenderableView.prototype.enableControls.apply(this, arguments);
+        this.model.get('controls').forEach(function (controlModel) {
+            controlModel.trigger('enableControl', this);
+        }, this);
+    },
+
+    disableControls: function() {
+        RenderableView.prototype.disableControls.apply(this, arguments);
+        this.model.get('controls').forEach(function (controlModel) {
+            controlModel.trigger('disableControl', this);
+        }, this);
+    },
+
     applyBackground: function() {
         if (!this.isFrozen) {
             var background = ThreeModel.prototype.convertColorModelToThree(this.model.get('background'));
