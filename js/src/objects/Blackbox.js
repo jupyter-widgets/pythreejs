@@ -30,6 +30,13 @@ var BlackboxModel = BlackboxAutogen.extend({
     },
 
 
+    constructThreeObject: function() {
+
+        var result = new THREE.Object3D();
+        return Promise.resolve(result);
+
+    },
+
     createPropertiesArrays: function() {
 
         BlackboxAutogen.prototype.createPropertiesArrays.call(this);
