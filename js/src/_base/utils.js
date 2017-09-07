@@ -6,7 +6,7 @@ var THREE = require('three');
 /**
  * Compute the box bounding all objects in a scene graph.
  *
- * Returns a unity box if no relevant objects were found.
+ * Returns an empty if no relevant objects were found.
  */
 var computeBoundingBox = function() {
     var objectBoundingBox = new THREE.Box3();
@@ -17,14 +17,11 @@ var computeBoundingBox = function() {
             if (object.geometry) {
                 object.geometry.computeBoundingBox();
                 objectBoundingBox.copy(object.geometry.boundingBox);
+                object.updateMatrixWorld();
                 objectBoundingBox.applyMatrix4(object.matrixWorld);
                 boundingBox.union(objectBoundingBox);
             }
         });
-        if (boundingBox.isEmpty()) {
-            boundingBox.min.set(-1, -1, -1);
-            boundingBox.max.set(1, 1, 1);
-        }
         return boundingBox;
     }
 }();
@@ -37,7 +34,7 @@ var computeBoundingBox = function() {
  * in the scene, and not the set of all points in the scene, and will
  * therefore not be optimal.
  *
- * Returns a unity sphere if no relevant objects were found.
+ * Returns a null if no relevant objects were found.
  */
 var computeBoundingSphere = function() {
     var objectBoundingSphere = new THREE.Sphere();
@@ -78,9 +75,6 @@ var computeBoundingSphere = function() {
                 boundingSphere.center.addScaledVector(vAB, 0.5 + rB);
             }
         });
-        if (boundingSphere === null) {
-            return new THREE.Sphere(new THREE.Vector3(), 1);
-        }
         return boundingSphere;
     }
 }();

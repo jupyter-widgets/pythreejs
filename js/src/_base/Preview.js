@@ -202,6 +202,9 @@ var PreviewView = RenderableView.extend({
     resetCamera: function() {
         // Compute bounding sphere for entire scene
         const sphere = utils.computeBoundingSphere(this.scene);
+        if (sphere === null) {
+            sphere = new THREE.Sphere(new THREE.Vector3(), 1);
+        }
 
         // Update camera to include bounding sphere
         lookAtSphere(this.camera, sphere.center, sphere.radius);
