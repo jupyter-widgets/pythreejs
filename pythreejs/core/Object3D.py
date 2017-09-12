@@ -12,7 +12,6 @@ class Object3D(Object3DBase):
         children_list.append(child)
 
         self.children = tuple(children_list)
-        child.parent = self
 
     def remove(self, child):
         pass

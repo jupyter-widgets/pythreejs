@@ -375,7 +375,7 @@ module.exports = {
             // id: new Types.String(''),
             name:                   new Types.String(''),
             type:                   new Types.String(''),
-            parent:                 new Types.ThreeType('this'),
+            //parent:                 new Types.ThreeType('this'),
             children:               new Types.ThreeTypeArray('this'),
             up:                     new Types.Vector3(0, 1, 0),
             position:               new Types.Vector3(),

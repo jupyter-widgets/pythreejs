@@ -9,15 +9,6 @@ var Object3DModel = Object3DAutogen.extend({
         this.property_assigners['children'] = 'assignChildren';
     },
 
-    onChildChanged: function(model, options) {
-        if (model === this.get('parent')) {
-            // Parent shouldn't be considered a child!
-            return;
-        }
-        Object3DAutogen.prototype.onChildChanged.apply(this, arguments);
-
-    },
-
     assignChildren: function(obj, key, value) {
         old = obj[key];
         removed = _.difference(old, value);
