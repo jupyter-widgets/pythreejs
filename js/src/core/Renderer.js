@@ -40,6 +40,7 @@ var RendererModel = RenderableModel.extend({
         var camera = this.get('camera');
         this.listenTo(scene, 'change', this.onChildChange.bind(this));
         this.listenTo(scene, 'childchange', this.onChildChange.bind(this));
+        this.listenTo(scene, 'rerender', this.onChildChange.bind(this));
         this.listenTo(camera, 'change', this.onCameraChange.bind(this));
 
     },

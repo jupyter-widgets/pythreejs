@@ -76,9 +76,6 @@ var RenderableView = widgets.DOMWidgetView.extend({
     tock: function() {
         this._ticking = false;
         this.renderScene();
-        if (this.animate) {
-            this.tick();
-        }
     },
 
     updateSize: function() {
@@ -103,12 +100,18 @@ var RenderableView = widgets.DOMWidgetView.extend({
         }
 
         if (this.renderer.context.isContextLost()) {
-            // Context is invalid, freeze for now (stops animation etc)
+            // Context is invalid, freeze for now
             this.freeze();
             return;
         }
 
+        if (scene.ipymodel) {
+            scene.ipymodel.trigger('beforeRender', scene, this.renderer, camera);
+        }
         this.renderer.render(scene, camera);
+        if (scene.ipymodel) {
+            scene.ipymodel.trigger('afterRender', scene, this.renderer, camera);
+        }
     },
 
     unfreeze: function() {
@@ -155,7 +158,6 @@ var RenderableView = widgets.DOMWidgetView.extend({
 
         this.log('ThreeView.freeze(id=' + this.renderer.poolId + ')');
 
-        this.animate = false;
         this.$el.empty().append('<img src="' + this.renderer.domElement.toDataURL() + '" />');
 
         this.teardownViewer();

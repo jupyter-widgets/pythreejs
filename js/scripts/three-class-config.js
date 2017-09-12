@@ -14,12 +14,41 @@ module.exports = {
 
     AnimationAction: {
         relativePath: './animation/AnimationAction',
+        properties: {
+            mixer:              new Types.ThreeType('AnimationMixer'),
+            clip:               new Types.ThreeType('AnimationClip'),
+            localRoot:          new Types.ThreeType(),
+            clampWhenFinished:  new Types.Bool(false),
+            enabled:            new Types.Bool(true),
+            loop:               new Types.Enum('LoopModes', 'LoopRepeat'),
+            paused:             new Types.Bool(false),
+            repititions:        new Types.Int(Infinity),
+            time:               new Types.Float(0),
+            timeScale:          new Types.Float(1),
+            weigth:             new Types.Float(1),
+            zeroSlopeAtEnd:     new Types.Bool(true),
+            zeroSlopeAtStart:   new Types.Bool(true),
+        },
+        constructorArgs: ['mixer', 'clip', 'localRoot'],
     },
     AnimationClip: {
         relativePath: './animation/AnimationClip',
+        properties: {
+            name:           new Types.String(null, true),
+            duration:       new Types.Float(-1.0),
+            tracks:         new Types.ThreeTypeArray('KeyframeTrack'),
+        },
+        constructorArgs: ['name', 'duration', 'tracks'],
+        propsDefinedByThree: ['duration'],
     },
     AnimationMixer: {
         relativePath: './animation/AnimationMixer',
+        properties: {
+            rootObject: new Types.ThreeType(),
+            time:       new Types.Float(0),
+            timeScale:  new Types.Float(1.0),
+        },
+        constructorArgs: ['rootObject', 'time', 'timeScale'],
     },
     AnimationObjectGroup: {
         relativePath: './animation/AnimationObjectGroup',
@@ -29,6 +58,13 @@ module.exports = {
     },
     KeyframeTrack: {
         relativePath: './animation/KeyframeTrack',
+        properties: {
+            name:           new Types.String(''),
+            times:          new Types.ArrayBuffer(),
+            values:         new Types.ArrayBuffer(),
+            interpolation:  new Types.Enum('InterpolationModes', 'InterpolateLinear'),
+        },
+        constructorArgs: ['name', 'times', 'values', 'interpolation'],
     },
     PropertyBinding: {
         relativePath: './animation/PropertyBinding',
@@ -1215,21 +1251,33 @@ module.exports = {
     },
     BooleanKeyframeTrack: {
         relativePath: './animation/tracks/BooleanKeyframeTrack',
+        superClass: 'KeyframeTrack',
+        constructorArgs: ['name', 'times', 'values', 'interpolation']
     },
     ColorKeyframeTrack: {
         relativePath: './animation/tracks/ColorKeyframeTrack',
+        superClass: 'KeyframeTrack',
+        constructorArgs: ['name', 'times', 'values', 'interpolation']
     },
     NumberKeyframeTrack: {
         relativePath: './animation/tracks/NumberKeyframeTrack',
+        superClass: 'KeyframeTrack',
+        constructorArgs: ['name', 'times', 'values', 'interpolation']
     },
     QuaternionKeyframeTrack: {
         relativePath: './animation/tracks/QuaternionKeyframeTrack',
+        superClass: 'KeyframeTrack',
+        constructorArgs: ['name', 'times', 'values', 'interpolation']
     },
     StringKeyframeTrack: {
         relativePath: './animation/tracks/StringKeyframeTrack',
+        superClass: 'KeyframeTrack',
+        constructorArgs: ['name', 'times', 'values', 'interpolation']
     },
     VectorKeyframeTrack: {
         relativePath: './animation/tracks/VectorKeyframeTrack',
+        superClass: 'KeyframeTrack',
+        constructorArgs: ['name', 'times', 'values', 'interpolation']
     },
     Curve: {
         relativePath: './extras/core/Curve',

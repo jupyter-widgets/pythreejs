@@ -277,7 +277,13 @@ var PreviewView = RenderableView.extend({
             this.constructScene();
         }
 
-        this.renderer.render(this.scene, this.camera);
+        if (scene.ipymodel) {
+            scene.ipymodel.trigger('beforeRender', scene, this.renderer, camera);
+        }
+        this.renderer.render(scene, camera);
+        if (scene.ipymodel) {
+            scene.ipymodel.trigger('afterRender', scene, this.renderer, camera);
+        }
     },
 
     updateSize: function() {
