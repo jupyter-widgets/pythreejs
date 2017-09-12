@@ -39,10 +39,7 @@ function generateClassConfig() {
                 lines = lines.concat([
                     "    " + className.replace(/\./g, '_') + ": {",
                     "        relativePath: './" + path.join(classDir, className) + "',",
-                    // "        modelName: '" + className + "Model',",
-                    // "        superDepModuleName: 'base',",
-                    // "        superDepModulePath: './base',",
-                    // "        modelSuperClass: 'ThreeModel',",
+                    // "        superClass: 'ThreeModel',",
                     // "        properties: {},",
                     // "        constructorArgs: [],",
                     "    },",
