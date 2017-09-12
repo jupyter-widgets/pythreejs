@@ -1141,9 +1141,22 @@ module.exports = {
     },
     Fog: {
         relativePath: './scenes/Fog',
+        properties: {
+            name:   new Types.String(''),
+            color:  new Types.Color('white'),
+            near:   new Types.Float(1),
+            far:    new Types.Float(1000)
+        },
+        constructorArgs: ['color', 'near', 'far'],
     },
     FogExp2: {
         relativePath: './scenes/FogExp2',
+        properties: {
+            name:   new Types.String(''),
+            color:  new Types.Color('white'),
+            density:   new Types.Float(0.00025),
+        },
+        constructorArgs: ['color', 'density'],
     },
     Scene: {
         relativePath: './scenes/Scene',
@@ -1912,11 +1925,5 @@ module.exports = {
     },
     WebGLState: {
         relativePath: './renderers/webgl/WebGLState',
-    },
-    LensFlarePlugin: {
-        relativePath: './renderers/webgl/plugins/LensFlarePlugin',
-    },
-    SpritePlugin: {
-        relativePath: './renderers/webgl/plugins/SpritePlugin',
     },
 };
