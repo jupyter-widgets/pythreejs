@@ -30,7 +30,7 @@ _.extend(BaseType.prototype, {
 })
 
 function ThreeType(typeName, options={}) {
-    this.typeName = typeName;
+    this.typeName = typeName || '';
     this.defaultValue = null;
     this.serializer = WIDGET_SERIALIZER;
     this.nullable = options.nullable !== false;
@@ -43,7 +43,7 @@ _.extend(ThreeType.prototype, BaseType.prototype, {
         // allow type unions
         if (this.typeName instanceof Array) {
             var instances = this.typeName.map(function(typeName) {
-                return `        Instance(${typeName}, allow_none=${nullableStr})`;
+                return `        Instance(${typeName || 'ThreeWidget'}, allow_none=${nullableStr})`;
             });
             return 'Union([\n' + instances.join(',\n') + '\n    ]).tag(sync=True, **widget_serialization)';
         }
@@ -52,7 +52,7 @@ _.extend(ThreeType.prototype, BaseType.prototype, {
             return 'This().tag(sync=True, **widget_serialization)';
         }
 
-        var ret = `Instance(${this.typeName}`;
+        var ret = `Instance(${this.typeName || 'ThreeWidget'}`;
         if (this.args !== undefined) {
             ret += `, args=${this.args}`;
         }

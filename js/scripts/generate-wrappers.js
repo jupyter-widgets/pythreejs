@@ -399,7 +399,8 @@ _.extend(JavascriptWrapper.prototype, {
                     prop instanceof Types.ThreeTypeArray || prop instanceof Types.ThreeTypeDict) {
                 if (prop.typeName !== 'this') {
                     if (typeof prop.typeName === 'string') {
-                        result[prop.typeName] = this.getRequireInfoFromClassDescriptor(prop.typeName);
+                        let typeName = prop.typeName || './_base/Three';
+                        result[typeName] = this.getRequireInfoFromClassDescriptor(typeName);
                     } else if (prop.typeName instanceof Array) {
                         prop.typeName.forEach(function(typeName) {
                             result[typeName] = this.getRequireInfoFromClassDescriptor(typeName);
@@ -758,7 +759,11 @@ _.extend(PythonWrapper.prototype, {
                     prop instanceof Types.ThreeTypeArray || prop instanceof Types.ThreeTypeDict) {
                 if (prop.typeName !== 'this') {
                     if (typeof prop.typeName === 'string') {
-                        result[prop.typeName] = this.getRequireInfoFromClassDescriptor(prop.typeName);
+                        let typeName = prop.typeName || './_base/Three';
+                        result[typeName] = this.getRequireInfoFromClassDescriptor(typeName);
+                        if (result[typeName].className === 'Three') {
+                            result[typeName].className = 'ThreeWidget';
+                        }
                     } else if (prop.typeName instanceof Array) {
                         prop.typeName.forEach(function(typeName) {
                             result[typeName] = this.getRequireInfoFromClassDescriptor(typeName);
