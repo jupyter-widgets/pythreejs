@@ -50,7 +50,7 @@ class ThreeWidget(Widget):
         content = {
             "type": "exec_three_obj_method",
             "method_name": method_name,
-            "args": args
+            "args": widget_serialization['to_json'](args, None)
         }
         self.send(content=content, buffers=None)
 

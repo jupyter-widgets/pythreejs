@@ -267,7 +267,7 @@ var ThreeModel = widgets.WidgetModel.extend({
         // convert serialized args to three.js compatible values
         args = args.map(function(arg) {
 
-            if (arg instanceof Array) {
+            if (Array.isArray(arg)) {
 
                 if (arg.length === 2) {
                     return new THREE.Vector2().fromArray(arg);
@@ -283,7 +283,7 @@ var ThreeModel = widgets.WidgetModel.extend({
                     return arg;
                 }
 
-            } else if (arg instanceof String && /IPY_MODEL_/.test(arg)) {
+            } else if (typeof arg === 'string' && /IPY_MODEL_/.test(arg)) {
 
                 arg = arg.replace('IPY_MODEL_', '');
                 return this.widget_manager.get_model(arg).then(function(model) {
@@ -302,7 +302,7 @@ var ThreeModel = widgets.WidgetModel.extend({
 
             this.syncToModel(true);
 
-            if (retVal != null) {
+            if (retVal !== null && retVal !== undefined) {
 
                 if (retVal.ipymodel) {
                     retVal = retVal.ipymodel;
