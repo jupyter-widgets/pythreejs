@@ -277,12 +277,12 @@ var PreviewView = RenderableView.extend({
             this.constructScene();
         }
 
-        if (scene.ipymodel) {
-            scene.ipymodel.trigger('beforeRender', scene, this.renderer, camera);
+        if (this.scene.ipymodel) {
+            this.scene.ipymodel.trigger('beforeRender', this.scene, this.renderer, this.camera);
         }
-        this.renderer.render(scene, camera);
-        if (scene.ipymodel) {
-            scene.ipymodel.trigger('afterRender', scene, this.renderer, camera);
+        this.renderer.render(this.scene, this.camera);
+        if (this.scene.ipymodel) {
+            this.scene.ipymodel.trigger('afterRender', this.scene, this.renderer, this.camera);
         }
     },
 
