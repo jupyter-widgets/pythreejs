@@ -62,7 +62,7 @@ var BufferAttributeModel = BufferAttributeAutogen.extend({
             } else {
                 modelNDArray.data.set(attributeData);
             }
-        } else if (modelNDArray) {
+        } else {
             // 3. / 4.
             this.set('array', ndarray(attributeData, [this.obj.count, this.obj.itemSize]));
         }
