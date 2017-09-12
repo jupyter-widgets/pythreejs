@@ -56,6 +56,7 @@ var IGNORE_FILES = [
     '**/audio/AudioContext.js',             // JS API for audio, nothing to expose
     '**/geometries/Geometries.js',          // index.js like file, nothing new here
     '**/materials/Materials.js',            // index.js like file, nothing new here
+    '**/materials/MeshDistanceMaterial.js', // TODO: Undocumented as of yet
     '**/renderers/WebGLRenderer.js',        // For now, the internals of the webgl
     '**/renderers/WebGL2Renderer.js',       //   render is not exposed.
     '**/renderers/webgl/**',

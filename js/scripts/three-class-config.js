@@ -647,7 +647,7 @@ module.exports = {
             precision:              new Types.String(null, true),
             premultipliedAlpha:     new Types.Bool(false),
             dithering:              new Types.Bool(false),
-            shading:                new Types.Enum('Shading', 'SmoothShading'),
+            flatShading:            new Types.Bool(false),
             side:                   new Types.Enum('Side', 'FrontSide'),
             transparent:            new Types.Bool(false),
             type:                   new Types.String(''),
@@ -1697,9 +1697,6 @@ module.exports = {
         },
         constructorArgs: ['size'],
     },
-    BoundingBoxHelper: {
-        relativePath: './helpers/BoundingBoxHelper',
-    },
     BoxHelper: {
         relativePath: './helpers/BoxHelper',
         superClass: 'Object3D',  // Should really be LineSegments, but we don't want to sync geometry/material
@@ -1709,6 +1706,14 @@ module.exports = {
         },
         constructorArgs: ['object', 'color'],
         propsDefinedByThree: ['matrixAutoUpdate']
+    },
+    Box3Helper: {
+        superClass: 'Object3D',  // Should really be LineSegments, but we don't want to sync geometry/material
+        properties: {
+            box:      new Types.ThreeType('Box3'),
+            color:    new Types.Color('yellow', true),
+        },
+        constructorArgs: ['box', 'color'],
     },
     CameraHelper: {
         relativePath: './helpers/CameraHelper',
@@ -1729,9 +1734,6 @@ module.exports = {
         },
         constructorArgs: ['light', 'size', 'color'],
         propsDefinedByThree: ['matrixAutoUpdate']
-    },
-    EdgesHelper: {
-        relativePath: './helpers/EdgesHelper',
     },
     FaceNormalsHelper: {
         relativePath: './helpers/FaceNormalsHelper',
@@ -1766,6 +1768,15 @@ module.exports = {
         },
         constructorArgs: ['light', 'size', 'color'],
         propsDefinedByThree: ['matrixAutoUpdate']
+    },
+    PlaneHelper: {
+        superClass: 'Object3D',  // Should really be LineSegments, but we don't want to sync geometry/material
+        properties: {
+            plane:    new Types.ThreeType('Plane'),
+            size:     new Types.Float(1.0),
+            color:    new Types.Color('yellow', true),
+        },
+        constructorArgs: ['plane', 'size', 'color'],
     },
     PointLightHelper: {
         relativePath: './helpers/PointLightHelper',
@@ -1830,14 +1841,8 @@ module.exports = {
         constructorArgs: ['object', 'size', 'color', 'linewidth'],
         propsDefinedByThree: ['matrixAutoUpdate']
     },
-    WireframeHelper: {
-        relativePath: './helpers/WireframeHelper',
-    },
     ImmediateRenderObject: {
         relativePath: './extras/objects/ImmediateRenderObject',
-    },
-    MorphBlendMesh: {
-        relativePath: './extras/objects/MorphBlendMesh',
     },
     CubicInterpolant: {
         relativePath: './math/interpolants/CubicInterpolant',
