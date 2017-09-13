@@ -1104,6 +1104,12 @@ module.exports = {
     },
     Points: {
         relativePath: './objects/Points',
+        superClass: 'Object3D',
+        constructorArgs: [ 'geometry', 'material' ],
+        properties: {
+            material: new Types.ThreeType('Material', {allowNull: false}),
+            geometry: new Types.ThreeType(['Geometry', 'BufferGeometry'], {allowNull: false}),
+        },
     },
     Skeleton: {
         relativePath: './objects/Skeleton',
