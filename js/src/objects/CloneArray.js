@@ -118,10 +118,10 @@ var CloneArrayModel = CloneArrayAutogen.extend({
     },
 
     // push data from model to three object
-    syncToThreeObj: function() {
+    syncToThreeObj: function(force) {
 
         this._needs_rebuild = false;
-        CloneArrayAutogen.prototype.syncToThreeObj.call(this);
+        CloneArrayAutogen.prototype.syncToThreeObj.call(this, arguments);
         if (this._needs_rebuild) {
             this.obj.build();
         }

@@ -55,7 +55,7 @@ var ThreeModel = widgets.WidgetModel.extend({
             this.syncToModel();
 
             // sync the rest from the server to the model
-            this.syncToThreeObj();
+            this.syncToThreeObj(true);
 
             // setup msg, model, and children change listeners
             this.setupListeners();
@@ -327,6 +327,8 @@ var ThreeModel = widgets.WidgetModel.extend({
     onChange: function(model, options) {
         if (options !== 'pushFromThree') {
             this.syncToThreeObj();
+            // Also sync back out any generated properties:
+            this.syncToModel();
         }
     },
 
@@ -337,9 +339,13 @@ var ThreeModel = widgets.WidgetModel.extend({
     },
 
     // push data from model to three object
-    syncToThreeObj: function() {
+    syncToThreeObj: function(force) {
 
         _.each(this.property_converters, function(converterName, propName) {
+            if (!force && !this.hasChanged(propName)) {
+                // Only set changed properties unless forced
+                return;
+            }
             assigner = this[this.property_assigners[propName]] || this.assignDirect;
             assigner = assigner.bind(this);
             if (!converterName) {

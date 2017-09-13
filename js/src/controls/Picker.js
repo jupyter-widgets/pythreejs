@@ -5,7 +5,7 @@ var PickerAutogen = require('./Picker.autogen');
 
 var PickerModel = PickerAutogen.PickerModel.extend({
 
-    syncToThreeObj: function() {
+    syncToThreeObj: function(force) {
     },
 
     syncToModel: function() {
