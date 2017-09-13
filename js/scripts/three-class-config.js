@@ -1061,6 +1061,7 @@ module.exports = {
     },
     Bone: {
         relativePath: './objects/Bone',
+        superClass: 'Object3D',
     },
     Group: {
         relativePath: './objects/Group',
@@ -1106,9 +1107,20 @@ module.exports = {
     },
     Skeleton: {
         relativePath: './objects/Skeleton',
+        properties: {
+            bones: new Types.ThreeTypeArray('Bone'),
+        },
+        constructorArgs: ['bones'],
     },
     SkinnedMesh: {
         relativePath: './objects/SkinnedMesh',
+        superClass: 'Mesh',
+        properties: {
+            bindMode:   new Types.String('attached'),
+            bindMatrix: new Types.Matrix4(),
+            skeleton:   new Types.ThreeType('Skeleton'),
+        },
+        constructorArgs: [ 'geometry', 'material' ],
     },
     Sprite: {
         relativePath: './objects/Sprite',
@@ -1117,6 +1129,7 @@ module.exports = {
         properties: {
             material: new Types.ThreeType('SpriteMaterial'),
         },
+        propsDefinedByThree: ['skeleton'],
     },
     CloneArray: {
         relativePath: './objects/CloneArray',
