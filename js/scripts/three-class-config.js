@@ -348,7 +348,7 @@ module.exports = {
         superClass: 'BufferGeometry',
         properties: {
             attributes:         new Types.ThreeTypeDict(['BufferAttribute', 'InterleavedBufferAttribute']),
-            morphAttributes:    new Types.ThreeTypeDict(['BufferAttribute', 'InterleavedBufferAttribute']),
+            morphAttributes:    new Types.BufferMorphAttributes(),
             MaxIndex:           new Types.Int(65535),
             //groups:             new Types.GeometryGroup(),
             //drawRange:          new Types.DrawRange(),
@@ -1100,7 +1100,9 @@ module.exports = {
             material: new Types.ThreeType('Material', {allowNull: false}),
             geometry: new Types.ThreeType(['Geometry', 'BufferGeometry'], {allowNull: false}),
             drawMode: new Types.Enum('DrawModes', 'TrianglesDrawMode'),
-        }
+            morphTargetInfluences: new Types.Array(),
+        },
+        propsDefinedByThree: ['morphTargetInfluences'],
     },
     Points: {
         relativePath: './objects/Points',

@@ -155,8 +155,112 @@ var createModel = function(constructor, widget_manager, obj) {
 }
 
 
+/**
+ * Gets the child models of an arbitrarily nested combination of
+ * arrays an dicts (hash maps).
+ *
+ * @param {any} obj nested array/dict structure with WidgetModels as leaf nodes.
+ * @returns The child models
+ */
+function childModelsNested(obj) {
+    var children;
+    if (Array.isArray(obj)) {
+        children = obj;
+    } else {
+        children = Object.keys(obj).map(function(childModelKey) {
+            return obj[childModelKey];
+        });
+    }
+    if (children.length === 0) {
+        return children;
+    }
+    if (children[0] instanceof widgets.WidgetModel) {
+        // Bottom level (children are leaf nodes)
+        return children;
+    }
+    return _.flatten(children.map(function(child) {
+        return childModelsNested(child);
+    }), true);
+}
+
+
+/**
+ * Get the diff of two array.
+ *
+ * @param {any[]} newArray
+ * @param {any[]} oldArray
+ * @returns An object with three attributes 'added', 'removed' and 'kept',
+ *          each an array of child values;
+ */
+function arrayDiff(newArray, oldArray) {
+    var added = _.difference(newArray, oldArray);
+    var removed = _.difference(oldArray, newArray);
+    var kept = _.intersection(oldArray, newArray);
+    return {added, removed, kept};
+}
+
+/**
+ * Get the diff of two dicts (hash maps).
+ *
+ * @param {any} newDict
+ * @param {any} oldDict
+ * @returns An object with three attributes 'added', 'removed' and 'kept',
+ *          each an array of child values;
+ */
+function dictDiff(newDict, oldDict) {
+    var newKeys = Object.keys(newDict);
+    var oldKeys = Object.keys(oldDict);
+
+    var added = _.difference(newKeys, oldKeys).map(function(key) { return newDict[key]; });
+    var removed = _.difference(oldKeys, newKeys).map(function(key) { return oldDict[key]; });
+    var kept = _.intersection(newKeys, oldKeys).map(function(key) { return newDict[key]; });
+    return {added, removed, kept};
+}
+
+/**
+ * Get the diff of two arbitrarily nested combinations of
+ * arrays an dicts (hash maps).
+ *
+ * Note: This function assumes the structure of both are the same,
+ * i.e. they both have the same type at the same nesting level.
+ *
+ * @param {any | any[]} newObj
+ * @param {any | any[]} oldObj
+ * @returns An object with three attributes 'added', 'removed' and 'kept',
+ *          each an array of child models;
+ */
+function nestedDiff(newObj, oldObj) {
+    var diff;
+    if (Array.isArray(newObj)) {
+        diff = arrayDiff(newObj, oldObj);
+    } else {
+        diff = dictDiff(newObj, oldObj);
+    }
+    var all = _.flatten([diff.added, diff.removed, diff.kept]);
+    if (all.length === 0) {
+        return all;
+    }
+    if (all[0] instanceof widgets.WidgetModel) {
+        // Bottom level
+        return diff;
+    }
+    var ret = {
+        added: childModelsNested(diff.added),
+        removed: childModelsNested(diff.removed),
+    }
+    ret.kept = _.flatten(diff.kept.map(function(child) {
+        return nestedDiff(child);
+    }), true);
+    return ret;
+}
+
+
 module.exports = {
     createModel: createModel,
     computeBoundingSphere: computeBoundingSphere,
     computeBoundingBox: computeBoundingBox,
+    childModelsNested: childModelsNested,
+    arrayDiff: arrayDiff,
+    dictDiff: dictDiff,
+    nestedDiff: nestedDiff,
 }

@@ -3,10 +3,13 @@ var widgets = require("@jupyter-widgets/base");
 var Promise = require('bluebird');
 var $ = require('jquery');
 var ndarray = require('ndarray');
+var datawidgets = require('jupyter-datawidgets');
 
 var THREE = require('three');
 
 var Enums = require('./enums');
+
+var utils = require('./utils');
 
 var version = require('../../package.json').version;
 
@@ -67,17 +70,42 @@ var ThreeModel = widgets.WidgetModel.extend({
     createPropertiesArrays: function() {
         // initialize properties arrays
         this.three_properties = [];
-        this.three_array_properties = [];
+        this.three_nested_properties = [];
         this.datawidget_properties = [];
-
-        // TODO: not currently integrated
-        this.three_dict_properties = [];
 
         this.enum_property_types = {};
         this.props_created_by_three = {};
         this.property_converters = {};
         this.property_assigners = {};
         this.property_mappers = {};
+    },
+
+    _listenNested: function(propNames, callback) {
+        propNames.forEach(function(propName) {
+
+            // listen to current values in array
+            var curr = this.get(propName) || [];
+            utils.childModelsNested(curr).forEach(function(childModel) {
+                this.listenTo(childModel, 'change', callback);
+                this.listenTo(childModel, 'childchange', callback);
+            }, this);
+
+            // make sure to (un)hook listeners when array changes
+            this.on('change:' + propName, function(model, value, options) {
+                var prev = this.previous(propName) || [];
+                var curr = value || [];
+
+                var diff = utils.nestedDiff(curr, prev);
+
+                diff.added.forEach(function(childModel) {
+                    this.listenTo(childModel, 'change', callback);
+                    this.listenTo(childModel, 'childchange', callback);
+                }, this);
+                diff.removed.forEach(function(childModel) {
+                    this.stopListening(childModel);
+                }, this);
+            }, this);
+        }, this);
     },
 
     setupListeners: function() {
@@ -87,8 +115,8 @@ var ThreeModel = widgets.WidgetModel.extend({
             // register listener for current child value
             var curValue = this.get(propName);
             if (curValue) {
-                this.listenTo(curValue, 'change', this.onChildChanged);
-                this.listenTo(curValue, 'childchange', this.onChildChanged);
+                this.listenTo(curValue, 'change', this.onChildChanged.bind(this));
+                this.listenTo(curValue, 'childchange', this.onChildChanged.bind(this));
             }
 
             // make sure to (un)hook listeners when child points to new object
@@ -99,102 +127,18 @@ var ThreeModel = widgets.WidgetModel.extend({
                     this.stopListening(prevModel);
                 }
                 if (currModel) {
-                    this.listenTo(currModel, 'change', this.onChildChanged);
-                    this.listenTo(currModel, 'childchange', this.onChildChanged);
+                    this.listenTo(currModel, 'change', this.onChildChanged.bind(this));
+                    this.listenTo(currModel, 'childchange', this.onChildChanged.bind(this));
                 }
             }, this);
         }, this);
 
-        // Handle changes in three instance array props
-        this.three_array_properties.forEach(function(propName) {
-
-            // listen to current values in array
-            var currArr = this.get(propName) || [];
-            currArr.forEach(function(childModel) {
-                this.listenTo(childModel, 'change', this.onChildChanged);
-                this.listenTo(childModel, 'childchange', this.onChildChanged);
-            }, this);
-
-            // make sure to (un)hook listeners when array changes
-            this.on('change:' + propName, function(model, value, options) {
-                var prevArr = this.previous(propName) || [];
-                var currArr = value || [];
-
-                var added = _.difference(currArr, prevArr);
-                var removed = _.difference(prevArr, currArr);
-
-                added.forEach(function(childModel) {
-                    this.listenTo(childModel, 'change', this.onChildChanged);
-                    this.listenTo(childModel, 'childchange', this.onChildChanged);
-                }, this);
-                removed.forEach(function(childModel) {
-                    this.stopListening(childModel);
-                }, this);
-            }, this);
-        }, this);
-
-        // Handle changes in three instance dict props
-        this.three_dict_properties.forEach(function(propName) {
-
-            var currDict = this.get(propName) || {};
-
-            // listen to current values in dict
-            var childModel;
-            Object.keys(currDict).forEach(function(childModelKey) {
-                childModel = currDict[childModelKey];
-                this.listenTo(childModel, 'change', this.onChildChanged);
-                this.listenTo(childModel, 'childchange', this.onChildChanged);
-            }, this);
-
-            // make sure to (un)hook listeners when dict changes
-            this.on('change:' + propName, function(model, value, options) {
-                var prevDict = this.previous(propName) || {};
-                var currDict = value || {};
-
-                var prevKeys = Object.keys(prevDict);
-                var currKeys = Object.keys(currDict);
-
-                var added = _.difference(currKeys, prevKeys);
-                var removed = _.difference(prevKeys, currKeys);
-
-                added.forEach(function(childModelKey) {
-                    childModel = currDict[childModelKey];
-                    this.listenTo(childModel, 'change', this.onChildChanged);
-                    this.listenTo(childModel, 'childchange', this.onChildChanged);
-                }, this);
-                removed.forEach(function(childModelKey) {
-                    childModel = prevDict[childModelKey];
-                    this.stopListening(childModel);
-                }, this);
-            }, this);
-
-        }, this);
+        // Handle changes in three instance nested props (arrays/dicts, possibly nested)
+        this._listenNested(this.three_nested_properties, this.onChildChanged.bind(this));
 
         // Handle changes in data widgets/union properties
         this.datawidget_properties.forEach(function(propName) {
-
-            var curr = this.get(propName) || [];
-            if (curr instanceof widgets.WidgetModel) {
-                // listen to changes in current model
-                this.listenTo(curr, 'change', this.onChildChanged);
-                this.listenTo(curr, 'childchange', this.onChildChanged);
-            }
-
-            // make sure to (un)hook listeners when property changes
-            this.on('change:' + propName, function(model, value, options) {
-                var prev = this.previous(propName) || [];
-                var curr = value || [];
-
-                if (prev instanceof widgets.WidgetModel) {
-                    this.stopListening(prev);
-                }
-                if (curr instanceof widgets.WidgetModel) {
-                    // listen to changes in current model
-                    this.listenTo(curr, 'change', this.onChildChanged);
-                    this.listenTo(curr, 'childchange', this.onChildChanged);
-                }
-            }, this);
-
+            datawidgets.listenToUnion(this, propName, this.onChildChanged.bind(this), false);
         }, this);
 
         this.on('change', this.onChange, this);
@@ -708,6 +652,23 @@ var ThreeModel = widgets.WidgetModel.extend({
     convertThreeTypeDictThreeToModel: function(threeTypeDict, propName) {
         return _.mapObject(threeTypeDict, function(threeType, name) {
             return this.convertThreeTypeThreeToModel(threeType, propName);
+        }, this);
+    },
+
+    // BufferMorphAttributes
+    convertMorphAttributesModelToThree: function(modelDict, propName) {
+        return _.mapObject(modelDict, function(arr, name) {
+            return arr.map(function(model) {
+                return this.convertThreeTypeModelToThree(model, propName);
+            }, this);
+        }, this);
+    },
+
+    convertMorphAttributesThreeToModel: function(threeTypeDict, propName) {
+        return _.mapObject(threeTypeDict, function(arr, name) {
+            return arr.map(function(model) {
+                return this.convertThreeTypeThreeToModel(threeType, propName);
+            }, this);
         }, this);
     },
 

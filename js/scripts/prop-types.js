@@ -128,7 +128,7 @@ _.extend(ThreeTypeArray.prototype, BaseType.prototype, {
         return 'Tuple().tag(sync=True, **widget_serialization)';
     },
     getPropArrayName: function() {
-        return 'three_array_properties';
+        return 'three_nested_properties';
     },
     getPropertyConverterFn: function() {
         return 'convertThreeTypeArray';
@@ -154,10 +154,30 @@ _.extend(ThreeTypeDict.prototype, BaseType.prototype, {
         return `Dict(Instance(${this.typeName})).tag(sync=True, **widget_serialization)`;
     },
     getPropArrayName: function() {
-        return 'three_dict_properties';
+        return 'three_nested_properties';
     },
     getPropertyConverterFn: function() {
         return 'convertThreeTypeDict';
+    },
+});
+
+function BufferMorphAttributes() {
+    this.defaultValue = {};
+    this.serializer = WIDGET_SERIALIZER;
+}
+_.extend(BufferMorphAttributes.prototype, BaseType.prototype, {
+    getTraitlet: function() {
+        var typeNames = ['BufferAttribute', 'InterleavedBufferAttribute'];
+        var instances = typeNames.map(function(typeName) {
+            return `        Instance(${typeName})`;
+        });
+        return 'Dict(Tuple(Union([\n' + instances.join(',\n') + '\n    ]))).tag(sync=True, **widget_serialization)';
+    },
+    getPropArrayName: function() {
+        return 'three_nested_properties';
+    },
+    getPropertyConverterFn: function() {
+        return 'convertMorphAttributes';
     },
 });
 
@@ -462,6 +482,7 @@ module.exports = {
     InitializedThreeType: InitializedThreeType,
     ThreeTypeArray: ThreeTypeArray,
     ThreeTypeDict: ThreeTypeDict,
+    BufferMorphAttributes: BufferMorphAttributes,
     Int: Int,
     Float: Float,
     String: StringType,
