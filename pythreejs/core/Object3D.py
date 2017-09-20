@@ -30,4 +30,9 @@ class Object3D(Object3DBase):
     def rotateX(self, rad):
         self.exec_three_obj_method('rotateX', rad)
 
-
+    def _repr_keys(self):
+        # Don't include aggregate structures in repr
+        super_keys = super(Object3D, self)._repr_keys()
+        for key in super_keys:
+            if key not in ['matrix', 'matrixWorld', 'normalMatrix', 'matrixWorldInverse', 'modelViewMatrix']:
+                yield key
