@@ -1400,7 +1400,7 @@ module.exports = {
         constructorArgs: [ 'radius', 'segments', 'thetaStart', 'thetaLength' ],
         properties: {
             radius:      new Types.Float(50.0),
-            segments:    new Types.Int(8), // TODO: min:3
+            segments:    new Types.Int(8, {minValue: 3}),
             thetaStart:  new Types.Float(0.0),
             thetaLength: new Types.Float(Math.PI * 2.0),
         },
@@ -1411,7 +1411,7 @@ module.exports = {
         constructorArgs: [ 'radius', 'segments', 'thetaStart', 'thetaLength' ],
         properties: {
             radius:      new Types.Float(50.0),
-            segments:    new Types.Int(8), // TODO: min:3
+            segments:    new Types.Int(8, {minValue: 3}),
             thetaStart:  new Types.Float(0.0),
             thetaLength: new Types.Float(Math.PI * 2.0),
         },
@@ -1570,8 +1570,8 @@ module.exports = {
         properties: {
             innerRadius:   new Types.Float(0.0), // Docs: "Default is 0, but it doesn't work right when innerRadius is set to 0.
             outerRadius:   new Types.Float(50.0),
-            thetaSegments: new Types.Int(8), // TODO: min: 3
-            phiSegments:   new Types.Int(8), // TODO: min 1
+            thetaSegments: new Types.Int(8, {minValue: 3}),
+            phiSegments:   new Types.Int(8, {minValue: 1}),
             thetaStart:    new Types.Float(0),
             thetaLength:   new Types.Float(Math.PI * 2),
         },
@@ -1583,8 +1583,8 @@ module.exports = {
         properties: {
             innerRadius:   new Types.Float(0.0), // Docs: "Default is 0, but it doesn't work right when innerRadius is set to 0.
             outerRadius:   new Types.Float(50.0),
-            thetaSegments: new Types.Int(8), // TODO: min: 3
-            phiSegments:   new Types.Int(8), // TODO: min 1
+            thetaSegments: new Types.Int(8, {minValue: 3}),
+            phiSegments:   new Types.Int(8, {minValue: 1}),
             thetaStart:    new Types.Float(0),
             thetaLength:   new Types.Float(Math.PI * 2),
         },

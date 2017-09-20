@@ -199,12 +199,21 @@ _.extend(Bool.prototype, BaseType.prototype, {
 function Int(defaultValue, options) {
     options = options || {};
     this.nullable = options.nullable === true;
+    this.minValue = options.minValue;
+    this.maxValue = options.maxValue;
     this.defaultValue = (defaultValue === null || defaultValue === undefined) && !this.nullable ? 0 : defaultValue ;
 }
 _.extend(Int.prototype, BaseType.prototype, {
     getTraitlet: function() {
         var nullableStr = this.nullable ? 'True' : 'False';
-        return `CInt(${this.getPythonDefaultValue()}, allow_none=${nullableStr}).tag(sync=True)`;
+        var limits = '';
+        if (this.minValue !== undefined) {
+            limits += `, min=${this.minValue}`
+        }
+        if (this.maxValue !== undefined) {
+            limits += `, max=${this.maxValue}`
+        }
+        return `CInt(${this.getPythonDefaultValue()}, allow_none=${nullableStr}${limits}).tag(sync=True)`;
     },
 
 });
@@ -212,12 +221,21 @@ _.extend(Int.prototype, BaseType.prototype, {
 function Float(defaultValue, options) {
     options = options || {};
     this.nullable = options.nullable === true;
+    this.minValue = options.minValue;
+    this.maxValue = options.maxValue;
     this.defaultValue = (defaultValue === null || defaultValue === undefined) && !this.nullable ? 0.0 : defaultValue;
 }
 _.extend(Float.prototype, BaseType.prototype, {
     getTraitlet: function() {
         var nullableStr = this.nullable ? 'True' : 'False';
-        return `CFloat(${this.getPythonDefaultValue()}, allow_none=${nullableStr}).tag(sync=True)`;
+        var limits = '';
+        if (this.minValue !== undefined) {
+            limits += `, min=${this.minValue}`
+        }
+        if (this.maxValue !== undefined) {
+            limits += `, max=${this.maxValue}`
+        }
+        return `CFloat(${this.getPythonDefaultValue()}, allow_none=${nullableStr}${limits}).tag(sync=True)`;
     },
     getPropertyConverterFn: function() {
         return 'convertFloat';
