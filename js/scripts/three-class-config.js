@@ -340,7 +340,7 @@ module.exports = {
             morphNormals:   new Types.Array(),
             skinWeights:    new Types.VectorArray(),
             skinIndices:    new Types.VectorArray(),
-            _ref_geometry:  new Types.ThreeType('Geometry', {nullable: false}),
+            _ref_geometry:  new Types.ThreeType('Geometry'),
         },
     },
     PlainBufferGeometry: {
@@ -353,7 +353,7 @@ module.exports = {
             // TODO: These likely require special types:
             //groups:             new Types.GeometryGroup(),
             //drawRange:          new Types.DrawRange(),
-            _ref_geometry:      new Types.ThreeType(['Geometry', 'BufferGeometry'], {nullable: false}),
+            _ref_geometry:      new Types.ThreeType(['Geometry', 'BufferGeometry']),
         },
     },
     InstancedBufferAttribute: {
