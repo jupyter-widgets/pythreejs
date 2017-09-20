@@ -33,7 +33,7 @@ var BlackboxModel = BlackboxAutogen.extend({
     createPropertiesArrays: function() {
 
         BlackboxAutogen.prototype.createPropertiesArrays.call(this);
-        delete this.three_array_properties['children'];
+        delete this.three_nested_properties['children'];
         delete this.property_converters['children'];
 
     }
