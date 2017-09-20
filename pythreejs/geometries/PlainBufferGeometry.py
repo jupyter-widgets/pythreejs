@@ -23,7 +23,7 @@ class PlainBufferGeometry(PlainBufferGeometryBase):
         if 'index' in value:
             # We treat index special, so we might as well do some checking:
             idx = value['index']
-            array = idx.array if isinstance(idx, NDArrayWidget) else idx.array
+            array = idx.array if isinstance(idx, NDArrayWidget) else idx
             if array.dtype.kind != 'u':
                 raise TraitError('Index attribute must have unsigned integer data')
             if array.ndim != 1:
