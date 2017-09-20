@@ -12,6 +12,7 @@ var SkinnedMeshModel = SkinnedMeshAutogen.extend({
     assignSkeleton: function(obj, key, value) {
         if (value) {
             obj.bind(value);
+            obj.scale.multiplyScalar(1);
         }
     }
 
