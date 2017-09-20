@@ -350,6 +350,7 @@ module.exports = {
             attributes:         new Types.ThreeTypeDict(['BufferAttribute', 'InterleavedBufferAttribute']),
             morphAttributes:    new Types.BufferMorphAttributes(),
             MaxIndex:           new Types.Int(65535),
+            // TODO: These likely require special types:
             //groups:             new Types.GeometryGroup(),
             //drawRange:          new Types.DrawRange(),
             _ref_geometry:      new Types.ThreeType(['Geometry', 'BufferGeometry'], {allowNull: false}),
@@ -1637,6 +1638,7 @@ module.exports = {
             detail: new Types.Int(0),
         },
     },
+    // TODO:
     TextGeometry: {
         relativePath: './geometries/TextGeometry',
         superClass: 'Geometry',
@@ -1875,63 +1877,83 @@ module.exports = {
         constructorArgs: ['object', 'size', 'color', 'linewidth'],
         propsDefinedByThree: ['matrixAutoUpdate']
     },
+    // TODO:
     ImmediateRenderObject: {
         relativePath: './extras/objects/ImmediateRenderObject',
     },
+    // TODO:
     CubicInterpolant: {
         relativePath: './math/interpolants/CubicInterpolant',
     },
+    // TODO:
     DiscreteInterpolant: {
         relativePath: './math/interpolants/DiscreteInterpolant',
     },
+    // TODO:
     LinearInterpolant: {
         relativePath: './math/interpolants/LinearInterpolant',
     },
+    // TODO:
     QuaternionLinearInterpolant: {
         relativePath: './math/interpolants/QuaternionLinearInterpolant',
     },
+    // TODO:
     ShaderChunk: {
         relativePath: './renderers/shaders/ShaderChunk',
     },
+    // TODO:
     ShaderLib: {
         relativePath: './renderers/shaders/ShaderLib',
     },
+    // TODO:
     UniformsLib: {
         relativePath: './renderers/shaders/UniformsLib',
     },
+    // TODO:
     UniformsUtils: {
         relativePath: './renderers/shaders/UniformsUtils',
     },
+    // TODO:
     WebGLBufferRenderer: {
         relativePath: './renderers/webgl/WebGLBufferRenderer',
     },
+    // TODO:
     WebGLCapabilities: {
         relativePath: './renderers/webgl/WebGLCapabilities',
     },
+    // TODO:
     WebGLExtensions: {
         relativePath: './renderers/webgl/WebGLExtensions',
     },
+    // TODO:
     WebGLGeometries: {
         relativePath: './renderers/webgl/WebGLGeometries',
     },
+    // TODO:
     WebGLIndexedBufferRenderer: {
         relativePath: './renderers/webgl/WebGLIndexedBufferRenderer',
     },
+    // TODO:
     WebGLLights: {
         relativePath: './renderers/webgl/WebGLLights',
     },
+    // TODO:
     WebGLObjects: {
         relativePath: './renderers/webgl/WebGLObjects',
     },
+    // TODO:
     WebGLProgram: {
         relativePath: './renderers/webgl/WebGLProgram',
     },
+    // TODO:
     WebGLPrograms: {
         relativePath: './renderers/webgl/WebGLPrograms',
     },
+    // TODO:
     WebGLProperties: {
         relativePath: './renderers/webgl/WebGLProperties',
     },
+    // TODO:
     WebGLShader: {
         relativePath: './renderers/webgl/WebGLShader',
     },
@@ -1944,6 +1966,7 @@ module.exports = {
             renderSingleSided: new Types.Bool(true),
         }
     },
+    // TODO:
     WebGLState: {
         relativePath: './renderers/webgl/WebGLState',
     },
