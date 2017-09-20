@@ -114,7 +114,7 @@ function getinfo(o) {
             faceVertices: verts,
             indices: o.indices || [],
             faceNormal: [o.face.normal.x, o.face.normal.y, o.face.normal.z],
-            faceIndex: o.faceIndex || null,
+            faceIndex: o.faceIndex !== undefined && o.faceIndex !== null ? o.faceIndex : null,
             object: o.object.ipymodel,
             uv: [o.uv.x, o.uv.y] || [0, 0],
         };
