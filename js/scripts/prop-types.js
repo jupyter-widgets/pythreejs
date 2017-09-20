@@ -181,8 +181,9 @@ _.extend(BufferMorphAttributes.prototype, BaseType.prototype, {
     },
 });
 
-function Bool(defaultValue, nullable) {
-    this.nullable = nullable === true;
+function Bool(defaultValue, options) {
+    options = options || {};
+    this.nullable = options.nullable === true;
     this.defaultValue = defaultValue;
 }
 _.extend(Bool.prototype, BaseType.prototype, {
@@ -195,8 +196,9 @@ _.extend(Bool.prototype, BaseType.prototype, {
     },
 });
 
-function Int(defaultValue, nullable) {
-    this.nullable = nullable === true;
+function Int(defaultValue, options) {
+    options = options || {};
+    this.nullable = options.nullable === true;
     this.defaultValue = (defaultValue === null || defaultValue === undefined) && !this.nullable ? 0 : defaultValue ;
 }
 _.extend(Int.prototype, BaseType.prototype, {
@@ -207,8 +209,9 @@ _.extend(Int.prototype, BaseType.prototype, {
 
 });
 
-function Float(defaultValue, nullable) {
-    this.nullable = nullable === true;
+function Float(defaultValue, options) {
+    options = options || {};
+    this.nullable = options.nullable === true;
     this.defaultValue = (defaultValue === null || defaultValue === undefined) && !this.nullable ? 0.0 : defaultValue;
 }
 _.extend(Float.prototype, BaseType.prototype, {
@@ -222,8 +225,9 @@ _.extend(Float.prototype, BaseType.prototype, {
 
 });
 
-function StringType(defaultValue, nullable) {
-    this.nullable = nullable === true;
+function StringType(defaultValue, options) {
+    options = options || {};
+    this.nullable = options.nullable === true;
     this.defaultValue = defaultValue;
 }
 _.extend(StringType.prototype, BaseType.prototype, {
@@ -234,10 +238,11 @@ _.extend(StringType.prototype, BaseType.prototype, {
 
 });
 
-function Enum(enumTypeName, defaultValue, nullable) {
+function Enum(enumTypeName, defaultValue, options) {
+    options = options || {};
     this.enumTypeName = enumTypeName;
     this.defaultValue = defaultValue;
-    this.nullable = nullable === true;
+    this.nullable = options.nullable === true;
 }
 _.extend(Enum.prototype, BaseType.prototype, {
     getTraitlet: function() {
@@ -249,9 +254,10 @@ _.extend(Enum.prototype, BaseType.prototype, {
     },
 });
 
-function Color(defaultValue, nullable) {
+function Color(defaultValue, options) {
+    options = options || {};
     this.defaultValue = defaultValue || "#ffffff";
-    this.nullable = nullable === true;
+    this.nullable = options.nullable === true;
 }
 _.extend(Color.prototype, BaseType.prototype, {
     getTraitlet: function() {
@@ -317,9 +323,10 @@ _.extend(ArrayBufferType.prototype, BaseType.prototype, {
     },
 });
 
-function DictType(defaultValue={}, nullable) {
+function DictType(defaultValue={}, options) {
+    options = options || {};
     this.defaultValue = defaultValue;
-    this.nullable = nullable === true;
+    this.nullable = options.nullable === true;
 }
 _.extend(DictType.prototype, BaseType.prototype, {
     getTraitlet: function() {

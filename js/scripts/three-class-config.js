@@ -34,7 +34,7 @@ module.exports = {
     AnimationClip: {
         relativePath: './animation/AnimationClip',
         properties: {
-            name:           new Types.String(null, true),
+            name:           new Types.String(null, {nullable: true}),
             duration:       new Types.Float(-1.0),
             tracks:         new Types.ThreeTypeArray('KeyframeTrack'),
         },
@@ -168,7 +168,7 @@ module.exports = {
     Controls: {
         relativePath: './controls/Controls',
         properties: {
-            controlling: new Types.ThreeType('Object3D', {allowNull: false}),
+            controlling: new Types.ThreeType('Object3D', {nullable: false}),
         },
     },
     OrbitControls: {
@@ -251,14 +251,14 @@ module.exports = {
         superClass: 'Controls',
         properties: {
             event:          new Types.String('click'),
-            root:           new Types.ThreeType('Object3D', {allowNull: true}),
+            root:           new Types.ThreeType('Object3D', {nullable: true}),
             all:            new Types.Bool(false),
-            distance:       new Types.Float(null, true),
+            distance:       new Types.Float(null, {nullable: true}),
             point:          new Types.Vector3(0, 0, 0),
             face:           new Types.Vector3(0, 0, 0),
             faceNormal:     new Types.Vector3(0, 0, 0),
             faceVertices:   new Types.VectorArray(),
-            faceIndex:      new Types.Int(null, true),
+            faceIndex:      new Types.Int(null, {nullable: true}),
             object:         new Types.ThreeType('Object3D', {nullable: true}),
             picked:         new Types.Array(),
             uv:             new Types.Vector2(0, 0),
@@ -340,7 +340,7 @@ module.exports = {
             morphNormals:   new Types.Array(),
             skinWeights:    new Types.VectorArray(),
             skinIndices:    new Types.VectorArray(),
-            _ref_geometry:  new Types.ThreeType('Geometry', {allowNull: false}),
+            _ref_geometry:  new Types.ThreeType('Geometry', {nullable: false}),
         },
     },
     PlainBufferGeometry: {
@@ -353,7 +353,7 @@ module.exports = {
             // TODO: These likely require special types:
             //groups:             new Types.GeometryGroup(),
             //drawRange:          new Types.DrawRange(),
-            _ref_geometry:      new Types.ThreeType(['Geometry', 'BufferGeometry'], {allowNull: false}),
+            _ref_geometry:      new Types.ThreeType(['Geometry', 'BufferGeometry'], {nullable: false}),
         },
     },
     InstancedBufferAttribute: {
@@ -368,7 +368,7 @@ module.exports = {
         relativePath: './core/InstancedBufferGeometry',
         superClass: 'PlainBufferGeometry',
         properties: {
-            maxInstancedCount: new Types.Int(null, true),
+            maxInstancedCount: new Types.Int(null, {nullable: true}),
         },
     },
     InstancedInterleavedBuffer: {
@@ -632,9 +632,9 @@ module.exports = {
             clippingPlanes:         new Types.ThreeTypeArray('Plane'),
             clipShadows:            new Types.Bool(false),
             colorWrite:             new Types.Bool(true),
-            //customDepthMaterial:    new Types.ForwardDeclaredThreeType('MeshDepthMaterial', 'pythreejs', {allowNull: true}),
-            //customDistanceMaterial: new Types.ForwardDeclaredThreeType('MeshDepthMaterial', 'pythreejs', {allowNull: true}),
-            defines:                new Types.Dict(null, true),
+            //customDepthMaterial:    new Types.ForwardDeclaredThreeType('MeshDepthMaterial', 'pythreejs', {nullable: true}),
+            //customDistanceMaterial: new Types.ForwardDeclaredThreeType('MeshDepthMaterial', 'pythreejs', {nullable: true}),
+            defines:                new Types.Dict(null, {nullable: true}),
             depthFunc:              new Types.Enum('DepthMode', 'LessEqualDepth'),
             depthTest:              new Types.Bool(true),
             depthWrite:             new Types.Bool(true),
@@ -645,7 +645,7 @@ module.exports = {
             polygonOffset:          new Types.Bool(false),
             polygonOffsetFactor:    new Types.Float(0),
             polygonOffsetUnits:     new Types.Float(0),
-            precision:              new Types.String(null, true),
+            precision:              new Types.String(null, {nullable: true}),
             premultipliedAlpha:     new Types.Bool(false),
             dithering:              new Types.Bool(false),
             flatShading:            new Types.Bool(false),
@@ -787,7 +787,7 @@ module.exports = {
         properties: {
             clearCoat:          new Types.Float(0.0),
             clearCoatRoughness: new Types.Float(0.0),
-            defines:            new Types.Dict({ 'PHYSICAL': '' }, true),
+            defines:            new Types.Dict({ 'PHYSICAL': '' }, {nullable: true}),
             reflectivity:       new Types.Float(0.5),
         },
     },
@@ -801,7 +801,7 @@ module.exports = {
             bumpMap:            new Types.ThreeType('Texture'),
             bumpScale:          new Types.Float(1.0),
             color:              new Types.Color('#ffffff'),
-            defines:            new Types.Dict({ 'STANDARD': '' }, true),
+            defines:            new Types.Dict({ 'STANDARD': '' }, {nullable: true}),
             displacementMap:    new Types.ThreeType('Texture'),
             displacementScale:  new Types.Float(1.0),
             displacementBias:   new Types.Float(0.0),
@@ -1098,8 +1098,8 @@ module.exports = {
         superClass: 'Object3D',
         constructorArgs: [ 'geometry', 'material' ],
         properties: {
-            material: new Types.ThreeType('Material', {allowNull: false}),
-            geometry: new Types.ThreeType(['Geometry', 'BufferGeometry'], {allowNull: false}),
+            material: new Types.ThreeType('Material', {nullable: false}),
+            geometry: new Types.ThreeType(['Geometry', 'BufferGeometry'], {nullable: false}),
             drawMode: new Types.Enum('DrawModes', 'TrianglesDrawMode'),
             morphTargetInfluences: new Types.Array(),
         },
@@ -1110,8 +1110,8 @@ module.exports = {
         superClass: 'Object3D',
         constructorArgs: [ 'geometry', 'material' ],
         properties: {
-            material: new Types.ThreeType('Material', {allowNull: false}),
-            geometry: new Types.ThreeType(['Geometry', 'BufferGeometry'], {allowNull: false}),
+            material: new Types.ThreeType('Material', {nullable: false}),
+            geometry: new Types.ThreeType(['Geometry', 'BufferGeometry'], {nullable: false}),
         },
     },
     Skeleton: {
@@ -1187,7 +1187,7 @@ module.exports = {
             fog: new Types.ThreeType('Fog'),
             overrideMaterial: new Types.ThreeType('Material'),
             autoUpdate: new Types.Bool(true),
-            background: new Types.Color(null, true),
+            background: new Types.Color(null, {nullable: true}),
         },
     },
     Texture: {
@@ -1721,8 +1721,8 @@ module.exports = {
             origin: new Types.Vector3(0, 0, 0),
             length: new Types.Float(1.0),
             hex: new Types.Int(0),
-            headLength: new Types.Float(null, true),
-            headWidth: new Types.Float(null, true),
+            headLength: new Types.Float(null, {nullable: true}),
+            headWidth: new Types.Float(null, {nullable: true}),
         },
     },
     AxisHelper: {
@@ -1738,7 +1738,7 @@ module.exports = {
         superClass: 'Object3D',  // Should really be LineSegments, but we don't want to sync geometry/material
         properties: {
             object:      new Types.ThreeType('Object3D'),
-            color:       new Types.Color(null, true),
+            color:       new Types.Color(null, {nullable: true}),
         },
         constructorArgs: ['object', 'color'],
         propsDefinedByThree: ['matrixAutoUpdate']
@@ -1747,7 +1747,7 @@ module.exports = {
         superClass: 'Object3D',  // Should really be LineSegments, but we don't want to sync geometry/material
         properties: {
             box:      new Types.ThreeType('Box3'),
-            color:    new Types.Color('yellow', true),
+            color:    new Types.Color('yellow', {nullable: true}),
         },
         constructorArgs: ['box', 'color'],
     },
@@ -1766,7 +1766,7 @@ module.exports = {
         properties: {
             light:      new Types.ThreeType('DirectionalLight'),
             size:       new Types.Float(1.0),
-            color:      new Types.Color(null, true),
+            color:      new Types.Color(null, {nullable: true}),
         },
         constructorArgs: ['light', 'size', 'color'],
         propsDefinedByThree: ['matrixAutoUpdate']
@@ -1800,7 +1800,7 @@ module.exports = {
         properties: {
             light:      new Types.ThreeType('HemisphereLight'),
             size:       new Types.Float(1.0),
-            color:      new Types.Color(null, true),
+            color:      new Types.Color(null, {nullable: true}),
         },
         constructorArgs: ['light', 'size', 'color'],
         propsDefinedByThree: ['matrixAutoUpdate']
@@ -1810,7 +1810,7 @@ module.exports = {
         properties: {
             plane:    new Types.ThreeType('Plane'),
             size:     new Types.Float(1.0),
-            color:    new Types.Color('yellow', true),
+            color:    new Types.Color('yellow', {nullable: true}),
         },
         constructorArgs: ['plane', 'size', 'color'],
     },
@@ -1820,7 +1820,7 @@ module.exports = {
         properties: {
             light:          new Types.ThreeType('PointLight'),
             sphereSize:     new Types.Float(1.0),
-            color:          new Types.Color(null, true),
+            color:          new Types.Color(null, {nullable: true}),
         },
         constructorArgs: ['light', 'sphereSize', 'color'],
         propsDefinedByThree: ['matrixAutoUpdate']
@@ -1843,7 +1843,7 @@ module.exports = {
         superClass: 'Object3D',
         properties: {
             light:      new Types.ThreeType('RectAreaLight'),
-            color:      new Types.Color(null, true),
+            color:      new Types.Color(null, {nullable: true}),
         },
         constructorArgs: ['light', 'color'],
     },
@@ -1860,7 +1860,7 @@ module.exports = {
         superClass: 'Object3D',
         properties: {
             light:      new Types.ThreeType('SpotLight'),
-            color:      new Types.Color(null, true),
+            color:      new Types.Color(null, {nullable: true}),
         },
         constructorArgs: ['light', 'color'],
         propsDefinedByThree: ['matrixAutoUpdate']
