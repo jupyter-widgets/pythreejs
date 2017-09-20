@@ -258,6 +258,7 @@ module.exports = {
             faceNormal:     new Types.Vector3(0, 0, 0),
             faceVertices:   new Types.VectorArray(),
             faceIndex:      new Types.Int(null, {nullable: true}),
+            modifiers:      new Types.Array(),
             object:         new Types.ThreeType('Object3D', {nullable: true}),
             picked:         new Types.Array(),
             uv:             new Types.Vector2(0, 0),

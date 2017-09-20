@@ -44,6 +44,7 @@ var PickerModel = PickerAutogen.PickerModel.extend({
         } else {
             info.picked = [];
         }
+        info.modifiers = this.obj.modifiers;
         this.set(info, 'pushFromThree');
         this.save_changes();
     },
@@ -58,6 +59,7 @@ var PickerControls = function(event) {
     scope.element = null;
 
     this.pickCoordinates = null;
+    this.modifiers = null;
 
     this.connectEvents = function(element) {
         scope.element = element;
@@ -75,6 +77,16 @@ var PickerControls = function(event) {
         var mouseY = -((event.pageY - offset.top) / $el.height()) * 2 + 1;
 
         scope.pickCoordinates = {x: mouseX, y: mouseY};
+        if (event.altKey !== undefined) {
+            scope.modifiers = [
+                event.shiftKey,
+                event.ctrlKey,
+                event.altKey,
+                event.metaKey,
+            ]
+        } else {
+            scope.modifiers = null;
+        }
 
         scope.dispatchEvent( pickEvent );
     }
