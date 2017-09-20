@@ -79,14 +79,117 @@ var computeBoundingSphere = function() {
     }
 }();
 
+
+
+
+/**
+ * Set camera near and far planes close to sphere with given center
+ * and radius, assuming the camera is already oriented to look at this
+ * sphere.
+ *
+ * @param {any} camera The camera to adjust
+ * @param {any} center The center of the sphere to use as a reference
+ * @param {any} radius The radius of the sphere to use as a reference
+ * @param {number} [distOffset=0.1] The fraction of the radius to use as padding
+ */
+function shrinkFrustumPlanes(camera, center, radius, distOffset=0.1) {
+    // distOffset = 0.1  -->  10% of radius
+
+    // Find distance from camera to edges of sphere
+    const dist = camera.position.distanceTo(center);
+    const nearEdge = dist - radius;
+    const farEdge = dist + radius;
+
+    // Set near/far sufficiently close to edges of sphere
+    camera.near = (1 - distOffset) * nearEdge,
+    camera.far = (1 + distOffset) * farEdge;
+
+    // Bound near plane away from zero
+    camera.near = Math.max(camera.near, 0.01 * radius);
+}
+
+/**
+ * Set camera near and far planes with some headroom around sphere
+ * with given center and radius, assuming the camera is already
+ * oriented to look at this sphere.
+ *
+ * @param {any} camera The camera to adjust
+ * @param {any} center The center of the sphere to use as a reference
+ * @param {any} radius The radius of the sphere to use as a reference
+ * @param {number} [allowZoom=20] The near/far planes will be adjusted
+ *  according to this factor. The far plane distance is multiplied with
+ *  this factor, while the near plane is multiplied with its inverse.
+ */
+function safeFrustumPlanes(camera, center, radius, allowZoom=20) {
+    // Find distance from camera to edges of sphere
+    const dist = camera.position.distanceTo(center);
+    const nearEdge = dist - radius;
+    const farEdge = dist + radius;
+
+    // Set near/far sufficiently far from edge of sphere to allow some zooming
+    camera.near = (1 / allowZoom) * nearEdge;
+    camera.far = allowZoom * farEdge;
+
+    // Bound near plane away from zero
+    camera.near = Math.max(camera.near, 0.001 * radius);
+}
+
+/**
+ * Set the camera to look at a sphere, additionally moving the camera
+ * closer/further to ensure that the sphere fills the camera FOV. The
+ * actual FOV value is left untouched. Additionaly it can adjust the
+ * camera's near/far planes to fit the sphere as well (enabled by
+ * default).
+ *
+ * @param {any} camera The camera to adjust
+ * @param {any} center The center of the sphere to use as a reference
+ * @param {any} radius The radius of the sphere to use as a reference
+ * @param {any} [setNearFar='safe'] Whether, and how, to update camera
+ *   near/far planes. 'safe' sets the planes a reasonable distance around
+ *   the sphere; 'tight' sets them close (but not touching) the sphere;
+ *   and a falsy value will leave the near/far planes untouched.
+ */
+function lookAtSphere(camera, center, radius, setNearFar='safe') {
+    if (!camera.isPerspectiveCamera) {
+        console.error("Expecting a perspective camera.");
+    }
+
+    // Compute distance based on FOV
+    const radScale = 1.5;  // Include this much more than the sphere
+    const distance = (radScale * radius) / Math.tan(0.5 * camera.fov * Math.PI / 180);
+
+    // Place camera such that the model is in the -z direction from the camera
+    camera.position.setX(center.x);
+    camera.position.setY(center.y);
+    camera.position.setZ(center.z + distance);
+
+    // Look at scene center
+    camera.lookAt(center.clone());
+
+    if (setNearFar === 'tight') {
+        // Set near and far planes to include sphere with a narrow margin
+        shrinkFrustumPlanes(camera, center, radius);
+    } else if (setNearFar === 'safe') {
+        // Set near and far planes to include sphere with a wide margin for zooming
+        safeFrustumPlanes(camera, center, radius);
+    } else if (!!setNearFar) {
+        // If setNearFar is a non-valid, truthy value, it is invalid
+        throw new Error(`setNearFar argument to lookAtSphere invalid: ${setNearFar}`);
+    }
+
+    // Update matrix
+    camera.updateProjectionMatrix();
+}
+
+
+
 /**
  * Work around for notebook issue #2730.
  */
-var commOpenWithBuffers = function(comm, content, callbacks, metadata, buffers) {
+function commOpenWithBuffers(comm, content, callbacks, metadata, buffers) {
     return comm.kernel.send_shell_message(
         "comm_open", content, callbacks, metadata, buffers);
 }
-
 
 
 /**
@@ -94,7 +197,7 @@ var commOpenWithBuffers = function(comm, content, callbacks, metadata, buffers) 
  *
  * This will be pushed to the python side.
  */
-var createModel = function(constructor, widget_manager, obj) {
+function createModel(constructor, widget_manager, obj) {
 
     var id = widgets.uuid();
 
@@ -259,6 +362,9 @@ module.exports = {
     createModel: createModel,
     computeBoundingSphere: computeBoundingSphere,
     computeBoundingBox: computeBoundingBox,
+    shrinkFrustumPlanes: shrinkFrustumPlanes,
+    safeFrustumPlanes: safeFrustumPlanes,
+    lookAtSphere: lookAtSphere,
     childModelsNested: childModelsNested,
     arrayDiff: arrayDiff,
     dictDiff: dictDiff,

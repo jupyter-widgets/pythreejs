@@ -15,72 +15,6 @@ var utils = require('./utils.js');
 var BLACK = new THREE.Color('black');
 
 
-// Set camera near and far planes close to sphere with given center
-// and radius, assuming the camera is already oriented to look at this
-// sphere.
-function shrinkFrustumPlanes(camera, center, radius, distOffset=0.1) {
-    // distOffset = 0.1  -->  10% of radius
-
-    // Find distance from camera to edges of sphere
-    const dist = camera.position.distanceTo(center);
-    const nearEdge = dist - radius;
-    const farEdge = dist + radius;
-
-    // Set near/far sufficiently close to edges of sphere
-    camera.near = (1 - distOffset) * nearEdge,
-    camera.far = (1 + distOffset) * farEdge;
-
-    // Bound near plane away from zero
-    camera.near = Math.max(camera.near, 0.01 * radius);
-}
-
-// Set camera near and far planes with some headroom around sphere
-// with given center and radius, assuming the camera is already
-// oriented to look at this sphere.
-function safeFrustumPlanes(camera, center, radius, allowZoom=20) {
-    // Find distance from camera to edges of sphere
-    const dist = camera.position.distanceTo(center);
-    const nearEdge = dist - radius;
-    const farEdge = dist + radius;
-
-    // Set near/far sufficiently far from edge of sphere to allow some zooming
-    camera.near = (1 / allowZoom) * nearEdge;
-    camera.far = allowZoom * farEdge;
-
-    // Bound near plane away from zero
-    camera.near = Math.max(camera.near, 0.001 * radius);
-}
-
-function lookAtSphere(camera, center, radius) {
-    if (!camera.isPerspectiveCamera) {
-        console.error("Expecting a perspective camera.");
-    }
-
-    // Compute distance based on FOV
-    const radScale = 1.5;  // Include this much more than the sphere
-    const distance = (radScale * radius) / Math.tan(0.5 * camera.fov * Math.PI / 180);
-
-    // Place camera such that the model is in the -z direction from the camera
-    camera.position.setX(center.x);
-    camera.position.setY(center.y);
-    camera.position.setZ(center.z + distance);
-
-    // Look at scene center
-    camera.lookAt(center.clone());
-
-    // Set near and far planes to include sphere with a narrow margin
-    //shrinkFrustumPlanes(camera, center, radius);
-
-    // Set near and far planes to include sphere with a wide margin for zooming
-    safeFrustumPlanes(camera, center, radius);
-
-    // Update matrix
-    camera.updateProjectionMatrix();
-}
-
-// TODO: Make this available as a general utility somewhere?
-
-
 var PreviewView = RenderableView.extend({
 
     initialize: function() {
@@ -207,7 +141,7 @@ var PreviewView = RenderableView.extend({
         }
 
         // Update camera to include bounding sphere
-        lookAtSphere(this.camera, sphere.center, sphere.radius);
+        utils.lookAtSphere(this.camera, sphere.center, sphere.radius);
 
         // Update controls with new target
         const control = this.controls[0];
