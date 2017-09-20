@@ -251,7 +251,6 @@ module.exports = {
         superClass: 'Controls',
         properties: {
             event:          new Types.String('click'),
-            root:           new Types.ThreeType('Object3D', {nullable: true}),
             all:            new Types.Bool(false),
             distance:       new Types.Float(null, {nullable: true}),
             point:          new Types.Vector3(0, 0, 0),

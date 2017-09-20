@@ -35,7 +35,7 @@ var PickerModel = PickerAutogen.PickerModel.extend({
 
     onPick: function() {
         var mouse = this.obj.pickCoordinates;
-        var objects = pick(mouse, this.camera, this.get('root').obj);
+        var objects = pick(mouse, this.camera, this.get('controlling').obj);
 
         var info = getinfo(objects.length > 0 ? objects[0] : null);
 
