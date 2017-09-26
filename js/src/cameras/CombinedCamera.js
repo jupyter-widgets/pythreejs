@@ -28,6 +28,8 @@ var CombinedCameraModel = CombinedCameraAutogen.extend({
             this.convertFloatModelToThree(this.get('orthoNear'), 'orthoNear'),
             this.convertFloatModelToThree(this.get('orthoFar'), 'orthoFar')
         );
+        result.impersonate = this.convertBoolModelToThree(
+            this.get('impersonate'), 'impersonate');
         return Promise.resolve(result);
 
     },

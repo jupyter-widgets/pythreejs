@@ -37,12 +37,36 @@ var CombinedCamera = function ( width, height, fov, near, far, orthoNear, orthoF
 	this.cameraO = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, 	orthoNear, orthoFar );
 	this.cameraP = new THREE.PerspectiveCamera( fov, width / height, near, far );
 
+	this.impersonate = true;
+
 	this.toPerspective();
 
 };
 
 CombinedCamera.prototype = Object.create( THREE.Camera.prototype );
 CombinedCamera.prototype.constructor = CombinedCamera;
+
+Object.defineProperties( CombinedCamera.prototype, {
+
+	isPerspectiveCamera: {
+		get: function () {
+			if (!this.impersonate) {
+				return undefined;
+			}
+			return this.inPerspectiveMode;
+		}
+	},
+
+	isOrthographicCamera: {
+		get: function () {
+			if (!this.impersonate) {
+				return undefined;
+			}
+			return this.inOrthographicMode;
+		}
+	}
+
+} );
 
 CombinedCamera.prototype.toPerspective = function () {
 

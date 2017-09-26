@@ -161,6 +161,7 @@ module.exports = {
             height:     new Types.Float(),
 
             mode:       new Types.Enum("['perspective', 'orthographic']", 'perspective'),
+            impersonate:new Types.Bool(true),
             // view: new Types.ViewOffset()
         },
         constructorArgs: [ 'width', 'height', 'fov', 'near', 'far', 'orthoNear', 'orthoFar' ],
