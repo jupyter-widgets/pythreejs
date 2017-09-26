@@ -13,7 +13,7 @@
     "clean": "node ./scripts/clean-generated-files.js",
     "autogen-enums": "node ./scripts/generate-enums.js",
     "autogen": "node ./scripts/generate-wrappers.js",
-    "postinstall": "npm run autogen",
+    "prepublish": "npm run autogen",
     "build": "webpack && node ./scripts/copy-three.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
