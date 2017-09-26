@@ -357,6 +357,39 @@ function nestedDiff(newObj, oldObj) {
     return ret;
 }
 
+/**
+ * Get the scene object of an Object3D.
+ *
+ * @param {THREE.Object3D} object3d
+ * @returns The scene object, or null if it cannot be found
+ */
+function getObjectScene(object3d) {
+    while (object3d.parent) {
+        object3d = object3d.parent;
+    }
+    if (object3d.type === 'Scene') {
+        return object3d;
+    }
+    return null;
+}
+
+/**
+ * Get the scene model for a three Object3D model.
+ *
+ * @param {any} model
+ * @returns The scene object's model, or null if it cannot be found
+ */
+function getModelScene(model) {
+    let obj = model.obj;
+    while (obj.parent) {
+        obj = obj.parent;
+    }
+    if (obj.type === 'Scene') {
+        return obj.ipymodel;
+    }
+    return null;
+}
+
 
 module.exports = {
     createModel: createModel,
@@ -369,4 +402,6 @@ module.exports = {
     arrayDiff: arrayDiff,
     dictDiff: dictDiff,
     nestedDiff: nestedDiff,
+    getObjectScene: getObjectScene,
+    getModelScene: getModelScene,
 }

@@ -1,31 +1,11 @@
 var _ = require('underscore');
 var widgets = require("@jupyter-widgets/base");
+var utils = require("../_base/utils");
 var AnimationActionAutogen = require('./AnimationAction.autogen').AnimationActionModel;
 
 var THREE = require('three');
 
 var pkgName = require('../../package.json').name;
-
-function getObjectScene(object3d) {
-    while (object3d.parent) {
-        object3d = object3d.parent;
-    }
-    if (object3d.type === 'Scene') {
-        return object3d;
-    }
-    return null;
-}
-
-function getModelScene(model) {
-    let obj = model.obj;
-    while (obj.parent) {
-        obj = obj.parent;
-    }
-    if (obj.type === 'Scene') {
-        return obj.ipymodel;
-    }
-    return null;
-}
 
 var AnimationActionModel = AnimationActionAutogen.extend({
 
@@ -70,7 +50,7 @@ var AnimationActionModel = AnimationActionAutogen.extend({
         this.obj.paused = false;
 
         var root = this.get('localRoot');
-        var scene = getModelScene(root);
+        var scene = utils.getModelScene(root);
         if (scene) {
             this.listenTo(scene, 'afterRender', this.animateFrame.bind(this));
         }
@@ -92,7 +72,7 @@ var AnimationActionModel = AnimationActionAutogen.extend({
         mixer.update(delta);
         // As long as root is in scene, this will trigger a re-render
         // The onAfterRender will then trigger a new frame
-        var scene = getModelScene(this.get('localRoot'));
+        var scene = utils.getModelScene(this.get('localRoot'));
         if (scene) {
             scene.trigger('rerender');
         }
@@ -118,7 +98,7 @@ var AnimationActionModel = AnimationActionAutogen.extend({
     },
 
     resetRenderHook: function() {
-        var scene = getModelScene(this.get('localRoot'));
+        var scene = utils.getModelScene(this.get('localRoot'));
         if (scene) {
             this.stopListening(scene, 'afterRender');
         }
