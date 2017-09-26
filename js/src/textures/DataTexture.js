@@ -77,7 +77,7 @@ var DataTextureModel = DataTextureBase.extend({
 
 }, {
     serializers: _.extend({
-        data: datawidgets.array_serialization,
+        data: datawidgets.data_union_serialization,
     }, DataTextureBase.serializers),
 });
 
