@@ -1,13 +1,11 @@
-var loaders = [
-    { test: /\.json$/, loader: "json-loader" },
-];
+var path = require('path');
 
 module.exports = [
     {// Notebook extension
         entry: './src/extension.js',
         output: {
             filename: 'extension.js',
-            path: '../pythreejs/static',
+            path: path.resolve(__dirname, '..', 'pythreejs', 'static'),
             libraryTarget: 'amd'
         }
     },
@@ -15,26 +13,20 @@ module.exports = [
         entry: './src/index.js',
         output: {
             filename: 'index.js',
-            path: '../pythreejs/static',
+            path: path.resolve(__dirname, '..', 'pythreejs', 'static'),
             libraryTarget: 'amd'
         },
         devtool: 'source-map',
-        module: {
-            loaders: loaders
-        },
         externals: ['@jupyter-widgets/base']
     },
     {// embeddable jupyter-threejs bundle
         entry: './src/index.js',
         output: {
             filename: 'index.js',
-            path: './dist/',
+            path: path.resolve(__dirname, 'dist'),
             libraryTarget: 'amd'
         },
         devtool: 'source-map',
-        module: {
-            loaders: loaders
-        },
         externals: ['@jupyter-widgets/base']
     }
 ];
