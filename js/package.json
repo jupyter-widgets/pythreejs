@@ -10,7 +10,7 @@
     "url": "https://github.com/jovyan/pythreejs.git"
   },
   "scripts": {
-    "prepublish": "webpack",
+    "build": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
