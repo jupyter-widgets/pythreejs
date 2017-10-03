@@ -21,7 +21,7 @@
   "dependencies": {
     "@jupyter-widgets/base": "0.5.1",
     "ndarray": "^1.0.18",
-    "three": "^0.75.0",
+    "three": "^0.85.0",
     "underscore": "^1.8.3"
   }
 }
