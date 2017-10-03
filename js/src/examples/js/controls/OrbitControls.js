@@ -20,8 +20,8 @@
 //    	controls = new THREE.TrackballControls( camera );
 //      controls.target.z = 150;
 // Simple substitute "OrbitControls" and the control should work as-is.
-
-THREE.OrbitControls = function ( object, domElement ) {
+var THREE = require('three')
+OrbitControls = function ( object, domElement ) {
 
 	this.object = object;
 	this.domElement = ( domElement !== undefined ) ? domElement : document;
@@ -671,5 +671,8 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 };
 
-THREE.OrbitControls.prototype = Object.create( THREE.EventDispatcher.prototype );
-THREE.OrbitControls.prototype.constructor = THREE.OrbitControls;
+OrbitControls.prototype = Object.create( THREE.EventDispatcher.prototype );
+OrbitControls.prototype.constructor = OrbitControls;
+
+module.exports = OrbitControls
+//:OrbitControls}

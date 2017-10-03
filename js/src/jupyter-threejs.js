@@ -1,12 +1,12 @@
 define(["@jupyter-widgets/base", "underscore", "three", "ndarray"],
        function(widgets, _, THREE, ndarray) {
 
-    window.THREE = THREE;
-    require("./examples/js/renderers/Projector.js");
-    require("./examples/js/renderers/CanvasRenderer.js");
-    require("./examples/js/controls/OrbitControls.js");
-    require("./examples/js/controls/MomentumCameraControls.js");
-    require("./examples/js/controls/TrackballControls.js");
+    //window.THREE = THREE;
+    //Projector = require("./examples/js/renderers/Projector.js");
+    CanvasRenderer = require("./examples/js/renderers/CanvasRenderer.js");
+    OrbitControls = require("./examples/js/controls/OrbitControls.js");
+    //require("./examples/js/controls/MomentumCameraControls.js");
+    TrackballControls = require("./examples/js/controls/TrackballControls.js");
     var $ = require("jquery");
 
     var Detector = require("./examples/js/Detector.js");
@@ -32,7 +32,7 @@ define(["@jupyter-widgets/base", "underscore", "three", "ndarray"],
                     alpha: true
                 });
             } else {
-                this.renderer = new THREE.CanvasRenderer();
+                this.renderer = new CanvasRenderer();
             }
             this.el.className = "jupyter-widget jupyter-threejs";
             this.el.innerHTML = '';
@@ -367,7 +367,7 @@ define(["@jupyter-widgets/base", "underscore", "three", "ndarray"],
                 that.controlled_view = _.find(views, function(o) {
                     return o.options.renderer_id === that.options.renderer_id
                 }, that);
-                that.obj = new THREE.OrbitControls(that.controlled_view.obj, that.options.dom);
+                that.obj = new OrbitControls(that.controlled_view.obj, that.options.dom);
                 that.register_object_parameters();
                 that.obj.noKeys = true; // turn off keyboard navigation
                 that.options.register_update(that.obj.update, that.obj);
@@ -458,7 +458,7 @@ define(["@jupyter-widgets/base", "underscore", "three", "ndarray"],
                 that.controlled_view = _.find(views, function(o) {
                     return o.options.renderer_id === that.options.renderer_id
                 }, that);
-                that.obj = new THREE.TrackballControls(that.controlled_view.obj, that.options.dom);
+                that.obj = new TrackballControls(that.controlled_view.obj, that.options.dom);
                 that.register_object_parameters();
                 that.obj.noKeys = true; // turn off keyboard navigation
                 that.options.register_update(that.obj.update, that.obj);
