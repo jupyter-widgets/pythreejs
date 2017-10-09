@@ -348,11 +348,12 @@ def wrap_command(cmds, data_dirs, cls, strict=True):
                         pass
 
             result = cls.run(self)
-            data_files = []
-            for dname in data_dirs:
-                data_files.extend(get_data_files(dname))
-            # update data-files in case this created new files
-            self.distribution.data_files = data_files
+            if data_dirs:
+                data_files = self.distribution.data_files if self.distribution.data_files else []
+                for dname in data_dirs:
+                    data_files.extend(get_data_files(dname))
+                # update data-files in case this created new files
+                self.distribution.data_files = data_files
             # also update package data
             update_package_data(self.distribution)
             return result
