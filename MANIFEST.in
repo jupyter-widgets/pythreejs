@@ -1,1 +1,3 @@
 recursive-include pythreejs/static *.*
+
+include setupbase.py

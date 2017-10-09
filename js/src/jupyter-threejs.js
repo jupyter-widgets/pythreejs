@@ -1,6 +1,9 @@
 define(["@jupyter-widgets/base", "underscore", "three", "ndarray"],
        function(widgets, _, THREE, ndarray) {
 
+    var VIEW_MODULE_VERSION = '0.4.0';
+    var MODEL_MODULE_VERSION = VIEW_MODULE_VERSION;
+
     window.THREE = THREE;
     require("./examples/js/renderers/Projector.js");
     require("./examples/js/renderers/CanvasRenderer.js");
@@ -1268,7 +1271,9 @@ define(["@jupyter-widgets/base", "underscore", "three", "ndarray"],
             _view_module: 'jupyter-threejs',
             _model_module: 'jupyter-threejs',
             _view_name: 'Object3dView',
-            _model_name: 'Object3dModel'
+            _model_name: 'Object3dModel',
+            _view_module_version: VIEW_MODULE_VERSION,
+            _model_module_version: MODEL_MODULE_VERSION
         })
     }, {
         serializers: _.extend({
@@ -1349,9 +1354,10 @@ define(["@jupyter-widgets/base", "underscore", "three", "ndarray"],
         defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
             _view_module: 'jupyter-threejs',
             _model_module: 'jupyter-threejs',
-
             _view_name: 'ControlsView',
             _model_name: 'ControlsModel',
+            _view_module_version: VIEW_MODULE_VERSION,
+            _model_module_version: MODEL_MODULE_VERSION,
             controling: null
         })
     }, {
@@ -1419,7 +1425,10 @@ define(["@jupyter-widgets/base", "underscore", "three", "ndarray"],
     var EffectModel = widgets.WidgetModel.extend({
         defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
             _model_module: 'jupyter-threejs',
-            _view_module: 'jupyter-threejs'
+            _view_module: 'jupyter-threejs',
+            _view_module_version: VIEW_MODULE_VERSION,
+            _model_module_version: MODEL_MODULE_VERSION
+
         })
     });
 
@@ -1436,6 +1445,8 @@ define(["@jupyter-widgets/base", "underscore", "three", "ndarray"],
             _view_module: 'jupyter-threejs',
             _model_name: 'MaterialModel',
             _view_name: 'MaterialView',
+            _view_module_version: VIEW_MODULE_VERSION,
+            _model_module_version: MODEL_MODULE_VERSION,
 
             name: '',
             side: 'DoubleSide',
@@ -1600,7 +1611,9 @@ define(["@jupyter-widgets/base", "underscore", "three", "ndarray"],
         defaults: _.extend({}, widgets.WidgetModel.prototype.defaults, {
             _view_module: 'jupyter-threejs',
             _model_module: 'jupyter-threejs',
-            _model_name: 'TextureModel'
+            _model_name: 'TextureModel',
+            _view_module_version: VIEW_MODULE_VERSION,
+            _model_module_version: MODEL_MODULE_VERSION
         })
     });
 
@@ -1649,7 +1662,9 @@ define(["@jupyter-widgets/base", "underscore", "three", "ndarray"],
             _model_module: 'jupyter-threejs',
             _view_module: 'jupyter-threejs',
             _model_name: 'GeometryModel',
-            _view_name: 'GeometryView'
+            _view_name: 'GeometryView',
+            _view_module_version: VIEW_MODULE_VERSION,
+            _model_module_version: MODEL_MODULE_VERSION
         })
     });
 
@@ -2017,6 +2032,8 @@ define(["@jupyter-widgets/base", "underscore", "three", "ndarray"],
             _model_module: 'jupyter-threejs',
             _view_name: 'RendererView',
             _model_name: 'RendererModel',
+            _view_module_version: VIEW_MODULE_VERSION,
+            _model_module_version: MODEL_MODULE_VERSION,
 
             width: 600,
             height: 100,
