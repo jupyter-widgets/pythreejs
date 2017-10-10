@@ -19,7 +19,8 @@ var ThreeModel = widgets.WidgetModel.extend({
     defaults: function() {
         return _.extend(widgets.WidgetModel.prototype.defaults.call(this), {
             _model_name: this.constructor.model_name,
-            _model_module: 'jupyter-threejs',
+            _model_module: this.constructor.model_module,
+            _model_version: this.constructor.model_module_version
         });
     },
 

@@ -49,7 +49,7 @@ setup_args = {
         ]),
     ],
     'install_requires': [
-        'ipywidgets>=7.0.0',
+        'ipywidgets>=7,<8',
         'ipydatawidgets>=1.1.1'
     ],
     'packages': find_packages(),

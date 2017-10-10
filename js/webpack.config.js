@@ -1,9 +1,5 @@
 const path = require('path');
 
-var loaders = [
-    { test: /\.json$/, loader: "json-loader" }
-];
-
 var externals = ['@jupyter-widgets/base', 'jupyter-datawidgets', 'three'];
 
 module.exports = [
@@ -12,7 +8,7 @@ module.exports = [
         entry: './src/extension.js',
         output: {
             filename: 'extension.js',
-            path: path.resolve('../pythreejs/static'),
+            path: path.resolve(__dirname, '..', 'pythreejs', 'static'),
             libraryTarget: 'amd'
         },
         resolve: {
@@ -24,13 +20,10 @@ module.exports = [
         entry: './src/index.js',
         output: {
             filename: 'index.js',
-            path: path.resolve('../pythreejs/static'),
+            path: path.resolve(__dirname, '..', 'pythreejs', 'static'),
             libraryTarget: 'amd'
         },
         devtool: 'source-map',
-        module: {
-            rules: loaders
-        },
         externals: externals,
         resolve: {
             extensions: [ ".autogen.js", ".js" ]
@@ -42,13 +35,10 @@ module.exports = [
         entry: './src/embed.js',
         output: {
             filename: 'index.js',
-            path: path.resolve('./dist/'),
+            path: path.resolve(__dirname, 'dist'),
             libraryTarget: 'amd'
         },
         devtool: 'source-map',
-        module: {
-            rules: loaders
-        },
         externals: externals,
         resolve: {
             extensions: [ ".autogen.js", ".js" ]
@@ -60,12 +50,9 @@ module.exports = [
         entry: './src/index.js',
         output: {
             filename: 'index.standalone.js',
-            path: path.resolve('./dist/'),
+            path: path.resolve(__dirname, 'dist'),
         },
         devtool: 'source-map',
-        module: {
-            rules: loaders
-        },
         resolve: {
             extensions: [ ".autogen.js", ".js" ]
         },

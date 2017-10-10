@@ -1,6 +1,6 @@
 {
   "name": "jupyter-threejs",
-  "version": "0.4.0-alpha.0",
+  "version": "0.4.0",
   "description": "jupyter - threejs bridge",
   "author": "Jupyter-Threejs development team",
   "license": "BSD-3-Clause",
@@ -10,20 +10,18 @@
     "url": "https://github.com/jovyan/pythreejs.git"
   },
   "scripts": {
-    "clean": "node ./scripts/clean-generated-files.js",
+    "clean": "rimraf dist && rimraf ../pythreejs/static && node ./scripts/clean-generated-files.js",
     "autogen-enums": "node ./scripts/generate-enums.js",
     "autogen": "node ./scripts/generate-wrappers.js",
-    "prepublish": "npm run autogen",
     "build": "webpack && node ./scripts/copy-three.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prepublish": "npm run autogen && npm run build"
   },
   "devDependencies": {
     "fs-extra": "^4.0.1",
     "glob": "^7.0.6",
     "handlebars": "^4.0.5",
-    "json-loader": "^0.5.4",
     "rimraf": "^2.4.1",
-    "webpack": "^3.5.5"
+    "webpack": "^3.6.0"
   },
   "dependencies": {
     "@jupyter-widgets/base": "^1.0.0",
