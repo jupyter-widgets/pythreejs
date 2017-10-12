@@ -1,5 +1,8 @@
 # pythreejs
 
+A Python / ThreeJS bridge utilizing the Jupyter widget infrastructure.
+
+![Screencast](/screencast.gif)
 
 ## Getting Started
 
@@ -30,7 +33,7 @@ conda install -c conda-forge pythreejs
 
 ## Developers
 
-### Autogen
+### Autogen update
 
 This is a _significant_ re-work of the pythreejs extension that introduces an "autogen" script that generates the majority of the ipython-widget code to wrap each of three.js's types.  It also takes a different view towards the pythreejs API.  Whereas pythreejs adds custom functionality to the classes, sometimes renaming, etc., this approach attempts to mimic the low-level three.js API as closely as possible, opening up the possibility for others to build utility libraries on top of this.
 
