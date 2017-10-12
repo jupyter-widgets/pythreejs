@@ -1,5 +1,7 @@
 *.egg-info/
 .ipynb_checkpoints/
+.tern-project
+npm-debug.log
 dist/
 build/
 *.py[cod]
@@ -10,3 +12,9 @@ pythreejs/static/
 
 # OS X
 .DS_Store
+
+
+*_autogen.py
+*.autogen.js
+js/src/**/index.js
+pythreejs/**/__init__.py

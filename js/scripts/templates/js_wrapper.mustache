@@ -1,0 +1,87 @@
+//
+// This file auto-generated with {{ generatorScriptName }}
+// Date: {{ now }}
+//
+
+var _ = require('underscore');
+var THREE = require('three');
+var widgets = require('@jupyter-widgets/base');
+var dataserializers = require('jupyter-dataserializers');
+
+var {{ superClass.modelName }} = require('{{ superClass.requirePath }}').{{ superClass.modelName }};
+
+{{#each dependencies as |dep depName|}}
+var {{ dep.modelName }} = require('{{ dep.requirePath }}').{{ dep.modelName }};
+{{/each}}
+
+var {{ modelName }} = {{ superClass.modelName }}.extend({
+
+    defaults: function() {
+        return _.extend({{ superClass.modelName }}.prototype.defaults.call(this), {
+
+            {{#each properties as |prop propName|}}
+            {{ propName }}: {{{ prop.defaultJson }}},
+            {{/each}}
+
+        });
+    },
+
+    constructThreeObject: function() {
+
+        var result = new THREE.{{ className }}({{#if constructor.args}}
+        {{#each constructor.args as |arg|}}
+            {{{ arg }}}{{#unless @last}},{{/unless}}
+        {{/each}}
+        {{/if}});
+        return Promise.resolve(result);
+
+    },
+
+    createPropertiesArrays: function() {
+
+        {{ superClass.modelName }}.prototype.createPropertiesArrays.call(this);
+        {{#each properties as |prop propName|}}
+        {{#if prop.property_array_name }}
+        this.{{ prop.property_array_name }}.push('{{ propName }}');
+        {{/if}}
+        {{/each}}
+
+        {{#each props_created_by_three as |propName|}}
+        this.props_created_by_three['{{propName}}'] = true;
+        {{/each}}
+        {{#each enum_properties as |enumTypeName propName|}}
+        this.enum_property_types['{{ propName }}'] = '{{ enumTypeName }}';
+        {{/each}}
+
+        {{#each properties as |prop propName|}}
+        {{#if prop.property_converter }}
+        this.property_converters['{{ propName }}'] = '{{ prop.property_converter }}';
+        {{else}}
+        this.property_converters['{{ propName }}'] = null;
+        {{/if}}
+        {{/each}}
+
+        {{#each properties as |prop propName|}}
+        {{#if prop.property_assigner }}
+        this.property_assigners['{{ propName }}'] = '{{ prop.property_assigner }}';
+        {{/if}}
+        {{/each}}
+
+    },
+
+}, {
+
+    model_name: '{{ modelName }}',
+
+    {{#if serialized_props }}
+    serializers: _.extend({
+        {{#each serialized_props as |serializer propName|}}
+        {{ propName }}: {{ serializer }},
+        {{/each}}
+    }{{#if superClass }},  {{ superClass.modelName }}.serializers){{/if}},
+    {{/if}}
+});
+
+module.exports = {
+    {{ modelName }}: {{ modelName }},
+};

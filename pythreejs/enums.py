@@ -1,21 +1,18 @@
-r"""
-Three.js Enums
-
-These correspond to the enum property names in the THREE js object
+"""
+This file auto-generated with generate-enums.js
+Date: Fri Jun 02 2017 16:44:47 GMT+0200 (W. Europe Daylight Time)
 """
 
-# Custom Blending Equation Constants
-# http://threejs.org/docs/index.html#Reference/Constants/CustomBlendingEquation
 
 Equations = [
     'AddEquation',
     'SubtractEquation',
     'ReverseSubtractEquation',
     'MinEquation',
-    'MaxEquation'
+    'MaxEquation',
 ]
 
-DestinationFactors = [
+BlendFactors = [
     'ZeroFactor',
     'OneFactor',
     'SrcColorFactor',
@@ -23,32 +20,27 @@ DestinationFactors = [
     'SrcAlphaFactor',
     'OneMinusSrcAlphaFactor',
     'DstAlphaFactor',
-    'OneMinusDstAlphaFactor'
-]
-
-SourceFactors = [
+    'OneMinusDstAlphaFactor',
     'DstColorFactor',
     'OneMinusDstColorFactor',
-    'SrcAlphaSaturateFactor'
+    'SrcAlphaSaturateFactor',
 ]
 
-# Material Constants
-# http://threejs.org/docs/index.html#Reference/Constants/Materials
 Side = [
     'FrontSide',
     'BackSide',
-    'DoubleSide'
+    'DoubleSide',
 ]
 
 Shading = [
     'FlatShading',
-    'SmoothShading'
+    'SmoothShading',
 ]
 
 Colors = [
     'NoColors',
     'FaceColors',
-    'VertexColors'
+    'VertexColors',
 ]
 
 BlendingMode = [
@@ -57,17 +49,24 @@ BlendingMode = [
     'AdditiveBlending',
     'SubtractiveBlending',
     'MultiplyBlending',
-    'CustomBlending'
+    'CustomBlending',
 ]
 
-
-# Texture Constants
-# http://threejs.org/docs/index.html#Reference/Constants/Textures
+DepthMode = [
+    'NeverDepth',
+    'AlwaysDepth',
+    'LessDepth',
+    'LessEqualDepth',
+    'EqualDepth',
+    'GreaterEqualDepth',
+    'GreaterDepth',
+    'NotEqualDepth',
+]
 
 Operations = [
     'MultiplyOperation',
     'MixOperation',
-    'AddOperation'
+    'AddOperation',
 ]
 
 MappingModes = [
@@ -76,13 +75,15 @@ MappingModes = [
     'CubeRefractionMapping',
     'EquirectangularReflectionMapping',
     'EquirectangularRefractionMapping',
-    'SphericalReflectionMapping'
+    'SphericalReflectionMapping',
+    'CubeUVReflectionMapping',
+    'CubeUVRefractionMapping',
 ]
 
 WrappingModes = [
     'RepeatWrapping',
     'ClampToEdgeWrapping',
-    'MirroredRepeatWrapping'
+    'MirroredRepeatWrapping',
 ]
 
 Filters = [
@@ -91,7 +92,7 @@ Filters = [
     'NearestMipMapLinearFilter',
     'LinearFilter',
     'LinearMipMapNearestFilter',
-    'LinearMipMapLinearFilter'
+    'LinearMipMapLinearFilter',
 ]
 
 DataTypes = [
@@ -102,22 +103,30 @@ DataTypes = [
     'IntType',
     'UnsignedIntType',
     'FloatType',
-    'HalfFloatType'
+    'HalfFloatType',
 ]
 
 PixelTypes = [
     'UnsignedShort4444Type',
     'UnsignedShort5551Type',
-    'UnsignedShort565Type'
+    'UnsignedShort565Type',
+    'UnsignedInt248Type',
 ]
 
 PixelFormats = [
     'AlphaFormat',
     'RGBFormat',
     'RGBAFormat',
+    'RGBEFormat',
     'LuminanceFormat',
     'LuminanceAlphaFormat',
-    'RGBEFormat'
+    'DepthFormat',
+    'DepthStencilFormat',
+]
+
+DepthFormats = [
+    'DepthFormat',
+    'DepthStencilFormat',
 ]
 
 CompressedTextureFormats = [
@@ -128,19 +137,67 @@ CompressedTextureFormats = [
     'RGB_PVRTC_4BPPV1_Format',
     'RGB_PVRTC_2BPPV1_Format',
     'RGBA_PVRTC_4BPPV1_Format',
-    'RGBA_PVRTC_2BPPV1_Format'
+    'RGBA_PVRTC_2BPPV1_Format',
+    'RGB_ETC1_Format',
 ]
 
-# Misc
-
-Lines = [
-    'LineStrip',
-    'LinePieces'
+TextureEncodings = [
+    'LinearEncoding',
+    'sRGBEncoding',
+    'RGBEEncoding',
+    'LogLuvEncoding',
+    'RGBM7Encoding',
+    'RGBM16Encoding',
+    'RGBDEncoding',
+    'GammaEncoding',
 ]
 
-Renderers = [
-    'webgl',
-    'canvas',
-    'auto'
+CullFaceModes = [
+    'CullFaceNone',
+    'CullFaceBack',
+    'CullFaceFront',
+    'CullFaceFrontBack',
 ]
 
+FrontFaceDirection = [
+    'FrontFaceDirectionCW',
+    'FrontFaceDirectionCCW',
+]
+
+ShadowTypes = [
+    'BasicShadowMap',
+    'PCFShadowMap',
+    'PCFSoftShadowMap',
+]
+
+ToneMappings = [
+    'NoToneMapping',
+    'LinearToneMapping',
+    'ReinhardToneMapping',
+    'Uncharted2ToneMapping',
+    'CineonToneMapping',
+]
+
+LoopModes = [
+    'LoopOnce',
+    'LoopRepeat',
+    'LoopPingPong',
+]
+
+InterpolationModes = [
+    'InterpolateDiscrete',
+    'InterpolateLinear',
+    'InterpolateSmooth',
+]
+
+EndingModes = [
+    'ZeroCurvatureEnding',
+    'ZeroSlopeEnding',
+    'WrapAroundEnding',
+]
+
+DrawModes = [
+    'TrianglesDrawMode',
+    'TriangleStripDrawMode',
+    'TriangleFanDrawMode',
+]

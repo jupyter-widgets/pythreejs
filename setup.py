@@ -39,7 +39,7 @@ setup_args = {
     'version': version_ns['__version__'],
     'description': 'Interactive 3d graphics for the Jupyter notebook, using Three.js from Jupyter interactive widgets.',
     'long_description': LONG_DESCRIPTION,
-    'License': 'BSD',
+    'license': 'BSD',
     'include_package_data': True,
     'data_files': [
         ('share/jupyter/nbextensions/jupyter-threejs', [
@@ -48,7 +48,10 @@ setup_args = {
             'pythreejs/static/index.js.map',
         ]),
     ],
-    'install_requires': ['ipywidgets>=7,<8', 'traittypes'],
+    'install_requires': [
+        'ipywidgets>=7,<8',
+        'ipydatawidgets>=1.1.1'
+    ],
     'packages': find_packages(),
     'zip_safe': False,
     'cmdclass': cmdclass,
