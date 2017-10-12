@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 from traitlets import (
     Unicode, Int, CInt, Instance, Enum, List, Dict, Float, CFloat,
@@ -42,16 +44,16 @@ def Matrix4(trait_type=CFloat, default=None, **kwargs):
 
 def Face3(**kwargs):
     return Tuple(
-        CInt(),     # a — Vertex A index.
-        CInt(),     # b — Vertex B index.
-        CInt(),     # c — Vertex C index.
-        Union([     # normal — (optional) Face normal (Vector3) or array of 3 vertex normals.
+        CInt(),     # a - Vertex A index.
+        CInt(),     # b - Vertex B index.
+        CInt(),     # c - Vertex C index.
+        Union([     # normal - (optional) Face normal (Vector3) or array of 3 vertex normals.
             Vector3(),
             List(Vector3(), minlen=3, maxlen=3)]),
-        Union([     # color — (optional) Face color or array of vertex colors.
+        Union([     # color - (optional) Face color or array of vertex colors.
             Unicode(),
             List(Unicode(), minlen=3, maxlen=3)]),
-        CInt(),     # materialIndex — (optional) which index of an array of materials to associate with the face.
+        CInt(),     # materialIndex - (optional) which index of an array of materials to associate with the face.
         )
 
 def Euler(default=None, **kwargs):
