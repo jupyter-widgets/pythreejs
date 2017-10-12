@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var datawidgets = require('jupyter-datawidgets');
+var dataserializers = require('jupyter-dataserializers');
 var ndarray = require('ndarray');
 var THREE = require('three');
 var BufferAttributeAutogen = require('./BufferAttribute.autogen').BufferAttributeModel;
@@ -15,7 +15,7 @@ var BufferAttributeModel = BufferAttributeAutogen.extend({
     },
 
     decodeData() {
-        var rawData = datawidgets.getArrayFromUnion(this.get('array'));
+        var rawData = dataserializers.getArray(this.get('array'));
         var itemSize = rawData.dimension === 1 ? 1 : rawData.shape[rawData.dimension - 1];
 
         var data = this.convertArrayBufferModelToThree(rawData, 'array');
@@ -57,11 +57,8 @@ var BufferAttributeModel = BufferAttributeAutogen.extend({
         var modelNDArray = this.get('array');
         if (modelNDArray) {
             // 1. / 2.
-            if (modelNDArray instanceof datawidgets.NDArrayModel) {
-                modelNDArray.get('array').data.set(attributeData);
-            } else {
-                modelNDArray.data.set(attributeData);
-            }
+            var rawData = dataserializers.getArray(modelNDArray);
+            rawData.data.set(attributeData);
         } else {
             // 3. / 4.
             this.set('array', ndarray(attributeData, [this.obj.count, this.obj.itemSize]));

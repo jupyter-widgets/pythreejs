@@ -26,7 +26,7 @@
   "dependencies": {
     "@jupyter-widgets/base": "^1.0.0",
     "bluebird": "^3.4.3",
-    "jupyter-datawidgets": "^2.0.0",
+    "jupyter-dataserializers": "^1.0.0",
     "three": "^0.87.1",
     "underscore": "^1.8.3"
   }

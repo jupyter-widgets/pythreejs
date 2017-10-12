@@ -319,7 +319,7 @@ function ArrayBufferType(arrayType, shapeConstraint) {
     this.arrayType = arrayType;
     this.shapeConstraint = shapeConstraint;
     this.defaultValue = null;
-    this.serializer = 'datawidgets.data_union_serialization';
+    this.serializer = 'dataserializers.data_union_serialization';
 }
 _.extend(ArrayBufferType.prototype, BaseType.prototype, {
     getTraitlet: function() {

@@ -3,7 +3,7 @@ var widgets = require("@jupyter-widgets/base");
 var Promise = require('bluebird');
 var $ = require('jquery');
 var ndarray = require('ndarray');
-var datawidgets = require('jupyter-datawidgets');
+var dataserializers = require('jupyter-dataserializers');
 
 var THREE = require('three');
 
@@ -139,7 +139,7 @@ var ThreeModel = widgets.WidgetModel.extend({
 
         // Handle changes in data widgets/union properties
         this.datawidget_properties.forEach(function(propName) {
-            datawidgets.listenToUnion(this, propName, this.onChildChanged.bind(this), false);
+            dataserializers.listenToUnion(this, propName, this.onChildChanged.bind(this), false);
         }, this);
 
         this.on('change', this.onChange, this);

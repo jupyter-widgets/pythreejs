@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var datawidgets = require('jupyter-datawidgets');
+var dataserializers = require('jupyter-dataserializers');
 var ndarray = require('ndarray');
 var THREE = require('three');
 var DataTextureBase = require('./DataTexture.autogen').DataTextureModel;
@@ -15,7 +15,7 @@ var DataTextureModel = DataTextureBase.extend({
     },
 
     decodeData() {
-        var rawData = datawidgets.getArrayFromUnion(this.get('data'));
+        var rawData = dataserializers.getArray(this.get('data'));
         if (rawData.dimension < 2 || rawData.dimension > 3) {
             throw Error('DataTexture data dimensions need to be 2 or 3, got:', rawData.dimension)
         }
@@ -69,7 +69,8 @@ var DataTextureModel = DataTextureBase.extend({
         var imageRecord = this.obj.image;
         var modelNDArray = this.get('data');
         if (modelNDArray) {
-            modelNDArray.data.set(imageRecord.data);
+            var rawData = dataserializers.getArray(modelNDArray);
+            rawData.data.set(imageRecord.data);
         } else {
             this.set('data', ndarray(imageRecord.data, [imageRecord.width, imageRecord.height]));
         }
@@ -77,7 +78,7 @@ var DataTextureModel = DataTextureBase.extend({
 
 }, {
     serializers: _.extend({
-        data: datawidgets.data_union_serialization,
+        data: dataserializers.data_union_serialization,
     }, DataTextureBase.serializers),
 });
 
