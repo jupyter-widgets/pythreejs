@@ -12,19 +12,20 @@ var ThreeModel = require('../_base/Three').ThreeModel;
 
 var RendererModel = RenderableModel.extend({
 
-    defaults: _.extend({}, RenderableModel.prototype.defaults, {
+    defaults: function() {
+        return _.extend(RenderableModel.prototype.defaults.call(this), {
 
-        _view_name: 'RendererView',
-        _model_name: 'RendererModel',
+            _view_name: 'RendererView',
+            _model_name: 'RendererModel',
 
-        scene: null,
-        camera: null,
-        controls: [],
-        effect: null,
-        background: "black",
-        background_opacity: 1.0,
-
-    }),
+            scene: null,
+            camera: null,
+            controls: [],
+            effect: null,
+            background: "black",
+            background_opacity: 1.0,
+        });
+    },
 
     initialize: function(attributes, options) {
         RenderableModel.prototype.initialize.apply(this, arguments);
