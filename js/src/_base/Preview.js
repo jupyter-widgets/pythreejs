@@ -34,15 +34,15 @@ var PreviewView = RenderableView.extend({
     setupEventListeners: function() {
         RenderableView.prototype.setupEventListeners.call(this);
         var child = this.model.get('child');
-        this.listenTo(child, 'change', this.onChildChange.bind(this));
+        this.listenTo(child, 'change', this.onChildChanged.bind(this));
         if (child.obj.isObject3D) {
             // Since we use clone for objects, we need to rebuild for
             // any nested change instead of just rerendering.
-            this.listenTo(child, 'childchange', this.onChildChange.bind(this));
+            this.listenTo(child, 'childchange', this.onChildChanged.bind(this));
         }
     },
 
-    onChildChange: function() {
+    onChildChanged: function() {
         // Enabling this line will reset the camera
         // when any changes are made to the child
         //this._resetCameraNeeded = true;
@@ -257,11 +257,11 @@ var PreviewModel = RenderableModel.extend({
 
     setupListeners: function() {
         var child = this.get('child');
-        this.listenTo(child, 'change', this.onChildChange.bind(this));
-        this.listenTo(child, 'childchange', this.onChildChange.bind(this));
+        this.listenTo(child, 'change', this.onChildChanged.bind(this));
+        this.listenTo(child, 'childchange', this.onChildChanged.bind(this));
     },
 
-    onChildChange: function(model, options) {
+    onChildChanged: function(model, options) {
         this.trigger('rerender', this, {});
     },
 

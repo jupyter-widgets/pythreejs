@@ -38,18 +38,18 @@ var RendererModel = RenderableModel.extend({
 
         var scene = this.get('scene');
         var camera = this.get('camera');
-        this.listenTo(scene, 'change', this.onChildChange.bind(this));
-        this.listenTo(scene, 'childchange', this.onChildChange.bind(this));
-        this.listenTo(scene, 'rerender', this.onChildChange.bind(this));
+        this.listenTo(scene, 'change', this.onChildChanged.bind(this));
+        this.listenTo(scene, 'childchange', this.onChildChanged.bind(this));
+        this.listenTo(scene, 'rerender', this.onChildChanged.bind(this));
         this.listenTo(camera, 'change', this.onCameraChange.bind(this));
 
     },
 
     onCameraChange: function(model, options) {
-        this.onChildChange();
+        this.onChildChanged(model, options);
     },
 
-    onChildChange: function(model, options) {
+    onChildChanged: function(model, options) {
         this.trigger('rerender', this, {});
     },
 
