@@ -243,6 +243,7 @@ module.exports = {
             rotationVector: new Types.Vector3(0, 0, 0),
             movementSpeed: new Types.Float(1.0),
             rollSpeed: new Types.Float(0.05),
+            syncRate: new Types.Float(1.0),
         },
     },
     Picker: {

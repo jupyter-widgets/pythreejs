@@ -11,6 +11,7 @@ var FlyControlsModel = FlyControlsAutogen.FlyControlsModel.extend({
         this.clock = new THREE.Clock();
         var controlling = this.get('controlling');
         this.renderer = null;
+        this.syncAtWill = true;
 
         obj = new FlyControls(controlling.obj);
         obj.dispose();  // Disconnect events, we need to (dis-)connect on freeze/thaw
@@ -21,7 +22,12 @@ var FlyControlsModel = FlyControlsAutogen.FlyControlsModel.extend({
         FlyControlsAutogen.FlyControlsModel.prototype.setupListeners.call(this);
         var that = this;
         this.obj.addEventListener('change', function() {
-            that.update_controlled();
+            // Throttle syncs:
+            if (that.syncAtWill) {
+                that.syncAtWill = false;
+                that.update_controlled();
+                setTimeout(that.allowSync.bind(that), 1000 * that.get('syncRate'));
+            }
         });
         this.on('enableControl', this.onEnable, this);
         this.on('disableControl', this.onDisable, this);
@@ -38,9 +44,13 @@ var FlyControlsModel = FlyControlsAutogen.FlyControlsModel.extend({
         this.renderer = null;
     },
 
+    allowSync: function() {
+        this.syncAtWill = true;
+    },
+
     _update: function() {
-        this.obj.update(this.clock.getDelta());
         if (this.renderer !== null) {
+            this.obj.update(this.clock.getDelta());
             requestAnimationFrame(this._update.bind(this));
         }
     },
