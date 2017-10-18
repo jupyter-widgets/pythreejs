@@ -239,12 +239,11 @@ module.exports = {
         relativePath: './controls/FlyControls',
         superClass: 'Controls',
         properties: {
-            forward_speed: new Types.Float(0),
-            lateral_speed: new Types.Float(0),
-            upward_speed: new Types.Float(0),
-            roll: new Types.Float(0),
-            pitch: new Types.Float(0),
-            yaw: new Types.Float(0),
+            moveVector: new Types.Vector3(0, 0, 0),
+            rotationVector: new Types.Vector3(0, 0, 0),
+            movementSpeed: new Types.Float(1.0),
+            rollSpeed: new Types.Float(0.05),
+            syncRate: new Types.Float(1.0),
         },
     },
     Picker: {
