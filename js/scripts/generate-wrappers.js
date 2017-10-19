@@ -817,10 +817,6 @@ _.extend(PythonWrapper.prototype, {
 
         var refTokens = this.modulePath.split(pathSep);
 
-        // capitalize elements in url
-        refTokens = refTokens.map(function(token) {
-            return token.charAt(0).toUpperCase() + token.slice(1);
-        });
         // strip extension off filename
         refTokens[refTokens.length - 1] = path.basename(refTokens[refTokens.length - 1], '.js');
 
