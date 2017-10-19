@@ -59,7 +59,18 @@ var IGNORE_FILES = [
     '**/materials/MeshDistanceMaterial.js', // TODO: Undocumented as of yet
     '**/renderers/WebGLRenderer.js',        // For now, the internals of the webgl
     '**/renderers/WebGL2Renderer.js',       //   render is not exposed.
-    '**/renderers/webgl/**',
+    //'**/renderers/webgl/**',
+    '**/renderers/webgl/WebGLAttributes.js',
+    '**/renderers/webgl/WebGLBackground.js',
+    '**/renderers/webgl/WebGLClipping.js',
+    '**/renderers/webgl/WebGLFlareRenderer.js',
+    '**/renderers/webgl/WebGLMorphtargets.js',
+    '**/renderers/webgl/WebGLRenderLists.js',
+    '**/renderers/webgl/WebGLSpriteRenderer.js',
+    '**/renderers/webgl/WebGLTextures.js',
+    '**/renderers/webgl/WebGLUniforms.js',
+    '**/renderers/webgl/WebGLUtils.js',
+    '**/renderers/webvr/**',
     '**/renderers/shaders/**',
     '**/extras/core/Interpolations.js',     // Only functions, nothing to export
     '**/extras/core/PathPrototype.js',      // Sub-part of one object, ignore

@@ -14,6 +14,41 @@ var utils = require('./utils');
 var version = require('../../package.json').version;
 
 
+/**
+ * Helper function for listening to child models in lists/dicts
+ *
+ * @param {any} model The parent model
+ * @param {any} propNames The propetry names that are lists/dicts
+ * @param {any} callback The callback to call when child changes
+ */
+function listenNested(model, propNames, callback) {
+    propNames.forEach(function(propName) {
+        // listen to current values in array
+        var curr = model.get(propName) || [];
+        utils.childModelsNested(curr).forEach(function(childModel) {
+            model.listenTo(childModel, 'change', callback);
+            model.listenTo(childModel, 'childchange', callback);
+        });
+
+        // make sure to (un)hook listeners when array changes
+        model.on('change:' + propName, function(model, value, options) {
+            var prev = model.previous(propName) || [];
+            var curr = value || [];
+
+            var diff = utils.nestedDiff(curr, prev);
+
+            diff.added.forEach(function(childModel) {
+                model.listenTo(childModel, 'change', callback);
+                model.listenTo(childModel, 'childchange', callback);
+            });
+            diff.removed.forEach(function(childModel) {
+                model.stopListening(childModel);
+            });
+        });
+    });
+}
+
+
 var ThreeModel = widgets.WidgetModel.extend({
 
     defaults: function() {
@@ -81,34 +116,6 @@ var ThreeModel = widgets.WidgetModel.extend({
         this.property_mappers = {};
     },
 
-    _listenNested: function(propNames, callback) {
-        propNames.forEach(function(propName) {
-
-            // listen to current values in array
-            var curr = this.get(propName) || [];
-            utils.childModelsNested(curr).forEach(function(childModel) {
-                this.listenTo(childModel, 'change', callback);
-                this.listenTo(childModel, 'childchange', callback);
-            }, this);
-
-            // make sure to (un)hook listeners when array changes
-            this.on('change:' + propName, function(model, value, options) {
-                var prev = this.previous(propName) || [];
-                var curr = value || [];
-
-                var diff = utils.nestedDiff(curr, prev);
-
-                diff.added.forEach(function(childModel) {
-                    this.listenTo(childModel, 'change', callback);
-                    this.listenTo(childModel, 'childchange', callback);
-                }, this);
-                diff.removed.forEach(function(childModel) {
-                    this.stopListening(childModel);
-                }, this);
-            }, this);
-        }, this);
-    },
-
     setupListeners: function() {
 
         // Handle changes in three instance props
@@ -135,7 +142,7 @@ var ThreeModel = widgets.WidgetModel.extend({
         }, this);
 
         // Handle changes in three instance nested props (arrays/dicts, possibly nested)
-        this._listenNested(this.three_nested_properties, this.onChildChanged.bind(this));
+        listenNested(this, this.three_nested_properties, this.onChildChanged.bind(this));
 
         // Handle changes in data widgets/union properties
         this.datawidget_properties.forEach(function(propName) {

@@ -9,7 +9,7 @@ from traitlets import (
 from ..enums import *
 from ..traits import *
 
-from .._base.Three import RenderableWidget
+from .._base.renderable import RenderableWidget
 from ..scenes.Scene_autogen import Scene
 from ..cameras.Camera_autogen import Camera
 from ..controls.Controls_autogen import Controls
@@ -19,8 +19,6 @@ from_json = widget_serialization['from_json']
 
 class Renderer(RenderableWidget):
     """Renderer
-
-    Author: @vidartf
     """
 
     _view_name = Unicode('RendererView').tag(sync=True)
@@ -35,11 +33,12 @@ class Renderer(RenderableWidget):
     background = Color('black', allow_none=True).tag(sync=True)
     background_opacity = Float(1.0, min=0.0, max=1.0).tag(sync=True)
 
-    def __init__(self, scene, camera, controls=None, **kwargs):
+    def __init__(self, scene, camera, controls=None, antialias=False, **kwargs):
         super(Renderer, self).__init__(
             scene=scene,
             camera=camera,
             controls=controls or [],
+            _antialias=antialias,
             **kwargs)
         link((self, 'width'), (self, '_width'))
         link((self, 'height'), (self, '_height'))

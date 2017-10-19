@@ -19,24 +19,6 @@ var WebGLRendererModel = RenderableModel.extend({
 
         width: 200,
         height: 200,
-        autoClear: true,
-        autoClearColor: true,
-        clearColor: '#000000',
-        clearOpacity: 1.0,
-        autoClearDepth: true,
-        autoClearStencil: true,
-        sortObject: true,
-        clippingPlanes: null,
-        localClippingEnabled: false,
-        gammaFactor: 2.0,
-        gammaInput: false,
-        gammaOutput: false,
-        physicallyCorrectLights: false,
-        toneMappingExposure: 1.0,
-        toneMappingWhitePoint: 1.0,
-        maxMorphTargets: 8,
-        maxMorphNormals: 4,
-        toneMapping: 'LinearToneMapping',
 
     }),
 
@@ -75,10 +57,7 @@ var WebGLRendererView = RenderableView.extend({
 
         // We need to ensure that renderer properties are applied
         // (we have no idea where the renderer has been...)
-        var clearColor = ThreeModel.prototype.convertColorModelToThree(this.model.get('clearColor'));
-        var clearOpacity = ThreeModel.prototype.convertFloatModelToThree(this.model.get('clearOpacity'));
-        this.renderer.setClearColor(clearColor, clearOpacity);
-        // TODO: Apply other model attributes
+        this.updateProperties();
     },
 
     //

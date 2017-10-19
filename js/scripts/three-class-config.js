@@ -470,16 +470,19 @@ module.exports = {
         relativePath: './lights/DirectionalLight',
         superClass: 'Light',
         properties: {
-            target:      new Types.InitializedThreeType('Object3D', {args: '()', nullable: false}),
-            // TODO: shadows
-            // shadow:      new Types.ThreeType('LightShadow'),
-            castsShadow: new Types.Bool(false),
+            target:      new Types.InitializedThreeType('Object3D', null, {args: '()', nullable: false}),
+            shadow:      new Types.InitializedThreeType('DirectionalLightShadow', 'LightShadow', {args: '()', nullable: false}),
         },
         constructorArgs: [ 'color', 'intensity' ],
-        propsDefinedByThree: [ 'target' ]
+        propsDefinedByThree: [ 'target', 'shadow' ]
     },
     DirectionalLightShadow: {
         relativePath: './lights/DirectionalLightShadow',
+        superClass: 'LightShadow',
+        properties: {
+            // TODO: Fix this
+            camera:     new Types.InitializedThreeType('OrthographicCamera', 'Camera', {args: '()'}),
+        },
     },
     HemisphereLight: {
         relativePath: './lights/HemisphereLight',
@@ -500,6 +503,15 @@ module.exports = {
     },
     LightShadow: {
         relativePath: './lights/LightShadow',
+        properties: {
+            // TODO: Fix this
+            camera:     new Types.ThreeType('Camera', {args: '()'}),
+            bias:       new Types.Float(0),
+            mapSize:    new Types.Vector2(512, 512),
+            radius:     new Types.Float(1)
+        },
+        constructorArgs: [ 'camera' ],
+        propsDefinedByThree: [ 'camera' ],
     },
     PointLight: {
         relativePath: './lights/PointLight',
@@ -508,10 +520,10 @@ module.exports = {
             power:    new Types.Float(4.0 * Math.PI),
             distance: new Types.Float(0.0),
             decay:    new Types.Float(1.0),
-            // TODO: shadows
-            // shadow:   new Types.ThreeType('LightShadow'),
+            shadow:   new Types.InitializedThreeType('LightShadow', null, {args: '()'}),
         },
         constructorArgs: [ 'color', 'intensity', 'distance', 'decay' ],
+        propsDefinedByThree: [ 'shadow' ],
     },
     RectAreaLight: {
         relativePath: './lights/RectAreaLight',
@@ -521,19 +533,23 @@ module.exports = {
         relativePath: './lights/SpotLight',
         superClass: 'Light',
         properties: {
-            target:   new Types.InitializedThreeType('Object3D', {args: '()', nullable: false}),
+            target:   new Types.InitializedThreeType('Object3D', null, {args: '()', nullable: false}),
             distance: new Types.Float(0.0),
             angle:    new Types.Float(Math.PI / 3.0),
             penumbra: new Types.Float(0.0),
             decay:    new Types.Float(1.0),
-            // TODO: shadows
-            // shadow:   new Types.ThreeType('LightShadow'),
+            shadow:   new Types.InitializedThreeType('SpotLightShadow', 'LightShadow', {args: '()'}),
         },
         constructorArgs: [ 'color', 'intensity', 'distance', 'angle', 'penumbra', 'decay' ],
-        propsDefinedByThree: [ 'target' ]
+        propsDefinedByThree: [ 'target', 'shadow' ]
     },
     SpotLightShadow: {
         relativePath: './lights/SpotLightShadow',
+        superClass: 'LightShadow',
+        properties: {
+            // TODO: Fix this
+            camera:     new Types.InitializedThreeType('PerspectiveCamera', 'Camera', {args: '()'}),
+        },
     },
     AnimationLoader: {
         relativePath: './loaders/AnimationLoader',
@@ -1160,6 +1176,21 @@ module.exports = {
     },
     WebGLRenderer: {
         relativePath: './renderers/WebGLRenderer',
+        properties: {
+            clippingPlanes:             new Types.ThreeTypeArray('Plane'),
+            gammaFactor:                new Types.Float(2),
+            gammaInput:                 new Types.Bool(false),
+            gammaOutput:                new Types.Bool(false),
+            localClippingEnabled:       new Types.Bool(false),
+            physicallyCorrectLights:    new Types.Bool(false),
+            // Note: shadow map has custom handling in `Renderable` base class
+            shadowMap:                  new Types.ThreeType('WebGLShadowMap'),
+            sortObjects:                new Types.Bool(false),
+            toneMapping:                new Types.Enum('ToneMappings', 'LinearToneMapping'),
+            toneMappingExposure:        new Types.Float(1.0),
+            toneMappingWhitepoint:      new Types.Float(1.0),
+        },
+        propsDefinedByThree: ['shadowMap']
     },
     Fog: {
         relativePath: './scenes/Fog',
