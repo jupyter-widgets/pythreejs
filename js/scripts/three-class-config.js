@@ -656,7 +656,7 @@ module.exports = {
             visible:                new Types.Bool(true),
             opacity:                new Types.Float(1.0),
         },
-        propsDefinedByThree: [ 'type' ]
+        propsDefinedByThree: [ 'type', 'needsUpdate' ]
     },
     MeshBasicMaterial: {
         relativePath: './materials/MeshBasicMaterial',
