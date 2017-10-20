@@ -74,8 +74,9 @@ var ThreeModel = widgets.WidgetModel.extend({
             var obj = options.three_obj;
             delete options.three_obj;
 
-            this.initPromise = Promise.resolve(obj).bind(this).then(this.processNewObj
-            ).then(function (obj) {
+            this.processNewObj(obj);
+
+            this.initPromise = this.createUninitializedChildren().bind(this).then(function() {
 
                 // sync in all the properties from the THREE object
                 this.syncToModel(true);
@@ -89,6 +90,8 @@ var ThreeModel = widgets.WidgetModel.extend({
 
         // Instantiate Three.js object
         this.initPromise = this.createThreeObjectAsync().bind(this).then(function() {
+            return this.createUninitializedChildren();
+        }).then(function() {
 
             // pull in props created by three
             this.syncToModel();
@@ -162,6 +165,26 @@ var ThreeModel = widgets.WidgetModel.extend({
         this.obj = obj;
         return obj;
 
+    },
+
+    createUninitializedChildren: function() {
+
+        // Get any properties to create from this side
+        var uninit = _.filter(this.three_properties, function(propName) {
+            return this.get(propName) === 'uninitialized';
+        }, this);
+
+        // Return promise for their creation
+        return Promise.all(_.map(uninit, function(propName) {
+            var obj = this.obj[propName]
+            // First, we need to figure out which model constructor to use
+            var ctorName = `${obj.constructor.name}Model`;
+            var index = require('../');
+            var ctor = index[ctorName];
+            // Create the model
+            var modelPromise = utils.createModel(ctor, this.widget_manager, obj);
+            return modelPromise;
+        }, this));
     },
 
     createThreeObjectAsync: function() {
@@ -614,25 +637,6 @@ var ThreeModel = widgets.WidgetModel.extend({
     convertThreeTypeThreeToModel: function(threeType, propName) {
         if (!threeType) {
             return threeType;
-        }
-        return threeType.ipymodel;
-    },
-
-    // InitializedThreeType
-    convertInitializedThreeTypeModelToThree: function(model, propName) {
-        if (model) {
-            return model.obj;
-        }
-        return null;
-    },
-
-    convertInitializedThreeTypeThreeToModel: function(threeType, propName) {
-        if (threeType.ipymodelId === undefined) {
-            var placeholder = this.get(propName);
-            threeType.ipymodelId = placeholder.obj.ipymodelId;
-            threeType.ipymodel = placeholder;
-            placeholder.obj = threeType;
-            placeholder.syncToModel();
         }
         return threeType.ipymodel;
     },

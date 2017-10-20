@@ -470,8 +470,8 @@ module.exports = {
         relativePath: './lights/DirectionalLight',
         superClass: 'Light',
         properties: {
-            target:      new Types.InitializedThreeType('Object3D', null, {args: '()', nullable: false}),
-            shadow:      new Types.InitializedThreeType('DirectionalLightShadow', 'LightShadow', {args: '()', nullable: false}),
+            target:      new Types.InitializedThreeType('Object3D', {nullable: false}),
+            shadow:      new Types.InitializedThreeType('LightShadow', {nullable: false}),
         },
         constructorArgs: [ 'color', 'intensity' ],
         propsDefinedByThree: [ 'target', 'shadow' ]
@@ -479,10 +479,6 @@ module.exports = {
     DirectionalLightShadow: {
         relativePath: './lights/DirectionalLightShadow',
         superClass: 'LightShadow',
-        properties: {
-            // TODO: Fix this
-            camera:     new Types.InitializedThreeType('OrthographicCamera', 'Camera', {args: '()'}),
-        },
     },
     HemisphereLight: {
         relativePath: './lights/HemisphereLight',
@@ -504,8 +500,7 @@ module.exports = {
     LightShadow: {
         relativePath: './lights/LightShadow',
         properties: {
-            // TODO: Fix this
-            camera:     new Types.ThreeType('Camera', {args: '()'}),
+            camera:     new Types.InitializedThreeType('Camera', {nullable: false}),
             bias:       new Types.Float(0),
             mapSize:    new Types.Vector2(512, 512),
             radius:     new Types.Float(1)
@@ -520,7 +515,7 @@ module.exports = {
             power:    new Types.Float(4.0 * Math.PI),
             distance: new Types.Float(0.0),
             decay:    new Types.Float(1.0),
-            shadow:   new Types.InitializedThreeType('LightShadow', null, {args: '()'}),
+            shadow:   new Types.InitializedThreeType('LightShadow', {nullable: false}),
         },
         constructorArgs: [ 'color', 'intensity', 'distance', 'decay' ],
         propsDefinedByThree: [ 'shadow' ],
@@ -533,12 +528,12 @@ module.exports = {
         relativePath: './lights/SpotLight',
         superClass: 'Light',
         properties: {
-            target:   new Types.InitializedThreeType('Object3D', null, {args: '()', nullable: false}),
+            target:   new Types.InitializedThreeType('Object3D', {nullable: false}),
             distance: new Types.Float(0.0),
             angle:    new Types.Float(Math.PI / 3.0),
             penumbra: new Types.Float(0.0),
             decay:    new Types.Float(1.0),
-            shadow:   new Types.InitializedThreeType('SpotLightShadow', 'LightShadow', {args: '()'}),
+            shadow:   new Types.InitializedThreeType('LightShadow', {nullable: false}),
         },
         constructorArgs: [ 'color', 'intensity', 'distance', 'angle', 'penumbra', 'decay' ],
         propsDefinedByThree: [ 'target', 'shadow' ]
@@ -546,10 +541,6 @@ module.exports = {
     SpotLightShadow: {
         relativePath: './lights/SpotLightShadow',
         superClass: 'LightShadow',
-        properties: {
-            // TODO: Fix this
-            camera:     new Types.InitializedThreeType('PerspectiveCamera', 'Camera', {args: '()'}),
-        },
     },
     AnimationLoader: {
         relativePath: './loaders/AnimationLoader',

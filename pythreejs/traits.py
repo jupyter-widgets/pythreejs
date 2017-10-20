@@ -6,6 +6,8 @@ from traitlets import (
     Bool, Tuple, Undefined, TraitError, Union,
 )
 
+from ipywidgets import widget_serialization
+
 from ipydatawidgets import DataUnion, NDArrayWidget
 
 def Vector2(trait_type=CFloat, default=None, **kwargs):
@@ -74,3 +76,21 @@ class WebGLDataUnion(DataUnion):
                 # 64-bit not supported, coerce to 32-bit
                 value = value.astype('float32')
         return value
+
+
+class Uninitialized:
+    pass
+
+_widget_to_json = widget_serialization['to_json']
+
+def _serialize_uninitialized(value, owner):
+    if isinstance(value, Uninitialized):
+        return 'uninitialized'
+    return _widget_to_json(value, owner)
+
+unitialized_serialization = {
+    'to_json': _serialize_uninitialized,
+    'from_json': widget_serialization['from_json'],
+    }
+
+UninitializedSentinel = Uninitialized()

@@ -101,8 +101,28 @@ function InitializedThreeType(typeName, options={}) {
     ThreeType.call(this, typeName, options);
 }
 _.extend(InitializedThreeType.prototype, ThreeType.prototype, {
-    getPropertyConverterFn: function() {
-        return 'convertInitializedThreeType';
+    getJSPropertyValue: function() {
+        return '"uninitialized"';
+    },
+    getPythonDefaultValue: function() {
+        return 'UninitializedSentinel';
+    },
+    getTraitlet: function() {
+        var typeName = this.typeName;
+        var nullableStr = this.nullable ? 'True' : 'False';
+        var inst = `Instance(${typeName}`;
+        if (this.args !== undefined) {
+            inst += `, args=${this.args}`;
+        }
+        if (this.kwargs !== undefined) {
+            inst += `, kw=${this.kwargs}`;
+        }
+        inst += `)`;
+        var uninit = 'Instance(Uninitialized)';
+        var ret = `Union([\n        ${uninit},\n        ${inst}\n        ]`
+        ret += `, default_value=${this.getPythonDefaultValue()}, allow_none=${nullableStr})`;
+        ret += `.tag(sync=True, **unitialized_serialization)`;
+        return ret;
     },
 });
 
