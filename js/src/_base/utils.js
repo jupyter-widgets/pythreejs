@@ -213,11 +213,13 @@ function createModel(constructor, widget_manager, obj) {
         delete widget_manager._models[id];
     });
 
-    var data, buffers;
     widget_manager._models[id] = widget_model.initPromise.then(() => {
+        // Create un-opened comm:
+        return widget_manager._create_comm(widget_manager.comm_target_name, id);
+    }).then(comm => {
         var split = widgets.remove_buffers(
             widget_model.serialize(widget_model.get_state(true)));
-        data = {
+        var data = {
             state: _.extend({}, split.state, {
                 _model_name: constructor.model_name,
                 _model_module: constructor.model_module,
@@ -228,12 +230,8 @@ function createModel(constructor, widget_manager, obj) {
             }),
             buffer_paths: split.buffer_paths
         };
-        buffers = split.buffers;
+        var buffers = split.buffers;
 
-        // Create un-opened comm:
-        return widget_manager._create_comm(widget_manager.comm_target_name, id);
-
-    }).then(comm => {
         var content = {
             'comm_id': id,
             'target_name': widget_manager.comm_target_name,
