@@ -59,6 +59,7 @@ var RenderableModel = widgets.DOMWidgetModel.extend({
         ThreeModel.prototype.createPropertiesArrays.call(this);
         this.three_nested_properties.push('clippingPlanes');
         this.three_properties.push('shadowMap');
+        this.props_created_by_three['shadowMap'] = true;
 
         this.enum_property_types['toneMapping'] = 'ToneMappings';
 
