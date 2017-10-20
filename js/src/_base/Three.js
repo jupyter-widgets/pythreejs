@@ -69,6 +69,9 @@ var ThreeModel = widgets.WidgetModel.extend({
 
             // We need to push a default state first, as comm open does
             // not support buffers!
+            // Fixed in:
+            // - @jupyterlab/services@0.49.0
+            // - notebook 5.1.0
             this.save_changes();
 
             var obj = options.three_obj;
