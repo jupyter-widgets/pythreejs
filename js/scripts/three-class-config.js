@@ -280,7 +280,7 @@ module.exports = {
             version:     new Types.Int(-1),
         },
         constructorArgs: [ 'array', 'normalized' ],
-        propsDefinedByThree: [ 'version' ]
+        propsDefinedByThree: [ 'version', 'needsUpdate' ]
     },
     BufferGeometry: {
         relativePath: './core/BufferGeometry',
@@ -389,7 +389,7 @@ module.exports = {
             version:        new Types.Int(0),
             needsUpdate:    new Types.Bool(false),
         },
-        propsDefinedByThree: ['version'],
+        propsDefinedByThree: ['version', 'needsUpdate'],
         constructorArgs: ['array', 'stride'],
     },
     InterleavedBufferAttribute: {
@@ -431,7 +431,7 @@ module.exports = {
             frustumCulled:          new Types.Bool(true),
             renderOrder:            new Types.Int(0),
         },
-        propsDefinedByThree: [ 'type', 'rotation', 'quaternion' ]
+        propsDefinedByThree: [ 'type', 'rotation', 'quaternion', 'matrixWorldNeedsUpdate' ]
     },
     Blackbox: {
         superClass: 'Object3D',
@@ -656,7 +656,7 @@ module.exports = {
             visible:                new Types.Bool(true),
             opacity:                new Types.Float(1.0),
         },
-        propsDefinedByThree: [ 'type', 'needsUpdate' ]
+        propsDefinedByThree: [ 'type' ]
     },
     MeshBasicMaterial: {
         relativePath: './materials/MeshBasicMaterial',
