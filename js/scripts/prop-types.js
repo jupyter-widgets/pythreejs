@@ -29,6 +29,31 @@ _.extend(BaseType.prototype, {
     },
 })
 
+function genInstanceTraitlet(typeName, nullable, args, kwargs) {
+    var nullableStr = nullable ? 'True' : 'False';
+    // allow type unions
+    if (typeName instanceof Array) {
+        var instances = typeName.map(function(tname) {
+            return `        Instance(${tname}, allow_none=${nullableStr})`;
+        });
+        return 'Union([\n' + instances.join(',\n') + '\n    ]).tag(sync=True, **widget_serialization)';
+    }
+
+    if (typeName.toLowerCase() === 'this') {
+        return 'This().tag(sync=True, **widget_serialization)';
+    }
+
+    var ret = `Instance(${typeName}`;
+    if (args !== undefined) {
+        ret += `, args=${args}`;
+    }
+    if (kwargs !== undefined) {
+        ret += `, kw=${kwargs}`;
+    }
+    ret += `, allow_none=${nullableStr}).tag(sync=True, **widget_serialization)`;
+    return ret;
+}
+
 function ThreeType(typeName, options={}) {
     this.typeName = typeName || '';
     this.defaultValue = null;
@@ -39,28 +64,16 @@ function ThreeType(typeName, options={}) {
 }
 _.extend(ThreeType.prototype, BaseType.prototype, {
     getTraitlet: function() {
-        var nullableStr = this.nullable ? 'True' : 'False';
-        // allow type unions
-        if (this.typeName instanceof Array) {
-            var instances = this.typeName.map(function(typeName) {
-                return `        Instance(${typeName || 'ThreeWidget'}, allow_none=${nullableStr})`;
+        var typeName = this.typeName;
+        if (typeName instanceof Array) {
+            typeName = _.each(typeName, function(tname) {
+                return `${tname || 'ThreeWidget'}`;
             });
-            return 'Union([\n' + instances.join(',\n') + '\n    ]).tag(sync=True, **widget_serialization)';
+        } else {
+            typeName = `${typeName || 'ThreeWidget'}`;
         }
-
-        if (this.typeName.toLowerCase() === 'this') {
-            return 'This().tag(sync=True, **widget_serialization)';
-        }
-
-        var ret = `Instance(${this.typeName || 'ThreeWidget'}`;
-        if (this.args !== undefined) {
-            ret += `, args=${this.args}`;
-        }
-        if (this.kwargs !== undefined) {
-            ret += `, kw=${this.kwargs}`;
-        }
-        ret += `, allow_none=${nullableStr}).tag(sync=True, **widget_serialization)`;
-        return ret;
+        return genInstanceTraitlet(
+            typeName, this.nullable, this.args, this.kwargs);
     },
     getPropArrayName: function() {
         return 'three_properties';
@@ -79,28 +92,8 @@ _.extend(ForwardDeclaredThreeType.prototype, ThreeType.prototype, {
         return this.modulePath + '.' + this.typeName;
     },
     getTraitlet: function() {
-        var nullableStr = this.nullable ? 'True' : 'False';
-        // allow type unions
-        if (this.typeName instanceof Array) {
-            var instances = this.typeName.map(function(typeName) {
-                return `        Instance('${this.forwardType()}', allow_none=${nullableStr})`;
-            });
-            return 'Union([\n' + instances.join(',\n') + '\n    ]).tag(sync=True, **widget_serialization)';
-        }
-
-        if (this.typeName.toLowerCase() === 'this') {
-            return 'This().tag(sync=True, **widget_serialization)';
-        }
-
-        var ret = `Instance('${this.forwardType()}'`;
-        if (this.args !== undefined) {
-            ret += `, args=${this.args}`;
-        }
-        if (this.kwargs !== undefined) {
-            ret += `, kw=${this.kwargs}`;
-        }
-        ret += `, allow_none=${nullableStr}).tag(sync=True, **widget_serialization)`;
-        return ret;
+        return genInstanceTraitlet(
+            this.forwardType(), this.nullable, this.args, this.kwargs);
     },
 });
 
