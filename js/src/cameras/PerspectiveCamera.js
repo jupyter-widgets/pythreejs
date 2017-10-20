@@ -4,7 +4,7 @@ var PerspectiveCameraAutogen = require('./PerspectiveCamera.autogen');
 var PerspectiveCameraModel = PerspectiveCameraAutogen.PerspectiveCameraModel.extend({
     // push data from model to three object
     syncToThreeObj: function(force) {
-        PerspectiveCameraAutogen.PerspectiveCameraModel.prototype.syncToThreeObj.call(this, arguments);
+        PerspectiveCameraAutogen.PerspectiveCameraModel.prototype.syncToThreeObj.apply(this, arguments);
         // Always update the projection matrix after setting the attributes:
         this.obj.updateProjectionMatrix();
     }
