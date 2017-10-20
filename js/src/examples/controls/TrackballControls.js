@@ -361,40 +361,43 @@ var TrackballControls = function ( object, domElement ) {
 
 	this.connectEvents = function(element) {
 		if (element) {
-			this.domElement = element;
+			_this.domElement = element;
 		}
-		this.domElement.addEventListener( 'contextmenu', contextmenu, false );
+		_this.domElement.addEventListener( 'contextmenu', contextmenu, false );
 
-		this.domElement.addEventListener( 'mousedown', mousedown, false );
+		_this.domElement.addEventListener( 'mousedown', mousedown, false );
 
-		this.domElement.addEventListener( 'mousewheel', mousewheel, false );
-		this.domElement.addEventListener( 'DOMMouseScroll', mousewheel, false ); // firefox
+		_this.domElement.addEventListener( 'mousewheel', mousewheel, false );
+		_this.domElement.addEventListener( 'DOMMouseScroll', mousewheel, false ); // firefox
 
-		this.domElement.addEventListener( 'touchstart', touchstart, false );
-		this.domElement.addEventListener( 'touchend', touchend, false );
-		this.domElement.addEventListener( 'touchmove', touchmove, false );
+		_this.domElement.addEventListener( 'touchstart', touchstart, false );
+		_this.domElement.addEventListener( 'touchend', touchend, false );
+		_this.domElement.addEventListener( 'touchmove', touchmove, false );
 
-		window.addEventListener( 'keydown', keydown, false );
-		window.addEventListener( 'keyup', keyup, false );
+		_this.domElement.addEventListener( 'keydown', keydown, false );
+		_this.domElement.addEventListener( 'keyup', keyup, false );
 	}
 
 	this.dispose = function() {
 
-		scope.domElement.removeEventListener( 'contextmenu', contextmenu, false );
+		_this.domElement.removeEventListener( 'contextmenu', contextmenu, false );
 
-		scope.domElement.removeEventListener( 'mousedown', mousedown, false );
+		_this.domElement.removeEventListener( 'mousedown', mousedown, false );
 
-		scope.domElement.removeEventListener( 'mousewheel', mousewheel, false );
-		scope.domElement.removeEventListener( 'DOMMouseScroll', mousewheel, false ); // firefox
+		_this.domElement.removeEventListener( 'mousewheel', mousewheel, false );
+		_this.domElement.removeEventListener( 'DOMMouseScroll', mousewheel, false ); // firefox
 
-		scope.domElement.removeEventListener( 'touchstart', touchstart, false );
-		scope.domElement.removeEventListener( 'touchend', touchend, false );
-		scope.domElement.removeEventListener( 'touchmove', touchmove, false );
+		_this.domElement.removeEventListener( 'touchstart', touchstart, false );
+		_this.domElement.removeEventListener( 'touchend', touchend, false );
+		_this.domElement.removeEventListener( 'touchmove', touchmove, false );
 
-		window.removeEventListener( 'keydown', keydown, false );
-		window.removeEventListener( 'keyup', keyup, false );
+		document.removeEventListener( 'mousemove', mousemove, false );
+		document.removeEventListener( 'mouseup', mouseup, false );
 
-		//scope.dispatchEvent( { type: 'dispose' } ); // should this be added here?
+		_this.domElement.removeEventListener( 'keydown', keydown, false );
+		_this.domElement.removeEventListener( 'keyup', keyup, false );
+
+		//_this.dispatchEvent( { type: 'dispose' } ); // should this be added here?
 
 	};
 
@@ -500,6 +503,8 @@ var TrackballControls = function ( object, domElement ) {
 
 		}
 
+		_this.update();
+
 	}
 
 	function mouseup( event ) {
@@ -508,6 +513,8 @@ var TrackballControls = function ( object, domElement ) {
 
 		event.preventDefault();
 		event.stopPropagation();
+
+		_this.update();
 
 		_state = STATE.NONE;
 
