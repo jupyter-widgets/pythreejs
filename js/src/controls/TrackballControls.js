@@ -6,7 +6,7 @@ var TrackballControlsModel = TrackballControlsAutogen.TrackballControlsModel.ext
 
     constructThreeObject: function() {
         var controlling = this.get('controlling');
-        obj = new TrackballControls(controlling);
+        obj = new TrackballControls(controlling.obj);
         obj.dispose();  // Disconnect events, we need to (dis-)connect on freeze/thaw
         obj.noKeys = true; // turn off keyboard navigation
 
