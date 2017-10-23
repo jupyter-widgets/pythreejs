@@ -51,6 +51,7 @@ var RendererModel = RenderableModel.extend({
     },
 
     onChildChanged: function(model, options) {
+        RenderableModel.prototype.onChildChanged.apply(this, arguments);
         this.trigger('rerender', this, {});
     },
 
@@ -93,6 +94,21 @@ var RendererView = RenderableView.extend({
         this.listenTo(this.model, 'change:scene', this.onSceneSwitched.bind(this));
         this.listenTo(this.model, 'change:controls', this.onControlsSwitched.bind(this));
         this.listenTo(this.model, 'change:background change:background_opacity', this.applyBackground.bind(this));
+
+        var that = this;
+        function wrap(model) {
+            // Update properties for all children except the following:
+            var exclude = [
+                this.model.get('scene'),
+                this.model.get('camera'),
+                this.model.get('controls')
+            ];
+            if (exclude.indexOf(model) === -1) {
+                that.updateProperties();
+            }
+        }
+        this.listenTo(this.model, 'change', wrap);
+        this.listenTo(this.model.get('shadowMap'), 'change', wrap);
     },
 
     onCameraSwitched: function() {

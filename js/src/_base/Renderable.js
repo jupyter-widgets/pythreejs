@@ -8,6 +8,8 @@ var THREE = require('three');
 var pkgName = require('../../package.json').name;
 var RendererPool = require('./RendererPool');
 
+var ThreeModel = require('./Three').ThreeModel;
+
 var RenderableModel = widgets.DOMWidgetModel.extend({
 
     defaults: function() {
@@ -19,10 +21,80 @@ var RenderableModel = widgets.DOMWidgetModel.extend({
 
             _width: 200,
             _height: 200,
+            _antialias: false,
+
+            autoClear: true,
+            autoClearColor: true,
+            autoClearDepth: true,
+            autoClearStencil: true,
+            clippingPlanes: [],
+            gammaFactor: 2.0,
+            gammaInput: false,
+            gammaOutput: false,
+            localClippingEnabled: false,
+            maxMorphTargets: 8,
+            maxMorphNormals: 4,
+            physicallyCorrectLights: false,
+            shadowMap: null,
+            sortObject: true,
+            toneMapping: 'LinearToneMapping',
+            toneMappingExposure: 1.0,
+            toneMappingWhitePoint: 1.0,
+
+            // Properties that are set by functions
+            clearColor: '#000000',
+            clearOpacity: 1.0,
         });
     },
 
+    initialize: function(attributes, options) {
+        widgets.DOMWidgetModel.prototype.initialize.apply(this, arguments);
+
+        this.createPropertiesArrays();
+        ThreeModel.prototype.setupListeners.call(this);
+    },
+
+    createPropertiesArrays: function() {
+        // This does not inherit ThreeModel, but follow same pattern
+        ThreeModel.prototype.createPropertiesArrays.call(this);
+        this.three_nested_properties.push('clippingPlanes');
+        this.three_properties.push('shadowMap');
+        this.props_created_by_three['shadowMap'] = true;
+
+        this.enum_property_types['toneMapping'] = 'ToneMappings';
+
+        this.property_converters['autoClear'] = 'convertBool';
+        this.property_converters['autoClearColor'] = 'convertBool';
+        this.property_converters['autoClearDepth'] = 'convertBool';
+        this.property_converters['autoClearStencil'] = 'convertBool';
+        this.property_converters['clippingPlanes'] = 'convertThreeTypeArray';
+        this.property_converters['gammaFactor'] = 'convertFloat';
+        this.property_converters['gammaInput'] = 'convertBool';
+        this.property_converters['gammaOutput'] = 'convertBool';
+        this.property_converters['localClippingEnabled'] = 'convertBool';
+        this.property_converters['physicallyCorrectLights'] = 'convertBool';
+        this.property_converters['sortObjects'] = 'convertBool';
+        this.property_converters['toneMapping'] = 'convertEnum';
+        this.property_converters['toneMappingExposure'] = 'convertFloat';
+        this.property_converters['toneMappingWhitepoint'] = 'convertFloat';
+    },
+
+    onChange: function(model, options) {
+    },
+
+    onChildChanged: function(model, options) {
+        console.log('child changed: ' + model.model_id);
+        // Let listeners (e.g. views) know:
+        this.trigger('childchange', this);
+    },
+
+}, {
+    serializers: _.extend({
+        clippingPlanes: { deserialize: widgets.unpack_models },
+        shadowMap: { deserialize: widgets.unpack_models },
+    }, widgets.DOMWidgetModel.serializers)
 });
+
 
 var RenderableView = widgets.DOMWidgetView.extend({
 
@@ -89,6 +161,80 @@ var RenderableView = widgets.DOMWidgetView.extend({
         }
     },
 
+    updateProperties: function(force) {
+        if (this.isFrozen) {
+            return;
+        }
+        var model = this.model;
+
+        _.each(model.property_converters, function(converterName, propName) {
+            if (!force && !(model._changing && model.hasChanged(propName))) {
+                // Only set changed properties unless forced
+                return;
+            }
+            if (!converterName) {
+                this.renderer[propName] = this.model.get(propName);
+                return;
+            }
+            if (converterName === 'convertThreeTypeArray') {
+                var converterFn = this[converterName].bind(this);
+            } else {
+                converterName = converterName + "ModelToThree";
+                var converterFn = ThreeModel.prototype[converterName];
+            }
+
+            if (!converterFn) {
+                throw new Error('invalid converter name: ' + converterName);
+            }
+            this.renderer[propName] = converterFn(model.get(propName), propName);
+        }, this);
+
+        // Deal with shadow map
+        this._updateShadowMap(force);
+
+        var clearColor = ThreeModel.prototype.convertColorModelToThree(model.get('clearColor'));
+        var clearOpacity = ThreeModel.prototype.convertFloatModelToThree(model.get('clearOpacity'));
+        this.renderer.setClearColor(clearColor, clearOpacity);
+    },
+
+    _updateShadowMap: function(force) {
+        var model = this.model.get('shadowMap');
+        var obj = this.renderer.shadowMap;
+        var changes = false;
+        _.each(model.property_converters, function(converterName, propName) {
+            if (!force && !(model._changing && model.hasChanged(propName))) {
+                // Only set changed properties unless forced
+                return;
+            }
+            if (!converterName) {
+                obj[propName] = this.model.get(propName);
+                changes = true;
+                return;
+            }
+            if (converterName === 'convertThreeTypeArray') {
+                var converterFn = this[converterName].bind(this);
+            } else {
+                converterName = converterName + "ModelToThree";
+                var converterFn = ThreeModel.prototype[converterName];
+            }
+
+            if (!converterFn) {
+                throw new Error('invalid converter name: ' + converterName);
+            }
+            obj[propName] = converterFn(model.get(propName), propName);
+            changes = true;
+        }, this);
+        if (changes) {
+            obj.needsUpdate = true;
+        }
+    },
+
+    convertThreeTypeArray: function(modelArr, propName) {
+        return modelArr.map(function(model) {
+            return ThreeModel.prototype.convertThreeTypeModelToThree(model, propName);
+        }, this);
+    },
+
     renderScene: function(scene, camera) {
         this.log('renderScene');
 
@@ -138,7 +284,12 @@ var RenderableView = widgets.DOMWidgetView.extend({
 
         this.log('ThreeView.acquiring...');
 
-        this.renderer = RendererPool.acquire(this.onRendererReclaimed.bind(this));
+        var config = {
+            antialias: this.model.get('_antialias'),
+        };
+        this.renderer = RendererPool.acquire(
+            config,
+            this.onRendererReclaimed.bind(this));
 
         this.$renderer = $(this.renderer.domElement);
         this.$el.empty().append(this.$renderer);

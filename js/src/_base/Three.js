@@ -14,6 +14,41 @@ var utils = require('./utils');
 var version = require('../../package.json').version;
 
 
+/**
+ * Helper function for listening to child models in lists/dicts
+ *
+ * @param {any} model The parent model
+ * @param {any} propNames The propetry names that are lists/dicts
+ * @param {any} callback The callback to call when child changes
+ */
+function listenNested(model, propNames, callback) {
+    propNames.forEach(function(propName) {
+        // listen to current values in array
+        var curr = model.get(propName) || [];
+        utils.childModelsNested(curr).forEach(function(childModel) {
+            model.listenTo(childModel, 'change', callback);
+            model.listenTo(childModel, 'childchange', callback);
+        });
+
+        // make sure to (un)hook listeners when array changes
+        model.on('change:' + propName, function(model, value, options) {
+            var prev = model.previous(propName) || [];
+            var curr = value || [];
+
+            var diff = utils.nestedDiff(curr, prev);
+
+            diff.added.forEach(function(childModel) {
+                model.listenTo(childModel, 'change', callback);
+                model.listenTo(childModel, 'childchange', callback);
+            });
+            diff.removed.forEach(function(childModel) {
+                model.stopListening(childModel);
+            });
+        });
+    });
+}
+
+
 var ThreeModel = widgets.WidgetModel.extend({
 
     defaults: function() {
@@ -34,13 +69,17 @@ var ThreeModel = widgets.WidgetModel.extend({
 
             // We need to push a default state first, as comm open does
             // not support buffers!
+            // Fixed in:
+            // - @jupyterlab/services@0.49.0
+            // - notebook 5.1.0
             this.save_changes();
 
             var obj = options.three_obj;
             delete options.three_obj;
 
-            this.initPromise = Promise.resolve(obj).bind(this).then(this.processNewObj
-            ).then(function (obj) {
+            this.processNewObj(obj);
+
+            this.initPromise = this.createUninitializedChildren().bind(this).then(function() {
 
                 // sync in all the properties from the THREE object
                 this.syncToModel(true);
@@ -54,6 +93,8 @@ var ThreeModel = widgets.WidgetModel.extend({
 
         // Instantiate Three.js object
         this.initPromise = this.createThreeObjectAsync().bind(this).then(function() {
+            return this.createUninitializedChildren();
+        }).then(function() {
 
             // pull in props created by three
             this.syncToModel();
@@ -79,34 +120,6 @@ var ThreeModel = widgets.WidgetModel.extend({
         this.property_converters = {};
         this.property_assigners = {};
         this.property_mappers = {};
-    },
-
-    _listenNested: function(propNames, callback) {
-        propNames.forEach(function(propName) {
-
-            // listen to current values in array
-            var curr = this.get(propName) || [];
-            utils.childModelsNested(curr).forEach(function(childModel) {
-                this.listenTo(childModel, 'change', callback);
-                this.listenTo(childModel, 'childchange', callback);
-            }, this);
-
-            // make sure to (un)hook listeners when array changes
-            this.on('change:' + propName, function(model, value, options) {
-                var prev = this.previous(propName) || [];
-                var curr = value || [];
-
-                var diff = utils.nestedDiff(curr, prev);
-
-                diff.added.forEach(function(childModel) {
-                    this.listenTo(childModel, 'change', callback);
-                    this.listenTo(childModel, 'childchange', callback);
-                }, this);
-                diff.removed.forEach(function(childModel) {
-                    this.stopListening(childModel);
-                }, this);
-            }, this);
-        }, this);
     },
 
     setupListeners: function() {
@@ -135,7 +148,7 @@ var ThreeModel = widgets.WidgetModel.extend({
         }, this);
 
         // Handle changes in three instance nested props (arrays/dicts, possibly nested)
-        this._listenNested(this.three_nested_properties, this.onChildChanged.bind(this));
+        listenNested(this, this.three_nested_properties, this.onChildChanged.bind(this));
 
         // Handle changes in data widgets/union properties
         this.datawidget_properties.forEach(function(propName) {
@@ -155,6 +168,26 @@ var ThreeModel = widgets.WidgetModel.extend({
         this.obj = obj;
         return obj;
 
+    },
+
+    createUninitializedChildren: function() {
+
+        // Get any properties to create from this side
+        var uninit = _.filter(this.three_properties, function(propName) {
+            return this.get(propName) === 'uninitialized';
+        }, this);
+
+        // Return promise for their creation
+        return Promise.all(_.map(uninit, function(propName) {
+            var obj = this.obj[propName]
+            // First, we need to figure out which model constructor to use
+            var ctorName = `${obj.constructor.name}Model`;
+            var index = require('../');
+            var ctor = index[ctorName];
+            // Create the model
+            var modelPromise = utils.createModel(ctor, this.widget_manager, obj);
+            return modelPromise;
+        }, this));
     },
 
     createThreeObjectAsync: function() {
@@ -607,25 +640,6 @@ var ThreeModel = widgets.WidgetModel.extend({
     convertThreeTypeThreeToModel: function(threeType, propName) {
         if (!threeType) {
             return threeType;
-        }
-        return threeType.ipymodel;
-    },
-
-    // InitializedThreeType
-    convertInitializedThreeTypeModelToThree: function(model, propName) {
-        if (model) {
-            return model.obj;
-        }
-        return null;
-    },
-
-    convertInitializedThreeTypeThreeToModel: function(threeType, propName) {
-        if (threeType.ipymodelId === undefined) {
-            var placeholder = this.get(propName);
-            threeType.ipymodelId = placeholder.obj.ipymodelId;
-            threeType.ipymodel = placeholder;
-            placeholder.obj = threeType;
-            placeholder.syncToModel();
         }
         return threeType.ipymodel;
     },

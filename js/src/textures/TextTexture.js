@@ -18,7 +18,7 @@ var TextTextureModel = TextTextureBase.extend({
 
     // push data from model to three object
     syncToThreeObj: function(force) {
-        TextTextureBase.prototype.syncToThreeObj.call(this, arguments);
+        TextTextureBase.prototype.syncToThreeObj.apply(this, arguments);
 
         // TODO: Use mapping of relevant properties instead of sync?
         var canvas = this.buildCanvas();
