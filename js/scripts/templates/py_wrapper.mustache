@@ -1,5 +1,4 @@
-import inspect
-
+import six
 from ipywidgets import Widget, DOMWidget, widget_serialization, Color, register
 from traitlets import (
     Unicode, Int, CInt, Instance, ForwardDeclaredInstance, This, Enum,
@@ -41,6 +40,7 @@ class {{ className }}({{ superClass.className }}):
     {{/each}}
 
 
-# Include explicit signature since the metaclass screws it up
-{{ className }}.__signature__ = inspect.signature({{ className }}.__init__)
-
+if six.PY3:
+    import inspect
+    # Include explicit signature since the metaclass screws it up
+    {{ className }}.__signature__ = inspect.signature({{ className }}.__init__)
