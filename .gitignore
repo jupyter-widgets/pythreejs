@@ -13,8 +13,15 @@ pythreejs/static/
 # OS X
 .DS_Store
 
-
+# Autogen files
 *_autogen.py
 *.autogen.js
 js/src/**/index.js
 pythreejs/**/__init__.py
+
+# Test and coverage
+.coverage
+.cache
+htmlcov/
+
+

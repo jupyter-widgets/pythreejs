@@ -955,16 +955,20 @@ function createPythonFiles() {
     return mapPromiseFnOverThreeModules(function(relativePath) {
             return createPythonWrapper(relativePath).then(function() {
                 // ensures each dir has empty __init__.py file for proper importing of sub dirs
-                createPythonModuleInitFile(relativePath);
+                return createPythonModuleInitFile(relativePath);
             });
         })
         .then(function() {
             return mapPromiseFnOverFileList(CUSTOM_CLASSES, function(relativePath) {
                 return createPythonWrapper(relativePath).then(function() {
                     // ensures each dir has empty __init__.py file for proper importing of sub dirs
-                    createPythonModuleInitFile(relativePath);
+                    return createPythonModuleInitFile(relativePath);
                 });
             });
+        })
+        .then(function() {
+            // Manually ensure base init file is created
+            return createPythonModuleInitFile('_base/__init__');
         })
         .then(function() {
             // top level __init__.py file imports *all* pythreejs modules into namespace

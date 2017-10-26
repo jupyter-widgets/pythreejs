@@ -1,7 +1,7 @@
 """
 """
-from inspect import Signature, Parameter
 
+import six
 from ipywidgets import widget_serialization, Color
 from traitlets import (
     Unicode, CInt, Instance, Float, Tuple, Undefined, link)
@@ -57,15 +57,18 @@ class Renderer(RenderableWidget):
         }
         self.send(content)
 
-# Include explicit signature since the metaclass screws it up
-parameters = [
-    Parameter('scene', Parameter.POSITIONAL_OR_KEYWORD),
-    Parameter('camera', Parameter.POSITIONAL_OR_KEYWORD),
-    Parameter('controls', Parameter.POSITIONAL_OR_KEYWORD, default=None),
-]
-for name in ('width', 'height', 'background', 'background_opacity'):
-    parameters.append(Parameter(
-        name, Parameter.KEYWORD_ONLY, default=getattr(Renderer, name).default_value))
-parameters.append(Parameter('kwargs', Parameter.VAR_KEYWORD))
-Renderer.__signature__ = Signature(parameters=tuple(parameters))
-del parameters
+
+if six.PY3:
+    from inspect import Signature, Parameter
+    # Include explicit signature since the metaclass screws it up
+    parameters = [
+        Parameter('scene', Parameter.POSITIONAL_OR_KEYWORD),
+        Parameter('camera', Parameter.POSITIONAL_OR_KEYWORD),
+        Parameter('controls', Parameter.POSITIONAL_OR_KEYWORD, default=None),
+    ]
+    for name in ('width', 'height', 'background', 'background_opacity'):
+        parameters.append(Parameter(
+            name, Parameter.KEYWORD_ONLY, default=getattr(Renderer, name).default_value))
+    parameters.append(Parameter('kwargs', Parameter.VAR_KEYWORD))
+    Renderer.__signature__ = Signature(parameters=tuple(parameters))
+    del parameters

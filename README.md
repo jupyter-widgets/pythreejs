@@ -2,7 +2,7 @@
 
 A Python / ThreeJS bridge utilizing the Jupyter widget infrastructure.
 
-![Screencast](/screencast.gif)
+![Screencast](screencast.gif)
 
 ## Getting Started
 

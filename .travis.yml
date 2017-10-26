@@ -1,0 +1,18 @@
+language: python
+python:
+  - 3.5
+  - 3.4
+  - 2.7
+sudo: false
+cache:
+  pip: true
+  directories:
+    - ~/.npm  # NPM cache
+before_install:
+  - pip install -U pip setuptools
+  - nvm install 6
+install:
+  - pip install --upgrade -e ".[test, examples]"
+script:
+  - py.test -l --nbval-lax --current-env examples
+  - python -m pytest_check_links
