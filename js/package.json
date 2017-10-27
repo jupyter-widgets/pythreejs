@@ -12,7 +12,9 @@
   "scripts": {
     "clean": "rimraf dist && rimraf ../pythreejs/static && node ./scripts/clean-generated-files.js",
     "autogen-enums": "node ./scripts/generate-enums.js",
-    "autogen": "node ./scripts/generate-wrappers.js",
+    "autogen-shaders": "node ./scripts/generate-shader-utils.js",
+    "autogen-wrappers": "node ./scripts/generate-shader-utils.js",
+    "autogen": "npm run autogen-wrappers && npm run autogen-shaders",
     "build": "webpack && node ./scripts/copy-three.js",
     "prepublish": "npm run autogen && npm run build"
   },

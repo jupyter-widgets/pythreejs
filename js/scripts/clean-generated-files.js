@@ -10,16 +10,16 @@ var scriptDir = __dirname;
 var baseDir = path.resolve(scriptDir, '..');
 
 // Execute a function for each match to a glob query
-// 
+//
 // Parameters:
 //   globPattern: String glob pattern for node-glob
 //   mapFn:       Function function(pathRelativeToCwd), should return a promise or list of promises
 //   globOptions: Object of options passed directly to node-glob
 //
 // Returns: Promise that resolves with array of results from mapFn applies to all glob matches
-function mapPromiseFnOverGlob(globPattern, mapFn, globOptions) {  
+function mapPromiseFnOverGlob(globPattern, mapFn, globOptions) {
     return new Promise(function(resolve, reject) {
-    
+
         var promises = [];
 
         // trailing slash will match only directories
@@ -53,8 +53,8 @@ function rmFileGlobAsync(globPattern) {
 		console.log(filePath);
 		var absPath = path.resolve(baseDir, filePath);
 		return fse.removeAsync(absPath);
-	}, { 
-        cwd: baseDir, 
+	}, {
+        cwd: baseDir,
         nodir: true,
         ignore: [
         	'./node_modules/**'
@@ -65,13 +65,15 @@ function rmFileGlobAsync(globPattern) {
 function cleanGeneratedFilesAsync() {
 	// trailing slash will match only directories
 	var jsPromise = rmFileGlobAsync('./**/*.autogen.js');
+	var jsonPromise = rmFileGlobAsync('./**/*.autogen.json');
 	var jsIndexPromise = rmFileGlobAsync('./**/index.js');
 
 	var pyPromise = rmFileGlobAsync('../pythreejs/**/*_autogen.py');
 	var pyIndexPromise = rmFileGlobAsync('../pythreejs/**/__init__.py');
 
 	return Promise.all([
-		jsPromise,
+        jsPromise,
+        jsonPromise,
 		jsIndexPromise,
 		pyPromise,
 		pyIndexPromise,
