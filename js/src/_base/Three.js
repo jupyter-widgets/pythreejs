@@ -644,6 +644,18 @@ var ThreeModel = widgets.WidgetModel.extend({
         return threeType.ipymodel;
     },
 
+    // Dict
+    assignDict: function(obj, key, value) {
+        if (obj[key] === value) {
+            // If instance equality, do nothing.
+            return;
+        }
+        // Clear the dict
+        Object.keys(obj[key]).forEach(k => { delete obj[key][k]; });
+        // Put in the new values
+        Object.assign(obj[key], value);
+    },
+
     // ThreeTypeArray
     convertThreeTypeArrayModelToThree: function(modelArr, propName) {
         return modelArr.map(function(model) {

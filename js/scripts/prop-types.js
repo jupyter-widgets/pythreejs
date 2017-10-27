@@ -364,6 +364,9 @@ _.extend(DictType.prototype, BaseType.prototype, {
         var nullableStr = this.nullable ? 'True' : 'False';
         return `Dict(default_value=${this.getPythonDefaultValue()}, allow_none=${nullableStr}).tag(sync=True)`;
     },
+    getPropertyAssignmentFn: function() {
+        return 'assignDict';
+    },
 });
 
 function FunctionType(fn) {
