@@ -6,10 +6,6 @@ A Python / ThreeJS bridge utilizing the Jupyter widget infrastructure.
 
 ## Getting Started
 
-### Try it online with [Binder](http://mybinder.org/)
-
-[![Binder](http://mybinder.org/badge.svg)](http://mybinder.org:/repo/jovyan/pythreejs/notebooks/examples)
-
 ### Installation
 
 Using pip:
