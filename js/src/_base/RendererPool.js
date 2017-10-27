@@ -73,6 +73,7 @@ _.extend(RendererPool.prototype, {
                     preserveDrawingBuffer: true
                 }
         ));
+        renderer.setPixelRatio(window.devicePixelRatio || 1);
         renderer.context.canvas.addEventListener("webglcontextlost", this.onContextLost.bind(this), false);
         renderer.poolId = this.numCreated;
         this.numCreated++;
