@@ -31,7 +31,7 @@ function mapPromiseFnOverGlob(globPattern, mapFn, globOptions) {
                 } else if (result instanceof Promise) {
                     promises.push(result);
                 } else {
-                	promises.push(Promise.resolve(result));
+                    promises.push(Promise.resolve(result));
                 }
             })
             .on('end', function() {
@@ -49,35 +49,35 @@ function mapPromiseFnOverGlob(globPattern, mapFn, globOptions) {
 }
 
 function rmFileGlobAsync(globPattern) {
-	return mapPromiseFnOverGlob(globPattern, function(filePath) {
-		console.log(filePath);
-		var absPath = path.resolve(baseDir, filePath);
-		return fse.removeAsync(absPath);
-	}, {
+    return mapPromiseFnOverGlob(globPattern, function(filePath) {
+        console.log(filePath);
+        var absPath = path.resolve(baseDir, filePath);
+        return fse.removeAsync(absPath);
+    }, {
         cwd: baseDir,
         nodir: true,
         ignore: [
-        	'./node_modules/**'
+            './node_modules/**'
         ]
     });
 }
 
 function cleanGeneratedFilesAsync() {
-	// trailing slash will match only directories
-	var jsPromise = rmFileGlobAsync('./**/*.autogen.js');
-	var jsonPromise = rmFileGlobAsync('./**/*.autogen.json');
-	var jsIndexPromise = rmFileGlobAsync('./**/index.js');
+    // trailing slash will match only directories
+    var jsPromise = rmFileGlobAsync('./**/*.autogen.js');
+    var jsonPromise = rmFileGlobAsync('./**/*.autogen.json');
+    var jsIndexPromise = rmFileGlobAsync('./**/index.js');
 
-	var pyPromise = rmFileGlobAsync('../pythreejs/**/*_autogen.py');
-	var pyIndexPromise = rmFileGlobAsync('../pythreejs/**/__init__.py');
+    var pyPromise = rmFileGlobAsync('../pythreejs/**/*_autogen.py');
+    var pyIndexPromise = rmFileGlobAsync('../pythreejs/**/__init__.py');
 
-	return Promise.all([
+    return Promise.all([
         jsPromise,
         jsonPromise,
-		jsIndexPromise,
-		pyPromise,
-		pyIndexPromise,
-	]);
+        jsIndexPromise,
+        pyPromise,
+        pyIndexPromise,
+    ]);
 }
 
 if (require.main === module) {
