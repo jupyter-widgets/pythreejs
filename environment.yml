@@ -1,6 +1,5 @@
 name: pythreejs
 channels:
-  - nodefaults
   - conda-forge
 dependencies:
   - pythreejs

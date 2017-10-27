@@ -16,6 +16,7 @@ pythreejs/static/
 # Autogen files
 *_autogen.py
 *.autogen.js
+*.autogen.json
 js/src/**/index.js
 pythreejs/**/__init__.py
 

@@ -875,7 +875,8 @@ module.exports = {
             linewidth:          new Types.Float(1.0),
             morphNormals:       new Types.Bool(false),
             morphTargets:       new Types.Bool(false),
-            shading:            new Types.Enum('Shading', 'SmoothShading'),
+            flatShading:        new Types.Bool(false),
+            //shading:            new Types.Enum('Shading', 'SmoothShading'),  // Deprecated in three
             skinning:           new Types.Bool(false),
             vertexShader:       new Types.String(''),
             wireframe:          new Types.Bool(false),
@@ -1918,22 +1919,6 @@ module.exports = {
     // TODO:
     QuaternionLinearInterpolant: {
         relativePath: './math/interpolants/QuaternionLinearInterpolant',
-    },
-    // TODO:
-    ShaderChunk: {
-        relativePath: './renderers/shaders/ShaderChunk',
-    },
-    // TODO:
-    ShaderLib: {
-        relativePath: './renderers/shaders/ShaderLib',
-    },
-    // TODO:
-    UniformsLib: {
-        relativePath: './renderers/shaders/UniformsLib',
-    },
-    // TODO:
-    UniformsUtils: {
-        relativePath: './renderers/shaders/UniformsUtils',
     },
     // TODO:
     WebGLBufferRenderer: {
