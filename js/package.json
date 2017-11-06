@@ -1,6 +1,6 @@
 {
   "name": "jupyter-threejs",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "jupyter - threejs bridge",
   "author": "Jupyter-Threejs development team",
   "license": "BSD-3-Clause",
@@ -23,5 +23,8 @@
     "ndarray": "^1.0.18",
     "three": "^0.75.0",
     "underscore": "^1.8.3"
+  },
+  "jupyterlab": {
+    "extension": "src/jupyterlab-plugin"
   }
 }
