@@ -38,7 +38,7 @@ def vector2(trait_type=CFloat, default=None, **kwargs):
         default = [0, 0]
     return List(trait_type, default_value=default, minlen=2, maxlen=2, **kwargs)
 
-PYTHREEJS_VERSION='0.3.0-alpha.0'
+PYTHREEJS_VERSION='0.4.1'
 
 class Texture(Widget):
     _view_module = Unicode(npm_pkg_name).tag(sync=True)
