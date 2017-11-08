@@ -74,7 +74,7 @@ var AnimationActionModel = AnimationActionAutogen.extend({
         // The onAfterRender will then trigger a new frame
         var scene = utils.getModelScene(this.get('localRoot'));
         if (scene) {
-            scene.trigger('rerender');
+            scene.trigger('rerender', this, {});
         }
     },
 
