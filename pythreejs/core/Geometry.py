@@ -1,9 +1,9 @@
 from ipywidgets import register
-from .PlainGeometry_autogen import PlainGeometry as PlainGeometryBase
+from .Geometry_autogen import Geometry as GeometryBase
 
 
 @register
-class PlainGeometry(PlainGeometryBase):
+class Geometry(GeometryBase):
 
     @classmethod
     def from_geometry(cls, geometry):

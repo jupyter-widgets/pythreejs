@@ -282,8 +282,8 @@ module.exports = {
         constructorArgs: [ 'array', 'normalized' ],
         propsDefinedByThree: [ 'version', 'needsUpdate' ]
     },
-    BufferGeometry: {
-        relativePath: './core/BufferGeometry',
+    BaseBufferGeometry: {
+        relativePath: './core/BaseBufferGeometry',
         properties: {
             name:       new Types.String(''),
             type:       new Types.String(''),
@@ -314,22 +314,22 @@ module.exports = {
         },
         constructorArgs: [ 'a', 'b', 'c', 'normal', 'color', 'materialIndex' ],
     },
-    Geometry: {
-        relativePath: './core/Geometry',
+    BaseGeometry: {
+        relativePath: './core/BaseGeometry',
         properties: {
             // TODO: id not supported as it conflicts with backbone's id
             // id: new Types.String(''),
             name: new Types.String(''),
             type: new Types.String(''),
 
-            // By default Geometry does not sync geometry arrays
-            // Use the custom class PlainGeometry to access those arrays
+            // By default BaseGeometry does not sync geometry arrays
+            // Use the Geometry class to access those arrays
         },
         propsDefinedByThree: [ 'type' ]
     },
-    PlainGeometry: {
-        relativePath: './geometries/PlainGeometry',
-        superClass: 'Geometry',
+    Geometry: {
+        relativePath: './core/Geometry',
+        superClass: 'BaseGeometry',
         properties: {
             vertices:       new Types.VectorArray(),
             colors:         new Types.ColorArray(),
@@ -340,12 +340,12 @@ module.exports = {
             morphNormals:   new Types.Array(),
             skinWeights:    new Types.VectorArray(),
             skinIndices:    new Types.VectorArray(),
-            _ref_geometry:  new Types.ThreeType('Geometry'),
+            _ref_geometry:  new Types.ThreeType('BaseGeometry'),
         },
     },
-    PlainBufferGeometry: {
-        relativePath: './geometries/PlainBufferGeometry',
-        superClass: 'BufferGeometry',
+    BufferGeometry: {
+        relativePath: './core/BufferGeometry',
+        superClass: 'BaseBufferGeometry',
         properties: {
             attributes:         new Types.ThreeTypeDict(['BufferAttribute', 'InterleavedBufferAttribute']),
             morphAttributes:    new Types.BufferMorphAttributes(),
@@ -353,7 +353,7 @@ module.exports = {
             // TODO: These likely require special types:
             //groups:             new Types.GeometryGroup(),
             //drawRange:          new Types.DrawRange(),
-            _ref_geometry:      new Types.ThreeType(['Geometry', 'BufferGeometry']),
+            _ref_geometry:      new Types.ThreeType(['BaseGeometry', 'BaseBufferGeometry']),
         },
     },
     InstancedBufferAttribute: {
@@ -366,7 +366,7 @@ module.exports = {
     },
     InstancedBufferGeometry: {
         relativePath: './core/InstancedBufferGeometry',
-        superClass: 'PlainBufferGeometry',
+        superClass: 'BufferGeometry',
         properties: {
             maxInstancedCount: new Types.Int(null, {nullable: true}),
         },
@@ -1088,7 +1088,7 @@ module.exports = {
         constructorArgs: [ 'geometry', 'material' ],
         properties: {
             material: new Types.ThreeType('Material'),
-            geometry: new Types.ThreeType(['Geometry', 'BufferGeometry']),
+            geometry: new Types.ThreeType(['BaseGeometry', 'BaseBufferGeometry']),
         }
     },
     LineLoop: {
@@ -1107,7 +1107,7 @@ module.exports = {
         constructorArgs: [ 'geometry', 'material' ],
         properties: {
             material: new Types.ThreeTypeArray('Material', {nullable: false, allow_single: true}),
-            geometry: new Types.ThreeType(['Geometry', 'BufferGeometry'], {nullable: false}),
+            geometry: new Types.ThreeType(['BaseGeometry', 'BaseBufferGeometry'], {nullable: false}),
             drawMode: new Types.Enum('DrawModes', 'TrianglesDrawMode'),
             morphTargetInfluences: new Types.Array(),
         },
@@ -1119,7 +1119,7 @@ module.exports = {
         constructorArgs: [ 'geometry', 'material' ],
         properties: {
             material: new Types.ThreeType('Material', {nullable: false}),
-            geometry: new Types.ThreeType(['Geometry', 'BufferGeometry'], {nullable: false}),
+            geometry: new Types.ThreeType(['BaseGeometry', 'BaseBufferGeometry'], {nullable: false}),
         },
     },
     Skeleton: {
@@ -1393,7 +1393,7 @@ module.exports = {
     },
     BoxBufferGeometry: {
         relativePath: './geometries/BoxGeometry',
-        superClass: 'BufferGeometry',
+        superClass: 'BaseBufferGeometry',
         constructorArgs: [ 'width', 'height', 'depth', 'widthSegments', 'heightSegments', 'depthSegments' ],
         properties: {
             width:          new Types.Float(10.0),
@@ -1406,7 +1406,7 @@ module.exports = {
     },
     BoxGeometry: {
         relativePath: './geometries/BoxGeometry',
-        superClass: 'Geometry',
+        superClass: 'BaseGeometry',
         constructorArgs: [ 'width', 'height', 'depth', 'widthSegments', 'heightSegments', 'depthSegments' ],
         properties: {
             width:          new Types.Float(10.0),
@@ -1419,7 +1419,7 @@ module.exports = {
     },
     CircleBufferGeometry: {
         relativePath: './geometries/CircleGeometry',
-        superClass: 'BufferGeometry',
+        superClass: 'BaseBufferGeometry',
         constructorArgs: [ 'radius', 'segments', 'thetaStart', 'thetaLength' ],
         properties: {
             radius:      new Types.Float(50.0),
@@ -1430,7 +1430,7 @@ module.exports = {
     },
     CircleGeometry: {
         relativePath: './geometries/CircleGeometry',
-        superClass: 'Geometry',
+        superClass: 'BaseGeometry',
         constructorArgs: [ 'radius', 'segments', 'thetaStart', 'thetaLength' ],
         properties: {
             radius:      new Types.Float(50.0),
@@ -1441,7 +1441,7 @@ module.exports = {
     },
     ConeGeometry: {
         relativePath: './geometries/ConeGeometry',
-        superClass: 'Geometry',
+        superClass: 'BaseGeometry',
         constructorArgs: ['radius', 'height', 'radialSegments', 'heightSegments', 'openEnded', 'thetaStart', 'thetaLength'],
         properties: {
             radius:         new Types.Float(20.0),
@@ -1455,7 +1455,7 @@ module.exports = {
     },
     CylinderBufferGeometry: {
         relativePath: './geometries/CylinderGeometry',
-        superClass: 'BufferGeometry',
+        superClass: 'BaseBufferGeometry',
         constructorArgs: [ 'radiusTop', 'radiusBottom', 'height', 'radiusSegments', 'heightSegments', 'openEnded', 'thetaStart', 'thetaLength' ],
         properties: {
             radiusTop:      new Types.Float(20.0),
@@ -1470,7 +1470,7 @@ module.exports = {
     },
     CylinderGeometry: {
         relativePath: './geometries/CylinderGeometry',
-        superClass: 'Geometry',
+        superClass: 'BaseGeometry',
         constructorArgs: [ 'radiusTop', 'radiusBottom', 'height', 'radiusSegments', 'heightSegments', 'openEnded', 'thetaStart', 'thetaLength' ],
         properties: {
             radiusTop:      new Types.Float(20.0),
@@ -1485,7 +1485,7 @@ module.exports = {
     },
     DodecahedronGeometry: {
         relativePath: './geometries/DodecahedronGeometry',
-        superClass: 'Geometry',
+        superClass: 'BaseGeometry',
         constructorArgs: [ 'radius', 'detail' ],
         properties: {
             radius: new Types.Float(1.0),
@@ -1495,16 +1495,16 @@ module.exports = {
     // TODO:
     EdgesGeometry: {
         relativePath: './geometries/EdgesGeometry',
-        superClass: 'Geometry',
+        superClass: 'BaseGeometry',
     },
     // TODO:
     ExtrudeGeometry: {
         relativePath: './geometries/ExtrudeGeometry',
-        superClass: 'Geometry',
+        superClass: 'BaseGeometry',
     },
     IcosahedronGeometry: {
         relativePath: './geometries/IcosahedronGeometry',
-        superClass: 'Geometry',
+        superClass: 'BaseGeometry',
         constructorArgs: [ 'radius', 'detail' ],
         properties: {
             radius: new Types.Float(1.0),
@@ -1513,7 +1513,7 @@ module.exports = {
     },
     LatheBufferGeometry: {
         relativePath: './geometries/LatheGeometry',
-        superClass: 'BufferGeometry',
+        superClass: 'BaseBufferGeometry',
         constructorArgs: [ 'points', 'segments', 'phiStart', 'phiLength' ],
         properties: {
             points:    new Types.VectorArray(),
@@ -1524,7 +1524,7 @@ module.exports = {
     },
     LatheGeometry: {
         relativePath: './geometries/LatheGeometry',
-        superClass: 'Geometry',
+        superClass: 'BaseGeometry',
         constructorArgs: [ 'points', 'segments', 'phiStart', 'phiLength' ],
         properties: {
             points:    new Types.VectorArray(),
@@ -1535,7 +1535,7 @@ module.exports = {
     },
     OctahedronGeometry: {
         relativePath: './geometries/OctahedronGeometry',
-        superClass: 'Geometry',
+        superClass: 'BaseGeometry',
         constructorArgs: [ 'radius', 'detail' ],
         properties: {
             radius: new Types.Float(1.0),
@@ -1544,7 +1544,7 @@ module.exports = {
     },
     ParametricGeometry: {
         relativePath: './geometries/ParametricGeometry',
-        superClass: 'Geometry',
+        superClass: 'BaseGeometry',
         constructorArgs: [ 'func', 'slices', 'stacks' ],
         properties: {
             func:   new Types.Function(function(u,v) { return THREE.Vector3(); }),
@@ -1554,7 +1554,7 @@ module.exports = {
     },
     PlaneBufferGeometry: {
         relativePath: './geometries/PlaneGeometry',
-        superClass: 'BufferGeometry',
+        superClass: 'BaseBufferGeometry',
         constructorArgs: [ 'width', 'height', 'widthSegments', 'heightSegments' ],
         properties: {
             width:          new Types.Float(10.0), // NOTE: default not specified in three.js
@@ -1565,7 +1565,7 @@ module.exports = {
     },
     PlaneGeometry: {
         relativePath: './geometries/PlaneGeometry',
-        superClass: 'Geometry',
+        superClass: 'BaseGeometry',
         constructorArgs: [ 'width', 'height', 'widthSegments', 'heightSegments' ],
         properties: {
             width:          new Types.Float(10.0), // NOTE: default not specified in three.js
@@ -1576,7 +1576,7 @@ module.exports = {
     },
     PolyhedronGeometry: {
         relativePath: './geometries/PolyhedronGeometry',
-        superClass: 'Geometry',
+        superClass: 'BaseGeometry',
         constructorArgs: [ 'vertices', 'faces', 'radius', 'detail' ],
         properties: {
             vertices: new Types.Array(),
@@ -1588,7 +1588,7 @@ module.exports = {
     },
     RingBufferGeometry: {
         relativePath: './geometries/RingGeometry',
-        superClass: 'BufferGeometry',
+        superClass: 'BaseBufferGeometry',
         constructorArgs: [ 'innerRadius', 'outerRadius', 'thetaSegments', 'phiSegments', 'thetaStart', 'thetaLength' ],
         properties: {
             innerRadius:   new Types.Float(0.0), // Docs: "Default is 0, but it doesn't work right when innerRadius is set to 0.
@@ -1601,7 +1601,7 @@ module.exports = {
     },
     RingGeometry: {
         relativePath: './geometries/RingGeometry',
-        superClass: 'Geometry',
+        superClass: 'BaseGeometry',
         constructorArgs: [ 'innerRadius', 'outerRadius', 'thetaSegments', 'phiSegments', 'thetaStart', 'thetaLength' ],
         properties: {
             innerRadius:   new Types.Float(0.0), // Docs: "Default is 0, but it doesn't work right when innerRadius is set to 0.
@@ -1615,7 +1615,7 @@ module.exports = {
     // TODO: figure out options constructor args + UVGenerator
     ShapeGeometry: {
         relativePath: './geometries/ShapeGeometry',
-        superClass: 'Geometry',
+        superClass: 'BaseGeometry',
         constructorArgs: [ 'shapes' ],
         properties: {
             shapes:        new Types.ThreeTypeArray('Shape'),
@@ -1626,7 +1626,7 @@ module.exports = {
     },
     SphereBufferGeometry: {
         relativePath: './geometries/SphereGeometry',
-        superClass: 'BufferGeometry',
+        superClass: 'BaseBufferGeometry',
         constructorArgs: [ 'radius', 'widthSegments', 'heightSegments', 'phiStart', 'phiLength', 'thetaStart', 'thetaLength' ],
         properties: {
             radius:         new Types.Float(50.0),
@@ -1640,7 +1640,7 @@ module.exports = {
     },
     SphereGeometry: {
         relativePath: './geometries/SphereGeometry',
-        superClass: 'Geometry',
+        superClass: 'BaseGeometry',
         constructorArgs: [ 'radius', 'widthSegments', 'heightSegments', 'phiStart', 'phiLength', 'thetaStart', 'thetaLength' ],
         properties: {
             radius:         new Types.Float(50.0),
@@ -1654,7 +1654,7 @@ module.exports = {
     },
     TetrahedronGeometry: {
         relativePath: './geometries/TetrahedronGeometry',
-        superClass: 'Geometry',
+        superClass: 'BaseGeometry',
         constructorArgs: [ 'radius', 'detail' ],
         properties: {
             radius: new Types.Float(1),
@@ -1664,11 +1664,11 @@ module.exports = {
     // TODO:
     TextGeometry: {
         relativePath: './geometries/TextGeometry',
-        superClass: 'Geometry',
+        superClass: 'BaseGeometry',
     },
     TorusBufferGeometry: {
         relativePath: './geometries/TorusGeometry',
-        superClass: 'BufferGeometry',
+        superClass: 'BaseBufferGeometry',
         constructorArgs: [ 'radius', 'tube', 'radialSegments', 'tubularSegments', 'arc' ],
         properties: {
             radius:          new Types.Float(100),
@@ -1680,7 +1680,7 @@ module.exports = {
     },
     TorusGeometry: {
         relativePath: './geometries/TorusGeometry',
-        superClass: 'Geometry',
+        superClass: 'BaseGeometry',
         constructorArgs: [ 'radius', 'tube', 'radialSegments', 'tubularSegments', 'arc' ],
         properties: {
             radius:          new Types.Float(100),
@@ -1692,7 +1692,7 @@ module.exports = {
     },
     TorusKnotBufferGeometry: {
         relativePath: './geometries/TorusKnotGeometry',
-        superClass: 'BufferGeometry',
+        superClass: 'BaseBufferGeometry',
         constructorArgs: [ 'radius', 'tube', 'tubularSegments', 'radialSegments', 'p', 'q' ],
         properties: {
             radius:          new Types.Float(100),
@@ -1705,7 +1705,7 @@ module.exports = {
     },
     TorusKnotGeometry: {
         relativePath: './geometries/TorusKnotGeometry',
-        superClass: 'Geometry',
+        superClass: 'BaseGeometry',
         constructorArgs: [ 'radius', 'tube', 'tubularSegments', 'radialSegments', 'p', 'q' ],
         properties: {
             radius:          new Types.Float(100),
@@ -1718,7 +1718,7 @@ module.exports = {
     },
     TubeGeometry: {
         relativePath: './geometries/TubeGeometry',
-        superClass: 'Geometry',
+        superClass: 'BaseGeometry',
         constructorArgs: [ 'path', 'segments', 'radius', 'radiusSegments', 'close' ],
         properties: {
             path:           new Types.ThreeType('Curve'),
@@ -1730,10 +1730,10 @@ module.exports = {
     },
     WireframeGeometry: {
         relativePath: './geometries/WireframeGeometry',
-        superClass: 'Geometry',
+        superClass: 'BaseGeometry',
         constructorArgs: [ 'geometry' ],
         properties: {
-            geometry:       new Types.ThreeType(['Geometry', 'BufferGeometry']),
+            geometry:       new Types.ThreeType(['BaseGeometry', 'BaseBufferGeometry']),
         },
     },
     ArrowHelper: {

@@ -39,8 +39,8 @@ var CUSTOM_CLASSES = [
     'controls/TrackballControls.js',
     'controls/FlyControls.js',
     'controls/Picker.js',
-    'geometries/PlainGeometry.js',
-    'geometries/PlainBufferGeometry.js',
+    'core/BaseGeometry.js',
+    'core/BaseBufferGeometry.js',
     'objects/CloneArray.js',
     'objects/Blackbox.js',
 ];

@@ -1,8 +1,8 @@
 var THREE = require('three');
-var AutogenPlainGeometryModel = require('../geometries/PlainGeometry.autogen').PlainGeometryModel;
+var AutogenGeometryModel = require('../core/Geometry.autogen').GeometryModel;
 
 
-var PlainGeometryModel = AutogenPlainGeometryModel.extend({
+var GeometryModel = AutogenGeometryModel.extend({
 
     constructThreeObject: function() {
 
@@ -37,5 +37,5 @@ var PlainGeometryModel = AutogenPlainGeometryModel.extend({
 });
 
 module.exports = {
-    PlainGeometryModel: PlainGeometryModel,
+    GeometryModel: GeometryModel,
 };

@@ -2,18 +2,18 @@ var _ = require('underscore');
 var THREE = require('three');
 var createModel = require('../_base/utils').createModel;
 
-var AutogenPlainBufferGeometryModel = require('../geometries/PlainBufferGeometry.autogen').PlainBufferGeometryModel;
+var AutogenBufferGeometryModel = require('../core/BufferGeometry.autogen').BufferGeometryModel;
 
 var BufferAttributeModel = require('../core/BufferAttribute.js').BufferAttributeModel;
 var InterleavedBufferAttributeModel = require('../core/InterleavedBufferAttribute.autogen.js').InterleavedBufferAttributeModel;
-var GeometryModel = require('../core/Geometry.autogen.js').GeometryModel;
-var BufferGeometryModel = require('../core/BufferGeometry.autogen.js').BufferGeometryModel;
+var BaseGeometryModel = require('../core/BaseGeometry.autogen.js').BaseGeometryModel;
+var BaseBufferGeometryModel = require('../core/BaseBufferGeometry.autogen.js').BaseBufferGeometryModel;
 
 
-var PlainBufferGeometryModel = AutogenPlainBufferGeometryModel.extend({
+var BufferGeometryModel = AutogenBufferGeometryModel.extend({
 
     createPropertiesArrays: function() {
-        AutogenPlainBufferGeometryModel.prototype.createPropertiesArrays.call(this);
+        AutogenBufferGeometryModel.prototype.createPropertiesArrays.call(this);
         this.property_assigners['attributes'] = 'assignAttributesMap';
     },
 
@@ -22,7 +22,7 @@ var PlainBufferGeometryModel = AutogenPlainBufferGeometryModel.extend({
 
         var chain = ref.initPromise.bind(this);
         var toSet = {};
-        if (ref instanceof PlainBufferGeometryModel) {
+        if (ref instanceof BufferGeometryModel) {
             // Ensure ref three obj attributes are actually created:
             chain = chain.then(
                 // Wait for all attributes
@@ -38,12 +38,12 @@ var PlainBufferGeometryModel = AutogenPlainBufferGeometryModel.extend({
         }
 
         // Create three.js BufferAttributes from ref.
-        if (ref instanceof BufferGeometryModel) {
+        if (ref instanceof BaseBufferGeometryModel) {
             chain = chain.then(function() {
                 // Copy ref. This will create new buffers!
                 result.copy(ref.obj);
             });
-        } else if (ref instanceof GeometryModel) {
+        } else if (ref instanceof BaseGeometryModel) {
             // Copy from geometry. This will create new buffers.
             chain = chain.then(function() {
                 result.fromGeometry(ref.obj);
@@ -133,5 +133,5 @@ var PlainBufferGeometryModel = AutogenPlainBufferGeometryModel.extend({
 });
 
 module.exports = {
-    PlainBufferGeometryModel: PlainBufferGeometryModel,
+    BufferGeometryModel: BufferGeometryModel,
 };

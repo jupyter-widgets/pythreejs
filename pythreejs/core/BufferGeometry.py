@@ -3,12 +3,12 @@ from ipywidgets import register, widget_serialization
 from traitlets import validate, TraitError
 from ipydatawidgets import NDArrayWidget
 
-from .PlainBufferGeometry_autogen import PlainBufferGeometry as PlainBufferGeometryBase
+from .BufferGeometry_autogen import BufferGeometry as BufferGeometryBase
 
 
 
 @register
-class PlainBufferGeometry(PlainBufferGeometryBase):
+class BufferGeometry(BufferGeometryBase):
 
     @classmethod
     def from_geometry(cls, geometry):
