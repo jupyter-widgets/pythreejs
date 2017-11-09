@@ -126,19 +126,29 @@ _.extend(InitializedThreeType.prototype, ThreeType.prototype, {
     },
 });
 
-function ThreeTypeArray(typeName) {
+function ThreeTypeArray(typeName, options={}) {
     this.typeName = typeName;
     this.defaultValue = [];
     this.serializer = WIDGET_SERIALIZER;
+    this.nullable = options.nullable !== false;
+    this.allow_single = options.allow_single === true;
 }
 _.extend(ThreeTypeArray.prototype, BaseType.prototype, {
     getTraitlet: function() {
+        var baseType = 'Tuple()';
+        if (this.allow_single) {
+            if (this.typeName === 'this') {
+                baseType = 'Union([This, ' + baseType + '])';
+            } else {
+                baseType = 'Union([Instance(' + this.typeName + '), ' + baseType + '])';
+            }
+        }
         if (this.typeName === 'this') {
             // return 'List(trait=This(), default_value=[]).tag(sync=True, **widget_serialization)';
-            return 'Tuple().tag(sync=True, **widget_serialization)';
+            return baseType + '.tag(sync=True, **widget_serialization)';
         }
         // return 'List(trait=Instance(' + this.typeName + ')).tag(sync=True, **widget_serialization)';
-        return 'Tuple().tag(sync=True, **widget_serialization)';
+        return baseType + '.tag(sync=True, **widget_serialization)';
     },
     getPropArrayName: function() {
         return 'three_nested_properties';

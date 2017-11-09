@@ -25,6 +25,11 @@ function listenNested(model, propNames, callback) {
     propNames.forEach(function(propName) {
         // listen to current values in array
         var curr = model.get(propName) || [];
+        // ignore ThreeModels in order to support properties
+        // that are either an instance, or a sequence of instances:
+        if (curr instanceof ThreeModel) {
+            return;
+        }
         utils.childModelsNested(curr).forEach(function(childModel) {
             model.listenTo(childModel, 'change', callback);
             model.listenTo(childModel, 'childchange', callback);
@@ -650,6 +655,13 @@ var ThreeModel = widgets.WidgetModel.extend({
             // If instance equality, do nothing.
             return;
         }
+        if (obj[key] === undefined || obj[key] === null) {
+            if (value === null || value === undefined) {
+                // Leave it as it is
+                return;
+            }
+            obj[key] = {};
+        }
         // Clear the dict
         Object.keys(obj[key]).forEach(k => { delete obj[key][k]; });
         // Put in the new values
@@ -658,12 +670,18 @@ var ThreeModel = widgets.WidgetModel.extend({
 
     // ThreeTypeArray
     convertThreeTypeArrayModelToThree: function(modelArr, propName) {
+        if (!Array.isArray(modelArr)) {
+            return this.convertThreeTypeModelToThree(modelArr, propName);
+        }
         return modelArr.map(function(model) {
             return this.convertThreeTypeModelToThree(model, propName);
         }, this);
     },
 
     convertThreeTypeArrayThreeToModel: function(threeTypeArr, propName) {
+        if (!Array.isArray(threeTypeArr)) {
+            return this.convertThreeTypeThreeToModel(threeTypeArr, propName);
+        }
         return threeTypeArr.map(function(threeType) {
             return this.convertThreeTypeThreeToModel(threeType, propName);
         }, this);
