@@ -1,5 +1,6 @@
 from ipywidgets import register
 
+from .._base.Three import ThreeWidget
 from .BufferAttribute_autogen import BufferAttribute as BaseBufferAttribute
 
 
@@ -15,3 +16,12 @@ class BufferAttribute(BaseBufferAttribute):
         kwargs['normalized'] = normalized
         # NOTE: skip init of direct parent class on purpose:
         super(BaseBufferAttribute, self).__init__(**kwargs)
+
+    def _ipython_display_(self, **kwargs):
+        # Preview widget doesn't make any sense for attributes
+        from IPython.display import display
+        data = {
+            'text/plain': repr(self),
+        }
+        display(data, raw=True)
+        self._handle_displayed(**kwargs)

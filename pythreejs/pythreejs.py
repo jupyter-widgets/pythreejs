@@ -23,9 +23,9 @@ from ._version import EXTENSION_VERSION
 
 
 from .core.BufferAttribute import BufferAttribute
+from .core.Geometry import Geometry
+from .core.BufferGeometry import BufferGeometry
 from .geometries.BoxGeometry_autogen import BoxGeometry
-from .geometries.PlainGeometry import PlainGeometry
-from .geometries.PlainBufferGeometry import PlainBufferGeometry
 from .geometries.SphereGeometry_autogen import SphereGeometry
 from .lights.AmbientLight_autogen import AmbientLight
 from .lights.DirectionalLight_autogen import DirectionalLight
@@ -52,7 +52,7 @@ def grid_indices_gen(nx, ny):
             yield (root + nx, root + 1, root + nx + 1)
 
 
-class SurfaceGeometry(PlainBufferGeometry):
+class SurfaceGeometry(BufferGeometry):
     """
     A regular grid with heights
     """
@@ -101,10 +101,10 @@ def SurfaceGrid(geometry, material, **kwargs):
 
     lines = []
     for x in range(nx):
-        g = PlainGeometry(vertices=[vertices[y * nx + x, :].tolist() for y in range(ny)])
+        g = Geometry(vertices=[vertices[y * nx + x, :].tolist() for y in range(ny)])
         lines.append(Line(g, material))
     for y in range(ny):
-        g = PlainGeometry(vertices=[vertices[y * nx + x, :].tolist() for x in range(nx)])
+        g = Geometry(vertices=[vertices[y * nx + x, :].tolist() for x in range(nx)])
         lines.append(Line(g, material))
 
     return Group(children=lines, **kwargs)
