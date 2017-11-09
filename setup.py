@@ -50,7 +50,8 @@ setup_args = {
     ],
     'install_requires': [
         'ipywidgets>=7,<8',
-        'ipydatawidgets>=1.1.1'
+        'ipydatawidgets>=1.1.1',
+        'numpy',
     ],
     'extras_require': {
         'test': [
