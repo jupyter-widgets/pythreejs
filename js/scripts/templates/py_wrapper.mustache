@@ -38,8 +38,8 @@ class {{ className }}({{ superClass.className }}):
 
     {{#each properties as |prop propName|}}
     {{ propName }} = {{{ prop.trait_declaration }}}
-    {{/each}}
 
+    {{/each}}
 
 if six.PY3:
     import inspect
