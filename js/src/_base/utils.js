@@ -1,6 +1,7 @@
 
 var widgets = require("@jupyter-widgets/base");
 var THREE = require('three');
+var _ = require('underscore');
 
 
 /**
