@@ -650,6 +650,13 @@ var ThreeModel = widgets.WidgetModel.extend({
             // If instance equality, do nothing.
             return;
         }
+        if (obj[key] === undefined || obj[key] === null) {
+            if (value === null || value === undefined) {
+                // Leave it as it is
+                return;
+            }
+            obj[key] = {};
+        }
         // Clear the dict
         Object.keys(obj[key]).forEach(k => { delete obj[key][k]; });
         // Put in the new values
