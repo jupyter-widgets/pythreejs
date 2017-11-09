@@ -71,10 +71,16 @@ var PickerControls = function(event) {
     }
 
     function onEvent( event ) {
-        var $el = $(scope.element);
-        var offset = $el.offset();
-        var mouseX = ((event.pageX - offset.left) / $el.width()) * 2 - 1;
-        var mouseY = -((event.pageY - offset.top) / $el.height()) * 2 + 1;
+        var el = scope.element;
+        r = el.getBoundingClientRect();
+        var offsetX = r.x + window.pageXOffset;
+        var offsetY = r.y + window.pageYOffset
+
+        scope.element
+        var mouseX = ((event.scrollX - offsetX) / el.scrollWidth) * 2 - 1;
+        var mouseY = -((event.scrollY - offsetY) / el.scrollHeight) * 2 + 1;
+
+        // mouseX/Y should be normalized device coordinates for Three
 
         scope.pickCoordinates = {x: mouseX, y: mouseY};
         if (event.altKey !== undefined) {
