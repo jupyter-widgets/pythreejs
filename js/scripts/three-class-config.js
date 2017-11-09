@@ -1106,7 +1106,7 @@ module.exports = {
         superClass: 'Object3D',
         constructorArgs: [ 'geometry', 'material' ],
         properties: {
-            material: new Types.ThreeType('Material', {nullable: false}),
+            material: new Types.ThreeTypeArray('Material', {nullable: false, allow_single: true}),
             geometry: new Types.ThreeType(['Geometry', 'BufferGeometry'], {nullable: false}),
             drawMode: new Types.Enum('DrawModes', 'TrianglesDrawMode'),
             morphTargetInfluences: new Types.Array(),
