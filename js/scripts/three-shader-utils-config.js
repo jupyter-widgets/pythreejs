@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = {
     ShaderChunk: {
         relativePath: './renderers/shaders/ShaderChunk',

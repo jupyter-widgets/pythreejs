@@ -1,4 +1,4 @@
-var _ = require('underscore');
+var Promise = require('bluebird');
 var THREE = require('three');
 var CloneArrayAutogen = require('./CloneArray.autogen').CloneArrayModel;
 
@@ -16,7 +16,7 @@ function ThreeCloneArray(original, positions, merge) {
 
 ThreeCloneArray.prototype = Object.assign(Object.create(THREE.Object3D.prototype), {
 
-	constructor: ThreeCloneArray,
+    constructor: ThreeCloneArray,
 
     clear: function() {
 
@@ -73,7 +73,7 @@ ThreeCloneArray.prototype = Object.assign(Object.create(THREE.Object3D.prototype
             }
 
             // Loop over positions
-            var i = 0;
+            i = 0;
             this.original.updateMatrix();
             var matrix = this.original.matrix.clone();
             this.positions.forEach(function(pos) {

@@ -1,4 +1,5 @@
-var _ = require('underscore');
+var Promise = require('bluebird');
+var THREE = require('three');
 var BlackboxAutogen = require('./Blackbox.autogen').BlackboxModel;
 
 /**

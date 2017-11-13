@@ -1,3 +1,5 @@
+'use strict'
+
 // BLENDING EQUATIONS
 
 var Equations = [

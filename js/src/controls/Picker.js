@@ -14,7 +14,7 @@ var PickerModel = PickerAutogen.PickerModel.extend({
     constructThreeObject: function() {
         this.camera = null;
         var event = this.get('event');
-        obj = new PickerControls(event);
+        var obj = new PickerControls(event);
         return obj;
     },
 
@@ -40,7 +40,7 @@ var PickerModel = PickerAutogen.PickerModel.extend({
         var info = getinfo(objects.length > 0 ? objects[0] : null);
 
         if (this.get('all')) {
-            info.picked = _.map(objs, getinfo);
+            info.picked = _.map(objects, getinfo);
         } else {
             info.picked = [];
         }
@@ -64,17 +64,17 @@ var PickerControls = function(event) {
     this.connectEvents = function(element) {
         scope.element = element;
         element.addEventListener(event, onEvent, false);
-    }
+    };
 
     this.dispose = function() {
         scope.element.removeEventListener(event, onEvent, false);
-    }
+    };
 
     function onEvent( event ) {
         var el = scope.element;
         var r = el.getBoundingClientRect();
         var offsetX = r.x + window.pageXOffset;
-        var offsetY = r.y + window.pageYOffset
+        var offsetY = r.y + window.pageYOffset;
 
         var mouseX = ((event.pageX - offsetX) / el.scrollWidth) * 2 - 1;
         var mouseY = -((event.pageY - offsetY) / el.scrollHeight) * 2 + 1;
@@ -88,7 +88,7 @@ var PickerControls = function(event) {
                 event.ctrlKey,
                 event.altKey,
                 event.metaKey,
-            ]
+            ];
         } else {
             scope.modifiers = null;
         }
@@ -96,7 +96,7 @@ var PickerControls = function(event) {
         scope.dispatchEvent( pickEvent );
     }
 
-}
+};
 
 PickerControls.prototype = Object.create( THREE.EventDispatcher.prototype );
 PickerControls.prototype.constructor = PickerControls;
@@ -106,7 +106,7 @@ function pick(mouse, camera, root) {
     var raycaster = new THREE.Raycaster();
     raycaster.setFromCamera( mouse, camera );
     return raycaster.intersectObject(root, true);
-};
+}
 
 
 function getinfo(o) {

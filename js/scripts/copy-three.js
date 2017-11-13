@@ -1,11 +1,13 @@
-var path = require('path');
-var fse = require('fs-extra');
+'use strict';
 
-var scriptDir = __dirname;
-var baseDir = path.resolve(scriptDir, '..');
+const path = require('path');
+const fse = require('fs-extra');
 
-var threeBuildDir = path.resolve(baseDir, 'node_modules', 'three', 'build');
-var staticDir = path.resolve(baseDir, '..', 'pythreejs', 'static');
+const scriptDir = __dirname;
+const baseDir = path.resolve(scriptDir, '..');
+
+const threeBuildDir = path.resolve(baseDir, 'node_modules', 'three', 'build');
+const staticDir = path.resolve(baseDir, '..', 'pythreejs', 'static');
 
 
 function copyThree() {

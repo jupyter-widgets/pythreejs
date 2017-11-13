@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var Promise = require('bluebird');
 var THREE = require('three');
 var createModel = require('../_base/utils').createModel;
 
@@ -26,12 +27,12 @@ var BufferGeometryModel = AutogenBufferGeometryModel.extend({
             // Ensure ref three obj attributes are actually created:
             chain = chain.then(
                 // Wait for all attributes
-                Promise.all(_.map(_.values(ref.get('attributes')), attr => {
+                Promise.all(_.map(_.values(ref.get('attributes')), function(attr) {
                     return attr.initPromise;
                 }))
             ).then(
                 // Wait for all morphAttributes
-                Promise.all(_.map(_.values(ref.get('morphAttributes')), attr => {
+                Promise.all(_.map(_.values(ref.get('morphAttributes')), function(attr) {
                     return attr.initPromise;
                 }))
             );
@@ -57,30 +58,30 @@ var BufferGeometryModel = AutogenBufferGeometryModel.extend({
         // We need to:
         // - Create models for each buffer attribute
         // - Set attribute dicts on model
-        return chain.then(() => {
+        return chain.then(function() {
         // Create models for all attributes:
-            return Promise.all(_.map(_.pairs(result.attributes), kv => {
+            return Promise.all(_.map(_.pairs(result.attributes), function(kv) {
                 var modelCtor = kv[1].isInterleavedBufferAttribute ? InterleavedBufferAttributeModel : BufferAttributeModel;
-                return createModel(modelCtor, this.widget_manager, kv[1]).then(model => {
+                return createModel(modelCtor, this.widget_manager, kv[1]).then(function(model) {
                     return [kv[0], model];
                 });
             }));
-        }).then((attribModelKVs) => {
+        }).then(function(attribModelKVs) {
             toSet.attributes = _.object(attribModelKVs);
 
         // Then create models for all morphAttributes:
-        }).then(() => {
-            return Promise.all(_.map(_.pairs(result.morphAttributes), kv => {
+        }).then(function() {
+            return Promise.all(_.map(_.pairs(result.morphAttributes), function(kv) {
                 var modelCtor = kv[1].isInterleavedBufferAttribute ? InterleavedBufferAttributeModel : BufferAttributeModel;
-                return createModel(modelCtor, this.widget_manager, kv[1]).then(model => {
+                return createModel(modelCtor, this.widget_manager, kv[1]).then(function(model) {
                     return [kv[0], model];
                 });
-            })
-        )}).then((attribModelKVs) => {
+            }));
+        }).then(function(attribModelKVs) {
             toSet.morphAttributes = _.object(attribModelKVs);
 
         // Sync out all properties that have been set:
-        }).then(() => {
+        }).then(function() {
             // Add other fields that needs to be synced out:
             toSet.name = result.name;
 
@@ -115,7 +116,7 @@ var BufferGeometryModel = AutogenBufferGeometryModel.extend({
         if (removed.length > 0) {
             console.warn('Cannot remove buffer geometry attributes:', removed);
         }
-        added.forEach(key => {
+        added.forEach(function(key) {
             if (key === 'index') {
                 obj.setIndex(value[key]);
             } else {
@@ -123,7 +124,9 @@ var BufferGeometryModel = AutogenBufferGeometryModel.extend({
             }
         });
 
-        var commonChanged = _.filter(common, key => { return obj.getAttribute(key) !== value[key]});
+        var commonChanged = _.filter(common, function(key) {
+            return obj.getAttribute(key) !== value[key];
+        });
         if (commonChanged.length > 0) {
             console.warn('Cannot reassign buffer geometry attribute:', commonChanged);
         }

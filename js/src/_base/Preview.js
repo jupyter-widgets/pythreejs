@@ -1,14 +1,12 @@
 var _ = require('underscore');
-var widgets = require("@jupyter-widgets/base");
-var Promise = require('bluebird');
-var $ = require('jquery');
+var widgets = require('@jupyter-widgets/base');
 
 var THREE = require('three');
 
 var Renderable = require('./Renderable');
 var RenderableView = Renderable.RenderableView;
 var RenderableModel = Renderable.RenderableModel;
-var OrbitControls = require("../examples/controls/OrbitControls.js").OrbitControls;
+var OrbitControls = require('../examples/controls/OrbitControls.js').OrbitControls;
 var utils = require('./utils.js');
 
 
@@ -56,6 +54,8 @@ var PreviewView = RenderableView.extend({
 
         this.clearScene();
 
+        var geometry, mesh;
+
         if (obj.isObject3D) {
 
             this.log('render Object3D');
@@ -85,7 +85,7 @@ var PreviewView = RenderableView.extend({
                 material.vertexColors = THREE.VertexColors;
             }
 
-            var mesh = new THREE.Mesh(obj, material);
+            mesh = new THREE.Mesh(obj, material);
             this.scene.add(mesh);
 
         } else if (obj.isMaterial) {
@@ -101,21 +101,21 @@ var PreviewView = RenderableView.extend({
                 }
                 this.scene.add(sprite);
             } else {
-                var geometry = new THREE.SphereGeometry(15, 16, 12);
-                var mesh = new THREE.Mesh(geometry, obj);
+                geometry = new THREE.SphereGeometry(15, 16, 12);
+                mesh = new THREE.Mesh(geometry, obj);
                 this.scene.add(mesh);
             }
 
         } else if (obj.isTexture) {
 
-            var geometry = new THREE.SphereGeometry(15, 16, 12);
+            geometry = new THREE.SphereGeometry(15, 16, 12);
             var mat = new THREE.MeshStandardMaterial({ map: obj });
-            var mesh = new THREE.Mesh(geometry, mat);
+            mesh = new THREE.Mesh(geometry, mat);
             this.scene.add(mesh);
 
         } else {
 
-            console.log("Unexpected object in preview, scene will be empty:", obj);
+            console.log('Unexpected object in preview, scene will be empty:', obj);
 
         }
 
@@ -135,7 +135,7 @@ var PreviewView = RenderableView.extend({
 
     resetCamera: function() {
         // Compute bounding sphere for entire scene
-        const sphere = utils.computeBoundingSphere(this.scene);
+        var sphere = utils.computeBoundingSphere(this.scene);
         if (sphere === null) {
             sphere = new THREE.Sphere(new THREE.Vector3(), 1);
         }
@@ -144,13 +144,13 @@ var PreviewView = RenderableView.extend({
         utils.lookAtSphere(this.camera, sphere.center, sphere.radius);
 
         // Update controls with new target
-        const control = this.controls[0];
+        var control = this.controls[0];
         control.target.copy(sphere.center);
         control.target0.copy(sphere.center);
         control.update();
 
         // Position light up to the left and behind camera
-        const dist = 2.5 * (this.camera.position.z - sphere.center.z);
+        var dist = 2.5 * (this.camera.position.z - sphere.center.z);
         this.pointLight.position.set(-dist, dist, dist);
     },
 

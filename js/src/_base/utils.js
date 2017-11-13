@@ -1,5 +1,5 @@
 
-var widgets = require("@jupyter-widgets/base");
+var widgets = require('@jupyter-widgets/base');
 var THREE = require('three');
 var _ = require('underscore');
 
@@ -24,7 +24,7 @@ var computeBoundingBox = function() {
             }
         });
         return boundingBox;
-    }
+    };
 }();
 
 
@@ -77,7 +77,7 @@ var computeBoundingSphere = function() {
             }
         });
         return boundingSphere;
-    }
+    };
 }();
 
 
@@ -93,13 +93,14 @@ var computeBoundingSphere = function() {
  * @param {any} radius The radius of the sphere to use as a reference
  * @param {number} [distOffset=0.1] The fraction of the radius to use as padding
  */
-function shrinkFrustumPlanes(camera, center, radius, distOffset=0.1) {
+function shrinkFrustumPlanes(camera, center, radius, distOffset) {
+    distOffset = distOffset === undefined ? 0.1 : distOffset;
     // distOffset = 0.1  -->  10% of radius
 
     // Find distance from camera to edges of sphere
-    const dist = camera.position.distanceTo(center);
-    const nearEdge = dist - radius;
-    const farEdge = dist + radius;
+    var dist = camera.position.distanceTo(center);
+    var nearEdge = dist - radius;
+    var farEdge = dist + radius;
 
     // Set near/far sufficiently close to edges of sphere
     camera.near = (1 - distOffset) * nearEdge,
@@ -121,11 +122,12 @@ function shrinkFrustumPlanes(camera, center, radius, distOffset=0.1) {
  *  according to this factor. The far plane distance is multiplied with
  *  this factor, while the near plane is multiplied with its inverse.
  */
-function safeFrustumPlanes(camera, center, radius, allowZoom=20) {
+function safeFrustumPlanes(camera, center, radius, allowZoom) {
+    allowZoom = allowZoom === undefined ? 20 : allowZoom;
     // Find distance from camera to edges of sphere
-    const dist = camera.position.distanceTo(center);
-    const nearEdge = dist - radius;
-    const farEdge = dist + radius;
+    var dist = camera.position.distanceTo(center);
+    var nearEdge = dist - radius;
+    var farEdge = dist + radius;
 
     // Set near/far sufficiently far from edge of sphere to allow some zooming
     camera.near = (1 / allowZoom) * nearEdge;
@@ -150,14 +152,15 @@ function safeFrustumPlanes(camera, center, radius, allowZoom=20) {
  *   the sphere; 'tight' sets them close (but not touching) the sphere;
  *   and a falsy value will leave the near/far planes untouched.
  */
-function lookAtSphere(camera, center, radius, setNearFar='safe') {
+function lookAtSphere(camera, center, radius, setNearFar) {
+    setNearFar = setNearFar === undefined ? 'safe' : setNearFar;
     if (!camera.isPerspectiveCamera) {
-        console.error("Expecting a perspective camera.");
+        console.error('Expecting a perspective camera.');
     }
 
     // Compute distance based on FOV
-    const radScale = 1.5;  // Include this much more than the sphere
-    const distance = (radScale * radius) / Math.tan(0.5 * camera.fov * Math.PI / 180);
+    var radScale = 1.5;  // Include this much more than the sphere
+    var distance = (radScale * radius) / Math.tan(0.5 * camera.fov * Math.PI / 180);
 
     // Place camera such that the model is in the -z direction from the camera
     camera.position.setX(center.x);
@@ -173,9 +176,9 @@ function lookAtSphere(camera, center, radius, setNearFar='safe') {
     } else if (setNearFar === 'safe') {
         // Set near and far planes to include sphere with a wide margin for zooming
         safeFrustumPlanes(camera, center, radius);
-    } else if (!!setNearFar) {
+    } else if (setNearFar) {
         // If setNearFar is a non-valid, truthy value, it is invalid
-        throw new Error(`setNearFar argument to lookAtSphere invalid: ${setNearFar}`);
+        throw new Error('setNearFar argument to lookAtSphere invalid: ' + setNearFar);
     }
 
     // Update matrix
@@ -189,7 +192,7 @@ function lookAtSphere(camera, center, radius, setNearFar='safe') {
  */
 function commOpenWithBuffers(comm, content, callbacks, metadata, buffers) {
     return comm.kernel.send_shell_message(
-        "comm_open", content, callbacks, metadata, buffers);
+        'comm_open', content, callbacks, metadata, buffers);
 }
 
 
@@ -206,18 +209,18 @@ function createModel(constructor, widget_manager, obj) {
         widget_manager: widget_manager,
         model_id: id,
         three_obj: obj,
-    }
+    };
     var attributes = { };
     var widget_model = new constructor(attributes, modelOptions);
 
-    widget_model.once('comm:close', () => {
+    widget_model.once('comm:close', function() {
         delete widget_manager._models[id];
     });
 
-    widget_manager._models[id] = widget_model.initPromise.then(() => {
+    widget_manager._models[id] = widget_model.initPromise.then(function() {
         // Create un-opened comm:
         return widget_manager._create_comm(widget_manager.comm_target_name, id);
-    }).then(comm => {
+    }).then(function(comm) {
         var split = widgets.remove_buffers(
             widget_model.serialize(widget_model.get_state(true)));
         var data = {
@@ -240,7 +243,7 @@ function createModel(constructor, widget_manager, obj) {
         };
         var metadata = {version: widgets.PROTOCOL_VERSION};
 
-        commOpenWithBuffers(comm, content, null, metadata, buffers)
+        commOpenWithBuffers(comm, content, null, metadata, buffers);
 
         widget_model.comm = comm;
 
@@ -298,7 +301,7 @@ function arrayDiff(newArray, oldArray) {
     var added = _.difference(newArray, oldArray);
     var removed = _.difference(oldArray, newArray);
     var kept = _.intersection(oldArray, newArray);
-    return {added, removed, kept};
+    return {added: added, removed: removed, kept: kept};
 }
 
 /**
@@ -316,7 +319,7 @@ function dictDiff(newDict, oldDict) {
     var added = _.difference(newKeys, oldKeys).map(function(key) { return newDict[key]; });
     var removed = _.difference(oldKeys, newKeys).map(function(key) { return oldDict[key]; });
     var kept = _.intersection(newKeys, oldKeys).map(function(key) { return newDict[key]; });
-    return {added, removed, kept};
+    return {added: added, removed: removed, kept: kept};
 }
 
 /**
@@ -349,7 +352,7 @@ function nestedDiff(newObj, oldObj) {
     var ret = {
         added: childModelsNested(diff.added),
         removed: childModelsNested(diff.removed),
-    }
+    };
     ret.kept = _.flatten(diff.kept.map(function(child) {
         return nestedDiff(child);
     }), true);
@@ -379,7 +382,7 @@ function getObjectScene(object3d) {
  * @returns The scene object's model, or null if it cannot be found
  */
 function getModelScene(model) {
-    let obj = model.obj;
+    var obj = model.obj;
     while (obj.parent) {
         obj = obj.parent;
     }
@@ -403,4 +406,4 @@ module.exports = {
     nestedDiff: nestedDiff,
     getObjectScene: getObjectScene,
     getModelScene: getModelScene,
-}
+};

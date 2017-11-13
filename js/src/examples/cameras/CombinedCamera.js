@@ -14,7 +14,7 @@ var THREE = require('three');
 
 var CombinedCamera = function ( width, height, fov, near, far, orthoNear, orthoFar ) {
 
-    THREE.Camera.call( this );
+	THREE.Camera.call( this );
 
 	this.fov = fov;
 
@@ -34,7 +34,7 @@ var CombinedCamera = function ( width, height, fov, near, far, orthoNear, orthoF
 	this.view = null;
 	// We could also handle the projectionMatrix internally, but just wanted to test nested camera objects
 
-	this.cameraO = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, 	orthoNear, orthoFar );
+	this.cameraO = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, orthoNear, orthoFar );
 	this.cameraP = new THREE.PerspectiveCamera( fov, width / height, near, far );
 
 	this.impersonate = true;
@@ -86,7 +86,7 @@ CombinedCamera.prototype.toPerspective = function () {
 	this.inPerspectiveMode = true;
 	this.inOrthographicMode = false;
 
-    this.type = 'PerspectiveCamera';  // Act as a perspective camera
+	this.type = 'PerspectiveCamera';  // Act as a perspective camera
 
 };
 
@@ -96,8 +96,6 @@ CombinedCamera.prototype.toOrthographic = function () {
 
 	var fov = this.fov;
 	var aspect = this.cameraP.aspect;
-	var near = this.cameraP.near;
-	var far = this.cameraP.far;
 
 	// The size that we set is the plane of the viewing frustum at the focus
 
@@ -122,7 +120,7 @@ CombinedCamera.prototype.toOrthographic = function () {
 	this.inPerspectiveMode = false;
 	this.inOrthographicMode = true;
 
-    this.type = 'OrthographicCamera';  // Act as an orthographic camera
+	this.type = 'OrthographicCamera';  // Act as an orthographic camera
 
 };
 
@@ -318,5 +316,5 @@ CombinedCamera.prototype.toBottomView = function() {
 
 
 module.exports = {
-    CombinedCamera: CombinedCamera
-}
+	CombinedCamera: CombinedCamera
+};

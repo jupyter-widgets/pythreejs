@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var SkinnedMeshAutogen = require('./SkinnedMesh.autogen').SkinnedMeshModel;
 
 var SkinnedMeshModel = SkinnedMeshAutogen.extend({

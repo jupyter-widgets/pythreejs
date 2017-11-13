@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var DepthTextureBase = require('./DepthTexture.autogen');
 
 var DepthTextureModel = DepthTextureBase.DepthTextureModel.extend({
@@ -12,21 +11,21 @@ var DepthTextureModel = DepthTextureBase.DepthTextureModel.extend({
 
 
     mapDepthTextureDataModelToThree: function() {
-    	var width = this.get('width');
-    	var height = this.get('height');
-    	this.obj.image = { width: width, height: height };
-    	this.obj.needsUpdate = true;
+        var width = this.get('width');
+        var height = this.get('height');
+        this.obj.image = { width: width, height: height };
+        this.obj.needsUpdate = true;
     },
 
     mapDepthTextureDataThreeToModel: function() {
-    	var imageRecord = this.obj.image;
+        var imageRecord = this.obj.image;
 
-		// this.image = { width: width, height: height };
-    	var dataWidth = imageRecord.width;
-    	var dataHeight = imageRecord.height;
+        // this.image = { width: width, height: height };
+        var dataWidth = imageRecord.width;
+        var dataHeight = imageRecord.height;
 
-    	this.set('width', dataWidth);
-    	this.set('height', dataHeight);
+        this.set('width', dataWidth);
+        this.set('height', dataHeight);
     },
 
 });

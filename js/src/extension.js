@@ -2,9 +2,9 @@
 if (window.require) {
     window.require.config({
         map: {
-            "*" : {
-                "jupyter-threejs": "nbextensions/jupyter-threejs/index",
-                "three": "nbextensions/jupyter-threejs/three"
+            '*' : {
+                'jupyter-threejs': 'nbextensions/jupyter-threejs/index',
+                'three': 'nbextensions/jupyter-threejs/three'
             }
         }
     });
