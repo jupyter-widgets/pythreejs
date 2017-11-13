@@ -9,7 +9,7 @@ var Promise = require('bluebird');
 
 var RenderableModel = require('../_base/Renderable').RenderableModel;
 var RenderableView = require('../_base/Renderable').RenderableView;
-var ThreeModel = require('../_base/Three').ThreeModel;
+
 
 var WebGLRendererModel = RenderableModel.extend({
 
@@ -42,7 +42,7 @@ var WebGLRendererView = RenderableView.extend({
 
     objFromCommWidgetId: function(commWidgetId) {
         var modelPromise = widgets.unpack_models(
-            commWidgetId, this.model.widget_manager)
+            commWidgetId, this.model.widget_manager);
         return modelPromise.then(function(model) {
             return model.obj;
         });
@@ -67,17 +67,17 @@ var WebGLRendererView = RenderableView.extend({
     onCustomMessage: function(content, buffers) {
         switch(content.type) {
 
-            case 'render':
-                Promise.props({
-                    scene: this.objFromCommWidgetId(content.scene),
-                    camera: this.objFromCommWidgetId(content.camera),
-                }).bind(this).then(function(result) {
-                    this.renderScene(result.scene, result.camera);
-                });
-                break;
+        case 'render':
+            Promise.props({
+                scene: this.objFromCommWidgetId(content.scene),
+                camera: this.objFromCommWidgetId(content.camera),
+            }).bind(this).then(function(result) {
+                this.renderScene(result.scene, result.camera);
+            });
+            break;
 
-            default:
-                return RenderableView.prototype.onCustomMessage.apply(this, arguments);
+        default:
+            return RenderableView.prototype.onCustomMessage.apply(this, arguments);
 
         }
     },

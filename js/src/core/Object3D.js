@@ -10,14 +10,14 @@ var Object3DModel = Object3DAutogen.extend({
     },
 
     assignChildren: function(obj, key, value) {
-        old = obj[key];
-        removed = _.difference(old, value);
-        added = _.difference(value, old);
+        var old = obj[key];
+        var removed = _.difference(old, value);
+        var added = _.difference(value, old);
         if (removed.length > 0) {
-            obj.remove(...removed);
+            obj.remove.apply(obj, removed);
         }
         if (added.length > 0) {
-            obj.add(...added);
+            obj.add.apply(obj, added);
         }
     }
 

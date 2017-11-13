@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var Promise = require('bluebird');
 var THREE = require('three');
 var TextTextureBase = require('./TextTexture.autogen').TextTextureModel;
@@ -56,7 +55,7 @@ var TextTextureModel = TextTextureBase.extend({
         // Must set the font again for the fillText call
         context.font = font;
         context.fillText(string, canvas.width / 2, canvas.height / 2);
-        return canvas
+        return canvas;
     }
 
 });

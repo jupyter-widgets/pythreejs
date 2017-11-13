@@ -1,4 +1,4 @@
-var _ = require('underscore');
+var Promise = require('bluebird');
 var dataserializers = require('jupyter-dataserializers');
 var ndarray = require('ndarray');
 var THREE = require('three');
@@ -14,7 +14,7 @@ var BufferAttributeModel = BufferAttributeAutogen.extend({
         delete this.property_converters['array'];
     },
 
-    decodeData() {
+    decodeData: function() {
         var rawData = dataserializers.getArray(this.get('array'));
         var itemSize = rawData.dimension === 1 ? 1 : rawData.shape[rawData.dimension - 1];
 
@@ -65,7 +65,7 @@ var BufferAttributeModel = BufferAttributeAutogen.extend({
         }
     },
 
-    onChildChanged: function(model, options) {
+    onChildChanged: function(model) {
         if (model === this.get('array')) {
             // We need to update data
             this.mapBufferAttributeArrayModelToThree();

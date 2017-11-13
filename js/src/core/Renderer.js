@@ -22,7 +22,7 @@ var RendererModel = RenderableModel.extend({
             camera: null,
             controls: [],
             effect: null,
-            background: "black",
+            background: 'black',
             background_opacity: 1.0,
         });
     },
@@ -76,7 +76,7 @@ var RendererView = RenderableView.extend({
     lazyRendererSetup: function() {
         this.scene = this.model.get('scene').obj;
         this.camera = this.model.get('camera').obj;
-        controls = [];
+        var controls = [];
         this.model.get('controls').forEach(function (controlModel) {
             controls.push(controlModel.obj);
         });
@@ -124,7 +124,7 @@ var RendererView = RenderableView.extend({
             this.disableControls();
         }
 
-        controls = [];
+        var controls = [];
         this.model.get('controls').forEach(function (controlModel) {
             controls.push(controlModel.obj);
         });

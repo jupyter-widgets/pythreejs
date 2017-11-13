@@ -1,6 +1,7 @@
 var _ = require('underscore');
-var widgets = require("@jupyter-widgets/base");
-var utils = require("../_base/utils");
+var widgets = require('@jupyter-widgets/base');
+var utils = require('../_base/utils');
+var Promise = require('bluebird');
 var AnimationActionAutogen = require('./AnimationAction.autogen').AnimationActionModel;
 
 var THREE = require('three');
@@ -16,7 +17,7 @@ var AnimationActionModel = AnimationActionAutogen.extend({
             {
                 _view_module: pkgName,
                 _view_name: 'AnimationActionView',
-        });
+            });
     },
 
 
@@ -33,7 +34,7 @@ var AnimationActionModel = AnimationActionAutogen.extend({
         // Use mixer.clipAction() instead of constructor for cache
         // (according to THREE docs)
         var mixer = this.convertThreeTypeModelToThree(this.get('mixer'), 'mixer');
-        var rootObj = this.convertThreeTypeModelToThree(this.get('localRoot'), 'localRoot')
+        var rootObj = this.convertThreeTypeModelToThree(this.get('localRoot'), 'localRoot');
         var result = mixer.clipAction(
             this.convertThreeTypeModelToThree(this.get('clip'), 'clip'),
             rootObj
@@ -163,7 +164,7 @@ var AnimationActionView = widgets.DOMWidgetView.extend({
     },
 
     update: function() {
-        let disabled = !this.model.get('enabled');
+        var disabled = !this.model.get('enabled');
         this.playButton.disabled = disabled;
         this.pauseButton.disabled = disabled;
         this.stopButton.disabled = disabled;
@@ -173,7 +174,7 @@ var AnimationActionView = widgets.DOMWidgetView.extend({
 
     update_playing: function() {
         var playing = !this.model.get('paused');
-        let disabled = !this.model.get('enabled');
+        var disabled = !this.model.get('enabled');
         if (playing) {
             if (!disabled) {
                 this.pauseButton.disabled = false;

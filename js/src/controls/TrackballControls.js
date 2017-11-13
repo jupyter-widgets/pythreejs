@@ -1,12 +1,12 @@
 var _ = require('underscore');
-var TrackballControls = require("../examples/controls/TrackballControls.js").TrackballControls;
+var TrackballControls = require('../examples/controls/TrackballControls.js').TrackballControls;
 var TrackballControlsAutogen = require('./TrackballControls.autogen');
 
 var TrackballControlsModel = TrackballControlsAutogen.TrackballControlsModel.extend({
 
     constructThreeObject: function() {
         var controlling = this.get('controlling');
-        obj = new TrackballControls(controlling.obj);
+        var obj = new TrackballControls(controlling.obj);
         obj.dispose();  // Disconnect events, we need to (dis-)connect on freeze/thaw
         obj.noKeys = true; // turn off keyboard navigation
 
@@ -27,7 +27,8 @@ var TrackballControlsModel = TrackballControlsAutogen.TrackballControlsModel.ext
         var controlling = this.get('controlling');
         var pos = controlling.obj.position;
         var qat = controlling.obj.quaternion;
-        controlling.set({
+        controlling.set(
+            {
                 position: [pos.x, pos.y, pos.z],
                 quaternion: [qat._x, qat._y, qat._z, qat._w],
             },

@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var widgets = require("@jupyter-widgets/base");
+var widgets = require('@jupyter-widgets/base');
 var Promise = require('bluebird');
 var $ = require('jquery');
 
@@ -121,7 +121,7 @@ var RenderableView = widgets.DOMWidgetView.extend({
     },
 
     doRender: function() {
-        this.el.className = "jupyter-widget jupyter-threejs";
+        this.el.className = 'jupyter-widget jupyter-threejs';
 
         this.unfreeze();
 
@@ -176,11 +176,12 @@ var RenderableView = widgets.DOMWidgetView.extend({
                 this.renderer[propName] = this.model.get(propName);
                 return;
             }
+            var converterFn;
             if (converterName === 'convertThreeTypeArray') {
-                var converterFn = this[converterName].bind(this);
+                converterFn = this[converterName].bind(this);
             } else {
-                converterName = converterName + "ModelToThree";
-                var converterFn = ThreeModel.prototype[converterName];
+                converterName = converterName + 'ModelToThree';
+                converterFn = ThreeModel.prototype[converterName];
             }
 
             if (!converterFn) {
@@ -211,11 +212,12 @@ var RenderableView = widgets.DOMWidgetView.extend({
                 changes = true;
                 return;
             }
+            var converterFn;
             if (converterName === 'convertThreeTypeArray') {
-                var converterFn = this[converterName].bind(this);
+                converterFn = this[converterName].bind(this);
             } else {
-                converterName = converterName + "ModelToThree";
-                var converterFn = ThreeModel.prototype[converterName];
+                converterName = converterName + 'ModelToThree';
+                converterFn = ThreeModel.prototype[converterName];
             }
 
             if (!converterFn) {
@@ -367,10 +369,10 @@ var RenderableView = widgets.DOMWidgetView.extend({
 
     onCustomMessage: function(content, buffers) {
         switch(content.type) {
-            case 'freeze':
-                this.freeze();
-                break;
-            default:
+        case 'freeze':
+            this.freeze();
+            break;
+        default:
         }
     },
 

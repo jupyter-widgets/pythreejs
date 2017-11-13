@@ -7,7 +7,7 @@
 
 var {{ category.key }} = {
 {{#each category.enums as |enum|}}
-    {{ enum.value }}: "{{ enum.key }}",
+    {{ enum.value }}: '{{ enum.key }}',
 {{/each}}
 };
 {{/each}}

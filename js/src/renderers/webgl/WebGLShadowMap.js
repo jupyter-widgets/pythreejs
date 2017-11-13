@@ -1,6 +1,5 @@
 
 var _ = require('underscore');
-var widgets = require('@jupyter-widgets/base');
 var Promise = require('bluebird');
 
 var WebGLShadowMapAutogenModel = require('./WebGLShadowMap.autogen').WebGLShadowMapModel;

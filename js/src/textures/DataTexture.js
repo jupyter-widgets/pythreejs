@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var Promise = require('bluebird');
 var dataserializers = require('jupyter-dataserializers');
 var ndarray = require('ndarray');
 var THREE = require('three');
@@ -14,10 +15,10 @@ var DataTextureModel = DataTextureBase.extend({
         delete this.property_converters['data'];
     },
 
-    decodeData() {
+    decodeData: function() {
         var rawData = dataserializers.getArray(this.get('data'));
         if (rawData.dimension < 2 || rawData.dimension > 3) {
-            throw Error('DataTexture data dimensions need to be 2 or 3, got:', rawData.dimension)
+            throw Error('DataTexture data dimensions need to be 2 or 3, got:', rawData.dimension);
         }
         var data = this.convertArrayBufferModelToThree(rawData, 'data');
 
@@ -25,7 +26,7 @@ var DataTextureModel = DataTextureBase.extend({
             data: data,
             width: rawData.shape[0],
             height: rawData.shape[1],
-        }
+        };
     },
 
     constructThreeObject: function() {
@@ -58,7 +59,7 @@ var DataTextureModel = DataTextureBase.extend({
         var imageRecord = this.obj.image;
         var data = this.decodeData();
         if (imageRecord.width !== data.width || imageRecord.height !== imageRecord.height) {
-           throw new Error('Cannot change the dimensions of a DataTexture!');
+            throw new Error('Cannot change the dimensions of a DataTexture!');
         }
         this.obj.image.data.set(data.data);
         this.obj.needsUpdate = true;

@@ -1,7 +1,6 @@
 var _ = require('underscore');
 var THREE = require('three');
-var widgets = require('@jupyter-widgets/base');
-var FlyControls = require("../examples/controls/MomentumCameraControls.js").FlyControls;
+var FlyControls = require('../examples/controls/MomentumCameraControls.js').FlyControls;
 var FlyControlsAutogen = require('./FlyControls.autogen');
 
 
@@ -13,9 +12,9 @@ var FlyControlsModel = FlyControlsAutogen.FlyControlsModel.extend({
         this.renderer = null;
         this.syncAtWill = true;
 
-        obj = new FlyControls(controlling.obj);
+        var obj = new FlyControls(controlling.obj);
         obj.dispose();  // Disconnect events, we need to (dis-)connect on freeze/thaw
-        return obj
+        return obj;
     },
 
     setupListeners: function() {
@@ -59,7 +58,8 @@ var FlyControlsModel = FlyControlsAutogen.FlyControlsModel.extend({
         var controlling = this.get('controlling');
         var pos = controlling.obj.position;
         var qat = controlling.obj.quaternion;
-        controlling.set({
+        controlling.set(
+            {
                 position: [pos.x, pos.y, pos.z],
                 quaternion: [qat._x, qat._y, qat._z, qat._w],
             },

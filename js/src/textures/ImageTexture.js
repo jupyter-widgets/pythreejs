@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var Promise = require('bluebird');
 var THREE = require('three');
 var ImageTextureBase = require('./ImageTexture.autogen');

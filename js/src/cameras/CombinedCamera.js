@@ -1,5 +1,5 @@
-var _ = require('underscore');
-var CombinedCamera = require("../examples/cameras/CombinedCamera.js").CombinedCamera;
+var Promise = require('bluebird');
+var CombinedCamera = require('../examples/cameras/CombinedCamera.js').CombinedCamera;
 var CombinedCameraAutogen = require('./CombinedCamera.autogen').CombinedCameraModel;
 
 var CombinedCameraModel = CombinedCameraAutogen.extend({

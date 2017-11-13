@@ -1,3 +1,4 @@
+var Promise = require('bluebird');
 var THREE = require('three');
 var AutogenGeometryModel = require('../core/Geometry.autogen').GeometryModel;
 
@@ -21,7 +22,7 @@ var GeometryModel = AutogenGeometryModel.extend({
                 [
                     'name', 'colors', 'faces', 'vertices', 'faceVertexUvs', 'morphTargets',
                     'morphNormals', 'skinWeights', 'skinIndices', 'lineDistances',
-                ].forEach(key => {
+                ].forEach(function(key) {
                     this.props_created_by_three[key] = true;
                 });
                 this.syncToModel();
