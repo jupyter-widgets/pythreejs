@@ -1,13 +1,11 @@
-var path = require('path');
+'use strict';
 
-var Promise = require('bluebird');
-var Glob = require('glob').Glob;
-var fse = require('fs-extra');
+const path = require('path');
+const Glob = require('glob').Glob;
+const fse = require('fs-extra');
 
-Promise.promisifyAll(fse);
-
-var scriptDir = __dirname;
-var baseDir = path.resolve(scriptDir, '..');
+const scriptDir = __dirname;
+const baseDir = path.resolve(scriptDir, '..');
 
 // Execute a function for each match to a glob query
 //
@@ -20,10 +18,10 @@ var baseDir = path.resolve(scriptDir, '..');
 function mapPromiseFnOverGlob(globPattern, mapFn, globOptions) {
     return new Promise(function(resolve, reject) {
 
-        var promises = [];
+        let promises = [];
 
         // trailing slash will match only directories
-        var glob = new Glob(globPattern, globOptions)
+        new Glob(globPattern, globOptions)
             .on('match', function(match) {
                 var result = mapFn(match);
                 if (result instanceof Array) {
@@ -52,7 +50,7 @@ function rmFileGlobAsync(globPattern) {
     return mapPromiseFnOverGlob(globPattern, function(filePath) {
         console.log(filePath);
         var absPath = path.resolve(baseDir, filePath);
-        return fse.removeAsync(absPath);
+        return fse.remove(absPath);
     }, {
         cwd: baseDir,
         nodir: true,

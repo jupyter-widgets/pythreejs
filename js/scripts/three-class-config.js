@@ -3,6 +3,8 @@
 // date: Wed Aug 31 2016 08:59:45 GMT-0700 (PDT)
 //
 
+'use strict';
+
 var Types = require('./prop-types');
 
 // NOTE: uuid properties are not generated, as they cannot be synced across
@@ -264,8 +266,9 @@ module.exports = {
             uv:             new Types.Vector2(0, 0),
             indices:        new Types.Array(),
         },
-        propsDefinedByThree: [ 'distance', 'point', 'face', 'faceNormal', 'faceVertices',
-                               'faceIndex', 'object', 'picked', 'uv', 'indices'],
+        propsDefinedByThree: [
+            'distance', 'point', 'face', 'faceNormal', 'faceVertices',
+            'faceIndex', 'object', 'picked', 'uv', 'indices'],
     },
 
     BufferAttribute: {

@@ -11,18 +11,20 @@
   },
   "scripts": {
     "clean": "rimraf dist && rimraf ../pythreejs/static && node ./scripts/clean-generated-files.js",
-    "autogen-enums": "node ./scripts/generate-enums.js",
-    "autogen-shaders": "node ./scripts/generate-shader-utils.js",
-    "autogen-wrappers": "node ./scripts/generate-wrappers.js",
-    "autogen": "npm run autogen-shaders && npm run autogen-wrappers",
+    "autogen:enums": "node ./scripts/generate-enums.js",
+    "autogen:shaders": "node ./scripts/generate-shader-utils.js",
+    "autogen:wrappers": "node ./scripts/generate-wrappers.js",
+    "autogen": "npm run autogen:shaders && npm run autogen:wrappers",
     "build": "webpack && node ./scripts/copy-three.js",
     "prepublish": "npm run autogen && npm run build"
   },
   "devDependencies": {
+    "eslint": "^4.11.0",
     "fs-extra": "^4.0.1",
     "glob": "^7.0.6",
     "handlebars": "^4.0.5",
     "rimraf": "^2.4.1",
+    "underscore": "^1.8.3",
     "webpack": "^3.6.0"
   },
   "dependencies": {

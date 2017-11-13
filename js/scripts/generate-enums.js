@@ -1,12 +1,9 @@
-var _ = require('underscore');
-var path = require('path');
-var fs = require('fs');
-var fse = require('fs-extra');
-var Promise = require('bluebird');
-var Handlebars = require('handlebars');
+'use strict';
 
-Promise.promisifyAll(fs);
-Promise.promisifyAll(fse);
+const _ = require('underscore');
+const path = require('path');
+const fse = require('fs-extra');
+const Handlebars = require('handlebars');
 
 const enumConfigs = require('./three-enum-config');
 
@@ -27,8 +24,9 @@ const pyEnumDst = path.resolve(pySrcDir, 'enums.py');
 //
 
 function parseThreeConstants() {
-    var content = fs.readFileSync(path.resolve(threeSrcDir, 'constants.js'), 'utf-8');
-    eval('var result = new function() {\n' + content.replace(/export var (.*?);/g, 'var $1;\nthis.$1;') + '}()');
+    var content = fse.readFileSync(path.resolve(threeSrcDir, 'constants.js'), 'utf-8');
+    var result;
+    eval('result = new function() {\n' + content.replace(/export var (.*?);/g, 'var $1;\nthis.$1;') + '}()');
     return result;
 }
 
@@ -40,9 +38,9 @@ const threeEnums = parseThreeConstants();
 //
 
 function compileTemplate(templateName) {
-    var templateName = path.basename(templateName, '.mustache');
-    var templatePath = path.resolve(templateDir, templateName + '.mustache');
-    return Handlebars.compile(fs.readFileSync(templatePath, {
+    templateName = path.basename(templateName, '.mustache');
+    const templatePath = path.resolve(templateDir, templateName + '.mustache');
+    return Handlebars.compile(fse.readFileSync(templatePath, {
         encoding: 'utf-8'
     }));
 }
@@ -56,13 +54,13 @@ var pyEnumTemplate = compileTemplate('py_enums');
 //
 
 function checkUnused() {
-    return new Promise(function(resolve, reject) {
+    return new Promise(() => {
         var unusedThreeEnums = _.keys(threeEnums);
 
         _.keys(enumConfigs).map(function(category) {
-            values = enumConfigs[category];
+            const values = enumConfigs[category];
             values.forEach(function(enumKey) {
-                 if (Array.isArray(enumKey)) {
+                if (Array.isArray(enumKey)) {
                     // Several keys share the same value, remove all.
                     enumKey.forEach(function(subKey) {
                         unusedThreeEnums.splice(unusedThreeEnums.indexOf(subKey), 1);
@@ -89,7 +87,7 @@ function writeJavascriptFile() {
 
     var categories = [];
 
-    _.keys(enumConfigs).map(function(category) {
+    _.keys(enumConfigs).map(category => {
         var categoryObj = {key: category, enums: []};
         categories.push(categoryObj);
         enumConfigs[category].forEach(function(enumKey) {
@@ -108,11 +106,11 @@ function writeJavascriptFile() {
         categories: categories
     });
 
-    return fse.outputFileAsync(jsEnumDst, content);
+    return fse.outputFile(jsEnumDst, content);
 }
 
 function createJavascriptFiles() {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve) {
         resolve(writeJavascriptFile());
     });
 }
@@ -143,11 +141,11 @@ function writePythonFile() {
         categories: categories,
     });
 
-    return fse.outputFileAsync(pyEnumDst, content);
+    return fse.outputFile(pyEnumDst, content);
 }
 
 function createPythonFiles() {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve) {
         resolve(writePythonFile());
     });
 }

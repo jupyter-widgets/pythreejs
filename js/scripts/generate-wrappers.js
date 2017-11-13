@@ -1,28 +1,30 @@
-var _ = require('underscore');
-var path = require('path');
-var fs = require('fs');
-var fse = require('fs-extra');
-var Glob = require('glob').Glob;
-var Promise = require('bluebird');
-var Handlebars = require('handlebars');
+'use strict';
+
+const _ = require('underscore');
+const path = require('path');
+const fs = require('fs');
+const fse = require('fs-extra');
+const Glob = require('glob').Glob;
+const Promise = require('bluebird');
+const Handlebars = require('handlebars');
 
 Promise.promisifyAll(fs);
 Promise.promisifyAll(fse);
 
-var classConfigs = require('./three-class-config');
-var Types = require('./prop-types.js');
+const classConfigs = require('./three-class-config');
+const Types = require('./prop-types.js');
 
-var scriptDir = __dirname;
-var baseDir = path.resolve(scriptDir, '..');
+const scriptDir = __dirname;
+const baseDir = path.resolve(scriptDir, '..');
 
-var jsSrcDir = path.resolve(baseDir, 'src/');
-var pySrcDir = path.resolve(baseDir, '..', 'pythreejs');
-var templateDir = path.resolve(scriptDir, 'templates');
+const jsSrcDir = path.resolve(baseDir, 'src/');
+const pySrcDir = path.resolve(baseDir, '..', 'pythreejs');
+const templateDir = path.resolve(scriptDir, 'templates');
 
-var threeSrcDir = path.resolve(baseDir, 'node_modules', 'three', 'src');
+const threeSrcDir = path.resolve(baseDir, 'node_modules', 'three', 'src');
 
-var AUTOGEN_EXT = 'autogen';
-var JS_AUTOGEN_EXT = '.' + AUTOGEN_EXT + '.js';
+const AUTOGEN_EXT = 'autogen';
+const JS_AUTOGEN_EXT = '.' + AUTOGEN_EXT + '.js';
 
 
 /**
@@ -30,7 +32,7 @@ var JS_AUTOGEN_EXT = '.' + AUTOGEN_EXT + '.js';
  * autogen routine but which has no *direct* counterpart in the
  * three.js library.
  */
-var CUSTOM_CLASSES = [
+const CUSTOM_CLASSES = [
     'textures/ImageTexture.js',
     'textures/TextTexture.js',
     'cameras/CombinedCamera.js',
@@ -45,7 +47,7 @@ var CUSTOM_CLASSES = [
     'objects/Blackbox.js',
 ];
 
-var IGNORE_FILES = [
+const IGNORE_FILES = [
     '**/Three.Legacy.js',   // Don't support legacy interface (deprecation should be done python side)
     '**/Three.js',          // Don't process aggregrate file
     '**/polyfills.js',      // Polyfill of JS methods, nothing to export
@@ -75,7 +77,7 @@ var IGNORE_FILES = [
     '**/extras/core/Interpolations.js',     // Only functions, nothing to export
     '**/extras/core/PathPrototype.js',      // Sub-part of one object, ignore
     '**/textures/CanvasTexture.js'          // Canvases are not referenceable from python
-]
+];
 
 
 //
@@ -83,17 +85,17 @@ var IGNORE_FILES = [
 //
 
 function compileTemplate(templateName) {
-    var templateName = path.basename(templateName, '.mustache');
-    var templatePath = path.resolve(templateDir, templateName + '.mustache');
+    templateName = path.basename(templateName, '.mustache');
+    const templatePath = path.resolve(templateDir, templateName + '.mustache');
     return Handlebars.compile(fs.readFileSync(templatePath, {
         encoding: 'utf-8'
     }));
 }
 
-var jsWrapperTemplate      = compileTemplate('js_wrapper');
-var jsIndexTemplate        = compileTemplate('js_index');
-var pyWrapperTemplate      = compileTemplate('py_wrapper');
-var pyTopLevelInitTemplate = compileTemplate('py_top_level_init');
+const jsWrapperTemplate      = compileTemplate('js_wrapper');
+const jsIndexTemplate        = compileTemplate('js_index');
+const pyWrapperTemplate      = compileTemplate('py_wrapper');
+const pyTopLevelInitTemplate = compileTemplate('py_top_level_init');
 
 const pathSep = /\\|\//;
 
@@ -101,28 +103,17 @@ const pathSep = /\\|\//;
 // Helper Functions
 //
 
-function isFile(filePath) {
-    var stats = fs.statSync(filePath);
-    return stats.isFile();
-}
-
-function isDir(filePath) {
-    var stats = fs.statSync(filePath);
-    return stats.isDirectory();
-}
-
-function getClassConfig(className, doLog) {
+function getClassConfig(className) {
 
     // console.log('getClassConfig: ' + className);
-    className = className.replace(/\./g, '_')
+    className = className.replace(/\./g, '_');
     if (!(className in classConfigs)) {
         throw new Error('invalid class name: ' + className);
     }
 
-    var curClass = classConfigs[className];
+    const curClass = classConfigs[className];
 
-    var result = {};
-    _.extend(result, curClass);
+    const result = Object.assign({}, curClass);
 
     result.propsDefinedByThree = [];
     result.propsDefinedByThree = result.propsDefinedByThree.concat(curClass.propsDefinedByThree || []);
@@ -130,12 +121,12 @@ function getClassConfig(className, doLog) {
     // combine cur props with superclass properties for allProperties
     result.allProperties = {};
     if (curClass.superClass && curClass.superClass !== classConfigs._defaults.superClass) {
-        var superClassConfig = getClassConfig(curClass.superClass);
-        _.extend(result.allProperties, superClassConfig.allProperties);
+        const superClassConfig = getClassConfig(curClass.superClass);
+        Object.assign(result.allProperties, superClassConfig.allProperties);
 
         result.propsDefinedByThree = result.propsDefinedByThree.concat(superClassConfig.propsDefinedByThree || []);
     }
-    _.extend(result.allProperties, curClass.properties);
+    Object.assign(result.allProperties, curClass.properties);
 
     // we want to inherit all propsDefinedByThree
 
@@ -158,38 +149,38 @@ function getClassConfig(className, doLog) {
  */
 function getExtraDefines(className) {
 
-    className = className.replace(/\./g, '_')
+    className = className.replace(/\./g, '_');
     if (!(className in classConfigs)) {
         throw new Error('invalid class name: ' + className);
     }
 
-    var relativePath = classConfigs[className].relativePath;
+    const relativePath = classConfigs[className].relativePath;
 
-    var shared = [];
+    const shared = [];
     Object.keys(classConfigs).forEach(function(key) {
         if (key[0] === '_') {
             return; // continue
         }
-        var config = classConfigs[key];
+        const config = classConfigs[key];
         if (config.relativePath === relativePath && key !== className) {
             shared.push(key);
         }
     });
     if (shared.length > 0) {
-        console.log('extra defines found: ' + shared)
+        console.log('extra defines found: ' + shared);
     }
     return shared;
 }
 
 function relativePathToPythonImportPath(relativePath) {
 
-    var tokens = relativePath.split(pathSep);
-    var firstToken = tokens[0];
-    var sawFolderToken = false;
+    let tokens = relativePath.split(pathSep);
+    const firstToken = tokens[0];
+    let sawFolderToken = false;
 
     if (tokens.length <= 0) { return '.'; }
 
-    var result = '';
+    let result = '';
     if (firstToken === '.') {
         tokens = tokens.slice(1);
         result = '';
@@ -227,11 +218,11 @@ function mapPromiseFnOverGlob(globPattern, mapFn, globOptions) {
 
     return new Promise(function(resolve, reject) {
 
-        var promises = [];
-        var result;
+        let promises = [];
+        let result;
 
         // trailing slash will match only directories
-        var glob = new Glob(globPattern, globOptions)
+        new Glob(globPattern, globOptions)
             .on('match', function(match) {
 
                 result = mapFn(match);
@@ -258,10 +249,10 @@ function mapPromiseFnOverGlob(globPattern, mapFn, globOptions) {
 }
 
 function mapPromiseFnOverFileList(fileList, mapFn) {
-    var promises = [];
+    let promises = [];
 
     fileList.forEach(function(filePath) {
-        var result = mapFn(filePath);
+        const result = mapFn(filePath);
         if (result instanceof Array) {
             promises = promises.concat(result);
         } else {
@@ -284,78 +275,79 @@ function mapPromiseFnOverThreeModules(mapFn) {
 // Javascript wrapper writer
 //
 
-function JavascriptWrapper(modulePath, className) {
+class JavascriptWrapper {
 
-    this.jsDestPath = path.resolve(jsSrcDir, modulePath);
-    this.destDir = path.dirname(this.jsDestPath);
-    this.relativePathToBase = path.relative(this.destDir, jsSrcDir);
+    constructor(modulePath, className) {
 
-    this.jsAutoDestPath = path.resolve(
-        this.destDir,
-        path.basename(this.jsDestPath, '.js') + '.' + AUTOGEN_EXT + '.js');
+        this.jsDestPath = path.resolve(jsSrcDir, modulePath);
+        this.destDir = path.dirname(this.jsDestPath);
+        this.relativePathToBase = path.relative(this.destDir, jsSrcDir);
 
-    if (className) {
-        this.className = className;
         this.jsAutoDestPath = path.resolve(
-            path.dirname(this.jsAutoDestPath),
-            className + '.' + AUTOGEN_EXT + '.js');
-    } else {
-        this.className = path.basename(modulePath, '.js').replace(/\./g, '_');
-        var extraDefines = getExtraDefines(this.className);
-        extraDefines.forEach(function(extraClassName) {
-            createJavascriptWrapper(modulePath, extraClassName);
-        });
+            this.destDir,
+            path.basename(this.jsDestPath, '.js') + '.' + AUTOGEN_EXT + '.js');
+
+        if (className) {
+            this.className = className;
+            this.jsAutoDestPath = path.resolve(
+                path.dirname(this.jsAutoDestPath),
+                className + '.' + AUTOGEN_EXT + '.js');
+        } else {
+            this.className = path.basename(modulePath, '.js').replace(/\./g, '_');
+            const extraDefines = getExtraDefines(this.className);
+            extraDefines.forEach(function(extraClassName) {
+                createJavascriptWrapper(modulePath, extraClassName);
+            });
+        }
+
+        this.config = getClassConfig(this.className);
+
+        this.modelName = this.className + 'Model';
+
+        // check if manual file exists
+        const customSrcPath = path.join(path.dirname(this.jsDestPath), path.basename(this.jsDestPath, '.js') + '.js');
+        this.hasOverride = fs.existsSync(customSrcPath);
+
+        this.processSuperClass();
+        this.processDependencies();
+        this.processProperties();
+        this.processConstructorArgs();
+        this.processOverrideClass();
+
+        // Template and context
+        this.template = jsWrapperTemplate;
+        this.context = {
+            now: new Date(),
+            generatorScriptName: path.basename(__filename),
+
+            className: this.className,
+            viewName: this.viewName,
+            modelName: this.modelName,
+            superClass: this.superClass,
+            constructor: {
+                args: this.constructorArgs,
+            },
+            properties: this.properties,
+            dependencies: this.dependencies,
+            props_created_by_three: this.config.propsDefinedByThree,
+            serialized_props: this.serializedProps,
+            enum_properties: this.enum_properties,
+            override_class: this.overrideClass, // { relativePath }
+        };
+
+        // Render template
+        this.output = this.template(this.context);
+
     }
 
-    this.config = getClassConfig(this.className);
+    getRequireInfoFromClassDescriptor(classDescriptor) {
 
-    this.modelName = this.className + 'Model';
-
-    // check if manual file exists
-    var customSrcPath = path.join(path.dirname(this.jsDestPath), path.basename(this.jsDestPath, '.js') + '.js');
-    this.hasOverride = fs.existsSync(customSrcPath);
-
-    this.processSuperClass();
-    this.processDependencies();
-    this.processProperties();
-    this.processConstructorArgs();
-    this.processOverrideClass();
-
-    // Template and context
-    this.template = jsWrapperTemplate;
-    this.context = {
-        now: new Date(),
-        generatorScriptName: path.basename(__filename),
-
-        className: this.className,
-        viewName: this.viewName,
-        modelName: this.modelName,
-        superClass: this.superClass,
-        constructor: {
-            args: this.constructorArgs,
-        },
-        properties: this.properties,
-        dependencies: this.dependencies,
-        props_created_by_three: this.config.propsDefinedByThree,
-        serialized_props: this.serializedProps,
-        enum_properties: this.enum_properties,
-        override_class: this.overrideClass, // { relativePath }
-    };
-
-    // Render template
-    this.output = this.template(this.context);
-
-}
-_.extend(JavascriptWrapper.prototype, {
-
-    getRequireInfoFromClassDescriptor: function(classDescriptor) {
-
-        var result = {};
+        const result = {};
 
         if (typeof classDescriptor === 'string') {
 
             if (classDescriptor in classConfigs) {
-                var config = getClassConfig(classDescriptor);
+                const config = getClassConfig(classDescriptor);
                 result.className = classDescriptor;
                 result.relativePath = config.relativePath;
             } else {
@@ -370,7 +362,7 @@ _.extend(JavascriptWrapper.prototype, {
         result.modelName = result.className + 'Model';
 
         result.absolutePath = path.resolve(jsSrcDir, result.relativePath);
-        var absPath = result.absolutePath;
+        let absPath = result.absolutePath;
         if (fs.existsSync(absPath + '.js')) {
             absPath += '.js';
         } else {
@@ -383,18 +375,17 @@ _.extend(JavascriptWrapper.prototype, {
 
         return result;
 
-    },
+    }
 
-    processSuperClass: function() {
+    processSuperClass() {
 
-        var superClassDescriptor = this.config.superClass;
         this.superClass = this.getRequireInfoFromClassDescriptor(this.config.superClass);
 
-    },
+    }
 
-    processDependencies: function() {
+    processDependencies() {
 
-        var dependencies = {};
+        const dependencies = {};
 
         // process explicitly listed dependencies
         _.reduce(this.config.dependencies, function(result, depName) {
@@ -405,7 +396,7 @@ _.extend(JavascriptWrapper.prototype, {
         }, dependencies, this);
 
         // infer dependencies from any properties that reference other Three types
-        _.reduce(this.config.properties, function(result, prop, propName) {
+        _.reduce(this.config.properties, function(result, prop) {
 
             if (prop instanceof Types.ThreeType || prop instanceof Types.InitializedThreeType ||
                     prop instanceof Types.ThreeTypeArray || prop instanceof Types.ThreeTypeDict) {
@@ -426,11 +417,11 @@ _.extend(JavascriptWrapper.prototype, {
 
         this.dependencies = dependencies;
 
-    },
+    }
 
-    processProperties: function() {
+    processProperties() {
 
-        this.properties = _.mapObject(this.config.properties, function(prop, propName) {
+        this.properties = _.mapObject(this.config.properties, function(prop) {
 
             return {
                 defaultJson: prop.getJSPropertyValue(),
@@ -441,11 +432,12 @@ _.extend(JavascriptWrapper.prototype, {
 
         }, this);
 
-        this.serializedProps = _.mapObject(_.pick(this.config.properties,
-            function(prop, propName) {
-                return !!prop.serializer;
-            }),
-            function(prop, propName) {
+        this.serializedProps = _.mapObject(
+            _.pick(this.config.properties,
+                function(prop) {
+                    return !!prop.serializer;
+                }),
+            function(prop) {
                 return prop.serializer;
             }, {});
 
@@ -456,22 +448,22 @@ _.extend(JavascriptWrapper.prototype, {
             return result;
         }, {});
 
-    },
+    }
 
-    processConstructorArgs: function() {
+    processConstructorArgs() {
 
         function getConstructorParametersObject() {
-            var result = [ '{' ];
+            let result = [ '{' ];
 
             result = result.concat(_.keys(this.config.properties).map(function(propName) {
-                return '                ' + propName + ": " + this.getModelToThreeGetter(propName) + ',';
-            }, this))
+                return '                ' + propName + ': ' + this.getModelToThreeGetter(propName) + ',';
+            }, this));
 
             result.push('            }');
             return result;
         }
 
-        var constructorArgs = this.config.constructorArgs.map(function(propName) {
+        const constructorArgs = this.config.constructorArgs.map(function(propName) {
             if (propName === 'parameters') {
                 return getConstructorParametersObject.bind(this)().join('\n');
             } else {
@@ -481,9 +473,9 @@ _.extend(JavascriptWrapper.prototype, {
 
         this.constructorArgs = constructorArgs;
 
-    },
+    }
 
-    processOverrideClass: function() {
+    processOverrideClass() {
 
         if (!this.hasOverride) {
             return;
@@ -491,39 +483,41 @@ _.extend(JavascriptWrapper.prototype, {
 
         console.log('JS override exists for ' + this.className);
 
-        var overrideModule = "Override";
-        var overrideModel = overrideModule + "." + this.modelClass;
+        const overrideModule = 'Override';
+        const overrideModel = overrideModule + '.' + this.modelClass;
 
         this.overrideClass = {
             relativePath: './' + this.className + '.js',
             modelName: overrideModel,
         };
 
-    },
+    }
 
-    getModelToThreeGetter: function(propName) {
-        var prop = this.config.allProperties[propName];
+    getModelToThreeGetter(propName) {
+        const prop = this.config.allProperties[propName];
         if (!prop) {
             throw new Error('invalid propName: ' + propName);
         }
-        var converter = prop.getPropertyConverterFn();
+        const converter = prop.getPropertyConverterFn();
         if (converter) {
-            return "this." + converter +  "ModelToThree(this.get('" + propName + "'), '" + propName +"')";
+            return 'this.' + converter +  'ModelToThree(this.get(\'' + propName + '\'), \'' + propName +'\')';
         } else {
-            return "this.get('" + propName + "')";
+            return 'this.get(\'' + propName + '\')';
         }
-    },
+    }
 
-    getOutputFilename: function() {
+    getOutputFilename() {
         return this.jsAutoDestPath;
-    },
+    }
 
-});
+}
+
 
 function createJavascriptWrapper(modulePath, className) {
 
+    let wrapper;
     try {
-        var wrapper = new JavascriptWrapper(modulePath, className);
+        wrapper = new JavascriptWrapper(modulePath, className);
     } catch (e) {
         console.log('error creating wrapper: ');
         console.log(e);
@@ -533,16 +527,17 @@ function createJavascriptWrapper(modulePath, className) {
     return fse.outputFileAsync(wrapper.getOutputFilename(), wrapper.output);
 
     // NOTE: Old implementation
-    // var wrapper = new JavascriptWrapper(modulePath);
+    // const wrapper = new JavascriptWrapper(modulePath);
     // return wrapper.writeOutFile();
 
 }
+
 
 function writeJavascriptIndexFiles() {
 
     console.log('Writing javascript indices...');
 
-    var excludes = [
+    const excludes = [
         /\.swp$/,
         /\.DS_Store$/,
         /index\.js$/,
@@ -551,12 +546,11 @@ function writeJavascriptIndexFiles() {
     ];
 
     // Regexp's
-    var RE_AUTOGEN_EXT = /\.autogen\.js$/;
-    var RE_JS_EXT = /\.js$/;
+    const RE_AUTOGEN_EXT = /\.autogen\.js$/;
 
     function writeIndexForDir(dirPath, isTopLevel) {
 
-        var dirAbsPath = path.resolve(jsSrcDir, dirPath);
+        const dirAbsPath = path.resolve(jsSrcDir, dirPath);
 
         // Generate list of files in dir to include in index.js as require lines
         return fs.readdirAsync(dirAbsPath).then(function(dirFiles) {
@@ -575,7 +569,7 @@ function writeJavascriptIndexFiles() {
                 }
 
                 // compare filePath to each exclude pattern
-                var shouldExclude = _.any(excludes, function(testPattern) {
+                const shouldExclude = _.any(excludes, function(testPattern) {
                     if (testPattern instanceof RegExp) {
                         return testPattern.test(filePath);
                     } else if (typeof testPattern === 'string') {
@@ -591,10 +585,10 @@ function writeJavascriptIndexFiles() {
                 // override classes should extend the autogen versions
                 if (RE_AUTOGEN_EXT.test(filePath)) {
 
-                    var dirname = path.dirname(filePath);
-                    var basename = path.basename(filePath, JS_AUTOGEN_EXT);
-                    var overrideName = basename + '.js';
-                    var overridePath = './' + path.join(dirname, overrideName);
+                    const dirname = path.dirname(filePath);
+                    const basename = path.basename(filePath, JS_AUTOGEN_EXT);
+                    const overrideName = basename + '.js';
+                    const overridePath = './' + path.join(dirname, overrideName);
 
                     // override file present, so don't include autogen file in index
                     if (dirFiles.indexOf(overridePath) > -1) {
@@ -613,14 +607,14 @@ function writeJavascriptIndexFiles() {
             });
 
             // render template
-            var context = {
+            const context = {
                 now: new Date(),
                 generatorScriptName: path.basename(__filename),
                 top_level: isTopLevel,
                 submodules: dirFiles,
             };
-            var output = jsIndexTemplate(context);
-            var outputPath = path.resolve(jsSrcDir, dirPath, 'index.js');
+            const output = jsIndexTemplate(context);
+            const outputPath = path.resolve(jsSrcDir, dirPath, 'index.js');
 
             return fse.outputFileAsync(outputPath, output);
 
@@ -641,82 +635,84 @@ function writeJavascriptIndexFiles() {
 
 }
 
+
 //
 // Python wrapper writer
 //
 
-function PythonWrapper(modulePath, className) {
+class PythonWrapper {
 
-    this.modulePath = modulePath;
-    this.dirRelativePath = path.dirname(modulePath);
-    this.destDirAbsolutePath = path.resolve(pySrcDir, this.dirRelativePath);
-    this.destDirRelativeToBase = path.relative(this.destDirAbsolutePath, pySrcDir);
+    constructor(modulePath, className) {
 
-    this.basename = path.basename(modulePath, '.js');
+        this.modulePath = modulePath;
+        this.dirRelativePath = path.dirname(modulePath);
+        this.destDirAbsolutePath = path.resolve(pySrcDir, this.dirRelativePath);
+        this.destDirRelativeToBase = path.relative(this.destDirAbsolutePath, pySrcDir);
 
-    if (className) {
-        this.className = className;
-    } else {
-        this.className = this.basename.replace(/\./g, '_');
-        var extraDefines = getExtraDefines(this.className);
-        extraDefines.forEach(function(extraClassName) {
-            createPythonWrapper(modulePath, extraClassName);
-        });
+        this.basename = path.basename(modulePath, '.js');
+
+        if (className) {
+            this.className = className;
+        } else {
+            this.className = this.basename.replace(/\./g, '_');
+            const extraDefines = getExtraDefines(this.className);
+            extraDefines.forEach(function(extraClassName) {
+                createPythonWrapper(modulePath, extraClassName);
+            });
+        }
+
+        this.pyDestPath = path.resolve(this.destDirAbsolutePath, this.className + '.py');
+        this.pyAutoDestPath = path.resolve(this.destDirAbsolutePath, this.className + '_' + AUTOGEN_EXT + '.py');
+
+        this.pyBaseRelativePath = path.relative(this.destDirAbsolutePath, pySrcDir);
+        this.pyBaseRelativePath = relativePathToPythonImportPath(this.pyBaseRelativePath);
+
+        // check if manual file exists
+        this.hasOverride = fs.existsSync(this.pyDestPath);
+
+        this.hasParameters = false;
+
+        this.config = getClassConfig(this.className);
+
+        this.processSuperClass();
+        this.processDependencies();
+        this.processProperties();
+        this.processDocsUrl();
+        this.processConstructorArgs();
+
+        // Template and context
+        this.template = pyWrapperTemplate;
+        this.context = {
+            now: new Date(),
+            generatorScriptName: path.basename(__filename),
+            threejs_docs_url: this.docsUrl,
+            py_base_relative_path: this.pyBaseRelativePath,
+            constructor: {
+                args: this.constructorArgs,
+                hasParameters: this.hasParameters,
+            },
+
+            className: this.className,
+            modelName: this.className + 'Model',
+            superClass: this.superClass,
+            properties: this.properties,
+            dependencies: this.dependencies,
+            hasOverride: this.hasOverride,
+        };
+
+        // Render template
+        this.output = this.template(this.context);
+
     }
 
-    this.pyDestPath = path.resolve(this.destDirAbsolutePath, this.className + '.py')
-    this.pyAutoDestPath = path.resolve(this.destDirAbsolutePath, this.className + '_' + AUTOGEN_EXT + '.py');
+    getRequireInfoFromClassDescriptor(classDescriptor) {
 
-    this.pyBaseRelativePath = path.relative(this.destDirAbsolutePath, pySrcDir);
-    this.pyBaseRelativePath = relativePathToPythonImportPath(this.pyBaseRelativePath);
-
-    // check if manual file exists
-    this.hasOverride = fs.existsSync(this.pyDestPath);
-
-    this.hasParameters = false;
-
-    this.config = getClassConfig(this.className);
-
-    this.processSuperClass();
-    this.processDependencies();
-    this.processProperties();
-    this.processDocsUrl();
-    this.processConstructorArgs();
-
-    // Template and context
-    this.template = pyWrapperTemplate;
-    this.context = {
-        now: new Date(),
-        generatorScriptName: path.basename(__filename),
-        threejs_docs_url: this.docsUrl,
-        py_base_relative_path: this.pyBaseRelativePath,
-        constructor: {
-            args: this.constructorArgs,
-            hasParameters: this.hasParameters,
-        },
-
-        className: this.className,
-        modelName: this.className + 'Model',
-        superClass: this.superClass,
-        properties: this.properties,
-        dependencies: this.dependencies,
-        hasOverride: this.hasOverride,
-    };
-
-    // Render template
-    this.output = this.template(this.context);
-
-}
-_.extend(PythonWrapper.prototype, {
-
-    getRequireInfoFromClassDescriptor: function(classDescriptor) {
-
-        var result = {};
+        const result = {};
 
         if (typeof classDescriptor === 'string') {
 
             if (classDescriptor in classConfigs) {
-                var config = getClassConfig(classDescriptor);
+                const config = getClassConfig(classDescriptor);
                 result.className = classDescriptor;
                 result.relativePath = config.relativePath;
             } else {
@@ -740,21 +736,20 @@ _.extend(PythonWrapper.prototype, {
 
         return result;
 
-    },
+    }
 
-    processSuperClass: function() {
+    processSuperClass() {
 
-        var superClassDescriptor = this.config.superClass;
         this.superClass = this.getRequireInfoFromClassDescriptor(this.config.superClass);
 
         if (this.superClass.className === 'Three') {
             this.superClass.className = 'ThreeWidget';
         }
-    },
+    }
 
-    processDependencies: function() {
+    processDependencies() {
 
-        var dependencies = {};
+        const dependencies = {};
 
         // process explicitly listed dependencies
         _.reduce(this.config.dependencies, function(result, depName) {
@@ -765,7 +760,7 @@ _.extend(PythonWrapper.prototype, {
         }, dependencies, this);
 
         // infer dependencies from any properties that reference other Three types
-        _.reduce(this.config.properties, function(result, prop, propName) {
+        _.reduce(this.config.properties, function(result, prop) {
 
             if (prop instanceof Types.ThreeType || prop instanceof Types.InitializedThreeType ||
                     prop instanceof Types.ThreeTypeArray || prop instanceof Types.ThreeTypeDict) {
@@ -789,20 +784,20 @@ _.extend(PythonWrapper.prototype, {
 
         this.dependencies = dependencies;
 
-    },
+    }
 
-    processProperties: function() {
+    processProperties() {
 
-        this.properties = _.mapObject(this.config.properties, function(prop, propName) {
+        this.properties = _.mapObject(this.config.properties, function(prop) {
             return {
                 trait_declaration: prop.getTraitlet(),
                 defaultJson: prop.getPythonDefaultValue(),
             };
         }, this);
 
-    },
+    }
 
-    processConstructorArgs: function() {
+    processConstructorArgs() {
         this.constructorArgs = this.config.constructorArgs.map(function(propName) {
             // Currently, we don't generate an __init__ method for classes that use the parameters
             // constructor arg
@@ -813,7 +808,7 @@ _.extend(PythonWrapper.prototype, {
                     prop: {
                         defaultJson: '{}',
                     }
-                }
+                };
             }
             return {
                 name: propName,
@@ -822,16 +817,16 @@ _.extend(PythonWrapper.prototype, {
                 }
             };
         }, this);
-    },
+    }
 
-    processDocsUrl: function() {
+    processDocsUrl() {
 
-        var refTokens = this.modulePath.split(pathSep);
+        const refTokens = this.modulePath.split(pathSep);
 
         // strip extension off filename
         refTokens[refTokens.length - 1] = path.basename(refTokens[refTokens.length - 1], '.js');
 
-        var refUrl = 'http://threejs.org/docs/#api/' + refTokens.join('/');
+        let refUrl = 'http://threejs.org/docs/#api/' + refTokens.join('/');
 
         // combine middle elements of url with dot
         refUrl = refUrl.replace('Renderers/WebGL/Plugins/', 'Renderers.WebGL.Plugins/');
@@ -846,18 +841,19 @@ _.extend(PythonWrapper.prototype, {
 
         this.docsUrl = refUrl;
 
-    },
+    }
 
-    getOutputFilename: function() {
+    getOutputFilename() {
         return this.pyAutoDestPath;
-    },
+    }
 
-});
+}
 
 function createPythonWrapper(modulePath, className) {
 
+    let wrapper;
     try {
-        var wrapper = new PythonWrapper(modulePath, className);
+        wrapper = new PythonWrapper(modulePath, className);
     } catch (e) {
         console.log(e);
         console.log('skipping: ' + modulePath + (className ? ':' + className : ''));
@@ -869,33 +865,33 @@ function createPythonWrapper(modulePath, className) {
 
 function createPythonModuleInitFile(modulePath) {
 
-    var dirname = path.dirname(modulePath);
-    var pyInitFilePath = path.resolve(pySrcDir, dirname, '__init__.py');
-    return fse.ensureFileAsync(pyInitFilePath);
+    const dirname = path.dirname(modulePath);
+    const pyInitFilePath = path.resolve(pySrcDir, dirname, '__init__.py');
+    return fse.ensureFile(pyInitFilePath);
 
 }
 
 function createTopLevelPythonModuleFile() {
 
-    var ignorePyFiles = [
+    const ignorePyFiles = [
         '**/__init__.py',
         'install.py',
         'sage.py'
     ];
 
-    var modules = [];
+    const modules = [];
 
     return mapPromiseFnOverGlob('**/*.py', function(filePath) {
 
-        var modulePath = path.dirname(filePath);
-        var moduleName = path.basename(filePath, '.py').replace(/\./g, '_');
+        const modulePath = path.dirname(filePath);
+        const moduleName = path.basename(filePath, '.py').replace(/\./g, '_');
 
         // check for override module.
         // for py files, the override subclasses the autogen class, so we should
         // only import the override in our __init__.py file
         if (/autogen/.test(moduleName)) {
-            var overrideName = moduleName.replace('_autogen', '');
-            var overridePath = path.resolve(pySrcDir, modulePath, overrideName + '.py');
+            const overrideName = moduleName.replace('_autogen', '');
+            const overridePath = path.resolve(pySrcDir, modulePath, overrideName + '.py');
             if (fs.existsSync(overridePath)) {
                 console.log('Python override exists: ' + overrideName + '. Skipping...');
                 return;
@@ -903,10 +899,11 @@ function createTopLevelPythonModuleFile() {
         }
 
         // convert relative path to python-style import path
+        let importPath;
         if (modulePath !== '.') {
-            var importPath = '.' + modulePath.split(pathSep).join('.') + '.' + moduleName;
+            importPath = '.' + modulePath.split(pathSep).join('.') + '.' + moduleName;
         } else {
-            var importPath = '.' + moduleName;
+            importPath = '.' + moduleName;
         }
 
         modules.push({
@@ -920,13 +917,13 @@ function createTopLevelPythonModuleFile() {
     }).then(function() {
 
         // render template
-        var context = {
+        const context = {
             generatorScriptName: path.basename(__filename),
             now: new Date(),
             modules: modules,
         };
-        var output = pyTopLevelInitTemplate(context);
-        var outFilePath = path.resolve(pySrcDir, '__init__.py');
+        const output = pyTopLevelInitTemplate(context);
+        const outFilePath = path.resolve(pySrcDir, '__init__.py');
 
         return fse.outputFileAsync(outFilePath, output);
 
@@ -952,7 +949,8 @@ function createPythonFiles() {
         return Promise.resolve();
     }
 
-    return mapPromiseFnOverThreeModules(function(relativePath) {
+    return mapPromiseFnOverThreeModules(
+        function(relativePath) {
             return createPythonWrapper(relativePath).then(function() {
                 // ensures each dir has empty __init__.py file for proper importing of sub dirs
                 return createPythonModuleInitFile(relativePath);

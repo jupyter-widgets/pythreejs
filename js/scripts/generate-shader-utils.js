@@ -1,12 +1,8 @@
-var _ = require('underscore');
-var path = require('path');
-var fs = require('fs');
-var fse = require('fs-extra');
-var Promise = require('bluebird');
-var Handlebars = require('handlebars');
+'use strict';
 
-Promise.promisifyAll(fs);
-Promise.promisifyAll(fse);
+const path = require('path');
+const fse = require('fs-extra');
+const Handlebars = require('handlebars');
 
 var shaderUtilsConfig = require('./three-shader-utils-config');
 
@@ -29,16 +25,14 @@ var THREE = require('three');
 //
 
 function compileTemplate(templateName) {
-    var templateName = path.basename(templateName, '.mustache');
+    templateName = path.basename(templateName, '.mustache');
     var templatePath = path.resolve(templateDir, templateName + '.mustache');
-    return Handlebars.compile(fs.readFileSync(templatePath, {
+    return Handlebars.compile(fse.readFileSync(templatePath, {
         encoding: 'utf-8'
     }));
 }
 
 var pyWrapperTemplate = compileTemplate('py_shader_utils');
-
-var pathSep = /\\|\//;
 
 
 //
@@ -67,7 +61,7 @@ function createPythonWrapper(name, relativePath) {
     var data = THREE[name];
 
     var jsonPath = path.resolve(pySrcDir, relativePath + JSON_AUTOGEN_EXT);
-    var promises = [fse.outputFileAsync(jsonPath, JSON.stringify(data, null, 4))];
+    var promises = [fse.outputFile(jsonPath, JSON.stringify(data, null, 4))];
 
     var pyPath = path.resolve(pySrcDir, relativePath + '_' + AUTOGEN_EXT + '.py');
     var output = pyWrapperTemplate({
@@ -77,7 +71,7 @@ function createPythonWrapper(name, relativePath) {
         now: new Date(),
         generatorScriptName: path.basename(__filename),
     });
-    promises.push(fse.outputFileAsync(pyPath, output))
+    promises.push(fse.outputFile(pyPath, output));
     return Promise.all(promises);
 }
 
@@ -85,14 +79,14 @@ function createPythonModuleInitFile(modulePath) {
 
     var dirname = path.dirname(modulePath);
     var pyInitFilePath = path.resolve(pySrcDir, dirname, '__init__.py');
-    return fse.ensureFileAsync(pyInitFilePath);
+    return fse.ensureFile(pyInitFilePath);
 
 }
 
 function createPythonFiles() {
 
     // Prevent python file generation when outside dir (e.g. npm install in dependent)
-    if (!fs.existsSync(pySrcDir)) {
+    if (!fse.existsSync(pySrcDir)) {
         return Promise.resolve();
     }
 
