@@ -3,7 +3,7 @@
  */
 var THREE = require('three');
 
-SpriteCanvasMaterial = function ( parameters ) {
+var SpriteCanvasMaterial = function ( parameters ) {
 
 	THREE.Material.call( this );
 
@@ -34,7 +34,7 @@ SpriteCanvasMaterial.prototype.clone = function () {
 
 //
 
-CanvasRenderer = function ( parameters ) {
+var CanvasRenderer = function ( parameters ) {
 
 	console.log( 'CanvasRenderer', THREE.REVISION );
 
@@ -43,84 +43,84 @@ CanvasRenderer = function ( parameters ) {
 	parameters = parameters || {};
 
 	var _this = this,
-	_renderData, _elements, _lights,
-	_projector = new THREE.Projector(),
+		_renderData, _elements, _lights,
+		_projector = new THREE.Projector(),
 
-	_canvas = parameters.canvas !== undefined
-			 ? parameters.canvas
-			 : document.createElement( 'canvas' ),
+		_canvas = parameters.canvas !== undefined
+				? parameters.canvas
+				: document.createElement( 'canvas' ),
 
-	_canvasWidth = _canvas.width,
-	_canvasHeight = _canvas.height,
-	_canvasWidthHalf = Math.floor( _canvasWidth / 2 ),
-	_canvasHeightHalf = Math.floor( _canvasHeight / 2 ),
+		_canvasWidth = _canvas.width,
+		_canvasHeight = _canvas.height,
+		_canvasWidthHalf = Math.floor( _canvasWidth / 2 ),
+		_canvasHeightHalf = Math.floor( _canvasHeight / 2 ),
 
-	_viewportX = 0,
-	_viewportY = 0,
-	_viewportWidth = _canvasWidth,
-	_viewportHeight = _canvasHeight,
+		_viewportX = 0,
+		_viewportY = 0,
+		_viewportWidth = _canvasWidth,
+		_viewportHeight = _canvasHeight,
 
-	pixelRatio = 1,
+		pixelRatio = 1,
 
-	_context = _canvas.getContext( '2d', {
-		alpha: parameters.alpha === true
-	} ),
+		_context = _canvas.getContext( '2d', {
+			alpha: parameters.alpha === true
+		} ),
 
-	_clearColor = new THREE.Color( 0x000000 ),
-	_clearAlpha = parameters.alpha === true ? 0 : 1,
+		_clearColor = new THREE.Color( 0x000000 ),
+		_clearAlpha = parameters.alpha === true ? 0 : 1,
 
-	_contextGlobalAlpha = 1,
-	_contextGlobalCompositeOperation = 0,
-	_contextStrokeStyle = null,
-	_contextFillStyle = null,
-	_contextLineWidth = null,
-	_contextLineCap = null,
-	_contextLineJoin = null,
-	_contextLineDash = [],
+		_contextGlobalAlpha = 1,
+		_contextGlobalCompositeOperation = 0,
+		_contextStrokeStyle = null,
+		_contextFillStyle = null,
+		_contextLineWidth = null,
+		_contextLineCap = null,
+		_contextLineJoin = null,
+		_contextLineDash = [],
 
-	_camera,
+		_camera,
 
-	_v1, _v2, _v3, _v4,
-	_v5 = new THREE.RenderableVertex(),
-	_v6 = new THREE.RenderableVertex(),
+		_v1, _v2, _v3, _v4,
+		_v5 = new THREE.RenderableVertex(),
+		_v6 = new THREE.RenderableVertex(),
 
-	_v1x, _v1y, _v2x, _v2y, _v3x, _v3y,
-	_v4x, _v4y, _v5x, _v5y, _v6x, _v6y,
+		_v1x, _v1y, _v2x, _v2y, _v3x, _v3y,
+		_v4x, _v4y, _v5x, _v5y, _v6x, _v6y,
 
-	_color = new THREE.Color(),
-	_color1 = new THREE.Color(),
-	_color2 = new THREE.Color(),
-	_color3 = new THREE.Color(),
-	_color4 = new THREE.Color(),
+		_color = new THREE.Color(),
+		_color1 = new THREE.Color(),
+		_color2 = new THREE.Color(),
+		_color3 = new THREE.Color(),
+		_color4 = new THREE.Color(),
 
-	_diffuseColor = new THREE.Color(),
-	_emissiveColor = new THREE.Color(),
+		_diffuseColor = new THREE.Color(),
+		_emissiveColor = new THREE.Color(),
 
-	_lightColor = new THREE.Color(),
+		_lightColor = new THREE.Color(),
 
-	_patterns = {},
+		_patterns = {},
 
-	_image, _uvs,
-	_uv1x, _uv1y, _uv2x, _uv2y, _uv3x, _uv3y,
+		_uvs,
+		_uv1x, _uv1y, _uv2x, _uv2y, _uv3x, _uv3y,
 
-	_clipBox = new THREE.Box2(),
-	_clearBox = new THREE.Box2(),
-	_elemBox = new THREE.Box2(),
+		_clipBox = new THREE.Box2(),
+		_clearBox = new THREE.Box2(),
+		_elemBox = new THREE.Box2(),
 
-	_ambientLight = new THREE.Color(),
-	_directionalLights = new THREE.Color(),
-	_pointLights = new THREE.Color(),
+		_ambientLight = new THREE.Color(),
+		_directionalLights = new THREE.Color(),
+		_pointLights = new THREE.Color(),
 
-	_vector3 = new THREE.Vector3(), // Needed for PointLight
-	_centroid = new THREE.Vector3(),
-	_normal = new THREE.Vector3(),
-	_normalViewMatrix = new THREE.Matrix3();
+		_vector3 = new THREE.Vector3(), // Needed for PointLight
+		_centroid = new THREE.Vector3(),
+		_normal = new THREE.Vector3(),
+		_normalViewMatrix = new THREE.Matrix3();
 
 	// dash+gap fallbacks for Firefox and everything else
 
 	if ( _context.setLineDash === undefined ) {
 
-		_context.setLineDash = function () {}
+		_context.setLineDash = function () {};
 
 	}
 
@@ -139,7 +139,7 @@ CanvasRenderer = function ( parameters ) {
 
 		}
 
-	}
+	};
 
 	// WebGLRenderer compatibility
 
@@ -707,12 +707,12 @@ CanvasRenderer = function ( parameters ) {
 			_color.multiply( _diffuseColor ).add( _emissiveColor );
 
 			material.wireframe === true
-				 ? strokePath( _color, material.wireframeLinewidth, material.wireframeLinecap, material.wireframeLinejoin )
-				 : fillPath( _color );
+				? strokePath( _color, material.wireframeLinewidth, material.wireframeLinecap, material.wireframeLinejoin )
+				: fillPath( _color );
 
 		} else if ( material instanceof THREE.MeshBasicMaterial ||
-				    material instanceof THREE.MeshLambertMaterial ||
-				    material instanceof THREE.MeshPhongMaterial ) {
+					material instanceof THREE.MeshLambertMaterial ||
+					material instanceof THREE.MeshPhongMaterial ) {
 
 			if ( material.map !== null ) {
 
@@ -756,8 +756,8 @@ CanvasRenderer = function ( parameters ) {
 				}
 
 				material.wireframe === true
-					 ? strokePath( _color, material.wireframeLinewidth, material.wireframeLinecap, material.wireframeLinejoin )
-					 : fillPath( _color );
+					? strokePath( _color, material.wireframeLinewidth, material.wireframeLinecap, material.wireframeLinejoin )
+					: fillPath( _color );
 
 			}
 
@@ -766,8 +766,8 @@ CanvasRenderer = function ( parameters ) {
 			_color.r = _color.g = _color.b = 1 - smoothstep( v1.positionScreen.z * v1.positionScreen.w, _camera.near, _camera.far );
 
 			material.wireframe === true
-					 ? strokePath( _color, material.wireframeLinewidth, material.wireframeLinecap, material.wireframeLinejoin )
-					 : fillPath( _color );
+					? strokePath( _color, material.wireframeLinewidth, material.wireframeLinecap, material.wireframeLinejoin )
+					: fillPath( _color );
 
 		} else if ( material instanceof THREE.MeshNormalMaterial ) {
 
@@ -776,16 +776,16 @@ CanvasRenderer = function ( parameters ) {
 			_color.setRGB( _normal.x, _normal.y, _normal.z ).multiplyScalar( 0.5 ).addScalar( 0.5 );
 
 			material.wireframe === true
-				 ? strokePath( _color, material.wireframeLinewidth, material.wireframeLinecap, material.wireframeLinejoin )
-				 : fillPath( _color );
+				? strokePath( _color, material.wireframeLinewidth, material.wireframeLinecap, material.wireframeLinejoin )
+				: fillPath( _color );
 
 		} else {
 
 			_color.setRGB( 1, 1, 1 );
 
 			material.wireframe === true
-				 ? strokePath( _color, material.wireframeLinewidth, material.wireframeLinecap, material.wireframeLinejoin )
-				 : fillPath( _color );
+				? strokePath( _color, material.wireframeLinewidth, material.wireframeLinecap, material.wireframeLinejoin )
+				: fillPath( _color );
 
 		}
 
@@ -848,12 +848,12 @@ CanvasRenderer = function ( parameters ) {
 
 		_patterns[ texture.id ] = _context.createPattern(
 			canvas, repeatX === true && repeatY === true
-				 ? 'repeat'
-				 : repeatX === true && repeatY === false
-					 ? 'repeat-x'
-					 : repeatX === false && repeatY === true
-						 ? 'repeat-y'
-						 : 'no-repeat'
+				? 'repeat'
+				: repeatX === true && repeatY === false
+					? 'repeat-x'
+					: repeatX === false && repeatY === true
+						? 'repeat-y'
+						: 'no-repeat'
 		);
 
 	}
@@ -892,10 +892,10 @@ CanvasRenderer = function ( parameters ) {
 		// http://extremelysatisfactorytotalitarianism.com/blog/?p=2120
 
 		var a, b, c, d, e, f, det, idet,
-		offsetX = texture.offset.x / texture.repeat.x,
-		offsetY = texture.offset.y / texture.repeat.y,
-		width = texture.image.width * texture.repeat.x,
-		height = texture.image.height * texture.repeat.y;
+			offsetX = texture.offset.x / texture.repeat.x,
+			offsetY = texture.offset.y / texture.repeat.y,
+			width = texture.image.width * texture.repeat.x,
+			height = texture.image.height * texture.repeat.y;
 
 		u0 = ( u0 + offsetX ) * width;
 		v0 = ( v0 + offsetY ) * height;
@@ -933,50 +933,12 @@ CanvasRenderer = function ( parameters ) {
 
 	}
 
-	function clipImage( x0, y0, x1, y1, x2, y2, u0, v0, u1, v1, u2, v2, image ) {
-
-		// http://extremelysatisfactorytotalitarianism.com/blog/?p=2120
-
-		var a, b, c, d, e, f, det, idet,
-		width = image.width - 1,
-		height = image.height - 1;
-
-		u0 *= width; v0 *= height;
-		u1 *= width; v1 *= height;
-		u2 *= width; v2 *= height;
-
-		x1 -= x0; y1 -= y0;
-		x2 -= x0; y2 -= y0;
-
-		u1 -= u0; v1 -= v0;
-		u2 -= u0; v2 -= v0;
-
-		det = u1 * v2 - u2 * v1;
-
-		idet = 1 / det;
-
-		a = ( v2 * x1 - v1 * x2 ) * idet;
-		b = ( v2 * y1 - v1 * y2 ) * idet;
-		c = ( u1 * x2 - u2 * x1 ) * idet;
-		d = ( u1 * y2 - u2 * y1 ) * idet;
-
-		e = x0 - a * u0 - c * v0;
-		f = y0 - b * u0 - d * v0;
-
-		_context.save();
-		_context.transform( a, b, c, d, e, f );
-		_context.clip();
-		_context.drawImage( image, 0, 0 );
-		_context.restore();
-
-	}
-
 	// Hide anti-alias gaps
 
 	function expand( v1, v2, pixels ) {
 
 		var x = v2.x - v1.x, y = v2.y - v1.y,
-		det = x * x + y * y, idet;
+			det = x * x + y * y, idet;
 
 		if ( det === 0 ) return;
 
@@ -1100,4 +1062,4 @@ CanvasRenderer = function ( parameters ) {
 module.exports = {
 	CanvasRenderer: CanvasRenderer,
 	SpriteCanvasMaterial: SpriteCanvasMaterial,
-}
+};

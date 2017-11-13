@@ -98,37 +98,37 @@ var RenderableSprite = function () {
 var Projector = function () {
 
 	var _object, _objectCount, _objectPool = [], _objectPoolLength = 0,
-	_vertex, _vertexCount, _vertexPool = [], _vertexPoolLength = 0,
-	_face, _faceCount, _facePool = [], _facePoolLength = 0,
-	_line, _lineCount, _linePool = [], _linePoolLength = 0,
-	_sprite, _spriteCount, _spritePool = [], _spritePoolLength = 0,
+		_vertex, _vertexCount, _vertexPool = [], _vertexPoolLength = 0,
+		_face, _faceCount, _facePool = [], _facePoolLength = 0,
+		_line, _lineCount, _linePool = [], _linePoolLength = 0,
+		_sprite, _spriteCount, _spritePool = [], _spritePoolLength = 0,
 
-	_renderData = { objects: [], lights: [], elements: [] },
+		_renderData = { objects: [], lights: [], elements: [] },
 
-	_vA = new THREE.Vector3(),
-	_vB = new THREE.Vector3(),
-	_vC = new THREE.Vector3(),
+		_vA = new THREE.Vector3(),
+		_vB = new THREE.Vector3(),
+		_vC = new THREE.Vector3(),
 
-	_vector3 = new THREE.Vector3(),
-	_vector4 = new THREE.Vector4(),
+		_vector3 = new THREE.Vector3(),
+		_vector4 = new THREE.Vector4(),
 
-	_clipBox = new THREE.Box3( new THREE.Vector3( - 1, - 1, - 1 ), new THREE.Vector3( 1, 1, 1 ) ),
-	_boundingBox = new THREE.Box3(),
-	_points3 = new Array( 3 ),
-	_points4 = new Array( 4 ),
+		_clipBox = new THREE.Box3( new THREE.Vector3( - 1, - 1, - 1 ), new THREE.Vector3( 1, 1, 1 ) ),
+		_boundingBox = new THREE.Box3(),
+		_points3 = new Array( 3 ),
+		_points4 = new Array( 4 ),
 
-	_viewMatrix = new THREE.Matrix4(),
-	_viewProjectionMatrix = new THREE.Matrix4(),
+		_viewMatrix = new THREE.Matrix4(),
+		_viewProjectionMatrix = new THREE.Matrix4(),
 
-	_modelMatrix,
-	_modelViewProjectionMatrix = new THREE.Matrix4(),
+		_modelMatrix,
+		_modelViewProjectionMatrix = new THREE.Matrix4(),
 
-	_normalMatrix = new THREE.Matrix3(),
+		_normalMatrix = new THREE.Matrix3(),
 
-	_frustum = new THREE.Frustum(),
+		_frustum = new THREE.Frustum(),
 
-	_clippedVertex1PositionScreen = new THREE.Vector4(),
-	_clippedVertex2PositionScreen = new THREE.Vector4();
+		_clippedVertex1PositionScreen = new THREE.Vector4(),
+		_clippedVertex2PositionScreen = new THREE.Vector4();
 
 	//
 
@@ -192,8 +192,8 @@ var Projector = function () {
 			positionScreen.z *= invW;
 
 			vertex.visible = positionScreen.x >= - 1 && positionScreen.x <= 1 &&
-					 positionScreen.y >= - 1 && positionScreen.y <= 1 &&
-					 positionScreen.z >= - 1 && positionScreen.z <= 1;
+					positionScreen.y >= - 1 && positionScreen.y <= 1 &&
+					positionScreen.z >= - 1 && positionScreen.z <= 1;
 
 		};
 
@@ -233,9 +233,9 @@ var Projector = function () {
 		var checkBackfaceCulling = function ( v1, v2, v3 ) {
 
 			return ( ( v3.positionScreen.x - v1.positionScreen.x ) *
-				    ( v2.positionScreen.y - v1.positionScreen.y ) -
-				    ( v3.positionScreen.y - v1.positionScreen.y ) *
-				    ( v2.positionScreen.x - v1.positionScreen.x ) ) < 0;
+					( v2.positionScreen.y - v1.positionScreen.y ) -
+					( v3.positionScreen.y - v1.positionScreen.y ) *
+					( v2.positionScreen.x - v1.positionScreen.x ) ) < 0;
 
 		};
 
@@ -310,7 +310,7 @@ var Projector = function () {
 			pushUv: pushUv,
 			pushLine: pushLine,
 			pushTriangle: pushTriangle
-		}
+		};
 
 	};
 
@@ -489,8 +489,8 @@ var Projector = function () {
 						var face = faces[ f ];
 
 						var material = isFaceMaterial === true
-							 ? objectMaterials.materials[ face.materialIndex ]
-							 : object.material;
+							? objectMaterials.materials[ face.materialIndex ]
+							: object.material;
 
 						if ( material === undefined ) continue;
 
@@ -811,7 +811,7 @@ var Projector = function () {
 			var line = new RenderableLine();
 			_linePool.push( line );
 			_linePoolLength ++;
-			_lineCount ++
+			_lineCount ++;
 			return line;
 
 		}
@@ -827,7 +827,7 @@ var Projector = function () {
 			var sprite = new RenderableSprite();
 			_spritePool.push( sprite );
 			_spritePoolLength ++;
-			_spriteCount ++
+			_spriteCount ++;
 			return sprite;
 
 		}
@@ -862,10 +862,10 @@ var Projector = function () {
 
 		// Calculate the boundary coordinate of each vertex for the near and far clip planes,
 		// Z = -1 and Z = +1, respectively.
-		bc1near =  s1.z + s1.w,
-		bc2near =  s2.z + s2.w,
-		bc1far =  - s1.z + s1.w,
-		bc2far =  - s2.z + s2.w;
+			bc1near =  s1.z + s1.w,
+			bc2near =  s2.z + s2.w,
+			bc1far =  - s1.z + s1.w,
+			bc2far =  - s2.z + s2.w;
 
 		if ( bc1near >= 0 && bc2near >= 0 && bc1far >= 0 && bc2far >= 0 ) {
 
@@ -935,4 +935,4 @@ module.exports = {
 	RenderableVertex: RenderableVertex,
 	RenderableSprite: RenderableSprite,
 	Projector: Projector,
-}
+};
