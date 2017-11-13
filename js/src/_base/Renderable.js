@@ -83,7 +83,7 @@ var RenderableModel = widgets.DOMWidgetModel.extend({
     },
 
     onChildChanged: function(model, options) {
-        console.log('child changed: ' + model.model_id);
+        console.debug('child changed: ' + model.model_id);
         // Let listeners (e.g. views) know:
         this.trigger('childchange', this);
     },
@@ -238,7 +238,7 @@ var RenderableView = widgets.DOMWidgetView.extend({
     },
 
     renderScene: function(scene, camera) {
-        this.log('renderScene');
+        this.debug('renderScene');
 
         scene = scene || this.scene;
         camera = camera || this.camera;
@@ -266,7 +266,7 @@ var RenderableView = widgets.DOMWidgetView.extend({
         if (!this.isFrozen) {
             return;
         }
-        this.log('unfreeze');
+        this.debug('unfreeze');
 
         this.isFrozen = false;
 
@@ -284,7 +284,7 @@ var RenderableView = widgets.DOMWidgetView.extend({
 
     acquireRenderer: function() {
 
-        this.log('ThreeView.acquiring...');
+        this.debug('ThreeView.acquiring...');
 
         var config = {
             antialias: this.model.get('_antialias'),
@@ -300,7 +300,7 @@ var RenderableView = widgets.DOMWidgetView.extend({
 
         this.updateSize();
 
-        this.log('ThreeView.acquireRenderer(' + this.renderer.poolId + ')');
+        this.debug('ThreeView.acquireRenderer(' + this.renderer.poolId + ')');
     },
 
     freeze: function() {
@@ -309,7 +309,7 @@ var RenderableView = widgets.DOMWidgetView.extend({
             return;
         }
 
-        this.log('ThreeView.freeze(id=' + this.renderer.poolId + ')');
+        this.debug('ThreeView.freeze(id=' + this.renderer.poolId + ')');
 
         this.$el.empty().append('<img src="' + this.renderer.domElement.toDataURL() + '" />');
 
@@ -321,7 +321,7 @@ var RenderableView = widgets.DOMWidgetView.extend({
 
         if (this.controls) {
             this.$frozenRenderer.on('mouseenter', _.bind(function() {
-                this.log('frozenRenderer.mouseenter');
+                this.debug('frozenRenderer.mouseenter');
                 this.tick(); // renderer will be acquired by renderScene
             }, this));
         }
@@ -348,7 +348,7 @@ var RenderableView = widgets.DOMWidgetView.extend({
     },
 
     enableControls: function() {
-        this.log('Enable controls');
+        this.debug('Enable controls');
         var that = this;
         this.controls.forEach(function(control) {
             control.enabled = true;
@@ -358,7 +358,7 @@ var RenderableView = widgets.DOMWidgetView.extend({
     },
 
     disableControls: function() {
-        this.log('Disable controls');
+        this.debug('Disable controls');
         var that = this;
         this.controls.forEach(function(control) {
             control.enabled = false;
@@ -377,13 +377,17 @@ var RenderableView = widgets.DOMWidgetView.extend({
     },
 
     onRendererReclaimed: function() {
-        this.log('ThreeView WebGL context is being reclaimed: ' + this.renderer.poolId);
+        this.debug('ThreeView WebGL context is being reclaimed: ' + this.renderer.poolId);
 
         this.freeze();
     },
 
     log: function(str) {
         console.log('TV(' + this.id + '): ' + str);
+    },
+
+    debug: function(str) {
+        console.debug('TV(' + this.id + '): ' + str);
     },
 
     lazyRendererSetup: function() {

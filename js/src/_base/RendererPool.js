@@ -92,7 +92,7 @@ _.extend(RendererPool.prototype, {
     acquire: function(config, onReclaim) {
 
         var renderer;
-        console.log('RendererPool.acquiring...');
+        console.debug('RendererPool.acquiring...');
 
         if (this.freePool.length > 0) {
 
@@ -131,14 +131,14 @@ _.extend(RendererPool.prototype, {
 
         // Ensure aliasing state matches, or remake
 
-        console.log('RendererPool.acquire(id=' + renderer.poolId + ')');
+        console.debug('RendererPool.acquire(id=' + renderer.poolId + ')');
         this.claimedPool.push(config, makeRendererClaimToken(renderer, onReclaim));
         renderer.clear();
         return renderer;
     },
 
     release: function(renderer) {
-        console.log('RendererPool.release(id=' + renderer.poolId + ')');
+        console.debug('RendererPool.release(id=' + renderer.poolId + ')');
 
         var id = renderer.poolId;
         var kvPair = this.claimedPool.popFind(function(claimToken) {

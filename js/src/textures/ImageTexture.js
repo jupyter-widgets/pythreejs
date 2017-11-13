@@ -16,7 +16,7 @@ var ImageTextureModel = ImageTextureBase.ImageTextureModel.extend({
                     return resolve(texture);
                 },
                 function(xhr) {
-                    console.log(imageUri + ': ' + (xhr.loaded / xhr.total * 100) + '%');
+                    console.debug(imageUri + ': ' + (xhr.loaded / xhr.total * 100) + '%');
                 },
                 function(xhr) {
                     console.log('Error loading texture: ' + imageUri);

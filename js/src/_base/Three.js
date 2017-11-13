@@ -235,13 +235,12 @@ var ThreeModel = widgets.WidgetModel.extend({
             console.log('SERVER: ' + JSON.stringify(content.msg));
             break;
         default:
-            console.log('ERROR: invalid custom message');
-            console.log(content);
+            console.error('ERROR: invalid custom message', content);
         }
     },
 
     onExecThreeObjMethod: function(methodName, args, buffers) {
-        console.log('execThreeObjMethod: ' + methodName +
+        console.debug('execThreeObjMethod: ' + methodName +
             '(' + args.map(JSON.stringify).join(',') + ')');
 
         if (!(methodName in this.obj)) {
@@ -292,7 +291,7 @@ var ThreeModel = widgets.WidgetModel.extend({
                     retVal = retVal.ipymodel;
                 }
 
-                console.log('sending return value to server...');
+                console.debug('sending return value to server...');
                 this.send({
                     type: 'exec_three_obj_method_retval',
                     method_name: methodName,
@@ -317,7 +316,7 @@ var ThreeModel = widgets.WidgetModel.extend({
     },
 
     onChildChanged: function(model) {
-        console.log('child changed: ' + model.model_id);
+        console.debug('child changed: ' + model.model_id);
         // Propagate up hierarchy:
         this.trigger('childchange', this);
     },
