@@ -65,7 +65,7 @@ class RenderableWidget(DOMWidget):
         self.send(content)
 
 
-class PreviewWidget(RenderableWidget):
+class Preview(RenderableWidget):
     # renderer properties
     _flat = Bool(False).tag(sync=True)
     _wire = Bool(False).tag(sync=True)
@@ -75,4 +75,4 @@ class PreviewWidget(RenderableWidget):
     child = Instance(ThreeWidget).tag(sync=True, **widget_serialization)
 
     def __init__(self, child, **kwargs):
-        super(PreviewWidget, self).__init__(child=child, **kwargs)
+        super(Preview, self).__init__(child=child, **kwargs)

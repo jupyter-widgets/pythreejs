@@ -30,5 +30,5 @@ class ThreeWidget(Widget):
 
     def _ipython_display_(self, **kwargs):
         from IPython.display import display
-        from .renderable import PreviewWidget
-        return display(PreviewWidget(self), **kwargs)
+        from .renderable import Preview
+        return display(Preview(self), **kwargs)
