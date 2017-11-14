@@ -2,14 +2,9 @@
 
 const _ = require('underscore');
 const path = require('path');
-const fs = require('fs');
 const fse = require('fs-extra');
 const Glob = require('glob').Glob;
-const Promise = require('bluebird');
 const Handlebars = require('handlebars');
-
-Promise.promisifyAll(fs);
-Promise.promisifyAll(fse);
 
 const classConfigs = require('./three-class-config');
 const Types = require('./prop-types.js');
@@ -87,7 +82,7 @@ const IGNORE_FILES = [
 function compileTemplate(templateName) {
     templateName = path.basename(templateName, '.mustache');
     const templatePath = path.resolve(templateDir, templateName + '.mustache');
-    return Handlebars.compile(fs.readFileSync(templatePath, {
+    return Handlebars.compile(fse.readFileSync(templatePath, {
         encoding: 'utf-8'
     }));
 }
@@ -306,7 +301,7 @@ class JavascriptWrapper {
 
         // check if manual file exists
         const customSrcPath = path.join(path.dirname(this.jsDestPath), path.basename(this.jsDestPath, '.js') + '.js');
-        this.hasOverride = fs.existsSync(customSrcPath);
+        this.hasOverride = fse.existsSync(customSrcPath);
 
         this.processSuperClass();
         this.processDependencies();
@@ -363,7 +358,7 @@ class JavascriptWrapper {
 
         result.absolutePath = path.resolve(jsSrcDir, result.relativePath);
         let absPath = result.absolutePath;
-        if (fs.existsSync(absPath + '.js')) {
+        if (fse.existsSync(absPath + '.js')) {
             absPath += '.js';
         } else {
             absPath += JS_AUTOGEN_EXT;
@@ -524,7 +519,7 @@ function createJavascriptWrapper(modulePath, className) {
         console.log('skipping: ' + modulePath + (className ? ':' + className : ''));
         return Promise.resolve(false);
     }
-    return fse.outputFileAsync(wrapper.getOutputFilename(), wrapper.output);
+    return fse.outputFile(wrapper.getOutputFilename(), wrapper.output);
 
     // NOTE: Old implementation
     // const wrapper = new JavascriptWrapper(modulePath);
@@ -553,7 +548,7 @@ function writeJavascriptIndexFiles() {
         const dirAbsPath = path.resolve(jsSrcDir, dirPath);
 
         // Generate list of files in dir to include in index.js as require lines
-        return fs.readdirAsync(dirAbsPath).then(function(dirFiles) {
+        return fse.readdir(dirAbsPath).then(function(dirFiles) {
 
             // get proper relative path for file
             dirFiles = dirFiles.map(function(filename) {
@@ -616,7 +611,7 @@ function writeJavascriptIndexFiles() {
             const output = jsIndexTemplate(context);
             const outputPath = path.resolve(jsSrcDir, dirPath, 'index.js');
 
-            return fse.outputFileAsync(outputPath, output);
+            return fse.outputFile(outputPath, output);
 
         });
     }
@@ -668,7 +663,7 @@ class PythonWrapper {
         this.pyBaseRelativePath = relativePathToPythonImportPath(this.pyBaseRelativePath);
 
         // check if manual file exists
-        this.hasOverride = fs.existsSync(this.pyDestPath);
+        this.hasOverride = fse.existsSync(this.pyDestPath);
 
         this.hasParameters = false;
 
@@ -681,7 +676,6 @@ class PythonWrapper {
         this.processConstructorArgs();
 
         // Template and context
-        this.template = pyWrapperTemplate;
         this.context = {
             now: new Date(),
             generatorScriptName: path.basename(__filename),
@@ -701,7 +695,7 @@ class PythonWrapper {
         };
 
         // Render template
-        this.output = this.template(this.context);
+        this.output = pyWrapperTemplate(this.context);
 
     }
 
@@ -727,7 +721,7 @@ class PythonWrapper {
         // get path of dependency relative to module dir
         result.absolutePath = path.resolve(pySrcDir, result.relativePath);
 
-        if (!fs.existsSync(result.absolutePath + '.py')) {
+        if (!fse.existsSync(result.absolutePath + '.py')) {
             result.absolutePath += '_' + AUTOGEN_EXT;
         }
 
@@ -859,8 +853,10 @@ function createPythonWrapper(modulePath, className) {
         console.log('skipping: ' + modulePath + (className ? ':' + className : ''));
         return Promise.resolve(false);
     }
-    return fse.outputFileAsync(wrapper.getOutputFilename(), wrapper.output);
+    let fname = wrapper.getOutputFilename();
+    let pyPromise = fse.outputFile(fname, wrapper.output);
 
+    return pyPromise;
 }
 
 function createPythonModuleInitFile(modulePath) {
@@ -892,7 +888,7 @@ function createTopLevelPythonModuleFile() {
         if (/autogen/.test(moduleName)) {
             const overrideName = moduleName.replace('_autogen', '');
             const overridePath = path.resolve(pySrcDir, modulePath, overrideName + '.py');
-            if (fs.existsSync(overridePath)) {
+            if (fse.existsSync(overridePath)) {
                 console.log('Python override exists: ' + overrideName + '. Skipping...');
                 return;
             }
@@ -925,7 +921,7 @@ function createTopLevelPythonModuleFile() {
         const output = pyTopLevelInitTemplate(context);
         const outFilePath = path.resolve(pySrcDir, '__init__.py');
 
-        return fse.outputFileAsync(outFilePath, output);
+        return fse.outputFile(outFilePath, output);
 
     });
 
@@ -945,7 +941,7 @@ function createJavascriptFiles() {
 function createPythonFiles() {
 
     // Prevent python file generation when outside dir (e.g. npm install in dependent)
-    if (!fs.existsSync(pySrcDir)) {
+    if (!fse.existsSync(pySrcDir)) {
         return Promise.resolve();
     }
 
@@ -974,6 +970,7 @@ function createPythonFiles() {
         });
 
 }
+
 
 function generateFiles() {
 

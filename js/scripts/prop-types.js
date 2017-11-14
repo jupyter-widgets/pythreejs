@@ -13,7 +13,7 @@ class BaseType {
         if (this.defaultValue === false) { return 'False'; }
         if (this.defaultValue === true) { return 'True'; }
         if (this.defaultValue === 0) { return '0'; }
-        if (this.defaultValue === '') { return '""'; }
+        if (this.defaultValue === '') { return "''"; }
         if (this.defaultValue === Infinity) { return "float('inf')"; }
         if (this.defaultValue === -Infinity) { return "-float('inf')"; }
         if (!this.defaultValue) { return 'None'; }
@@ -99,7 +99,7 @@ class ForwardDeclaredThreeType extends ThreeType {
 
 class InitializedThreeType extends ThreeType {
     getJSPropertyValue() {
-        return '"uninitialized"';
+        return "'uninitialized'";
     }
     getPythonDefaultValue() {
         return 'UninitializedSentinel';
@@ -304,7 +304,7 @@ class Color extends BaseType {
     constructor(defaultValue, options) {
         super();
         options = options || {};
-        this.defaultValue = defaultValue || "#ffffff";
+        this.defaultValue = defaultValue || '#ffffff';
         this.nullable = options.nullable === true;
     }
     getTraitlet() {
@@ -319,7 +319,7 @@ class Color extends BaseType {
 class ColorArray extends BaseType {
     constructor(defaultValue) {
         super();
-        this.defaultValue = defaultValue || ["#ffffff"];
+        this.defaultValue = defaultValue || ['#ffffff'];
     }
     getTraitlet() {
         return `List(trait=Unicode(), default_value=${this.getPythonDefaultValue()}).tag(sync=True)`;
