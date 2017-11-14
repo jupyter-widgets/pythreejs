@@ -5,7 +5,6 @@ const path = require('path');
 const fse = require('fs-extra');
 const Glob = require('glob').Glob;
 const Handlebars = require('handlebars');
-
 const classConfigs = require('./three-class-config');
 const Types = require('./prop-types.js');
 
@@ -14,6 +13,7 @@ const baseDir = path.resolve(scriptDir, '..');
 
 const jsSrcDir = path.resolve(baseDir, 'src/');
 const pySrcDir = path.resolve(baseDir, '..', 'pythreejs');
+const docSrcDir = path.resolve(baseDir, '..', 'docs', 'source', 'api');
 const templateDir = path.resolve(scriptDir, 'templates');
 
 const threeSrcDir = path.resolve(baseDir, 'node_modules', 'three', 'src');
@@ -99,8 +99,26 @@ const jsWrapperTemplate      = compileTemplate('js_wrapper');
 const jsIndexTemplate        = compileTemplate('js_index');
 const pyWrapperTemplate      = compileTemplate('py_wrapper');
 const pyTopLevelInitTemplate = compileTemplate('py_top_level_init');
+const docTemplate            = compileTemplate('autodoc');
+const docIndexTemplate       = compileTemplate('autodoc_index');
 
 const pathSep = /\\|\//;
+
+Handlebars.registerHelper('indent', function (data, indent) {
+    const out = data.replace(/\n/g, '\n' + indent);
+    return new Handlebars.SafeString(out);
+});
+
+Handlebars.registerHelper('rst', function (data, indent) {
+    let out = data
+        .replace(/\*/g, '\\*')
+        .replace(/\[/g, '\\[')
+        .replace(/\]/g, '\\]');
+    if (indent) {
+        out = out.replace(/\n/g, '\n' + indent);
+    }
+    return new Handlebars.SafeString(out);
+});
 
 //
 // Helper Functions
@@ -856,6 +874,14 @@ class PythonWrapper {
         return this.pyAutoDestPath;
     }
 
+    getDocFilename() {
+        return path.resolve(docSrcDir, this.dirRelativePath, `${this.className}_autogen.rst`);
+    }
+
+    getDocOutput() {
+        return docTemplate(this.context);
+    }
+
 }
 
 function createPythonWrapper(modulePath, className) {
@@ -871,7 +897,13 @@ function createPythonWrapper(modulePath, className) {
     let fname = wrapper.getOutputFilename();
     let pyPromise = fse.outputFile(fname, wrapper.output);
 
-    return pyPromise;
+    // Also output documentation for the Python API
+    let docfname = wrapper.getDocFilename();
+    //console.log(docfname);
+    //let docPromise = Promise.resolve();
+    let docPromise = fse.outputFile(docfname, wrapper.getDocOutput());
+
+    return Promise.all([pyPromise, docPromise]);
 }
 
 function createPythonModuleInitFile(modulePath) {
@@ -879,6 +911,75 @@ function createPythonModuleInitFile(modulePath) {
     const dirname = path.dirname(modulePath);
     const pyInitFilePath = path.resolve(pySrcDir, dirname, '__init__.py');
     return fse.ensureFile(pyInitFilePath);
+}
+
+
+
+
+function writeDocModuleFiles() {
+
+    console.log('Writing document indices...');
+
+    const RE_AUTOGEN = /index.rst/g;
+
+    function writeIndexForDir(dirPath, isTopLevel) {
+
+        const dirAbsPath = path.resolve(docSrcDir, dirPath);
+        let moduleName;
+        if (dirPath === '.') {
+            moduleName = 'pythreejs';
+        } else {
+            moduleName = path.basename(dirPath);
+        }
+
+        // Generate list of files in dir to include in module as toc entries
+        return fse.readdir(dirAbsPath).then(function(dirFiles) {
+
+            // sort directories first:
+            dirFiles = _.sortBy(dirFiles, filePath => {
+                return fse.statSync(path.join(dirAbsPath, filePath)).isDirectory() ? 0 : 1;
+            });
+
+            dirFiles = dirFiles.filter(filePath => {
+                return !filePath.match(RE_AUTOGEN);
+            });
+
+            // convert file paths to paths relative to dirPath
+            dirFiles = dirFiles.map(filePath => {
+                if (fse.statSync(path.join(dirAbsPath, filePath)).isDirectory()) {
+                    return `./${filePath}/index`;
+                }
+                // Need to use forward slash for RST:
+                return `./${path.basename(filePath)}`;
+            });
+
+            // render template
+            const context = {
+                now: new Date(),
+                generatorScriptName: path.basename(__filename),
+                moduleName: moduleName,
+                submodules: dirFiles,
+                top_level: isTopLevel,
+            };
+            const output = docIndexTemplate(context);
+            const outputPath = path.resolve(docSrcDir, dirPath, 'index.rst');
+
+            return fse.outputFile(outputPath, output);
+
+        });
+    }
+
+    // map over all directories in js src dir
+    return mapPromiseFnOverGlob(
+        `**/`, // trailing slash globs for dirs only
+        function(dirPath) {
+            return writeIndexForDir(dirPath, false);
+        },
+        { cwd: docSrcDir, }
+    ).then(function() {
+        // write top-level index (not included in above glob)
+        return writeIndexForDir('.', true);
+    });
 
 }
 
@@ -888,6 +989,14 @@ function createTopLevelPythonModuleFile() {
         '**/__init__.py',
         'install.py',
         'sage.py'
+    ];
+
+    const ignoreDocFiles = [
+        'enums',
+        'pythreejs',
+        'traits',
+        '_package',
+        '_version',
     ];
 
     const modules = [];
@@ -917,8 +1026,16 @@ function createTopLevelPythonModuleFile() {
             importPath = '.' + moduleName;
         }
 
+        let docPath;
+        if (ignoreDocFiles.indexOf(moduleName) === -1) {
+            docPath = filePath.replace('_autogen', '').replace('.py', '') + '_autogen';
+        } else {
+            docPath = '';
+        }
+
         modules.push({
             pyRelativePath: importPath,
+            docRelativePath: docPath,
         });
 
     }, {
@@ -980,11 +1097,15 @@ function createPythonFiles() {
             return createPythonModuleInitFile('_base/__init__');
         })
         .then(function() {
+            return writeDocModuleFiles();
+        })
+        .then(function() {
             // top level __init__.py file imports *all* pythreejs modules into namespace
             return createTopLevelPythonModuleFile();
         });
 
 }
+
 
 
 function generateFiles() {

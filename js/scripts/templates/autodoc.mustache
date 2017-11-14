@@ -1,0 +1,32 @@
+
+.. py:currentmodule:: pythreejs
+
+{{ className }}
+====================================================
+
+.. py:class:: {{ className }}({{#unless constructor.hasParameters}}{{#each constructor.args as |arg|}}{{{ arg.name }}}{{#if arg.prop.defaultJson}}={{{ arg.prop.defaultJson }}}{{/if}}, {{/each}}{{/unless}})
+
+    {{#if hasOverride}}
+    This widget has some manual overrides on the Python side.
+    {{/if}}
+
+    {{#if superClass.className }}
+    Inherits :py:class:`~pythreejs.{{ superClass.className }}`.
+    {{/if}}
+
+    Three.js docs: {{ threejs_docs_url }}
+
+    .. py:attribute:: _model_name
+
+        .. sourcecode:: python
+
+            Unicode('{{ modelName }}').tag(sync=True)
+
+    {{#each properties as |prop propName|}}
+    .. py:attribute:: {{ propName }}
+
+        .. sourcecode:: python
+
+            {{{indent prop.trait_declaration '        '}}}
+
+    {{/each}}

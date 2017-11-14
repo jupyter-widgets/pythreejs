@@ -1,0 +1,23 @@
+
+{{#if top_level}}
+
+=============
+API Reference
+=============
+
+.. py:module:: pythreejs
+
+{{else}}
+
+========================================================
+{{ moduleName }}
+========================================================
+
+{{/if}}
+
+.. toctree::
+    :maxdepth: 10
+
+{{#each submodules as |module|}}
+    {{ module }}
+{{/each}}

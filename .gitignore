@@ -15,10 +15,12 @@ pythreejs/static/
 
 # Autogen files
 *_autogen.py
+*_autogen.rst
 *.autogen.js
 *.autogen.json
 js/src/**/index.js
 pythreejs/**/__init__.py
+docs/source/api/**/index.rst
 
 # Test and coverage
 .coverage
