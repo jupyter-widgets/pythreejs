@@ -665,6 +665,8 @@ class PythonWrapper {
         // check if manual file exists
         this.hasOverride = fse.existsSync(this.pyDestPath);
 
+        this.isCustom = CUSTOM_CLASSES.indexOf(modulePath) !== -1;
+
         this.hasParameters = false;
 
         this.config = getClassConfig(this.className);
@@ -692,6 +694,7 @@ class PythonWrapper {
             properties: this.properties,
             dependencies: this.dependencies,
             hasOverride: this.hasOverride,
+            isCustom: this.isCustom,
         };
 
         // Render template
@@ -814,6 +817,10 @@ class PythonWrapper {
     }
 
     processDocsUrl() {
+
+        if (this.isCustom) {
+            this.docsUrl = null;
+        }
 
         const refTokens = this.modulePath.split(pathSep);
 
