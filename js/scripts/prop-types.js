@@ -411,7 +411,7 @@ class Vector2 extends BaseType {
         this.defaultValue = [ x||0, y||0 ];
     }
     getTraitlet() {
-        return 'Vector2(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
+        return 'Vector2(default_value=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
     }
     getPropertyConverterFn() {
         return 'convertVector';
@@ -427,7 +427,7 @@ class Vector3 extends BaseType {
         this.defaultValue = [ x||0, y||0, z||0 ];
     }
     getTraitlet() {
-        return 'Vector3(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
+        return 'Vector3(default_value=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
     }
     getPropertyConverterFn() {
         return 'convertVector';
@@ -443,7 +443,7 @@ class Vector4 extends BaseType {
         this.defaultValue = [ x||0, y||0, z||0, w||0 ];
     }
     getTraitlet() {
-        return 'Vector4(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
+        return 'Vector4(default_value=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
     }
     getPropertyConverterFn() {
         return 'convertVector';
@@ -495,7 +495,7 @@ class Matrix3 extends BaseType {
         ];
     }
     getTraitlet() {
-        return 'Matrix3(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
+        return 'Matrix3(default_value=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
     }
     getPropertyConverterFn() {
         return 'convertMatrix';
@@ -516,7 +516,7 @@ class Matrix4 extends BaseType {
         ];
     }
     getTraitlet() {
-        return 'Matrix4(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
+        return 'Matrix4(default_value=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
     }
     getPropertyConverterFn() {
         return 'convertMatrix';
@@ -534,7 +534,7 @@ class Euler extends BaseType {
     }
 
     getTraitlet() {
-        return 'Euler(default=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
+        return 'Euler(default_value=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
     }
     getPropertyConverterFn() {
         return 'convertEuler';

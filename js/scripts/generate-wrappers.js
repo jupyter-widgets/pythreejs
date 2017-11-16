@@ -51,9 +51,17 @@ const IGNORE_FILES = [
     '**/animation/KeyframeTrackConstructor.js',     // Sub-part of one object, ignore
     '**/animation/KeyframeTrackPrototype.js',       // Sub-part of one object, ignore
     '**/audio/AudioContext.js',             // JS API for audio, nothing to expose
+    '**/core/Face3.js',     // Implemented as trait only, not widget model
     '**/geometries/Geometries.js',          // index.js like file, nothing new here
     '**/materials/Materials.js',            // index.js like file, nothing new here
     '**/materials/MeshDistanceMaterial.js', // TODO: Undocumented as of yet
+    '**/math/Vector2.js',   // Implemented as trait only, not widget model
+    '**/math/Vector3.js',   // Implemented as trait only, not widget model
+    '**/math/Vector4.js',   // Implemented as trait only, not widget model
+    '**/math/Matrix3.js',   // Implemented as trait only, not widget model
+    '**/math/Matrix4.js',   // Implemented as trait only, not widget model
+    '**/math/Color.js',     // Implemented as trait only, not widget model
+    '**/math/Euler.js',     // Implemented as trait only, not widget model
     '**/renderers/WebGLRenderer.js',        // For now, the internals of the webgl
     '**/renderers/WebGL2Renderer.js',       //   render is not exposed.
     //'**/renderers/webgl/**',
