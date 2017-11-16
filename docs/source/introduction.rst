@@ -17,12 +17,13 @@ Renderer classes
 While the :py:class:`~pythreejs.WebGLRenderer` class mimics its three.js
 counterpart in only rendering frames on demand (one frame per call to its
 :py:meth:`~pythreejs.WebGLRenderer.render` method), the :py:class:`~pythreejs.Renderer` class
-sets up an interactive render loop allowing for `interactive controls`_ and `animation`_.
+sets up an interactive render loop allowing for
+:ref:`interactive_controls` and :ref:`animation`.
 Similarly, a :py:class:`~pythreejs.Preview` widget allows for a quick visualization of various
 threejs objects.
 
 
-.. _interactive controls:
+.. _interactive_controls:
 
 Interactive controls
 --------------------
