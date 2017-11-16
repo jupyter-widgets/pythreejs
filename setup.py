@@ -72,6 +72,9 @@ setup_args = {
             'matplotlib',
             'scikit-image'
         ],
+        'docs': [
+            'sphinx>=1.5',
+        ]
     },
     'packages': [name],  # Manually specify here, update after autogen
     'zip_safe': False,

@@ -2,7 +2,7 @@
 
 from collections import OrderedDict
 
-from traitlets import TraitType, Undefined, Container, Dict, Any
+from traitlets import TraitType, Undefined, Container, Dict, Any, HasTraits
 from sphinx.ext.autodoc import ClassDocumenter, AttributeDocumenter
 
 
@@ -37,6 +37,10 @@ class HasTraitsDocumenter(ClassDocumenter):
     """Specialized Documenter subclass for traits"""
     objtype = 'hastraits'
     directivetype = 'class'
+
+    @classmethod
+    def can_document_member(cls, member, membername, isattr, parent):
+        return isinstance(member, HasTraits)
 
     def get_object_members(self, want_all):
         """Add traits to members list"""

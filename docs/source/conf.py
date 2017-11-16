@@ -187,3 +187,8 @@ if not on_rtd:  # only import and set the theme if we're building docs locally
     html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # otherwise, readthedocs.org uses their theme by default, so no need to specify it
+
+
+# Ignore anchored API links (javascript uses the anchors, otherwise invalid)
+linkcheck_ignore = [r'https://threejs.org/docs/#(api|manual)']
+# linkcheck_anchors_ignore = ['^!', '^api', '^manual']
