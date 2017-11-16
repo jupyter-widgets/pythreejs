@@ -7,9 +7,6 @@ these classes and the various constants.
 
 This is meant to be a low-level wrapper around three.js. We hope that others
 will use this foundation to build higher-level interfaces to build 3d plots.
-
-Another resource to understanding three.js decisions is the Udacity course on
-3d graphics using three.js: https://www.udacity.com/course/cs291
 """
 
 from __future__ import absolute_import

@@ -1,10 +1,7 @@
-from ipywidgets import Widget, DOMWidget, widget_serialization, Color
-from traitlets import Unicode, Int, CInt, Enum, Instance, List, Float, CFloat, Bool, link
-
-from ..enums import ToneMappings
+from ipywidgets import widget_serialization
+from traitlets import Unicode, CInt, link
 
 from .._base.renderable import RenderableWidget
-from ..math.Plane_autogen import Plane
 
 to_json = widget_serialization['to_json']
 from_json = widget_serialization['from_json']
