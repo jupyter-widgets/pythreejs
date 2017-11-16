@@ -835,7 +835,7 @@ class PythonWrapper {
         // strip extension off filename
         refTokens[refTokens.length - 1] = path.basename(refTokens[refTokens.length - 1], '.js');
 
-        let refUrl = 'http://threejs.org/docs/#api/' + refTokens.join('/');
+        let refUrl = 'https://threejs.org/docs/#api/' + refTokens.join('/');
 
         // combine middle elements of url with dot
         refUrl = refUrl.replace('Renderers/WebGL/Plugins/', 'Renderers.WebGL.Plugins/');
