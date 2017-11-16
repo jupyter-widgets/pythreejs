@@ -236,6 +236,7 @@ module.exports = {
 
             target: new Types.Vector3(0, 0, 0),
         },
+        constructorArgs: ['controlling'],
     },
     FlyControls: {
         relativePath: './controls/FlyControls',
@@ -247,6 +248,7 @@ module.exports = {
             rollSpeed: new Types.Float(0.05),
             syncRate: new Types.Float(1.0),
         },
+        constructorArgs: ['controlling'],
     },
     Picker: {
         relativePath: './controls/Picker',
@@ -269,6 +271,7 @@ module.exports = {
         propsDefinedByThree: [
             'distance', 'point', 'face', 'faceNormal', 'faceVertices',
             'faceIndex', 'object', 'picked', 'uv', 'indices'],
+        constructorArgs: ['controlling'],
     },
 
     BufferAttribute: {
