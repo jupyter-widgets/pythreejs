@@ -13,14 +13,6 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
-#
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
-
 
 # -- General configuration ------------------------------------------------
 
@@ -37,7 +29,16 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.napoleon',
     'sphinx.ext.todo',
+    'autodoc_traits',
 ]
+
+# Ensure our extension is available:
+import sys
+from os.path import dirname, join as pjoin
+docs = dirname(dirname(__file__))
+root = dirname(docs)
+sys.path.insert(0, pjoin(root, '..'))
+sys.path.insert(0, pjoin(docs, 'sphinxext'))
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
