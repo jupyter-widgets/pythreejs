@@ -18,7 +18,7 @@ import sys
 from glob import glob
 from subprocess import check_call
 
-from setuptools import Command
+from setuptools import Command, find_packages
 from setuptools.command.build_py import build_py
 from setuptools.command.sdist import sdist
 from setuptools.command.develop import develop
@@ -82,24 +82,15 @@ def expand_data_files(data_file_patterns):
     return data_files
 
 
-def find_packages(top):
-    """
-    Find all of the packages.
-    """
-    packages = []
-    for d, dirs, _ in os.walk(top, followlinks=True):
-        if os.path.exists(pjoin(d, '__init__.py')):
-            packages.append(os.path.relpath(d, top).replace(os.path.sep, '.'))
-        elif d != top:
-            # Do not look for packages in subfolders if current is not a package
-            dirs[:] = []
-    return packages
-
-
 def update_package_data(distribution):
     """update build_py options to get package_data changes"""
     build_py = distribution.get_command_obj('build_py')
     build_py.finalize_options()
+
+
+def update_packages(command):
+    """update build_py options to get packages changes"""
+    command.distribution.packages = find_packages()
 
 
 def create_cmdclass(wrappers=None):
@@ -376,6 +367,8 @@ def wrap_command(cmds, cls, strict=True):
                         raise
                     else:
                         pass
+
+            update_packages(self)
 
             result = cls.run(self)
             # update package data
