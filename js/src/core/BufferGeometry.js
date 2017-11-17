@@ -65,7 +65,7 @@ var BufferGeometryModel = AutogenBufferGeometryModel.extend({
                 return createModel(modelCtor, this.widget_manager, kv[1]).then(function(model) {
                     return [kv[0], model];
                 });
-            }));
+            }, this));
         }).then(function(attribModelKVs) {
             toSet.attributes = _.object(attribModelKVs);
 
@@ -75,7 +75,7 @@ var BufferGeometryModel = AutogenBufferGeometryModel.extend({
                 var modelCtor = kv[1].isInterleavedBufferAttribute ? InterleavedBufferAttributeModel : BufferAttributeModel;
                 return createModel(modelCtor, this.widget_manager, kv[1]).then(function(model) {
                     return [kv[0], model];
-                });
+                }, this);
             }));
         }).then(function(attribModelKVs) {
             toSet.morphAttributes = _.object(attribModelKVs);

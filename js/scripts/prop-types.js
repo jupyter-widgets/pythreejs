@@ -66,9 +66,9 @@ class ThreeType extends BaseType {
     getTraitlet() {
         let typeName = this.typeName;
         if (typeName instanceof Array) {
-            for (let tname of typeName) {
+            typeName = typeName.map(tname => {
                 return `${tname || 'ThreeWidget'}`;
-            }
+            });
         } else {
             typeName = `${typeName || 'ThreeWidget'}`;
         }
