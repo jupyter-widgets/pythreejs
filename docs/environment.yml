@@ -1,0 +1,14 @@
+
+name: pythreejs_docs
+channels:
+  - conda-forge
+dependencies:
+- python=3.5
+- nodejs
+- numpy
+- scipy
+- matplotlib
+- scikit-image
+- sphinx
+- nbsphinx
+- jupyter_sphinx

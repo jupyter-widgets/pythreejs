@@ -35,6 +35,7 @@ Contents
 .. toctree::
    :maxdepth: 1
 
+   examples/index
    api/index
 
 

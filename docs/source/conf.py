@@ -30,6 +30,9 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.todo',
     'autodoc_traits',
+    'nbsphinx',
+    'jupyter_sphinx.embed_widgets',
+    'nbsphinx_link',
 ]
 
 # Ensure our extension is available:
@@ -37,7 +40,7 @@ import sys
 from os.path import dirname, join as pjoin
 docs = dirname(dirname(__file__))
 root = dirname(docs)
-sys.path.insert(0, pjoin(root, '..'))
+sys.path.insert(0, root)
 sys.path.insert(0, pjoin(docs, 'sphinxext'))
 
 # Add any paths that contain templates here, relative to this directory.
@@ -88,7 +91,7 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = []
+exclude_patterns = ['**.ipynb_checkpoints']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
@@ -99,10 +102,6 @@ todo_include_todos = False
 
 # -- Options for HTML output ----------------------------------------------
 
-# The theme to use for HTML and HTML Help pages.  See the documentation for
-# a list of builtin themes.
-#
-html_theme = 'alabaster'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -192,3 +191,28 @@ if not on_rtd:  # only import and set the theme if we're building docs locally
 # Ignore anchored API links (javascript uses the anchors, otherwise invalid)
 linkcheck_ignore = [r'https://threejs.org/docs/#(api|manual)']
 # linkcheck_anchors_ignore = ['^!', '^api', '^manual']
+
+
+nbsphinx_allow_errors = True # exception ipstruct.py ipython_genutils
+
+
+def setup(app):
+    if on_rtd and not os.path.exists(os.path.join(here, '_static', 'jupyter-threejs.js')):
+        # We don't have a develop install on RTD, ensure we get autogen output:
+        from subprocess import check_call
+        popd = os.path.abspath(os.curdir)
+        os.chdir(os.path.join(here, '..', '..', 'js'))
+        try:
+            # This assumes that autogen and build is also triggered postinstall:
+            check_call(['npm', 'install'])
+        finally:
+            os.chdir(popd)
+
+
+    app.setup_extension('jupyter_sphinx.embed_widgets')
+    def add_scripts(app):
+        for fname in ['helper.js', 'jupyter-threejs.js']:
+            if not os.path.exists(os.path.join(here, '_static', fname)):
+                app.warn('missing javascript file: %s' % fname)
+            app.add_javascript(fname)
+    app.connect('builder-inited', add_scripts)

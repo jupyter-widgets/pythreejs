@@ -202,6 +202,8 @@ function createModel(constructor, widget_manager, obj) {
     };
     var attributes = { };
     var widget_model = new constructor(attributes, modelOptions);
+    widget_model.name = constructor.model_name;
+    widget_model.module = constructor.model_module;
 
     var modelPromise = widget_model.initPromise.then(function() {
         var split = widgets.remove_buffers(

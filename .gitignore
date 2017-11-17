@@ -28,3 +28,5 @@ docs/source/api/**/index.rst
 htmlcov/
 
 
+docs/source/_static/jupyter-threejs.js
+docs/source/_static/three.js

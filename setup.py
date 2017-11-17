@@ -47,6 +47,7 @@ cmdclass['js'] = combine_commands(
         name + '/static/index.js',
         'js/src/core/BufferAttribute.autogen.js',
         name + '/core/BufferAttribute_autogen.py',
+        'docs/source/_static/jupyter-threejs.js',
     ]),
 )
 
@@ -74,6 +75,9 @@ setup_args = {
         ],
         'docs': [
             'sphinx>=1.5',
+            'nbsphinx>=0.2.13',
+            'jupyter_sphinx',
+            'nbsphinx-link',
         ]
     },
     'packages': [name],  # Manually specify here, update after autogen

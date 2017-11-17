@@ -24,7 +24,7 @@ install:
 script:
   - if [[ $GROUP == python ]]; then
       py.test -l --nbval-lax --current-env examples
-    elif [[ $GROUP == js ]]; then
+    elif [[ $GROUP == docs ]]; then
       EXIT_STATUS=0
       cd docs
       make html || EXIT_STATUS=$?
