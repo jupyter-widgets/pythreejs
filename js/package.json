@@ -20,16 +20,15 @@
   },
   "devDependencies": {
     "eslint": "^4.11.0",
-    "fs-extra": "^4.0.1",
-    "glob": "^7.0.6",
-    "handlebars": "^4.0.5",
-    "rimraf": "^2.4.1",
-    "underscore": "^1.8.3",
-    "webpack": "^3.6.0"
+    "fs-extra": "^4.0.2",
+    "glob": "^7.1.2",
+    "handlebars": "^4.0.11",
+    "rimraf": "^2.6.2",
+    "webpack": "^3.8.1"
   },
   "dependencies": {
-    "@jupyter-widgets/base": "^1.0.0",
-    "bluebird": "^3.4.3",
+    "@jupyter-widgets/base": "^1.1.4",
+    "bluebird": "^3.5.1",
     "jupyter-dataserializers": "^1.0.0",
     "three": "^0.87.1",
     "underscore": "^1.8.3"
