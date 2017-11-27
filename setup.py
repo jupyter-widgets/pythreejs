@@ -64,7 +64,7 @@ setup_args = {
             'scikit-image'
         ],
     },
-    'packages': find_packages(),
+    'packages': ['pythreejs'],  # Manually specify here, update after autogen
     'zip_safe': False,
     'cmdclass': cmdclass,
     'author': 'PyThreejs Development Team',

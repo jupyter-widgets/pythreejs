@@ -236,6 +236,7 @@ module.exports = {
 
             target: new Types.Vector3(0, 0, 0),
         },
+        constructorArgs: ['controlling'],
     },
     FlyControls: {
         relativePath: './controls/FlyControls',
@@ -247,6 +248,7 @@ module.exports = {
             rollSpeed: new Types.Float(0.05),
             syncRate: new Types.Float(1.0),
         },
+        constructorArgs: ['controlling'],
     },
     Picker: {
         relativePath: './controls/Picker',
@@ -269,6 +271,7 @@ module.exports = {
         propsDefinedByThree: [
             'distance', 'point', 'face', 'faceNormal', 'faceVertices',
             'faceIndex', 'object', 'picked', 'uv', 'indices'],
+        constructorArgs: ['controlling'],
     },
 
     BufferAttribute: {
@@ -301,21 +304,6 @@ module.exports = {
     },
     EventDispatcher: {
         relativePath: './core/EventDispatcher',
-    },
-    Face3: {
-        relativePath: './core/Face3',
-        properties: {
-            a: new Types.Int(0),
-            b: new Types.Int(1),
-            c: new Types.Int(2),
-            normal: new Types.Vector3(),
-            color: new Types.Color('#ffffff'),
-            // TODO: arrays of vectors/colors
-            // vertexNormals: new Types.ThreeTypeArray('Vector3')
-            // vertexColors: new Types.ThreeTypeArray('Color')
-            materialIndex: new Types.Int(0),
-        },
-        constructorArgs: [ 'a', 'b', 'c', 'normal', 'color', 'materialIndex' ],
     },
     BaseGeometry: {
         relativePath: './core/BaseGeometry',
@@ -925,15 +913,6 @@ module.exports = {
         constructorArgs: [ 'min', 'max' ],
 
     },
-    Color: {
-        relativePath: './math/Color',
-        properties: {
-            r: new Types.Float(1.0),
-            g: new Types.Float(1.0),
-            b: new Types.Float(1.0),
-        },
-        constructorArgs: [ 'r', 'g', 'b' ],
-    },
     Cylindrical: {
         relativePath: './math/Cylindrical',
         properties: {
@@ -942,16 +921,6 @@ module.exports = {
             y:      new Types.Float(0.),
         },
         constructorArgs: ['radius', 'theta', 'y'],
-    },
-    Euler: {
-        relativePath: './math/Euler',
-        properties: {
-            x: new Types.Float(0),
-            y: new Types.Float(0),
-            z: new Types.Float(0),
-            order: new Types.String('XYZ'),
-        },
-        constructorArgs: [ 'x', 'y', 'z', 'order' ],
     },
     Frustum: {
         relativePath: './math/Frustum',
@@ -978,18 +947,6 @@ module.exports = {
     },
     Math: {
         relativePath: './math/Math',
-    },
-    Matrix3: {
-        relativePath: './math/Matrix3',
-        properties: {
-            elements: new Types.Array(),
-        },
-    },
-    Matrix4: {
-        relativePath: './math/Matrix4',
-        properties: {
-            elements: new Types.Array(),
-        },
     },
     Plane: {
         relativePath: './math/Plane',
@@ -1043,33 +1000,6 @@ module.exports = {
             c: new Types.Vector3(),
         },
         constructorArgs: [ 'a', 'b', 'c' ],
-    },
-    Vector2: {
-        relativePath: './math/Vector2',
-        properties: {
-            x: new Types.Float(),
-            y: new Types.Float(),
-        },
-        constructorArgs: [ 'x', 'y' ],
-    },
-    Vector3: {
-        relativePath: './math/Vector3',
-        properties: {
-            x: new Types.Float(),
-            y: new Types.Float(),
-            z: new Types.Float(),
-        },
-        constructorArgs: [ 'x', 'y', 'z' ],
-    },
-    Vector4: {
-        relativePath: './math/Vector4',
-        properties: {
-            x: new Types.Float(),
-            y: new Types.Float(),
-            z: new Types.Float(),
-            w: new Types.Float(),
-        },
-        constructorArgs: [ 'x', 'y', 'z', 'w' ],
     },
     Bone: {
         relativePath: './objects/Bone',

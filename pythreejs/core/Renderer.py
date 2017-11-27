@@ -6,7 +6,6 @@ from ipywidgets import widget_serialization, Color
 from traitlets import (
     Unicode, CInt, Instance, Float, Tuple, Undefined, link)
 
-from ..enums import *
 from ..traits import *
 
 from .._base.renderable import RenderableWidget

@@ -4,19 +4,26 @@
 # Copyright (c) Jupyter Development Team.
 # Distributed under the terms of the Modified BSD License.
 
+"""
+This file originates from the 'jupyter-packaging' package, and
+contains a set of useful utilities for including npm packages
+within a Python package.
+"""
+
 import os
 from os.path import join as pjoin
 import functools
 import pipes
 import sys
+from glob import glob
+from subprocess import check_call
 
-from setuptools import Command
+from setuptools import Command, find_packages
 from setuptools.command.build_py import build_py
 from setuptools.command.sdist import sdist
 from setuptools.command.develop import develop
 from setuptools.command.bdist_egg import bdist_egg
 from distutils import log
-from subprocess import check_call
 
 try:
     from wheel.bdist_wheel import bdist_wheel
@@ -36,10 +43,10 @@ __version__ = '0.1.0'
 # Top Level Variables
 # ---------------------------------------------------------------------------
 
-
-here = os.path.abspath(os.path.dirname(sys.argv[0]))
+here = os.path.dirname(__file__)
 is_repo = os.path.exists(pjoin(here, '.git'))
 node_modules = pjoin(here, 'node_modules')
+
 npm_path = ':'.join([
     pjoin(here, 'node_modules', '.bin'),
     os.environ.get('PATH', os.defpath),
@@ -57,32 +64,22 @@ else:
 # ---------------------------------------------------------------------------
 
 
-def get_data_files(top):
-    """Get data files"""
+def expand_data_files(data_file_patterns):
+    """Expand data file patterns to a valid data_files spec.
 
+    Parameters
+    -----------
+    data_file_patterns: list(tuple)
+        A list of (directory, glob patterns) for the data file locations.
+        The globs themselves do not recurse.
+    """
     data_files = []
-    ntrim = len(here + os.path.sep)
-
-    for (d, dirs, filenames) in os.walk(top):
-        data_files.append((
-            d[ntrim:],
-            [pjoin(d, f) for f in filenames]
-        ))
+    for (directory, patterns) in data_file_patterns:
+        files = []
+        for p in patterns:
+            files.extend([os.path.relpath(f, here) for f in glob(p)])
+        data_files.append((directory, files))
     return data_files
-
-
-def find_packages(top):
-    """
-    Find all of the packages.
-    """
-    packages = []
-    for d, dirs, _ in os.walk(top, followlinks=True):
-        if os.path.exists(pjoin(d, '__init__.py')):
-            packages.append(os.path.relpath(d, top).replace(os.path.sep, '.'))
-        elif d != top:
-            # Do not look for packages in subfolders if current is not a package
-            dirs[:] = []
-    return packages
 
 
 def update_package_data(distribution):
@@ -91,20 +88,22 @@ def update_package_data(distribution):
     build_py.finalize_options()
 
 
-def create_cmdclass(wrappers=None, data_dirs=None):
+def update_packages(command):
+    """update build_py options to get packages changes"""
+    command.distribution.packages = find_packages()
+
+
+def create_cmdclass(wrappers=None):
     """Create a command class with the given optional wrappers.
 
     Parameters
     ----------
     wrappers: list(str), optional
         The cmdclass names to run before running other commands
-    data_dirs: list(str), optional.
-        The directories containing static data.
     """
     egg = bdist_egg if 'bdist_egg' in sys.argv else bdist_egg_disabled
     wrappers = wrappers or []
-    data_dirs = data_dirs or []
-    wrapper = functools.partial(wrap_command, wrappers, data_dirs)
+    wrapper = functools.partial(wrap_command, wrappers)
     cmdclass = dict(
         build_py=wrapper(build_py, strict=is_repo),
         sdist=wrapper(sdist, strict=True),
@@ -225,6 +224,8 @@ def mtime(path):
 def install_npm(path=None, build_dir=None, source_dir=None, build_cmd='build', force=False):
     """Return a Command for managing an npm installation.
 
+    Note: The command is skipped if the `--skip-npm` flag is used.
+
     Parameters
     ----------
     path: str, optional
@@ -264,6 +265,26 @@ def install_npm(path=None, build_dir=None, source_dir=None, build_cmd='build', f
                 run(['npm', 'run', build_cmd], cwd=node_package)
 
     return NPM
+
+
+def ensure_targets(targets):
+    """Return a Command that checks that certain files exist.
+
+    Raises a ValueError if any of the files are missing.
+
+    Note: The check is skipped if the `--skip-npm` flag is used.
+    """
+
+    class TargetsCheck(BaseCommand):
+        def run(self):
+            if skip_npm:
+                log.info('Skipping target checks')
+                return
+            missing = [t for t in targets if not os.path.exists(t)]
+            if missing:
+                raise ValueError(('missing files: %s' % missing))
+
+    return TargetsCheck
 
 
 # `shutils.which` function copied verbatim from the Python-3.3 source.
@@ -325,7 +346,7 @@ def which(cmd, mode=os.F_OK | os.X_OK, path=None):
 # ---------------------------------------------------------------------------
 
 
-def wrap_command(cmds, data_dirs, cls, strict=True):
+def wrap_command(cmds, cls, strict=True):
     """Wrap a setup command
 
     Parameters
@@ -347,14 +368,10 @@ def wrap_command(cmds, data_dirs, cls, strict=True):
                     else:
                         pass
 
+            update_packages(self)
+
             result = cls.run(self)
-            if data_dirs:
-                data_files = self.distribution.data_files if self.distribution.data_files else []
-                for dname in data_dirs:
-                    data_files.extend(get_data_files(dname))
-                # update data-files in case this created new files
-                self.distribution.data_files = data_files
-            # also update package data
+            # update package data
             update_package_data(self.distribution)
             return result
     return WrappedCommand
