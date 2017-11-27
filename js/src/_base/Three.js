@@ -670,6 +670,23 @@ var ThreeModel = widgets.WidgetModel.extend({
         Object.assign(obj[key], value);
     },
 
+    convertUniformDictModelToThree: function(modelDict) {
+        // Convert any strings to THREE.Color
+        // Just modify dict in-place, as it should serialize the same
+        Object.keys(modelDict).forEach(function(k) {
+            var value = modelDict[k].value;
+            if (value && (typeof value === 'string' || value instanceof String)) {
+                modelDict[k].value = new THREE.Color(value);
+            }
+        });
+        return modelDict;
+    },
+
+    convertUniformDictThreeToModel: function(threeDict) {
+        // No-op
+        return threeDict;
+    },
+
     // ThreeTypeArray
     convertThreeTypeArrayModelToThree: function(modelArr, propName) {
         if (!Array.isArray(modelArr)) {

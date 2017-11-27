@@ -389,6 +389,12 @@ class DictType extends BaseType {
     }
 }
 
+class UniformDict extends DictType {
+    getPropertyConverterFn() {
+        return 'convertUniformDict';
+    }
+}
+
 class FunctionType extends BaseType {
     constructor(fn) {
         super();
@@ -562,6 +568,7 @@ module.exports = {
     Array: ArrayType,
     ArrayBuffer: ArrayBufferType,
     Dict: DictType,
+    UniformDict: UniformDict,
     Function: FunctionType,
     Vector2: Vector2,
     Vector3: Vector3,
