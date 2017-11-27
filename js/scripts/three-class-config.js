@@ -857,7 +857,7 @@ module.exports = {
         relativePath: './materials/ShaderMaterial',
         superClass: 'Material',
         properties: {
-            uniforms:           new Types.Dict(),
+            uniforms:           new Types.UniformDict(),
             clipping:           new Types.Bool(false),
             extensions:         new Types.Dict(),
             fog:                new Types.Bool(false),
