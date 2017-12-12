@@ -7,6 +7,8 @@ from .BufferAttribute_autogen import BufferAttribute as BaseBufferAttribute
 @register
 class BufferAttribute(BaseBufferAttribute):
 
+    _previewable = False
+
     def __init__(self, array=None, normalized=True, **kwargs):
         if array is not None:
             # Only include array in kwargs if supplied
@@ -16,12 +18,3 @@ class BufferAttribute(BaseBufferAttribute):
         kwargs['normalized'] = normalized
         # NOTE: skip init of direct parent class on purpose:
         super(BaseBufferAttribute, self).__init__(**kwargs)
-
-    def _ipython_display_(self, **kwargs):
-        # Preview widget doesn't make any sense for attributes
-        from IPython.display import display
-        data = {
-            'text/plain': repr(self),
-        }
-        display(data, raw=True)
-        self._handle_displayed(**kwargs)

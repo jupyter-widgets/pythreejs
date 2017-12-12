@@ -18,9 +18,7 @@ class AnimationAction(AnimationActionBase, DOMWidget):
     _view_module = Unicode(npm_pkg_name).tag(sync=True)
     _view_module_version = Unicode(EXTENSION_VERSION).tag(sync=True)
 
+    _previewable = False
+
     # Normally an int, but can also be inf:
     repititions = Union([CInt(), CFloat()], default_value=float('inf'), allow_none=False).tag(sync=True)
-
-    # Override default super MRO resolution (this is a mixin):
-    def _ipython_display_(self, **kwargs):
-        return Widget._ipython_display_(self, **kwargs)

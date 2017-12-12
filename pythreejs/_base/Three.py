@@ -11,6 +11,8 @@ class ThreeWidget(Widget):
     _model_module = Unicode(npm_pkg_name).tag(sync=True)
     _model_module_version = Unicode(EXTENSION_VERSION).tag(sync=True)
 
+    _previewable = True
+
     def __init__(self, **kwargs):
         super(ThreeWidget, self).__init__(**kwargs)
         self.on_msg(self._on_potential_ret_val)
@@ -38,6 +40,9 @@ class ThreeWidget(Widget):
         self.log.info('%s() -> %s' % (method_name, ret_val))
 
     def _ipython_display_(self, **kwargs):
-        from IPython.display import display
-        from .renderable import Preview
-        return display(Preview(self), **kwargs)
+        if self._previewable:
+            from IPython.display import display
+            from .renderable import Preview
+            return display(Preview(self), **kwargs)
+        else:
+            return super(ThreeWidget, self)._ipython_display_(**kwargs)
