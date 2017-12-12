@@ -465,7 +465,6 @@ module.exports = {
             shadow:      new Types.InitializedThreeType('LightShadow', {nullable: false}),
         },
         constructorArgs: [ 'color', 'intensity' ],
-        propsDefinedByThree: [ 'target', 'shadow' ]
     },
     DirectionalLightShadow: {
         relativePath: './lights/DirectionalLightShadow',
@@ -497,7 +496,6 @@ module.exports = {
             radius:     new Types.Float(1)
         },
         constructorArgs: [ 'camera' ],
-        propsDefinedByThree: [ 'camera' ],
     },
     PointLight: {
         relativePath: './lights/PointLight',
@@ -509,7 +507,6 @@ module.exports = {
             shadow:   new Types.InitializedThreeType('LightShadow', {nullable: false}),
         },
         constructorArgs: [ 'color', 'intensity', 'distance', 'decay' ],
-        propsDefinedByThree: [ 'shadow' ],
     },
     RectAreaLight: {
         relativePath: './lights/RectAreaLight',
@@ -527,7 +524,6 @@ module.exports = {
             shadow:   new Types.InitializedThreeType('LightShadow', {nullable: false}),
         },
         constructorArgs: [ 'color', 'intensity', 'distance', 'angle', 'penumbra', 'decay' ],
-        propsDefinedByThree: [ 'target', 'shadow' ]
     },
     SpotLightShadow: {
         relativePath: './lights/SpotLightShadow',
