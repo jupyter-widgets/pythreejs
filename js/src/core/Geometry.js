@@ -24,7 +24,7 @@ var GeometryModel = AutogenGeometryModel.extend({
                     'morphNormals', 'skinWeights', 'skinIndices', 'lineDistances',
                 ].forEach(function(key) {
                     this.props_created_by_three[key] = true;
-                });
+                }, this);
                 this.syncToModel();
                 this.props_created_by_three = old_three;
                 return result;
