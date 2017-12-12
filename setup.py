@@ -5,7 +5,6 @@ import os
 import sys
 
 from setupbase import (
-    setup,
     log,
     create_cmdclass,
     install_npm,
@@ -13,6 +12,8 @@ from setupbase import (
     ensure_targets,
     get_version,
 )
+
+from setuptools import setup
 
 
 log.set_verbosity(log.DEBUG)
@@ -26,12 +27,13 @@ name = 'pythreejs'
 version = get_version(os.path.join(here, name, '_version.py'))
 
 
-cmdclass = create_cmdclass('js',
+cmdclass = create_cmdclass(
+    'js',
     data_files_spec=[
-        ('share/jupyter/nbextensions/jupyter-threejs', [
-            name + '/static/*.js',
-            name + '/static/*.js.map',
-        ]),
+        ('share/jupyter/nbextensions/jupyter-threejs',
+         name, 'static/*.js'),
+        ('share/jupyter/nbextensions/jupyter-threejs',
+         name, 'static/*.js.map'),
     ],
 )
 cmdclass['js'] = combine_commands(
