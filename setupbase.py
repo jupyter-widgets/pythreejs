@@ -26,9 +26,9 @@ import sys
 if os.path.exists('MANIFEST'): os.remove('MANIFEST')
 
 
-from distutils.cmd import Command
-from distutils.command.build_py import build_py
-from distutils.command.sdist import sdist
+from setuptools import Command
+from setuptools.command.build_py import build_py
+from setuptools.command.sdist import sdist
 from distutils import log
 
 from setuptools.command.develop import develop
