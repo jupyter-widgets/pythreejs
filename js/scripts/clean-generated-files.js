@@ -69,12 +69,17 @@ function cleanGeneratedFilesAsync() {
     var pyPromise = rmFileGlobAsync('../pythreejs/**/*_autogen.py');
     var pyIndexPromise = rmFileGlobAsync('../pythreejs/**/__init__.py');
 
+    var docPromise = rmFileGlobAsync('../docs/source/**/*_autogen.rst');
+    var docIndexPromise = rmFileGlobAsync('../docs/source/api/**/index.rst');
+
     return Promise.all([
         jsPromise,
         jsonPromise,
         jsIndexPromise,
         pyPromise,
         pyIndexPromise,
+        docPromise,
+        docIndexPromise,
     ]);
 }
 

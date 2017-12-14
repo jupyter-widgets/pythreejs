@@ -31,15 +31,16 @@ module.exports = [
 
     },
     {
-        // embeddable jupyter-threejs bundle
+        // embeddable jupyter-threejs bundle (e.g. for docs)
         entry: './src/embed.js',
         output: {
             filename: 'index.js',
             path: path.resolve(__dirname, 'dist'),
+            library: "jupyter-threejs",
             libraryTarget: 'amd'
         },
         devtool: 'source-map',
-        externals: externals,
+        externals: ['@jupyter-widgets/base'],
         resolve: {
             extensions: [ ".autogen.js", ".js" ]
         },

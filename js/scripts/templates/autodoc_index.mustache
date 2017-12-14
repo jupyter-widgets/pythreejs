@@ -1,0 +1,36 @@
+
+{{#if top_level}}
+
+=============
+API Reference
+=============
+
+The pythreejs API attempts to mimic `the three.js API`_ as closely as possible.
+This API reference therefore does not attempt to explain the purpose of any
+forwarded objects or attributes, but can  still be useful for:
+
+- The trait signatures of various properties.
+- Classes, properties and methods custom to pythreejs.
+- Variations from the three.js API, e.g. for :py:class:`~pythreejs.BufferAttribute`.
+
+.. _`the three.js API`: https://threejs.org/docs/
+
+
+.. automodule:: pythreejs
+    :members:
+    :undoc-members:
+
+{{else}}
+
+========================================================
+{{ moduleName }}
+========================================================
+
+{{/if}}
+
+.. toctree::
+    :maxdepth: 10
+
+    {{#each submodules as |module|}}
+    {{ module }}
+    {{/each}}

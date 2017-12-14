@@ -15,7 +15,7 @@
     "autogen:shaders": "node ./scripts/generate-shader-utils.js",
     "autogen:wrappers": "node ./scripts/generate-wrappers.js",
     "autogen": "npm run autogen:shaders && npm run autogen:wrappers",
-    "build": "webpack && node ./scripts/copy-three.js",
+    "build": "webpack && node ./scripts/copy-files.js",
     "prepublish": "npm run autogen && npm run build"
   },
   "devDependencies": {

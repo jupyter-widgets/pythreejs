@@ -1,0 +1,32 @@
+
+.. py:currentmodule:: pythreejs
+
+{{ className }}
+====================================================
+
+.. Use autoclass to fill any memebers not manually specified.
+   This ensures it picks up any members in overridden classes.
+
+.. autohastraits:: {{ className }}({{#unless constructor.hasParameters}}{{#each constructor.args as |arg|}}{{{ arg.name }}}{{#if arg.prop.defaultJson}}={{{ arg.prop.defaultJson }}}{{/if}}, {{/each}}{{/unless}})
+    :members:
+    :undoc-members:
+
+    {{#if hasOverride}}
+    This widget has some manual overrides on the Python side.
+    {{/if}}
+
+    {{#if superClass.className }}
+    Inherits :py:class:`~pythreejs.{{ superClass.className }}`.
+    {{/if}}
+
+    Three.js docs: {{ threejs_docs_url }}
+
+
+    {{#each properties as |prop propName|}}
+    .. py:attribute:: {{ propName }}
+
+        .. sourcecode:: python
+
+            {{{indent prop.trait_declaration '        '}}}
+
+    {{/each}}

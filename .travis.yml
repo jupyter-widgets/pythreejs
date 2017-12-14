@@ -1,9 +1,17 @@
 language: python
 python:
+  - 3.6
   - 3.5
   - 3.4
   - 2.7
 sudo: false
+env:
+  matrix:
+    - GROUP=python
+matrix:
+  include:
+    - python: 3.5
+      env: GROUP=docs
 cache:
   pip: true
   directories:
@@ -12,7 +20,16 @@ before_install:
   - pip install -U pip setuptools
   - nvm install 6
 install:
-  - pip install --upgrade -e ".[test, examples]"
+  - pip install --upgrade -e ".[test, examples, docs]"
 script:
-  - py.test -l --nbval-lax --current-env examples
-  - python -m pytest_check_links
+  - if [[ $GROUP == python ]]; then
+      py.test -l --nbval-lax --current-env examples;
+    elif [[ $GROUP == docs ]]; then
+      EXIT_STATUS=0
+      cd docs
+      make html || EXIT_STATUS=$?
+      make linkcheck || EXIT_STATUS=$?
+      cd ..
+      python -m pytest_check_links || EXIT_STATUS=$?
+      exit $EXIT_STATUS;
+    fi

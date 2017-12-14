@@ -124,6 +124,8 @@ var ThreeModel = widgets.WidgetModel.extend({
         this.property_converters = {};
         this.property_assigners = {};
         this.property_mappers = {};
+
+        this.initialized_from_three = {};
     },
 
     setupListeners: function() {
@@ -183,6 +185,7 @@ var ThreeModel = widgets.WidgetModel.extend({
 
         // Return promise for their creation
         return Promise.all(_.map(uninit, function(propName) {
+            this.initialized_from_three[propName] = true;
             var obj = this.obj[propName];
             // First, we need to figure out which model constructor to use
             var ctorName = obj.constructor.name + 'Model';
@@ -369,7 +372,11 @@ var ThreeModel = widgets.WidgetModel.extend({
 
         _.each(this.property_converters, function(converterName, propName) {
             if (!syncAllProps && !(propName in this.props_created_by_three)) {
-                return;
+                if (this.initialized_from_three[propName]) {
+                    delete this.initialized_from_three[propName];
+                } else {
+                    return;
+                }
             }
 
             if (!converterName) {
