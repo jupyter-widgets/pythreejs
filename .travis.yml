@@ -23,7 +23,7 @@ install:
   - pip install --upgrade -e ".[test, examples, docs]"
 script:
   - if [[ $GROUP == python ]]; then
-      py.test -l --nbval-lax --current-env examples
+      py.test -l --nbval-lax --current-env examples;
     elif [[ $GROUP == docs ]]; then
       EXIT_STATUS=0
       cd docs
@@ -31,5 +31,5 @@ script:
       make linkcheck || EXIT_STATUS=$?
       cd ..
       python -m pytest_check_links || EXIT_STATUS=$?
-      exit $EXIT_STATUS
+      exit $EXIT_STATUS;
     fi
