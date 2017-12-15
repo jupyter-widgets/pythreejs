@@ -58,7 +58,7 @@ var PreviewView = RenderableView.extend({
 
         if (obj.isObject3D) {
 
-            this.log('render Object3D');
+            this.debug('render Object3D');
             // Use a clone to not change `parent` attribute
             this.scene.add(obj.clone());
 
@@ -161,7 +161,7 @@ var PreviewView = RenderableView.extend({
 
     setupControls: function() {
         // Allow user to inspect object with mouse/scrollwheel
-        this.log('setting up controls');
+        this.debug('setting up controls');
         var control = new OrbitControls(this.camera, this.renderer.domElement);
         control.target.set(0, 0, 0);
         control.update();
@@ -195,7 +195,7 @@ var PreviewView = RenderableView.extend({
     },
 
     renderScene: function() {
-        this.log('renderScene');
+        this.debug('renderScene');
 
         if (this.isFrozen) {
             this.unfreeze();
