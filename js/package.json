@@ -4,7 +4,7 @@
   "description": "jupyter - threejs bridge",
   "author": "Jupyter-Threejs development team",
   "license": "BSD-3-Clause",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/jovyan/pythreejs.git"

@@ -15,7 +15,7 @@ const docStaticDir = path.resolve(baseDir, '..', 'docs', 'source', '_static');
 
 function copyThree() {
     return fse.copy(
-        path.resolve(threeBuildDir, 'three.js'),
+        path.resolve(threeBuildDir, 'three.min.js'),
         path.resolve(staticDir, 'three.js')
     ).then(function() {
         console.log('Copied three.js to static folder');
@@ -31,10 +31,20 @@ function copyBundleToDocs() {
     });
 }
 
+function copyThreeToDocs() {
+    return fse.copy(
+        path.resolve(threeBuildDir, 'three.min.js'),
+        path.resolve(docStaticDir, 'three.js')
+    ).then(function() {
+        console.log('Copied three.js to docs folder');
+    });
+}
+
 if (require.main === module) {
     // This script copies files after a build
     Promise.all([
         copyThree(),
         copyBundleToDocs(),
+        copyThreeToDocs(),
     ]);
 }

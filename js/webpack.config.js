@@ -40,7 +40,7 @@ module.exports = [
             libraryTarget: 'amd'
         },
         devtool: 'source-map',
-        externals: ['@jupyter-widgets/base'],
+        externals: externals,
         resolve: {
             extensions: [ ".autogen.js", ".js" ]
         },
