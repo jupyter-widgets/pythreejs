@@ -19,18 +19,18 @@
     "prepublish": "npm run autogen && npm run build"
   },
   "devDependencies": {
-    "eslint": "^4.11.0",
-    "fs-extra": "^4.0.2",
+    "eslint": "^4.13.1",
+    "fs-extra": "^5.0.0",
     "glob": "^7.1.2",
     "handlebars": "^4.0.11",
     "rimraf": "^2.6.2",
-    "webpack": "^3.8.1"
+    "webpack": "^3.10.0"
   },
   "dependencies": {
-    "@jupyter-widgets/base": "^1.1.4",
+    "@jupyter-widgets/base": "^1.1.5",
     "bluebird": "^3.5.1",
     "jupyter-dataserializers": "^1.0.0",
-    "three": "^0.87.1",
+    "three": "^0.88.0",
     "underscore": "^1.8.3"
   }
 }
