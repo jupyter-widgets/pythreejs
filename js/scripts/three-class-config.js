@@ -443,9 +443,6 @@ module.exports = {
     Uniform: {
         relativePath: './core/Uniform',
     },
-    CurveUtils: {
-        relativePath: './extras/CurveUtils',
-    },
     SceneUtils: {
         relativePath: './extras/SceneUtils',
     },
@@ -1164,6 +1161,7 @@ module.exports = {
             unpackAlignment:  new Types.Int(4), // from three docs: valid values: 1, 2, 4, 8 (see http://www.khronos.org/opengles/sdk/docs/man/xhtml/glPixelStorei.xml)
             encoding:         new Types.Enum('TextureEncodings', 'LinearEncoding'),
             version:          new Types.Int(0),
+            rotation:         new Types.Float(0),
         },
         // As the image property is not exposed, we don't define constructorArgs.
         // The image property is hidden, as it does not have a good corresponding python type (yet)
@@ -1325,9 +1323,9 @@ module.exports = {
         superClass: 'BaseBufferGeometry',
         constructorArgs: [ 'width', 'height', 'depth', 'widthSegments', 'heightSegments', 'depthSegments' ],
         properties: {
-            width:          new Types.Float(10.0),
-            height:         new Types.Float(10.0),
-            depth:          new Types.Float(10.0),
+            width:          new Types.Float(1.0),
+            height:         new Types.Float(1.0),
+            depth:          new Types.Float(1.0),
             widthSegments:  new Types.Int(1),
             heightSegments: new Types.Int(1),
             depthSegments:  new Types.Int(1),
@@ -1338,9 +1336,9 @@ module.exports = {
         superClass: 'BaseGeometry',
         constructorArgs: [ 'width', 'height', 'depth', 'widthSegments', 'heightSegments', 'depthSegments' ],
         properties: {
-            width:          new Types.Float(10.0),
-            height:         new Types.Float(10.0),
-            depth:          new Types.Float(10.0),
+            width:          new Types.Float(1.0),
+            height:         new Types.Float(1.0),
+            depth:          new Types.Float(1.0),
             widthSegments:  new Types.Int(1),
             heightSegments: new Types.Int(1),
             depthSegments:  new Types.Int(1),
@@ -1351,7 +1349,7 @@ module.exports = {
         superClass: 'BaseBufferGeometry',
         constructorArgs: [ 'radius', 'segments', 'thetaStart', 'thetaLength' ],
         properties: {
-            radius:      new Types.Float(50.0),
+            radius:      new Types.Float(1.0),
             segments:    new Types.Int(8, {minValue: 3}),
             thetaStart:  new Types.Float(0.0),
             thetaLength: new Types.Float(Math.PI * 2.0),
@@ -1362,7 +1360,7 @@ module.exports = {
         superClass: 'BaseGeometry',
         constructorArgs: [ 'radius', 'segments', 'thetaStart', 'thetaLength' ],
         properties: {
-            radius:      new Types.Float(50.0),
+            radius:      new Types.Float(1.0),
             segments:    new Types.Int(8, {minValue: 3}),
             thetaStart:  new Types.Float(0.0),
             thetaLength: new Types.Float(Math.PI * 2.0),
@@ -1387,9 +1385,9 @@ module.exports = {
         superClass: 'BaseBufferGeometry',
         constructorArgs: [ 'radiusTop', 'radiusBottom', 'height', 'radiusSegments', 'heightSegments', 'openEnded', 'thetaStart', 'thetaLength' ],
         properties: {
-            radiusTop:      new Types.Float(20.0),
-            radiusBottom:   new Types.Float(20.0),
-            height:         new Types.Float(100.0),
+            radiusTop:      new Types.Float(1.0),
+            radiusBottom:   new Types.Float(1.0),
+            height:         new Types.Float(1.0),
             radiusSegments: new Types.Int(8),
             heightSegments: new Types.Int(1),
             openEnded:      new Types.Bool(false),
@@ -1402,9 +1400,9 @@ module.exports = {
         superClass: 'BaseGeometry',
         constructorArgs: [ 'radiusTop', 'radiusBottom', 'height', 'radiusSegments', 'heightSegments', 'openEnded', 'thetaStart', 'thetaLength' ],
         properties: {
-            radiusTop:      new Types.Float(20.0),
-            radiusBottom:   new Types.Float(20.0),
-            height:         new Types.Float(100.0),
+            radiusTop:      new Types.Float(1.0),
+            radiusBottom:   new Types.Float(1.0),
+            height:         new Types.Float(1.0),
             radiusSegments: new Types.Int(8),
             heightSegments: new Types.Int(1),
             openEnded:      new Types.Bool(false),
@@ -1486,8 +1484,8 @@ module.exports = {
         superClass: 'BaseBufferGeometry',
         constructorArgs: [ 'width', 'height', 'widthSegments', 'heightSegments' ],
         properties: {
-            width:          new Types.Float(10.0), // NOTE: default not specified in three.js
-            height:         new Types.Float(10.0), // NOTE: default not specified in three.js
+            width:          new Types.Float(1.0),
+            height:         new Types.Float(1.0),
             widthSegments:  new Types.Int(1),
             heightSegments: new Types.Int(1),
         },
@@ -1497,8 +1495,8 @@ module.exports = {
         superClass: 'BaseGeometry',
         constructorArgs: [ 'width', 'height', 'widthSegments', 'heightSegments' ],
         properties: {
-            width:          new Types.Float(10.0), // NOTE: default not specified in three.js
-            height:         new Types.Float(10.0), // NOTE: default not specified in three.js
+            width:          new Types.Float(1.0),
+            height:         new Types.Float(1.0),
             widthSegments:  new Types.Int(1),
             heightSegments: new Types.Int(1),
         },
@@ -1520,8 +1518,8 @@ module.exports = {
         superClass: 'BaseBufferGeometry',
         constructorArgs: [ 'innerRadius', 'outerRadius', 'thetaSegments', 'phiSegments', 'thetaStart', 'thetaLength' ],
         properties: {
-            innerRadius:   new Types.Float(0.0), // Docs: "Default is 0, but it doesn't work right when innerRadius is set to 0.
-            outerRadius:   new Types.Float(50.0),
+            innerRadius:   new Types.Float(0.5),
+            outerRadius:   new Types.Float(1.0),
             thetaSegments: new Types.Int(8, {minValue: 3}),
             phiSegments:   new Types.Int(8, {minValue: 1}),
             thetaStart:    new Types.Float(0),
@@ -1533,8 +1531,8 @@ module.exports = {
         superClass: 'BaseGeometry',
         constructorArgs: [ 'innerRadius', 'outerRadius', 'thetaSegments', 'phiSegments', 'thetaStart', 'thetaLength' ],
         properties: {
-            innerRadius:   new Types.Float(0.0), // Docs: "Default is 0, but it doesn't work right when innerRadius is set to 0.
-            outerRadius:   new Types.Float(50.0),
+            innerRadius:   new Types.Float(0.5),
+            outerRadius:   new Types.Float(1.0),
             thetaSegments: new Types.Int(8, {minValue: 3}),
             phiSegments:   new Types.Int(8, {minValue: 1}),
             thetaStart:    new Types.Float(0),
@@ -1558,7 +1556,7 @@ module.exports = {
         superClass: 'BaseBufferGeometry',
         constructorArgs: [ 'radius', 'widthSegments', 'heightSegments', 'phiStart', 'phiLength', 'thetaStart', 'thetaLength' ],
         properties: {
-            radius:         new Types.Float(50.0),
+            radius:         new Types.Float(1.0),
             widthSegments:  new Types.Int(8),
             heightSegments: new Types.Int(6),
             phiStart:       new Types.Float(0),
@@ -1572,7 +1570,7 @@ module.exports = {
         superClass: 'BaseGeometry',
         constructorArgs: [ 'radius', 'widthSegments', 'heightSegments', 'phiStart', 'phiLength', 'thetaStart', 'thetaLength' ],
         properties: {
-            radius:         new Types.Float(50.0),
+            radius:         new Types.Float(1.0),
             widthSegments:  new Types.Int(8),
             heightSegments: new Types.Int(6),
             phiStart:       new Types.Float(0),
@@ -1600,8 +1598,8 @@ module.exports = {
         superClass: 'BaseBufferGeometry',
         constructorArgs: [ 'radius', 'tube', 'radialSegments', 'tubularSegments', 'arc' ],
         properties: {
-            radius:          new Types.Float(100),
-            tube:            new Types.Float(40),
+            radius:          new Types.Float(1.0),
+            tube:            new Types.Float(0.4),
             radialSegments:  new Types.Int(8),
             tubularSegments: new Types.Int(6),
             arc:             new Types.Float(Math.PI * 2.0),
@@ -1612,8 +1610,8 @@ module.exports = {
         superClass: 'BaseGeometry',
         constructorArgs: [ 'radius', 'tube', 'radialSegments', 'tubularSegments', 'arc' ],
         properties: {
-            radius:          new Types.Float(100),
-            tube:            new Types.Float(40),
+            radius:          new Types.Float(1.0),
+            tube:            new Types.Float(0.4),
             radialSegments:  new Types.Int(8),
             tubularSegments: new Types.Int(6),
             arc:             new Types.Float(Math.PI * 2.0),
@@ -1624,8 +1622,8 @@ module.exports = {
         superClass: 'BaseBufferGeometry',
         constructorArgs: [ 'radius', 'tube', 'tubularSegments', 'radialSegments', 'p', 'q' ],
         properties: {
-            radius:          new Types.Float(100),
-            tube:            new Types.Float(40),
+            radius:          new Types.Float(1.0),
+            tube:            new Types.Float(0.4),
             tubularSegments: new Types.Int(64),
             radialSegments:  new Types.Int(8),
             p:               new Types.Int(2),
@@ -1637,8 +1635,8 @@ module.exports = {
         superClass: 'BaseGeometry',
         constructorArgs: [ 'radius', 'tube', 'tubularSegments', 'radialSegments', 'p', 'q' ],
         properties: {
-            radius:          new Types.Float(100),
-            tube:            new Types.Float(40),
+            radius:          new Types.Float(1),
+            tube:            new Types.Float(0.4),
             tubularSegments: new Types.Int(64),
             radialSegments:  new Types.Int(8),
             p:               new Types.Int(2),
@@ -1677,8 +1675,8 @@ module.exports = {
             headWidth: new Types.Float(null, {nullable: true}),
         },
     },
-    AxisHelper: {
-        relativePath: './helpers/AxisHelper',
+    AxesHelper: {
+        relativePath: './helpers/AxesHelper',
         superClass: 'Object3D',  // Should really be LineSegments, but we don't want to sync geometry/material
         properties: {
             size:       new Types.Float(1.0),
