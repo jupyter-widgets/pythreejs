@@ -34,6 +34,8 @@ cmdclass = create_cmdclass(
          name, 'static/*.js'),
         ('share/jupyter/nbextensions/jupyter-threejs',
          name, 'static/*.js.map'),
+        ('share/jupyter/lab/extensions',
+         'js/lab-dist', 'jupyter-threejs-*.tgz'),
     ],
 )
 cmdclass['js'] = combine_commands(
@@ -41,6 +43,7 @@ cmdclass['js'] = combine_commands(
         path=os.path.join(here, 'js'),
         build_dir=os.path.join(here, name, 'static'),
         source_dir=os.path.join(here, 'js'),
+        build_cmd='build:all'
     ),
     ensure_targets([
         name + '/static/extension.js',
