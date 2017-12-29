@@ -133,7 +133,7 @@ function getinfo(o) {
             faceNormal: [o.face.normal.x, o.face.normal.y, o.face.normal.z],
             faceIndex: o.faceIndex !== undefined && o.faceIndex !== null ? o.faceIndex : null,
             object: o.object.ipymodel,
-            uv: [o.uv.x, o.uv.y] || [0, 0],
+            uv: o.uv ? [o.uv.x, o.uv.y] : [0, 0],
         };
     }
     return {
