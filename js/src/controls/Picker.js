@@ -113,12 +113,12 @@ function getinfo(o) {
     if (o !== null) {
         var v;
         var verts;
-        if (o.object.geometry.isBufferGeometry) {
+        if (o.face && o.object.geometry.isBufferGeometry) {
             v = o.object.geometry.attributes.position.array;
             verts = [[v[o.face.a], v[o.face.a] + 1, v[o.face.a] + 2],
                      [v[o.face.b], v[o.face.b] + 1, v[o.face.b] + 2],
                      [v[o.face.c], v[o.face.c] + 1, v[o.face.c] + 2]];
-        } else {
+        } else if (o.face) {
             v = o.object.geometry.vertices;
             verts = [[v[o.face.a].x, v[o.face.a].y, v[o.face.a].z],
                      [v[o.face.b].x, v[o.face.b].y, v[o.face.b].z],
@@ -127,10 +127,10 @@ function getinfo(o) {
         return {
             point: [o.point.x, o.point.y, o.point.z],
             distance: o.distance,
-            face: [o.face.a, o.face.b, o.face.c],
-            faceVertices: verts,
+            face: o.face ? [o.face.a, o.face.b, o.face.c] : [0, 0, 0],
+            faceVertices: verts || [],
             indices: o.indices || [],
-            faceNormal: [o.face.normal.x, o.face.normal.y, o.face.normal.z],
+            faceNormal: o.face ? [o.face.normal.x, o.face.normal.y, o.face.normal.z] : [0, 0, 0],
             faceIndex: o.faceIndex !== undefined && o.faceIndex !== null ? o.faceIndex : null,
             object: o.object.ipymodel,
             uv: o.uv ? [o.uv.x, o.uv.y] : [0, 0],
