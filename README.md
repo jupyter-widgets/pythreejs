@@ -47,11 +47,14 @@ The relevant commands while working on the repository are included below. These 
 # To perform initial dev setup, run:
 pip install -e .
 
+# All commands below assume to be in the ./js/ directory
+cd ./js/
+
 # To re-generate autogen files, run:
 npm run autogen
 
 # To build and install distribution files, run:
-npm run build
+npm run build:all
 jupyter nbextension install --py --symlink --sys-prefix pythreejs
 
 # To clean out generated files, run:
