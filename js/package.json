@@ -18,7 +18,7 @@
     "build:bundles": "webpack && node ./scripts/copy-files.js",
     "build:labextension": "rimraf lab-dist && mkdirp lab-dist && cd lab-dist && npm pack ..",
     "build:all": "npm run build:labextension",
-    "prepare": "npm run autogen && npm run build:bundles"
+    "prepublish": "npm run autogen && npm run build:bundles"
   },
   "devDependencies": {
     "eslint": "^4.13.1",
