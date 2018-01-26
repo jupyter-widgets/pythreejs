@@ -35,6 +35,15 @@
     "three": "^0.88.0",
     "underscore": "^1.8.3"
   },
+  "keywords": [
+    "jupyterlab",
+    "extension",
+    "jupyterlab extension",
+    "notebook",
+    "jupyter",
+    "widgets",
+    "three"
+  ],
   "jupyterlab": {
     "extension": "src/jupyterlab-plugin"
   }
