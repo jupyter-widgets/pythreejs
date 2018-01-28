@@ -1,0 +1,44 @@
+#ifndef XTHREEJS_CONFIG_HPP
+#define XTHREEJS_CONFIG_HPP
+
+#ifdef _WIN32
+    #ifdef XTHREEJS_EXPORTS
+        #define XTHREEJS_API __declspec(dllexport)
+    #else
+        #define XTHREEJS_API __declspec(dllimport)
+    #endif
+#else
+    #define XTHREEJS_API
+#endif
+
+// Project version
+#define XTHREEJS_VERSION_MAJOR 0
+#define XTHREEJS_VERSION_MINOR 0
+#define XTHREEJS_VERSION_PATCH 1
+
+// Binary version
+#define XTHREEJS_BINARY_CURRENT 1
+#define XTHREEJS_BINARY_REVISION 0
+#define XTHREEJS_BINARY_AGE 1
+
+// Semver requirement for threejs
+#define XTHREEJS_PROTOCOL_VERSION_MAJOR 1
+#define XTHREEJS_PROTOCOL_VERSION_MINOR 1
+#define XTHREEJS_PROTOCOL_VERSION_PATCH 0
+
+// Composing the protocol version string from major, minor and patch
+#define XTHREEJS_CONCATENATE(A, B) XTHREEJS_CONCATENATE_IMPL(A, B)
+#define XTHREEJS_CONCATENATE_IMPL(A, B) A##B
+#define XTHREEJS_STRINGIFY(a) XTHREEJS_STRINGIFY_IMPL(a)
+#define XTHREEJS_STRINGIFY_IMPL(a) #a
+
+#define XTHREEJS_PROTOCOL_VERSION XTHREEJS_STRINGIFY(XTHREEJS_CONCATENATE(XTHREEJS_PROTOCOL_VERSION_MAJOR,   \
+                              XTHREEJS_CONCATENATE(.,XTHREEJS_CONCATENATE(XTHREEJS_PROTOCOL_VERSION_MINOR,   \
+                                                   XTHREEJS_CONCATENATE(.,XTHREEJS_PROTOCOL_VERSION_PATCH)))))
+
+#ifdef __CLING__
+#pragma cling add_library_path(@XTHREEJS_INSTALL_LIBRARY_DIR@)
+#pragma cling load("libxthreejs")
+#endif
+
+#endif
