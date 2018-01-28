@@ -2,11 +2,16 @@
 
 const WIDGET_SERIALIZER = '{ deserialize: widgets.unpack_models }';
 
+function camelCaseToUnderscore (str) {
+    return str.replace(/([a-zA-Z])(?=[A-Z])/g, '$1_').toLowerCase()
+}
+
 class BaseType {
     constructor(options) {
         options = options || {};
         this.options = options;
         this.nullable = options.nullable === true;
+        this.is_defined = false;
     }
     getJSPropertyValue() {
         return JSON.stringify(this.defaultValue);
@@ -14,6 +19,11 @@ class BaseType {
     getPropArrayName() {
         return null;
     }
+
+    isBinaryBuffer() {
+        return false;
+    }
+
     getPythonDefaultValue() {
         if (this.defaultValue === false) { return 'False'; }
         if (this.defaultValue === true) { return 'True'; }
@@ -24,6 +34,70 @@ class BaseType {
         if (!this.defaultValue) { return 'None'; }
 
         return JSON.stringify(this.defaultValue);
+    }
+    getCppDefaultValue() {
+        if (this.defaultValue instanceof Array){
+            let RE_COLOR = /\#/;
+            let to_str = this.defaultValue.toString();
+            if (RE_COLOR.test(to_str)){
+                return '{"' + to_str + '"}';
+            }
+            return '{' + to_str + '}';
+        }
+        if (typeof this.defaultValue === 'function'){
+            return 'R"(' + this.defaultValue.toString() + ')"';
+        }
+
+        if (this.defaultValue === false) { return 'false'; }
+        if (this.defaultValue === true) { return 'true'; }
+        if (this.defaultValue === 0) { return '0'; }
+        if (this.defaultValue === '') { return '""'; }
+        if (this.defaultValue === Infinity) { return "1e15"; }//std::numeric_limits<double>::infinity()"; }
+        if (this.defaultValue === -Infinity) { return "-1e15"; }//-std::numeric_limits<double>::infinity()"; }
+        if (!this.defaultValue) { return 'None'; }
+        
+        return JSON.stringify(this.defaultValue);
+    }
+    _getCppProperty(propName, typeName, enumTypeName) {
+        const nullableStr = this.nullable ? `xtl::xoptional<${typeName}>` : typeName;
+        const defaultValue = this.getCppDefaultValue();
+        let defaultValueStr = ''; 
+
+        if (defaultValue != 'None') {
+            if (this.defaultValue instanceof Array) {
+                defaultValueStr = `, ${nullableStr}(${defaultValue})`;
+            }
+            else {
+                defaultValueStr = `, ${defaultValue}`;
+            }
+        }
+
+        if (typeName === '::xeus::xjson' && defaultValue != 'None'){
+            if (defaultValue === '{}') {
+                defaultValueStr = ', ::xeus::xjson::object()';
+            }
+            else {
+                defaultValueStr = `, ::xeus::xjson::parse(R"(${defaultValue})")`;
+            }
+        }
+
+        let enumStr = '';
+        const RE_LIST_OF_STRING = /\[.*\]/;
+        if (enumTypeName) {
+            if (RE_LIST_OF_STRING.test(enumTypeName)) {
+                enumStr = ', XEITHER' + enumTypeName.replace('[', '(').replace(']', ')').replace(/\'/g, '"');
+            }
+            else {
+                enumStr = `, xenums::${enumTypeName}`;
+            }
+        }
+
+        if (this.is_defined) {
+            return `XPROPERTY(${nullableStr}, derived_type, ${propName}${defaultValueStr}${enumStr});`;
+        }
+    }
+    getCppProperty(propName, typeName, enumTypeName) {
+        return 'undefined';
     }
     getPropertyConverterFn() {
         return null;
@@ -79,6 +153,8 @@ class ThreeType extends BaseType {
         this.nullable = options.nullable !== false;
         this.args = options.args;
         this.kwargs = options.kwargs;
+        this.is_defined = true;
+
     }
     getTraitlet() {
         let typeName = this.typeName;
@@ -91,6 +167,9 @@ class ThreeType extends BaseType {
         }
         return genInstanceTraitlet(
             typeName, this.nullable, this.args, this.kwargs, this.getTagParts());
+    }
+    getCppProperty(propName) {
+        return this._getCppProperty(propName, `xw::xholder<xthree_widget>`);
     }
     getPropArrayName() {
         return 'three_properties';
@@ -115,6 +194,10 @@ class ForwardDeclaredThreeType extends ThreeType {
 }
 
 class InitializedThreeType extends ThreeType {
+    constructor(typeName, options={}) {
+        super(typeName, options);
+        this.is_defined = true;
+    }
     getJSPropertyValue() {
         return "'uninitialized'";
     }
@@ -123,6 +206,9 @@ class InitializedThreeType extends ThreeType {
     }
     getTagParts() {
         return super.getTagParts().concat(['**unitialized_serialization']);
+    }
+    getCppDefaultValue() {
+        return 'object3d()';
     }
     getTraitlet() {
         const typeName = this.typeName;
@@ -141,6 +227,12 @@ class InitializedThreeType extends ThreeType {
         ret += this.getTagString();
         return ret;
     }
+    getCppProperty(propName) {
+        //return this._getCppProperty(propName, `xw::xholder<xobject3>`);
+        return this._getCppProperty(propName, `xw::xholder<xthree_widget>`);
+        //return this._getCppProperty(propName, `xw::xholder<x${camelCaseToUnderscore(this.typeName)}>`);
+    }
+
 }
 
 class ThreeTypeArray extends BaseType {
@@ -152,6 +244,7 @@ class ThreeTypeArray extends BaseType {
         this.serializer = WIDGET_SERIALIZER;
         this.nullable = options.nullable !== false;
         this.allow_single = options.allow_single === true;
+        this.is_defined = true;
     }
     getTagParts() {
         return super.getTagParts().concat(['**widget_serialization']);
@@ -172,6 +265,14 @@ class ThreeTypeArray extends BaseType {
         // return 'List(trait=Instance(' + this.typeName + ')).tag(sync=True, **widget_serialization)';
         return baseType + this.getTagString();
     }
+    getCppProperty(propName) {
+        let typeName = this.typeName;
+        if (this.allow_single) {
+            return this._getCppProperty(propName, `xw::xholder<xthree_widget>`);
+        }
+        this.nullable = false;
+        return this._getCppProperty(propName, `std::vector<xw::xholder<xthree_widget>>`);
+    }
     getPropArrayName() {
         return 'three_nested_properties';
     }
@@ -186,6 +287,7 @@ class ThreeTypeDict extends BaseType {
         this.typeName = typeName;
         this.defaultValue = {};
         this.serializer = WIDGET_SERIALIZER;
+        this.is_defined = true;
     }
     getTagParts() {
         return super.getTagParts().concat(['**widget_serialization']);
@@ -202,6 +304,10 @@ class ThreeTypeDict extends BaseType {
         }
         return `Dict(Instance(${this.typeName}))${this.getTagString()}`;
     }
+    getCppProperty(propName) {
+        //this.defaultValue = 'std::map<std::string, xw::xholder<xthree_widget>>{}';
+        return this._getCppProperty(propName, 'dict');
+    }
     getPropArrayName() {
         return 'three_nested_properties';
     }
@@ -215,6 +321,7 @@ class BufferMorphAttributes extends BaseType {
         super(options);
         this.defaultValue = {};
         this.serializer = WIDGET_SERIALIZER;
+        this.is_defined = false;
     }
     getTagParts() {
         return super.getTagParts().concat(['**widget_serialization']);
@@ -225,6 +332,9 @@ class BufferMorphAttributes extends BaseType {
             return `        Instance(${typeName})`;
         });
         return 'Dict(Tuple(Union([\n' + instances.join(',\n') + '\n    ])))' + this.getTagString();
+    }
+    getCppProperty(propName) {
+        return this._getCppProperty(propName, 'dictvec');
     }
     getPropArrayName() {
         return 'three_nested_properties';
@@ -238,10 +348,14 @@ class Bool extends BaseType {
     constructor(defaultValue, options) {
         super(options);
         this.defaultValue = defaultValue;
+        this.is_defined = true;
     }
     getTraitlet() {
         const nullableStr = this.getNullableStr();
         return `Bool(${this.getPythonDefaultValue()}, ${nullableStr})${this.getTagString()}`;
+    }
+    getCppProperty(propName) {
+        return this._getCppProperty(propName, 'bool');
     }
     getPropertyConverterFn() {
         return 'convertBool';
@@ -255,6 +369,7 @@ class Int extends BaseType {
         this.minValue = options.minValue;
         this.maxValue = options.maxValue;
         this.defaultValue = (defaultValue === null || defaultValue === undefined) && !this.nullable ? 0 : defaultValue ;
+        this.is_defined = true;
     }
     getTraitlet() {
         const nullableStr = this.getNullableStr();
@@ -267,7 +382,9 @@ class Int extends BaseType {
         }
         return `CInt(${this.getPythonDefaultValue()}, ${nullableStr}${limits})${this.getTagString()}`;
     }
-
+    getCppProperty(propName) {
+        return this._getCppProperty(propName, 'int');
+    }
 }
 
 class Float extends BaseType {
@@ -277,6 +394,7 @@ class Float extends BaseType {
         this.minValue = options.minValue;
         this.maxValue = options.maxValue;
         this.defaultValue = (defaultValue === null || defaultValue === undefined) && !this.nullable ? 0.0 : defaultValue;
+        this.is_defined = true;
     }
     getTraitlet() {
         const nullableStr = this.getNullableStr();
@@ -289,6 +407,9 @@ class Float extends BaseType {
         }
         return `CFloat(${this.getPythonDefaultValue()}, ${nullableStr}${limits})${this.getTagString()}`;
     }
+    getCppProperty(propName) {
+        return this._getCppProperty(propName, 'double');
+    }
     getPropertyConverterFn() {
         return 'convertFloat';
     }
@@ -299,12 +420,15 @@ class StringType extends BaseType {
     constructor(defaultValue, options) {
         super(options);
         this.defaultValue = defaultValue;
+        this.is_defined = true;
     }
     getTraitlet() {
         const nullableStr = this.getNullableStr();
         return `Unicode(${this.getPythonDefaultValue()}, ${nullableStr})${this.getTagString()}`;
     }
-
+    getCppProperty(propName) {
+        return this._getCppProperty(propName, 'std::string');
+    }
 }
 
 class Enum extends BaseType {
@@ -312,10 +436,14 @@ class Enum extends BaseType {
         super(options);
         this.enumTypeName = enumTypeName;
         this.defaultValue = defaultValue;
+        this.is_defined = true;
     }
     getTraitlet() {
         const nullableStr = this.getNullableStr();
         return `Enum(${this.enumTypeName}, ${this.getPythonDefaultValue()}, ${nullableStr})${this.getTagString()}`;
+    }
+    getCppProperty(propName) {
+        return this._getCppProperty(propName, 'std::string', this.enumTypeName);
     }
     getPropertyConverterFn() {
         return 'convertEnum';
@@ -326,10 +454,14 @@ class Color extends BaseType {
     constructor(defaultValue, options) {
         super(options);
         this.defaultValue = defaultValue || '#ffffff';
+        this.is_defined = true;
     }
     getTraitlet() {
         const nullableStr = this.getNullableStr();
         return `Unicode(${this.getPythonDefaultValue()}, ${nullableStr})${this.getTagString()}`;
+    }
+    getCppProperty(propName) {
+        return this._getCppProperty(propName, 'xw::html_color');
     }
     getPropertyConverterFn() {
         return 'convertColor';
@@ -340,9 +472,13 @@ class ColorArray extends BaseType {
     constructor(defaultValue, options) {
         super(options);
         this.defaultValue = defaultValue || ['#ffffff'];
+        this.is_defined = true;
     }
     getTraitlet() {
         return `List(trait=Unicode(), default_value=${this.getPythonDefaultValue()})${this.getTagString()}`;
+    }
+    getCppProperty(propName) {
+        return this._getCppProperty(propName, 'std::vector<xw::html_color>');
     }
     getPropertyConverterFn() {
         return 'convertColorArray';
@@ -356,9 +492,13 @@ class ArrayType extends BaseType {
     constructor(options) {
         super(options);
         this.defaultValue = [];
+        this.is_defined = true;
     }
     getTraitlet() {
         return `List()${this.getTagString()}`;
+    }
+    getCppProperty(propName) {
+        return this._getCppProperty(propName, 'std::vector<double>');
     }
     getPropertyAssignmentFn() {
         return 'assignArray';
@@ -373,6 +513,7 @@ class ArrayBufferType extends BaseType {
         this.shapeConstraint = shapeConstraint;
         this.defaultValue = null;
         this.serializer = 'dataserializers.data_union_serialization';
+        this.is_defined = true;
     }
     getTraitlet() {
         const args = [];
@@ -385,6 +526,14 @@ class ArrayBufferType extends BaseType {
 
         return `WebGLDataUnion(${args.join(', ')})${this.getTagString()}`;
     }
+    getCppProperty(propName) {
+        return this._getCppProperty(propName, 'webgldataunion<float>');
+    }
+
+    isBinaryBuffer(){
+        return true;
+    }
+
     getPropertyConverterFn() {
         return 'convertArrayBuffer';
     }
@@ -397,10 +546,14 @@ class DictType extends BaseType {
     constructor(defaultValue={}, options) {
         super(options);
         this.defaultValue = defaultValue;
+        this.is_defined = true;
     }
     getTraitlet() {
         const nullableStr = this.getNullableStr();
         return `Dict(default_value=${this.getPythonDefaultValue()}, ${nullableStr})${this.getTagString()}`;
+    }
+    getCppProperty(propName) {
+        return this._getCppProperty(propName, '::xeus::xjson');
     }
     getPropertyAssignmentFn() {
         return 'assignDict';
@@ -417,9 +570,14 @@ class FunctionType extends BaseType {
     constructor(fn, options) {
         super(options);
         this.defaultValue = fn || function() {};
+        this.is_defined = true;
     }
     getTraitlet() {
         return `Unicode('${this.defaultValue.toString()}')${this.getTagString()}`;
+    }
+    getCppProperty(propName) {
+        // FIX: not sure that is what we want
+        return this._getCppProperty(propName, 'std::string');
     }
     getJSPropertyValue() {
         return this.defaultValue.toString();
@@ -433,9 +591,13 @@ class Vector2 extends BaseType {
     constructor(x, y, options) {
         super(options);
         this.defaultValue = [ x||0, y||0 ];
+        this.is_defined = true;
     }
     getTraitlet() {
         return `Vector2(default_value=${JSON.stringify(this.defaultValue)})${this.getTagString()}`;
+    }
+    getCppProperty(propName) {
+        return this._getCppProperty(propName, 'vector2');
     }
     getPropertyConverterFn() {
         return 'convertVector';
@@ -449,9 +611,13 @@ class Vector3 extends BaseType {
     constructor(x, y, z, options) {
         super(options);
         this.defaultValue = [ x||0, y||0, z||0 ];
+        this.is_defined = true;
     }
     getTraitlet() {
         return `Vector3(default_value=${JSON.stringify(this.defaultValue)})${this.getTagString()}`;
+    }
+    getCppProperty(propName) {
+        return this._getCppProperty(propName, 'vector3');
     }
     getPropertyConverterFn() {
         return 'convertVector';
@@ -465,9 +631,13 @@ class Vector4 extends BaseType {
     constructor(x, y, z, w, options) {
         super(options);
         this.defaultValue = [ x||0, y||0, z||0, w||0 ];
+        this.is_defined = true;
     }
     getTraitlet() {
         return `Vector4(default_value=${JSON.stringify(this.defaultValue)})${this.getTagString()}`;
+    }
+    getCppProperty(propName) {
+        return this._getCppProperty(propName, 'vector4');
     }
     getPropertyConverterFn() {
         return 'convertVector';
@@ -481,9 +651,13 @@ class VectorArray extends BaseType {
     constructor(options) {
         super(options);
         this.defaultValue = [];
+        this.is_defined = true;
     }
     getTraitlet() {
         return `List(trait=List())${this.getTagString()}`;
+    }
+    getCppProperty(propName) {
+        return this._getCppProperty(propName, 'std::vector<std::vector<double>>');
     }
     getPropertyConverterFn() {
         return 'convertVectorArray';
@@ -497,9 +671,13 @@ class FaceArray extends BaseType {
     constructor(options) {
         super(options);
         this.defaultValue = [];
+        this.is_defined = true;
     }
     getTraitlet() {
         return `Tuple(trait=Face3())${this.getTagString()}`;
+    }
+    getCppProperty(propName) {
+        return this._getCppProperty(propName, 'std::vector<face3>');
     }
     getPropertyConverterFn() {
         return 'convertFaceArray';
@@ -517,9 +695,13 @@ class Matrix3 extends BaseType {
             0, 1, 0,
             0, 0, 1,
         ];
+        this.is_defined = true;
     }
     getTraitlet() {
         return `Matrix3(default_value=${JSON.stringify(this.defaultValue)})${this.getTagString()}`;
+    }
+    getCppProperty(propName) {
+        return this._getCppProperty(propName, 'matrix3');
     }
     getPropertyConverterFn() {
         return 'convertMatrix';
@@ -538,9 +720,13 @@ class Matrix4 extends BaseType {
             0, 0, 1, 0,
             0, 0, 0, 1
         ];
+        this.is_defined = true;
     }
     getTraitlet() {
         return `Matrix4(default_value=${JSON.stringify(this.defaultValue)})${this.getTagString()}`;
+    }
+    getCppProperty(propName) {
+        return this._getCppProperty(propName, 'matrix4');
     }
     getPropertyConverterFn() {
         return 'convertMatrix';
@@ -554,11 +740,15 @@ class Matrix4 extends BaseType {
 class Euler extends BaseType {
     constructor(options) {
         super(options);
-        this.defaultValue = [0, 0, 0, 'XYZ'];
+        this.defaultValue = [0, 0, 0, '"XYZ"'];
+        this.is_defined = true;
     }
 
     getTraitlet() {
         return `Euler(default_value=${JSON.stringify(this.defaultValue)})${this.getTagString()}`;
+    }
+    getCppProperty(propName) {
+         return this._getCppProperty(propName, 'xthree::euler');
     }
     getPropertyConverterFn() {
         return 'convertEuler';

@@ -13,6 +13,9 @@ const baseDir = path.resolve(scriptDir, '..');
 
 const jsSrcDir = path.resolve(baseDir, 'src/');
 const pySrcDir = path.resolve(baseDir, '..', 'pythreejs');
+const cppSrcDir = path.resolve(baseDir, '..', 'xthreejs/include/xthreejs');
+const cppcppSrcDir = path.resolve(baseDir, '..', 'xthreejs/src');
+const cmakeSrcDir = path.resolve(baseDir, '..', 'xthreejs');
 const docSrcDir = path.resolve(baseDir, '..', 'docs', 'source', 'api');
 const templateDir = path.resolve(scriptDir, 'templates');
 
@@ -97,12 +100,18 @@ function compileTemplate(templateName) {
     }));
 }
 
-const jsWrapperTemplate      = compileTemplate('js_wrapper');
-const jsIndexTemplate        = compileTemplate('js_index');
-const pyWrapperTemplate      = compileTemplate('py_wrapper');
-const pyTopLevelInitTemplate = compileTemplate('py_top_level_init');
-const docTemplate            = compileTemplate('autodoc');
-const docIndexTemplate       = compileTemplate('autodoc_index');
+const jsWrapperTemplate       = compileTemplate('js_wrapper');
+const jsIndexTemplate         = compileTemplate('js_index');
+const pyWrapperTemplate       = compileTemplate('py_wrapper');
+const pyTopLevelInitTemplate  = compileTemplate('py_top_level_init');
+const cppWrapperTemplate      = compileTemplate('cpp_wrapper');
+const cppSrcTemplate          = compileTemplate('cpp_src');
+const headerCppTemplate       = compileTemplate('cppheader_wrapper');
+const cppSrcWrapperTemplate   = compileTemplate('cppsrc_wrapper');
+const headerXthreeCppTemplate = compileTemplate('cppxthreeheader_wrapper');
+const cmakeListsTemplate      = compileTemplate('cmake_wrapper');
+const docTemplate             = compileTemplate('autodoc');
+const docIndexTemplate        = compileTemplate('autodoc_index');
 
 const pathSep = /\\|\//;
 
@@ -237,6 +246,10 @@ function relativePathToPythonImportPath(relativePath) {
     if (!sawFolderToken) { result += '.'; }
 
     return result;
+}
+
+function camelCaseToUnderscore (str) {
+    return str.replace(/([a-zA-Z])(?=[A-Z])/g, '$1_').toLowerCase()
 }
 
 // Execute a function for each match to a glob query
@@ -1081,6 +1094,378 @@ function createTopLevelPythonModuleFile() {
 
 }
 
+//
+// Cpp wrapper writer
+//
+
+class CppWrapper {
+
+    constructor(modulePath, className) {
+
+        this.modulePath = modulePath;
+        this.dirRelativePath = path.dirname(modulePath);
+        this.destDirAbsolutePath = path.resolve(cppSrcDir, this.dirRelativePath);
+        this.destDirSrcAbsolutePath = path.resolve(cppcppSrcDir, this.dirRelativePath);
+        this.destDirRelativeToBase = path.relative(this.destDirAbsolutePath, cppSrcDir);
+
+        this.basename = path.basename(modulePath, '.js');
+
+        if (className) {
+            this.className = className;
+        } else {
+            this.className = this.basename.replace(/\./g, '_');
+            const extraDefines = getExtraDefines(this.className);
+            extraDefines.forEach(function(extraClassName) {
+                createCppWrapper(modulePath, extraClassName);
+            });
+        }
+
+        this.cppDestPath = path.resolve(this.destDirAbsolutePath, this.getUnderscoreRep(this.className) + '.hpp');
+        
+        this.cppAutoDestPath = path.resolve(this.destDirAbsolutePath, this.getUnderscoreRep(this.className) + '_' + AUTOGEN_EXT + '.hpp');
+        this.cppSrcAutoDestPath = path.resolve(this.destDirSrcAbsolutePath, this.getUnderscoreRep(this.className) + '_' + AUTOGEN_EXT + '.cpp');
+
+        this.cppBaseRelativePath = path.relative(this.destDirAbsolutePath, cppSrcDir);
+        //this.cppBaseRelativePath = relativePathToPythonImportPath(this.cppBaseRelativePath);
+
+        this.hppfile = path.relative(cppSrcDir, this.cppAutoDestPath);
+
+        // check if manual file exists
+        this.hasOverride = fse.existsSync(this.cppDestPath);
+
+        this.isCustom = CUSTOM_CLASSES.indexOf(modulePath) !== -1;
+
+        this.hasParameters = false;
+        this.hasBuffer = false;
+
+        this.config = getClassConfig(this.className);
+
+        this.processSuperClass();
+        this.processDependencies();
+        this.processProperties();
+
+        if (this.hasOverride){
+            this.className = this.className + 'Base';
+        }
+
+        // Template and context
+        this.context = {
+            now: new Date(),
+            generatorScriptName: path.basename(__filename),
+            threejs_docs_url: this.docsUrl,
+            cpp_base_relative_path: this.cppBaseRelativePath,
+            constructor: {
+                args: this.constructorArgs,
+                hasParameters: this.hasParameters,
+            },
+
+            className: this.getUnderscoreRep(this.className, false),
+            xclassName: this.getUnderscoreRep(this.className),
+            header: 'XTHREE_' + this.getUnderscoreRep(this.className, false).toUpperCase() + '_HPP',
+            hppfile: this.hppfile,
+            modelName: this.className + 'Model',
+            superClass: this.superClass,
+            properties: this.properties,
+            dependencies: this.dependencies,
+            hasOverride: this.hasOverride,
+            hasBuffer: this.hasBuffer,
+            isCustom: this.isCustom,
+        };
+
+        // Render template
+        this.output = cppWrapperTemplate(this.context);
+        this.outputcpp = cppSrcWrapperTemplate(this.context);
+    }
+
+    getUnderscoreRep(className, with_x=true) {
+        const REPLACE = {
+            'web_g_l': 'webgl'
+        };
+
+        let class_name;
+        _.mapObject(REPLACE, function(new_str, old_str) {
+            class_name = camelCaseToUnderscore(className); 
+            class_name = class_name.replace(old_str, new_str);
+        });
+        return (with_x) ? 'x' + class_name : class_name;
+    }
+
+    getRequireInfoFromClassDescriptor(classDescriptor) {
+
+        const result = {};
+
+        if (typeof classDescriptor === 'string') {
+
+            if (classDescriptor in classConfigs) {
+                const config = getClassConfig(classDescriptor);
+                result.className = classDescriptor;
+                result.relativePath = config.relativePath;
+                let res = result.relativePath.split("/");
+                res[res.length - 1] = this.getUnderscoreRep(res[res.length - 1]);
+                result.relativePath = res.join("/");
+            } else {
+                result.className = path.basename(classDescriptor, '.js');
+                result.relativePath = classDescriptor;
+            }
+
+        } else {
+            throw new Error('invalid classDescriptor: ' + classDescriptor);
+        }
+
+        // get path of dependency relative to module dir
+        if (result.className == 'Three') {
+            result.relativePath = './base/xthree';
+        };
+        result.absolutePath = path.resolve(cppSrcDir, result.relativePath);
+
+        if (!fse.existsSync(result.absolutePath + '.hpp')) {
+            result.absolutePath += '_' + AUTOGEN_EXT;
+        }
+
+        result.requirePath = path.relative(this.destDirAbsolutePath, result.absolutePath);
+        //result.cppRelativePath = relativePathToPythonImportPath(result.requirePath);
+        result.cppRelativePath = result.requirePath;
+
+        return result;
+
+    }
+
+    processSuperClass() {
+
+        this.superClass = this.getRequireInfoFromClassDescriptor(this.config.superClass);
+
+        if (this.superClass.className === 'Three') {
+            this.superClass.className  = 'three_widget';
+        }
+        this.superClass.className = this.getUnderscoreRep(this.superClass.className, false);
+        this.superClass.xclassName = this.getUnderscoreRep(this.superClass.className);
+    }
+
+    processDependencies() {
+
+        const dependencies = {};
+
+        // process explicitly listed dependencies
+        _.reduce(this.config.dependencies, function(result, depName) {
+
+            result[depName] = this.getRequireInfoFromClassDescriptor(depName);
+            return result;
+
+        }, dependencies, this);
+
+        // infer dependencies from any properties that reference other Three types
+        _.reduce(this.config.properties, function(result, prop) {
+
+            if (prop instanceof Types.ThreeType || prop instanceof Types.InitializedThreeType ||
+                    prop instanceof Types.ThreeTypeArray || prop instanceof Types.ThreeTypeDict) {
+                if (prop.typeName !== 'this') {
+                    if (typeof prop.typeName === 'string') {
+                        let typeName = prop.typeName || './base/xthree.hpp';
+                        result[typeName] = this.getRequireInfoFromClassDescriptor(typeName);
+                        if (result[typeName].className === 'Three') {
+                            result[typeName].className = 'ThreeWidget';
+                        }
+                    } else if (prop.typeName instanceof Array) {
+                        prop.typeName.forEach(function(typeName) {
+                            result[typeName] = this.getRequireInfoFromClassDescriptor(typeName);
+                        }, this);
+                    }
+                }
+            }
+            return result;
+
+        }, dependencies, this);
+
+        this.dependencies = dependencies;
+
+    }
+
+    processProperties() {
+
+        this.properties = _.mapObject(this.config.properties, function(prop, key) {
+            if (prop.getCppProperty(key) !== 'undefined') {
+                if (prop.isBinaryBuffer()){
+                    this.hasBuffer = true;
+                }
+                return {
+                    xproperty: prop.getCppProperty(key),
+                    isBinaryBuffer: prop.isBinaryBuffer(),
+                    defaultJson: prop.getCppDefaultValue(),
+                };
+            }
+        }, this);
+    }
+
+    getOutputFilename() {
+        return this.cppAutoDestPath;
+    }
+
+    getOutputSrcFilename() {
+        return this.cppSrcAutoDestPath;
+    }
+}
+
+function createCppWrapper(modulePath, className) {
+
+    let wrapper;
+    try {
+        wrapper = new CppWrapper(modulePath, className);
+    } catch (e) {
+        console.log(e);
+        console.log('skipping: ' + modulePath + (className ? ':' + className : ''));
+        return Promise.resolve(false);
+    }
+    let fname = wrapper.getOutputFilename();
+    let cppPromise = fse.outputFile(fname, wrapper.output);
+
+    let fnameCpp = wrapper.getOutputSrcFilename();
+    let cppcppPromise = fse.outputFile(fnameCpp, wrapper.outputcpp);
+
+    // Also output documentation for the Python API
+    //let docfname = wrapper.getDocFilename();
+    //console.log(docfname);
+    //let docPromise = Promise.resolve();
+    //let docPromise = fse.outputFile(docfname, wrapper.getDocOutput());
+
+    return Promise.all([cppPromise]);//, docPromise]);
+}
+
+function writeCMakeLists() {
+
+    console.log('Writing CMakeLists...');
+
+    // Regexp's
+    const RE_AUTOGEN_EXT = /.hpp$/;
+    const RE_AUTOGEN_EXT_CPP = /.cpp$/;
+
+    const excludes = ['build'];
+
+    const allFilesSync = (dir, fileList = []) => {
+        fse.readdirSync(dir).forEach(file => {
+            const filePath = path.join(dir, file)
+      
+            const shouldExclude = _.any(excludes, function(testPattern) {
+                if (testPattern instanceof RegExp) {
+                    return testPattern.test(file);
+                } else if (typeof testPattern === 'string') {
+                    return testPattern === file;
+                }
+            });
+            if (!shouldExclude) {
+                if (fse.statSync(filePath).isDirectory()) {
+                    allFilesSync(filePath, fileList);
+                }
+                else {
+                    if (filePath.match(RE_AUTOGEN_EXT)) {
+                        fileList.push(path.relative(cppSrcDir, filePath));
+                    }
+                }
+            }
+        })
+        return fileList
+      }
+
+      const allFilesSyncCpp = (dir, fileList = []) => {
+        fse.readdirSync(dir).forEach(file => {
+            const filePath = path.join(dir, file)
+      
+            const shouldExclude = _.any(excludes, function(testPattern) {
+                if (testPattern instanceof RegExp) {
+                    return testPattern.test(file);
+                } else if (typeof testPattern === 'string') {
+                    return testPattern === file;
+                }
+            });
+            if (!shouldExclude) {
+                if (fse.statSync(filePath).isDirectory()) {
+                    allFilesSyncCpp(filePath, fileList);
+                }
+                else {
+                    if (filePath.match(RE_AUTOGEN_EXT_CPP)) {
+                        fileList.push(path.relative(cppcppSrcDir, filePath));
+                    }
+                }
+            }
+        })
+        return fileList
+      }
+
+      var fileList = [];
+      allFilesSync(cmakeSrcDir, fileList);
+      var fileList_cpp = [];
+      allFilesSyncCpp(cmakeSrcDir, fileList_cpp);
+      const context = {
+        hppfiles: fileList,
+        cppfiles: fileList_cpp
+    };
+    const output = cmakeListsTemplate(context);
+    const outputPath = path.join(cmakeSrcDir, 'CMakeLists.txt');
+
+    return fse.outputFile(outputPath, output);
+}
+
+function writeHeaderCppFiles() {
+
+    console.log('Writing HeaderCppFiles...');
+
+    // Regexp's
+    const RE_AUTOGEN_EXT = /.hpp$/;
+
+    const excludes = ['build'];
+
+    const allFilesSync = (dir, fileList = []) => {
+        fse.readdirSync(dir).forEach(file => {
+            const filePath = path.join(dir, file)
+      
+            const shouldExclude = _.any(excludes, function(testPattern) {
+                if (testPattern instanceof RegExp) {
+                    return testPattern.test(file);
+                } else if (typeof testPattern === 'string') {
+                    return testPattern === file;
+                }
+            });
+            if (!shouldExclude) {
+                if (fse.statSync(filePath).isDirectory()) {
+                    allFilesSync(filePath, fileList);
+                }
+                else {
+                    if (filePath.match(RE_AUTOGEN_EXT)) {
+                        fileList.push(path.relative(cppSrcDir, filePath));
+                    }
+                }
+            }
+        })
+        return fileList
+      }
+
+    let xthree_hpp = []
+
+    fse.readdirSync(cppSrcDir).forEach(dir => {
+        const filePath = path.join(cppSrcDir, dir);
+        if (fse.statSync(filePath).isDirectory()) {
+            var fileList = [];
+            allFilesSync(filePath, fileList);
+            xthree_hpp.push(dir);
+            const context = {
+                dir: dir,
+                header: dir.toUpperCase(),
+                hppfiles: fileList
+            };
+
+        const output = headerCppTemplate(context);
+        const outputPath = path.join(cppSrcDir, 'x' + dir + '.hpp');
+
+        return fse.outputFile(outputPath, output);
+        }
+    });
+
+    const context = {
+        files: xthree_hpp
+    };
+    const output = headerXthreeCppTemplate(context);
+    const outputPath = path.join(cppSrcDir, 'xthreejs.hpp');
+    return fse.outputFile(outputPath, output);
+}
 
 function createJavascriptFiles() {
     return mapPromiseFnOverThreeModules(createJavascriptWrapper)
@@ -1128,6 +1513,29 @@ function createPythonFiles() {
 
 }
 
+function createCppFiles() {
+
+    // Prevent cpp file generation when outside dir (e.g. npm install in dependent)
+    if (!fse.existsSync(cppSrcDir)) {
+        return Promise.resolve();
+    }
+
+    return mapPromiseFnOverThreeModules(
+        function(relativePath) {
+            return createCppWrapper(relativePath);
+        })
+        .then(function() {
+            return mapPromiseFnOverFileList(CUSTOM_CLASSES, function(relativePath) {
+                return createCppWrapper(relativePath)
+            });
+        })
+        .then(function() {
+            return writeHeaderCppFiles();
+        })
+        .then(function() {
+            return writeCMakeLists();
+        });
+}
 
 
 function generateFiles() {
@@ -1135,6 +1543,7 @@ function generateFiles() {
     return Promise.all([
         createJavascriptFiles(),
         createPythonFiles(),
+        createCppFiles(),
     ]);
 
 }
