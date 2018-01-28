@@ -1,5 +1,6 @@
 //
 // This file auto-generated with generate-enums.js
+// Date: Thu Jan 25 2018 04:46:33 GMT+0100 (CET)
 //
 
 

@@ -12,12 +12,14 @@ const baseDir = path.resolve(scriptDir, '..');
 
 const jsSrcDir = path.resolve(baseDir, 'src/');
 const pySrcDir = path.resolve(baseDir, '..', 'pythreejs');
+const cppSrcDir = path.resolve(baseDir, '..', 'xthreejs/include/xthreejs');
 const templateDir = path.resolve(scriptDir, 'templates');
 
 const threeSrcDir = path.resolve(baseDir, 'node_modules', 'three', 'src');
 
 const jsEnumDst = path.resolve(jsSrcDir, '_base', 'enums.js');
 const pyEnumDst = path.resolve(pySrcDir, 'enums.py');
+const cppEnumDst = path.resolve(cppSrcDir, 'base', 'xenums.hpp');
 
 //
 // Actual THREE constants:
@@ -47,6 +49,7 @@ function compileTemplate(templateName) {
 
 var jsEnumTemplate = compileTemplate('js_enums');
 var pyEnumTemplate = compileTemplate('py_enums');
+var cppEnumTemplate = compileTemplate('cpp_enums');
 
 
 //
@@ -150,11 +153,45 @@ function createPythonFiles() {
     });
 }
 
+function writeCppFile() {
+    // Here we generate lists of enum keys
+
+    var categories = [];
+
+    _.keys(enumConfigs).map(category => {
+        var categoryObj = {key: category, enums: []};
+        categories.push(categoryObj);
+        enumConfigs[category].forEach(function(enumKey) {
+            if (Array.isArray(enumKey)) {
+                // Several keys share the same value, use the first one.
+                enumKey = enumKey[0];
+            }
+            categoryObj.enums.push({ key: enumKey, value: threeEnums[enumKey] });
+        }, this);
+    }, this);
+
+    var content = cppEnumTemplate({
+        now: new Date(),
+        generatorScriptName: path.basename(__filename),
+
+        categories: categories
+    });
+
+    return fse.outputFile(cppEnumDst, content);
+}
+
+function createCppFiles() {
+    return new Promise(function(resolve) {
+        resolve(writeCppFile());
+    });
+}
+
 function generateFiles() {
 
     return Promise.all([
         createJavascriptFiles(),
         createPythonFiles(),
+        createCppFiles(),
         checkUnused(),
     ]);
 

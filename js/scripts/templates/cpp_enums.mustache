@@ -1,0 +1,23 @@
+#ifndef XTHREE_ENUMS_HPP
+#define XTHREE_ENUMS_HPP
+
+//
+// This file auto-generated with {{ generatorScriptName }}
+// Date: {{ now }}
+//
+
+#include "xwidgets/xeither.hpp"
+
+namespace xthree{
+    namespace xenums{
+        {{#each categories as |category|}}
+
+        auto {{ category.key }} = XEITHER(
+        {{#each category.enums as |enum|}}
+            "{{ enum.key }}",
+        {{/each}}
+        );
+        {{/each}}
+    }
+}
+#endif
