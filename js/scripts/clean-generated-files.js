@@ -69,6 +69,11 @@ function cleanGeneratedFilesAsync() {
     var pyPromise = rmFileGlobAsync('../pythreejs/**/*_autogen.py');
     var pyIndexPromise = rmFileGlobAsync('../pythreejs/**/__init__.py');
 
+    var cppPromise1 = rmFileGlobAsync('../xthreejs/**/*_autogen.hpp');
+    var cppPromise2 = rmFileGlobAsync('../xthreejs/include/xthreejs/*.hpp');
+    var cppPromise3 = rmFileGlobAsync('../xthreejs/**/*_autogen.cpp');
+    var cmakePromise = rmFileGlobAsync('../xthreejs/CMakeLists.txt');
+
     var docPromise = rmFileGlobAsync('../docs/source/**/*_autogen.rst');
     var docIndexPromise = rmFileGlobAsync('../docs/source/api/**/index.rst');
 
@@ -78,6 +83,10 @@ function cleanGeneratedFilesAsync() {
         jsIndexPromise,
         pyPromise,
         pyIndexPromise,
+        cppPromise1,
+        cppPromise2,
+        cppPromise3,
+        cmakePromise,
         docPromise,
         docIndexPromise,
     ]);
