@@ -707,7 +707,7 @@ def _translate_glob_part(pat):
 
 
 
-# pythreejs specific functions to hanlde autogen:
+# pythreejs specific functions to handle autogen:
 
 # Call this after running wrapper command, but before running wrapped command:
 
