@@ -6,7 +6,7 @@ var $ = require('jquery');
 var THREE = require('three');
 
 var pkgName = require('../../package.json').name;
-var EXTENSION_SPEC_VERSION = require('../../version').EXTENSION_SPEC_VERSION;
+var EXTENSION_SPEC_VERSION = require('../version').EXTENSION_SPEC_VERSION;
 var RendererPool = require('./RendererPool');
 
 var ThreeModel = require('./Three').ThreeModel;

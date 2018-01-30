@@ -10,7 +10,7 @@ var Enums = require('./enums');
 
 var utils = require('./utils');
 
-var EXTENSION_SPEC_VERSION = require('../../version').EXTENSION_SPEC_VERSION;
+var EXTENSION_SPEC_VERSION = require('../version').EXTENSION_SPEC_VERSION;
 
 
 /**
