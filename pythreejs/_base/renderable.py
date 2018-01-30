@@ -2,7 +2,7 @@ from ipywidgets import DOMWidget, Widget, widget_serialization
 from traitlets import Unicode, CInt, CFloat, Enum, Bool, Instance, List
 
 from .._package import npm_pkg_name
-from .._version import EXTENSION_VERSION
+from .._version import EXTENSION_SPEC_VERSION
 
 from .Three import ThreeWidget
 from ..enums import ToneMappings
@@ -13,8 +13,8 @@ from ..renderers.webgl.WebGLShadowMap_autogen import WebGLShadowMap
 class RenderableWidget(DOMWidget):
     _view_module = Unicode(npm_pkg_name).tag(sync=True)
     _model_module = Unicode(npm_pkg_name).tag(sync=True)
-    _view_module_version = Unicode(EXTENSION_VERSION).tag(sync=True)
-    _model_module_version = Unicode(EXTENSION_VERSION).tag(sync=True)
+    _view_module_version = Unicode(EXTENSION_SPEC_VERSION).tag(sync=True)
+    _model_module_version = Unicode(EXTENSION_SPEC_VERSION).tag(sync=True)
 
     # renderer properties
     _width = CInt(200).tag(sync=True)

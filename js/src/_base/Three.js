@@ -10,7 +10,7 @@ var Enums = require('./enums');
 
 var utils = require('./utils');
 
-var version = require('../../package.json').version;
+var EXTENSION_SPEC_VERSION = require('../../version').EXTENSION_SPEC_VERSION;
 
 
 /**
@@ -59,7 +59,7 @@ var ThreeModel = widgets.WidgetModel.extend({
         return _.extend(widgets.WidgetModel.prototype.defaults.call(this), {
             _model_name: this.constructor.model_name,
             _model_module: this.constructor.model_module,
-            _model_version: this.constructor.model_module_version
+            _model_module_version: this.constructor.model_module_version
         });
     },
 
@@ -767,7 +767,7 @@ var ThreeModel = widgets.WidgetModel.extend({
 }, {
     model_module: 'jupyter-threejs',
     model_name: 'ThreeModel',
-    model_module_version: version,
+    model_module_version: EXTENSION_SPEC_VERSION,
 });
 
 module.exports = {

@@ -6,6 +6,7 @@ var $ = require('jquery');
 var THREE = require('three');
 
 var pkgName = require('../../package.json').name;
+var EXTENSION_SPEC_VERSION = require('../../version').EXTENSION_SPEC_VERSION;
 var RendererPool = require('./RendererPool');
 
 var ThreeModel = require('./Three').ThreeModel;
@@ -16,8 +17,10 @@ var RenderableModel = widgets.DOMWidgetModel.extend({
         return _.extend(widgets.DOMWidgetModel.prototype.defaults.call(this), {
             _model_module: pkgName,
             _view_module: pkgName,
+            _model_module_version: EXTENSION_SPEC_VERSION,
             _model_name: 'RenderableModel',
             _view_name: 'RenderableView',
+            _view_module_version: EXTENSION_SPEC_VERSION,
 
             _width: 200,
             _height: 200,

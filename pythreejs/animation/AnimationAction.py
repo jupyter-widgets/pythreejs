@@ -2,7 +2,7 @@ from ipywidgets import register, DOMWidget, Widget
 from traitlets import Unicode, Union, CInt, CFloat
 
 from .._package import npm_pkg_name
-from .._version import EXTENSION_VERSION
+from .._version import EXTENSION_SPEC_VERSION
 
 from .._base.Three import ThreeWidget
 from .AnimationAction_autogen import AnimationAction as AnimationActionBase
@@ -16,7 +16,7 @@ class AnimationAction(AnimationActionBase, DOMWidget):
     """
     _view_name = Unicode('AnimationActionView').tag(sync=True)
     _view_module = Unicode(npm_pkg_name).tag(sync=True)
-    _view_module_version = Unicode(EXTENSION_VERSION).tag(sync=True)
+    _view_module_version = Unicode(EXTENSION_SPEC_VERSION).tag(sync=True)
 
     _previewable = False
 

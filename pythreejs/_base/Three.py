@@ -2,14 +2,14 @@ from ipywidgets import Widget, widget_serialization
 from traitlets import Unicode
 
 from .._package import npm_pkg_name
-from .._version import EXTENSION_VERSION
+from .._version import EXTENSION_SPEC_VERSION
 
 
 class ThreeWidget(Widget):
     """Base widget type for all pythreejs widgets"""
 
     _model_module = Unicode(npm_pkg_name).tag(sync=True)
-    _model_module_version = Unicode(EXTENSION_VERSION).tag(sync=True)
+    _model_module_version = Unicode(EXTENSION_SPEC_VERSION).tag(sync=True)
 
     _previewable = True
 

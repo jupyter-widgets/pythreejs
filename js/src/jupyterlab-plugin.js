@@ -8,7 +8,7 @@ module.exports = {
     activate: function(app, widgets) {
         widgets.registerWidget({
             name: 'jupyter-threejs',
-            version: jupyter_threejs.version,
+            version: jupyter_threejs.EXTENSION_SPEC_VERSION,
             exports: jupyter_threejs
         });
     },

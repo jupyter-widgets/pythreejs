@@ -16,7 +16,7 @@ from traitlets import Unicode, CInt, Instance, List, CFloat, Bool, observe, vali
 import numpy as np
 
 from ._package import npm_pkg_name
-from ._version import EXTENSION_VERSION
+from ._version import EXTENSION_SPEC_VERSION
 
 
 from .core.BufferAttribute import BufferAttribute
