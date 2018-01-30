@@ -19,7 +19,21 @@ To get started with pythreejs, install with pip::
 
     pip install pythreejs
 
-.. TODO: Config calls
+If you are using a notebook version older than 5.3, or if your kernel is in another environment
+than the notebook server, you will also need to register the front-end extensions.
+
+For the notebook front-end::
+
+    jupyter nbextension install [--sys-prefix | --user | --system] --py pythreejs
+    jupyter nbextension enable [--sys-prefix | --user | --system] --py pythreejs
+
+For jupyterlab::
+
+    jupyter labextension install jupyter-threejs
+
+.. note::
+    If you are installing an older version of pythreejs, you might have to add a version
+    specifier for the labextension to match the Python package, e.g. `jupyter-threejs@1.0.0`.
 
 
 Contents
