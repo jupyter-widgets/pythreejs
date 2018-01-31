@@ -31,11 +31,17 @@ cmdclass = create_cmdclass(
     'js',
     data_files_spec=[
         ('share/jupyter/nbextensions/jupyter-threejs',
-         name + '/static', '*.js'),
+         name + '/static',
+         '*.js'),
         ('share/jupyter/nbextensions/jupyter-threejs',
-         name + '/static', '*.js.map'),
+         name + '/static',
+         '*.js.map'),
         ('share/jupyter/lab/extensions',
-         'js/lab-dist', 'jupyter-threejs-*.tgz'),
+         'js/lab-dist',
+         'jupyter-threejs-*.tgz'),
+        ('etc/jupyter/nbconfig',
+         'jupyter-config',
+         '**/*.json'),
     ],
 )
 cmdclass['js'] = combine_commands(
