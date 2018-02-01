@@ -25,6 +25,10 @@
     {{#each properties as |prop propName|}}
     .. py:attribute:: {{ propName }}
 
+        {{#if prop.help}}
+        {{{indent prop.help '        '}}}
+        {{/if}}
+
         .. sourcecode:: python
 
             {{{indent prop.trait_declaration '        '}}}
