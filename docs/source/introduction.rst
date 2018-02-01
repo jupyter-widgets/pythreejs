@@ -33,6 +33,11 @@ class, which allows the user to control the camera by zooming, panning, and orbi
 around a target. Another example is the :py:class:`~pythreejs.Picker` widget, which allows
 for getting the objects and surface coordinates underneath the mouse cursor.
 
+To use controls, pass them to the renderer, e.g.::
+
+    Renderer(controls=[OrbitControls(...), ...], ...)
+
+
 
 .. _animation:
 

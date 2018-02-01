@@ -260,19 +260,50 @@ module.exports = {
         relativePath: './controls/Picker',
         superClass: 'Controls',
         properties: {
-            event:          new Types.String('click'),
-            all:            new Types.Bool(false),
-            distance:       new Types.Float(null, {nullable: true}),
-            point:          new Types.Vector3(0, 0, 0),
-            face:           new Types.Vector3(0, 0, 0),
-            faceNormal:     new Types.Vector3(0, 0, 0),
-            faceVertices:   new Types.VectorArray(),
-            faceIndex:      new Types.Int(null, {nullable: true}),
-            modifiers:      new Types.Array(),
-            object:         new Types.ThreeType('Object3D', {nullable: true}),
-            picked:         new Types.Array(),
-            uv:             new Types.Vector2(0, 0),
-            indices:        new Types.Array(),
+            event: new Types.String('click', {
+                help: 'The DOM MouseEvent type to trigger the pick',
+            }),
+            all: new Types.Bool(false, {
+                help: 'Wether to send info on all object intersections beneath the picked point, or only the first one. See ``picked``.',
+            }),
+            distance: new Types.Float(null, {
+                nullable: true,
+                help: 'The distance from the camera of the picked point (null if no object picked)',
+            }),
+            point: new Types.Vector3(0, 0, 0, {
+                help: 'The coordinates of the picked point (all zero if no object picked)',
+            }),
+            face: new Types.Vector3(0, 0, 0, {
+                help: 'The vertex indices of the picked face (all zero if no face picked)',
+            }),
+            faceNormal: new Types.Vector3(0, 0, 0, {
+                help: 'The normal vector of the picked face (all zero if no face picked)',
+            }),
+            faceVertices: new Types.VectorArray({
+                help: 'The three vertices that make up the picked face, as vectors (empty if no face picked)',
+            }),
+            faceIndex: new Types.Int(null, {
+                nullable: true,
+                help: 'The index of the face picked (null if no face picked)',
+            }),
+            modifiers: new Types.Array({
+                help: 'The keyboard modifiers held at the pick event in the following order: [SHIFT, CTRL, ALT, META]',
+            }),
+            object: new Types.ThreeType('Object3D', {
+                nullable: true,
+                help: 'The picked object (null if no object picked)',
+            }),
+            picked: new Types.Array({
+                help: 'The other fields on the picker will always be for the first object intersection. ' +
+                      'If ``all`` is set true, this field will be an array containing the same information ' +
+                      'for all intersections.',
+            }),
+            uv: new Types.Vector2(0, 0, {
+                help: 'The UV coordinate picked (all zero if invalid pick)',
+            }),
+            indices: new Types.Array({
+                help: 'The vertex indices of the picked face (empty if no face picked)',
+            }),
         },
         propsDefinedByThree: [
             'distance', 'point', 'face', 'faceNormal', 'faceVertices',
