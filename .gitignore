@@ -6,6 +6,7 @@ dist/
 build/
 *.py[cod]
 node_modules/
+.vscode
 
 # Compiled javascript
 pythreejs/static/
