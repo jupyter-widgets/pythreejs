@@ -157,6 +157,15 @@ function getClassConfig(className) {
         classConfigs._defaults
     );
 
+    if ('type' in result.allProperties && result.allProperties.type instanceof Types.String) {
+        if ('type' in result.properties) {
+            result.properties.type.defaultValue = className;
+        } else {
+            result.properties.type = new Types.String(className);
+            result.allProperties.type = result.properties.type;
+        }
+    }
+
     return result;
 }
 
