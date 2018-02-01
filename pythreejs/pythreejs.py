@@ -73,9 +73,9 @@ class SurfaceGeometry(BufferGeometry):
         dx, dy = np.gradient(z, self.width/nx, self.height/ny)
         normals = np.dstack((-dx, -dy, np.ones_like(dx))).reshape(nx * ny, 3).astype(np.float32)
 
-        vmin = np.min(positions, 0)
-        vrange = np.max(positions, 0) - vmin
-        uvs = ((positions - vmin) / vrange)[:, :2]
+        vmin = np.min(positions, 0)[:2]
+        vrange = np.max(positions, 0)[:2] - vmin
+        uvs = ((positions[:, :2] - vmin) / vrange)
 
         indices = np.array(tuple(grid_indices_gen(nx, ny)), dtype=np.uint16).ravel()
 
