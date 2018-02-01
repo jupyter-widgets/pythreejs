@@ -77,6 +77,7 @@ setup_args = {
         'test': [
             'nbval',
             'pytest-check-links',
+            'numpy>=1.14',
         ],
         'examples': [
             'scipy',
