@@ -14,9 +14,11 @@ or via conda::
     conda install pythreejs
 
 
-If you installed via pip, you will also have to install / configure the
-front-end extension as well. If you are using classic notebook (as opposed to
-Jupyterlab), run::
+With jupyter notebook version >= 5.3, this should also install and enable the
+relevant front-end extensions. If for some reason this did not happen
+(e.g. if the notebook server is in a different environment than the kernel),
+you can install / configure the front-end extensions manually. If you are using classic
+notebook (as opposed to Jupyterlab), run::
 
     jupyter nbextension install [--sys-prefix / --user / --system] --py pythreejs
 
@@ -27,9 +29,21 @@ with::
 
     jupyter labextension install jupyter-threejs
 
-If you are installing using conda, these commands should be unnecessary, but If
-you need to run them the commands should be the same (just make sure you choose the
-`--sys-prefix` flag).
+
+Upgrading to 1.x
+================
+
+If you are upgrading to version 1.x from a verion prior to 1.0, there are certain
+backwards-incompatible changes that you should note::
+
+- ``Plain[Buffer]Geometry`` was renamed to ``[Buffer]Geometry``. This was done in
+  order to be more consistent with the names used in threejs. The base classes for
+  geometry are now called ``Base[Buffer]Geometry``. This also avoids the confusion
+  with ``Plane[Buffer]Geometry``.
+
+- ``LambertMaterial -> MeshLambertMaterial``, and other similar material class
+  renames were done. Again, this was to more closely match the names used in
+  three.js itself.
 
 
 .. links

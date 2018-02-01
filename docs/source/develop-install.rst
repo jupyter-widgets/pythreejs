@@ -6,7 +6,7 @@ Developer install
 To install a developer version of pythreejs, you will first need to clone
 the repository::
 
-    git clone https://github.com/jovyan/pythreejs
+    git clone https://github.com/jovyan/pythreejs.git
     cd pythreejs
 
 Next, install it with a develop install using pip::
