@@ -53,19 +53,19 @@ gives interactive controls to the user for controlling a `threejs animation`_.
 Other notable deviations from the threejs API are listed below:
 
 - Buffers are based on `numpy arrays`_, with their inbuilt knowledge of shape and dtype.
-  As such, most threejs APIs that take a buffer is slightly modified (fewer options need
+  As such, most threejs APIs that take a buffer are slightly modified (fewer options need
   to be specified explicitly).
 
 - The generative geometry objects (e.g. :py:class:`~pythreejs.SphereGeometry` and
   :py:class:`~pythreejs.BoxBufferGeometry`) do not sync their vertices or similar data
   by default. To gain acess to the generated data, convert them to either the
   :py:class:`~pythreejs.Geometry` or :py:class:`~pythreejs.BufferGeometry` type with
-  the :py:meth:`~pythreejs.BufferGeometry.from_ref` factory method. See the method
-  documentation for further details.
+  the :py:meth:`~pythreejs.BufferGeometry.from_geometry` factory method.
 
 - Methods are often not mirrored to the Python side. However, they can be
   executed with the :py:meth:`~pythreejs.ThreeWidget.exec_three_obj_method` method.
-  Consider contributing
+  Consider contributing to make methods directly available. Possibly, these can
+  be auto-generated as well.
 
 
 
