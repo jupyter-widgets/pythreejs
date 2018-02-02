@@ -102,7 +102,6 @@ module.exports = {
         relativePath: './cameras/CubeCamera',
         superClass: 'Object3D',
         properties: {
-            type: new Types.String('CubeCamera'),
         }
     },
     OrthographicCamera: {
@@ -116,7 +115,6 @@ module.exports = {
             bottom: new Types.Float(),
             near:   new Types.Float(0.1),
             far:    new Types.Float(2000),
-            type:   new Types.String('OrthographicCamera'),
         },
         constructorArgs: [ 'left', 'right', 'top', 'bottom', 'near', 'far' ],
     },
@@ -133,7 +131,6 @@ module.exports = {
             // view:       new Types.Dict(),
             // filmGauge:  new Types.Float(35.0),
             // filmOffset: new Types.Float(0.0),
-            type:   new Types.String('PerspectiveCamera'),
         },
         constructorArgs: [ 'fov', 'aspect', 'near', 'far' ],
     },
@@ -141,7 +138,6 @@ module.exports = {
         relativePath: './cameras/ArrayCamera',
         superClass: 'PerspectiveCamera',
         properties: {
-            type:   new Types.String('ArrayCamera'),
         },
         constructorArgs: [ 'fov', 'aspect', 'near', 'far' ],
     },
@@ -347,7 +343,6 @@ module.exports = {
             attributes:         new Types.ThreeTypeDict(['BufferAttribute', 'InterleavedBufferAttribute']),
             morphAttributes:    new Types.BufferMorphAttributes(),
             MaxIndex:           new Types.Int(65535),
-            type:               new Types.String('BufferGeometry'),
             // TODO: These likely require special types:
             //groups:             new Types.GeometryGroup(),
             //drawRange:          new Types.DrawRange(),
@@ -675,7 +670,6 @@ module.exports = {
             refractionRatio:    new Types.Float(0.98),
             skinning:           new Types.Bool(false),
             specularMap:        new Types.ThreeType('Texture'),
-            type:               new Types.String('MeshBasicMaterial'),
             wireframe:          new Types.Bool(false),
             wireframeLinewidth: new Types.Float(1),
             wireframeLinecap:   new Types.String('round'), // TODO: enum?
@@ -1044,7 +1038,6 @@ module.exports = {
             geometry: new Types.ThreeType(['BaseGeometry', 'BaseBufferGeometry'], {nullable: false}),
             drawMode: new Types.Enum('DrawModes', 'TrianglesDrawMode'),
             morphTargetInfluences: new Types.Array(),
-            type: new Types.String('Mesh'),
         },
         propsDefinedByThree: ['morphTargetInfluences'],
     },
@@ -1682,7 +1675,6 @@ module.exports = {
             hex: new Types.Int(0),
             headLength: new Types.Float(null, {nullable: true}),
             headWidth: new Types.Float(null, {nullable: true}),
-            type: new Types.String('ArrowHelper'),
         },
     },
     AxesHelper: {
