@@ -3,6 +3,11 @@
 const WIDGET_SERIALIZER = '{ deserialize: widgets.unpack_models }';
 
 class BaseType {
+    constructor(options) {
+        options = options || {};
+        this.options = options;
+        this.nullable = options.nullable === true;
+    }
     getJSPropertyValue() {
         return JSON.stringify(this.defaultValue);
     }
@@ -26,20 +31,31 @@ class BaseType {
     getPropertyAssignmentFn() {
         return null;
     }
+    getTagParts() {
+        return ['sync=True'];
+    }
+    getTagString() {
+        return `.tag(${this.getTagParts().join(', ')})`;
+    }
+    getNullableStr() {
+        return `allow_none=${this.nullable === true ? 'True' : 'False'}`;
+    }
 }
 
-function genInstanceTraitlet(typeName, nullable, args, kwargs) {
-    const nullableStr = nullable ? 'True' : 'False';
+function genInstanceTraitlet(typeName, nullable, args, kwargs, tagParts) {
+    const nullableStr = `allow_none=${nullable === true ? 'True' : 'False'}`;
+    tagParts = tagParts.concat(['**widget_serialization']);
+    const tagStr = `.tag(${tagParts.join(', ')})`;
     // allow type unions
     if (typeName instanceof Array) {
         const instances = typeName.map(function(tname) {
-            return `        Instance(${tname}, allow_none=${nullableStr})`;
+            return `        Instance(${tname}, ${nullableStr})`;
         });
-        return 'Union([\n' + instances.join(',\n') + '\n    ]).tag(sync=True, **widget_serialization)';
+        return `Union([\n${instances.join(',\n')}\n    ])${tagStr}`;
     }
 
     if (typeName.toLowerCase() === 'this') {
-        return 'This().tag(sync=True, **widget_serialization)';
+        return `This()${tagStr}`;
     }
 
     let ret = `Instance(${typeName}`;
@@ -49,13 +65,14 @@ function genInstanceTraitlet(typeName, nullable, args, kwargs) {
     if (kwargs !== undefined) {
         ret += `, kw=${kwargs}`;
     }
-    ret += `, allow_none=${nullableStr}).tag(sync=True, **widget_serialization)`;
+    ret += `, ${nullableStr})${tagStr}`;
     return ret;
 }
 
 class ThreeType extends BaseType {
-    constructor(typeName, options={}) {
-        super();
+    constructor(typeName, options) {
+        options = options || {};
+        super(options);
         this.typeName = typeName || '';
         this.defaultValue = null;
         this.serializer = WIDGET_SERIALIZER;
@@ -73,7 +90,7 @@ class ThreeType extends BaseType {
             typeName = `${typeName || 'ThreeWidget'}`;
         }
         return genInstanceTraitlet(
-            typeName, this.nullable, this.args, this.kwargs);
+            typeName, this.nullable, this.args, this.kwargs, this.getTagParts());
     }
     getPropArrayName() {
         return 'three_properties';
@@ -84,7 +101,7 @@ class ThreeType extends BaseType {
 }
 
 class ForwardDeclaredThreeType extends ThreeType {
-    constructor(typeName, modulePath, options={}) {
+    constructor(typeName, modulePath, options) {
         super(typeName, options);
         this.modulePath = modulePath;
     }
@@ -93,7 +110,7 @@ class ForwardDeclaredThreeType extends ThreeType {
     }
     getTraitlet() {
         return genInstanceTraitlet(
-            this.forwardType(), this.nullable, this.args, this.kwargs);
+            this.forwardType(), this.nullable, this.args, this.kwargs, this.getTagParts());
     }
 }
 
@@ -104,9 +121,12 @@ class InitializedThreeType extends ThreeType {
     getPythonDefaultValue() {
         return 'UninitializedSentinel';
     }
+    getTagParts() {
+        return super.getTagParts().concat(['**unitialized_serialization']);
+    }
     getTraitlet() {
         const typeName = this.typeName;
-        const nullableStr = this.nullable ? 'True' : 'False';
+        const nullableStr = this.getNullableStr();
         let inst = `Instance(${typeName}`;
         if (this.args !== undefined) {
             inst += `, args=${this.args}`;
@@ -117,20 +137,24 @@ class InitializedThreeType extends ThreeType {
         inst += ')';
         const uninit = 'Instance(Uninitialized)';
         let ret = `Union([\n        ${uninit},\n        ${inst},\n        ]`;
-        ret += `, default_value=${this.getPythonDefaultValue()}, allow_none=${nullableStr})`;
-        ret += '.tag(sync=True, **unitialized_serialization)';
+        ret += `, default_value=${this.getPythonDefaultValue()}, ${nullableStr})`;
+        ret += this.getTagString();
         return ret;
     }
 }
 
 class ThreeTypeArray extends BaseType {
-    constructor(typeName, options={}) {
-        super();
+    constructor(typeName, options) {
+        options = options || {};
+        super(options);
         this.typeName = typeName;
         this.defaultValue = [];
         this.serializer = WIDGET_SERIALIZER;
         this.nullable = options.nullable !== false;
         this.allow_single = options.allow_single === true;
+    }
+    getTagParts() {
+        return super.getTagParts().concat(['**widget_serialization']);
     }
     getTraitlet() {
         let baseType = 'Tuple()';
@@ -143,10 +167,10 @@ class ThreeTypeArray extends BaseType {
         }
         if (this.typeName === 'this') {
             // return 'List(trait=This(), default_value=[]).tag(sync=True, **widget_serialization)';
-            return baseType + '.tag(sync=True, **widget_serialization)';
+            return baseType + this.getTagString();
         }
         // return 'List(trait=Instance(' + this.typeName + ')).tag(sync=True, **widget_serialization)';
-        return baseType + '.tag(sync=True, **widget_serialization)';
+        return baseType + this.getTagString();
     }
     getPropArrayName() {
         return 'three_nested_properties';
@@ -157,23 +181,26 @@ class ThreeTypeArray extends BaseType {
 }
 
 class ThreeTypeDict extends BaseType {
-    constructor(typeName) {
-        super();
+    constructor(typeName, options) {
+        super(options);
         this.typeName = typeName;
         this.defaultValue = {};
         this.serializer = WIDGET_SERIALIZER;
+    }
+    getTagParts() {
+        return super.getTagParts().concat(['**widget_serialization']);
     }
     getTraitlet() {
         if (this.typeName instanceof Array) {
             const instances = this.typeName.map(function(typeName) {
                 return `        Instance(${typeName})`;
             });
-            return 'Dict(Union([\n' + instances.join(',\n') + '\n    ])).tag(sync=True, **widget_serialization)';
+            return `Dict(Union([\n${instances.join(',\n')}\n    ]))${this.getTagString()}`;
         }
         if (this.typeName === 'this') {
-            return 'Dict(This()).tag(sync=True, **widget_serialization)';
+            return `Dict(This())${this.getTagString()}`;
         }
-        return `Dict(Instance(${this.typeName})).tag(sync=True, **widget_serialization)`;
+        return `Dict(Instance(${this.typeName}))${this.getTagString()}`;
     }
     getPropArrayName() {
         return 'three_nested_properties';
@@ -184,17 +211,20 @@ class ThreeTypeDict extends BaseType {
 }
 
 class BufferMorphAttributes extends BaseType {
-    constructor() {
-        super();
+    constructor(options) {
+        super(options);
         this.defaultValue = {};
         this.serializer = WIDGET_SERIALIZER;
+    }
+    getTagParts() {
+        return super.getTagParts().concat(['**widget_serialization']);
     }
     getTraitlet() {
         const typeNames = ['BufferAttribute', 'InterleavedBufferAttribute'];
         const instances = typeNames.map(function(typeName) {
             return `        Instance(${typeName})`;
         });
-        return 'Dict(Tuple(Union([\n' + instances.join(',\n') + '\n    ]))).tag(sync=True, **widget_serialization)';
+        return 'Dict(Tuple(Union([\n' + instances.join(',\n') + '\n    ])))' + this.getTagString();
     }
     getPropArrayName() {
         return 'three_nested_properties';
@@ -206,14 +236,12 @@ class BufferMorphAttributes extends BaseType {
 
 class Bool extends BaseType {
     constructor(defaultValue, options) {
-        super();
-        options = options || {};
-        this.nullable = options.nullable === true;
+        super(options);
         this.defaultValue = defaultValue;
     }
     getTraitlet() {
-        const nullableStr = this.nullable ? 'True' : 'False';
-        return `Bool(${this.getPythonDefaultValue()}, allow_none=${nullableStr}).tag(sync=True)`;
+        const nullableStr = this.getNullableStr();
+        return `Bool(${this.getPythonDefaultValue()}, ${nullableStr})${this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertBool';
@@ -222,15 +250,14 @@ class Bool extends BaseType {
 
 class Int extends BaseType {
     constructor(defaultValue, options) {
-        super();
         options = options || {};
-        this.nullable = options.nullable === true;
+        super();
         this.minValue = options.minValue;
         this.maxValue = options.maxValue;
         this.defaultValue = (defaultValue === null || defaultValue === undefined) && !this.nullable ? 0 : defaultValue ;
     }
     getTraitlet() {
-        const nullableStr = this.nullable ? 'True' : 'False';
+        const nullableStr = this.getNullableStr();
         let limits = '';
         if (this.minValue !== undefined) {
             limits += `, min=${this.minValue}`;
@@ -238,22 +265,21 @@ class Int extends BaseType {
         if (this.maxValue !== undefined) {
             limits += `, max=${this.maxValue}`;
         }
-        return `CInt(${this.getPythonDefaultValue()}, allow_none=${nullableStr}${limits}).tag(sync=True)`;
+        return `CInt(${this.getPythonDefaultValue()}, ${nullableStr}${limits})${this.getTagString()}`;
     }
 
 }
 
 class Float extends BaseType {
     constructor(defaultValue, options) {
-        super();
         options = options || {};
-        this.nullable = options.nullable === true;
+        super(options);
         this.minValue = options.minValue;
         this.maxValue = options.maxValue;
         this.defaultValue = (defaultValue === null || defaultValue === undefined) && !this.nullable ? 0.0 : defaultValue;
     }
     getTraitlet() {
-        const nullableStr = this.nullable ? 'True' : 'False';
+        const nullableStr = this.getNullableStr();
         let limits = '';
         if (this.minValue !== undefined) {
             limits += `, min=${this.minValue}`;
@@ -261,7 +287,7 @@ class Float extends BaseType {
         if (this.maxValue !== undefined) {
             limits += `, max=${this.maxValue}`;
         }
-        return `CFloat(${this.getPythonDefaultValue()}, allow_none=${nullableStr}${limits}).tag(sync=True)`;
+        return `CFloat(${this.getPythonDefaultValue()}, ${nullableStr}${limits})${this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertFloat';
@@ -271,29 +297,25 @@ class Float extends BaseType {
 
 class StringType extends BaseType {
     constructor(defaultValue, options) {
-        super();
-        options = options || {};
-        this.nullable = options.nullable === true;
+        super(options);
         this.defaultValue = defaultValue;
     }
     getTraitlet() {
-        const nullableStr = this.nullable ? 'True' : 'False';
-        return `Unicode(${this.getPythonDefaultValue()}, allow_none=${nullableStr}).tag(sync=True)`;
+        const nullableStr = this.getNullableStr();
+        return `Unicode(${this.getPythonDefaultValue()}, ${nullableStr})${this.getTagString()}`;
     }
 
 }
 
 class Enum extends BaseType {
     constructor(enumTypeName, defaultValue, options) {
-        super();
-        options = options || {};
+        super(options);
         this.enumTypeName = enumTypeName;
         this.defaultValue = defaultValue;
-        this.nullable = options.nullable === true;
     }
     getTraitlet() {
-        const nullableStr = this.nullable ? 'True' : 'False';
-        return `Enum(${this.enumTypeName}, ${this.getPythonDefaultValue()}, allow_none=${nullableStr}).tag(sync=True)`;
+        const nullableStr = this.getNullableStr();
+        return `Enum(${this.enumTypeName}, ${this.getPythonDefaultValue()}, ${nullableStr})${this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertEnum';
@@ -302,14 +324,12 @@ class Enum extends BaseType {
 
 class Color extends BaseType {
     constructor(defaultValue, options) {
-        super();
-        options = options || {};
+        super(options);
         this.defaultValue = defaultValue || '#ffffff';
-        this.nullable = options.nullable === true;
     }
     getTraitlet() {
-        const nullableStr = this.nullable ? 'True' : 'False';
-        return `Unicode(${this.getPythonDefaultValue()}, allow_none=${nullableStr}).tag(sync=True)`;
+        const nullableStr = this.getNullableStr();
+        return `Unicode(${this.getPythonDefaultValue()}, ${nullableStr})${this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertColor';
@@ -317,12 +337,12 @@ class Color extends BaseType {
 }
 
 class ColorArray extends BaseType {
-    constructor(defaultValue) {
-        super();
+    constructor(defaultValue, options) {
+        super(options);
         this.defaultValue = defaultValue || ['#ffffff'];
     }
     getTraitlet() {
-        return `List(trait=Unicode(), default_value=${this.getPythonDefaultValue()}).tag(sync=True)`;
+        return `List(trait=Unicode(), default_value=${this.getPythonDefaultValue()})${this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertColorArray';
@@ -333,12 +353,12 @@ class ColorArray extends BaseType {
 }
 
 class ArrayType extends BaseType {
-    constructor() {
-        super();
+    constructor(options) {
+        super(options);
         this.defaultValue = [];
     }
     getTraitlet() {
-        return 'List().tag(sync=True)';
+        return `List()${this.getTagString()}`;
     }
     getPropertyAssignmentFn() {
         return 'assignArray';
@@ -347,8 +367,8 @@ class ArrayType extends BaseType {
 
 
 class ArrayBufferType extends BaseType {
-    constructor(arrayType, shapeConstraint) {
-        super();
+    constructor(arrayType, shapeConstraint, options) {
+        super(options);
         this.arrayType = arrayType;
         this.shapeConstraint = shapeConstraint;
         this.defaultValue = null;
@@ -363,7 +383,7 @@ class ArrayBufferType extends BaseType {
             args.push(`shape_constraint=${this.shapeConstraint}`);
         }
 
-        return `WebGLDataUnion(${args.join(', ')}).tag(sync=True)`;
+        return `WebGLDataUnion(${args.join(', ')})${this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertArrayBuffer';
@@ -375,14 +395,12 @@ class ArrayBufferType extends BaseType {
 
 class DictType extends BaseType {
     constructor(defaultValue={}, options) {
-        super();
-        options = options || {};
+        super(options);
         this.defaultValue = defaultValue;
-        this.nullable = options.nullable === true;
     }
     getTraitlet() {
-        const nullableStr = this.nullable ? 'True' : 'False';
-        return `Dict(default_value=${this.getPythonDefaultValue()}, allow_none=${nullableStr}).tag(sync=True)`;
+        const nullableStr = this.getNullableStr();
+        return `Dict(default_value=${this.getPythonDefaultValue()}, ${nullableStr})${this.getTagString()}`;
     }
     getPropertyAssignmentFn() {
         return 'assignDict';
@@ -396,12 +414,12 @@ class UniformDict extends DictType {
 }
 
 class FunctionType extends BaseType {
-    constructor(fn) {
-        super();
+    constructor(fn, options) {
+        super(options);
         this.defaultValue = fn || function() {};
     }
     getTraitlet() {
-        return `Unicode('${this.defaultValue.toString()}').tag(sync=True)`;
+        return `Unicode('${this.defaultValue.toString()}')${this.getTagString()}`;
     }
     getJSPropertyValue() {
         return this.defaultValue.toString();
@@ -412,12 +430,12 @@ class FunctionType extends BaseType {
 }
 
 class Vector2 extends BaseType {
-    constructor(x, y) {
-        super();
+    constructor(x, y, options) {
+        super(options);
         this.defaultValue = [ x||0, y||0 ];
     }
     getTraitlet() {
-        return 'Vector2(default_value=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
+        return `Vector2(default_value=${JSON.stringify(this.defaultValue)})${this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertVector';
@@ -428,12 +446,12 @@ class Vector2 extends BaseType {
 }
 
 class Vector3 extends BaseType {
-    constructor(x, y, z) {
-        super();
+    constructor(x, y, z, options) {
+        super(options);
         this.defaultValue = [ x||0, y||0, z||0 ];
     }
     getTraitlet() {
-        return 'Vector3(default_value=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
+        return `Vector3(default_value=${JSON.stringify(this.defaultValue)})${this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertVector';
@@ -444,12 +462,12 @@ class Vector3 extends BaseType {
 }
 
 class Vector4 extends BaseType {
-    constructor(x, y, z, w) {
-        super();
+    constructor(x, y, z, w, options) {
+        super(options);
         this.defaultValue = [ x||0, y||0, z||0, w||0 ];
     }
     getTraitlet() {
-        return 'Vector4(default_value=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
+        return `Vector4(default_value=${JSON.stringify(this.defaultValue)})${this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertVector';
@@ -460,12 +478,12 @@ class Vector4 extends BaseType {
 }
 
 class VectorArray extends BaseType {
-    constructor() {
-        super();
+    constructor(options) {
+        super(options);
         this.defaultValue = [];
     }
     getTraitlet() {
-        return 'List(trait=List()).tag(sync=True)';
+        return `List(trait=List())${this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertVectorArray';
@@ -476,12 +494,12 @@ class VectorArray extends BaseType {
 }
 
 class FaceArray extends BaseType {
-    constructor() {
-        super();
+    constructor(options) {
+        super(options);
         this.defaultValue = [];
     }
     getTraitlet() {
-        return 'Tuple(trait=Face3()).tag(sync=True)';
+        return `Tuple(trait=Face3())${this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertFaceArray';
@@ -492,8 +510,8 @@ class FaceArray extends BaseType {
 }
 
 class Matrix3 extends BaseType {
-    constructor() {
-        super();
+    constructor(options) {
+        super(options);
         this.defaultValue = [
             1, 0, 0,
             0, 1, 0,
@@ -501,7 +519,7 @@ class Matrix3 extends BaseType {
         ];
     }
     getTraitlet() {
-        return 'Matrix3(default_value=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
+        return `Matrix3(default_value=${JSON.stringify(this.defaultValue)})${this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertMatrix';
@@ -512,8 +530,8 @@ class Matrix3 extends BaseType {
 }
 
 class Matrix4 extends BaseType {
-    constructor() {
-        super();
+    constructor(options) {
+        super(options);
         this.defaultValue = [
             1, 0, 0, 0,
             0, 1, 0, 0,
@@ -522,7 +540,7 @@ class Matrix4 extends BaseType {
         ];
     }
     getTraitlet() {
-        return 'Matrix4(default_value=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
+        return `Matrix4(default_value=${JSON.stringify(this.defaultValue)})${this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertMatrix';
@@ -534,13 +552,13 @@ class Matrix4 extends BaseType {
 
 
 class Euler extends BaseType {
-    constructor() {
-        super();
+    constructor(options) {
+        super(options);
         this.defaultValue = [0, 0, 0, 'XYZ'];
     }
 
     getTraitlet() {
-        return 'Euler(default_value=' + JSON.stringify(this.defaultValue) + ').tag(sync=True)';
+        return `Euler(default_value=${JSON.stringify(this.defaultValue)})${this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertEuler';

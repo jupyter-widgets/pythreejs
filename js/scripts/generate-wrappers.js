@@ -822,6 +822,7 @@ class PythonWrapper {
 
         this.properties = _.mapObject(this.config.properties, function(prop) {
             return {
+                help: prop.options.help,
                 trait_declaration: prop.getTraitlet(),
                 defaultJson: prop.getPythonDefaultValue(),
             };
