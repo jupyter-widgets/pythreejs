@@ -9,8 +9,8 @@ __webpack_public_path__ = document.querySelector('body').getAttribute('data-base
 
 
 // Configure requirejs
-if (window.require) {
-    window.require.config({
+if (window.requirejs) {
+    window.requirejs.config({
         map: {
             '*' : {
                 'jupyter-threejs': 'nbextensions/jupyter-threejs/index',
