@@ -141,6 +141,7 @@ function getClassConfig(className) {
 
     // combine cur props with superclass properties for allProperties
     result.allProperties = {};
+    result.properties = result.properties || {};
     if (curClass.superClass && curClass.superClass !== classConfigs._defaults.superClass) {
         const superClassConfig = getClassConfig(curClass.superClass);
         Object.assign(result.allProperties, superClassConfig.allProperties);
