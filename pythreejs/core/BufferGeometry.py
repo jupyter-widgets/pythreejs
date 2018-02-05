@@ -35,11 +35,14 @@ class BufferGeometry(BufferGeometryBase):
     def _gen_repr_from_keys(self, keys):
         # Hide data in repr to avoid overly large datasets
         # Replace with uuids of buffer attributes
+        data_keys = ('attributes', 'morphAttributes', 'index')
         class_name = self.__class__.__name__
         signature_parts = [
             '%s=%r' % (key, getattr(self, key))
-            for key in keys if key not in ('attributes', 'morphAttributes')
+            for key in keys if key not in data_keys
         ]
+        if not self._compare(self.index, self.__class__.index.default_value):
+            signature_parts.append('index=%s' % _attr_value_repr(self.index))
         for name in ('attributes', 'morphAttributes'):
             if not _dict_is_default(self, name):
                 signature_parts.append('%s=%s' % (name, _attr_dict_repr(getattr(self, name))))

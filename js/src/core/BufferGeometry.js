@@ -35,7 +35,12 @@ var BufferGeometryModel = AutogenBufferGeometryModel.extend({
                 Promise.all(_.map(_.values(ref.get('morphAttributes')), function(attr) {
                     return attr.initPromise;
                 }))
-            );
+            ).then(function() {
+                // Wait for index attribute
+                return ref.get('index').then(function(index) {
+                    return index.initPromise;
+                });
+            });
         }
 
         // Create three.js BufferAttributes from ref.
@@ -79,6 +84,15 @@ var BufferGeometryModel = AutogenBufferGeometryModel.extend({
             }));
         }).then(function(attribModelKVs) {
             toSet.morphAttributes = _.object(attribModelKVs);
+
+        // Then create models for index attribute:
+        }).then(function() {
+            if (result.index) {
+                var modelCtor = result.index.isInterleavedBufferAttribute ? InterleavedBufferAttributeModel : BufferAttributeModel;
+                return createModel(modelCtor, this.widget_manager, result.index).then(function(model) {
+                    toSet.index = model;
+                }, this);
+            }
 
         // Sync out all properties that have been set:
         }).then(function() {

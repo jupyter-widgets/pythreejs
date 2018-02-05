@@ -371,6 +371,7 @@ module.exports = {
         relativePath: './core/BufferGeometry',
         superClass: 'BaseBufferGeometry',
         properties: {
+            index:              new Types.ThreeType(['BufferAttribute', 'InterleavedBufferAttribute']),
             attributes:         new Types.ThreeTypeDict(['BufferAttribute', 'InterleavedBufferAttribute']),
             morphAttributes:    new Types.BufferMorphAttributes(),
             MaxIndex:           new Types.Int(65535),
