@@ -45,7 +45,8 @@ class BufferGeometry(BufferGeometryBase):
             '%s=%r' % (key, getattr(self, key))
             for key in keys if key not in data_keys
         ]
-        if not self._compare(self.index, self.__class__.index.default_value):
+        if (not self._compare(self.index, self.__class__.index.default_value) and
+                self.index is not None):
             signature_parts.append('index=%s' % _attr_value_repr(self.index))
         for name in ('attributes', 'morphAttributes'):
             if not _dict_is_default(self, name):
