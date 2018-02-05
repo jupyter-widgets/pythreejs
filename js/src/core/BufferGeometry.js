@@ -18,7 +18,7 @@ var BufferGeometryModel = AutogenBufferGeometryModel.extend({
         this.property_assigners['attributes'] = 'assignAttributesMap';
     },
 
-    constructFromRef: function(ref) {
+    constructFromRef: function(ref, keep_ref) {
         var result = new THREE.BufferGeometry();
 
         var chain = ref.initPromise.bind(this);
@@ -98,6 +98,10 @@ var BufferGeometryModel = AutogenBufferGeometryModel.extend({
         }).then(function() {
             // Add other fields that needs to be synced out:
             toSet.name = result.name;
+            // Discard ref unless told to keep it:
+            if (!keep_ref) {
+                toSet._ref_geometry = null;
+            }
 
             // Perform actual sync to kernel side:
             this.set(toSet, 'pushFromThree');
@@ -109,8 +113,9 @@ var BufferGeometryModel = AutogenBufferGeometryModel.extend({
 
     constructThreeObject: function() {
         var ref = this.get('_ref_geometry');
+        var keep_ref = this.get('_store_ref');
         if (ref) {
-            return this.constructFromRef(ref);
+            return this.constructFromRef(ref, keep_ref);
         }
 
         var result = new THREE.BufferGeometry();

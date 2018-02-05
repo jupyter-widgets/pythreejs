@@ -10,6 +10,7 @@ var GeometryModel = AutogenGeometryModel.extend({
         var result = new THREE.Geometry();
 
         var ref = this.get('_ref_geometry');
+        var keep_ref = this.get('_store_ref');
         if (ref) {
             return ref.initPromise.bind(this).then(function() {
                 result.copy(ref.obj);
@@ -27,6 +28,10 @@ var GeometryModel = AutogenGeometryModel.extend({
                 }, this);
                 this.syncToModel();
                 this.props_created_by_three = old_three;
+                if (!keep_ref) {
+                    this.set({_ref_geometry: null}, 'pushFromThree');
+                    this.save_changes();
+                }
                 return result;
             });
         }

@@ -3,6 +3,7 @@ from ipywidgets import register, widget_serialization
 from traitlets import validate, TraitError, Undefined
 from ipydatawidgets import NDArrayWidget, get_union_array
 
+from .Geometry import _make_key_filter
 from .BufferGeometry_autogen import BufferGeometry as BufferGeometryBase
 
 
@@ -11,10 +12,13 @@ from .BufferGeometry_autogen import BufferGeometry as BufferGeometryBase
 class BufferGeometry(BufferGeometryBase):
 
     @classmethod
-    def from_geometry(cls, geometry):
+    def from_geometry(cls, geometry, store_ref=False):
         """Creates a PlainBufferGeometry of another geometry.
+
+        store_ref determines if the reference is stored after initalization.
+        If it is, it will be used for future embedding.
         """
-        return cls(_ref_geometry=geometry)
+        return cls(_ref_geometry=geometry, _store_ref=store_ref)
 
     @validate('attributes')
     def validate(self, proposal):
@@ -47,6 +51,10 @@ class BufferGeometry(BufferGeometryBase):
             if not _dict_is_default(self, name):
                 signature_parts.append('%s=%s' % (name, _attr_dict_repr(getattr(self, name))))
         return '%s(%s)' % (class_name, ', '.join(signature_parts))
+
+    def _repr_keys(self):
+        return filter(_make_key_filter(self._store_ref),
+                      super(BufferGeometry, self)._repr_keys())
 
 
 def _dict_is_default(ht, name):

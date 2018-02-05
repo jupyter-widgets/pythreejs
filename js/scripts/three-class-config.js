@@ -365,6 +365,7 @@ module.exports = {
             skinWeights:    new Types.VectorArray(),
             skinIndices:    new Types.VectorArray(),
             _ref_geometry:  new Types.ThreeType('BaseGeometry'),
+            _store_ref:     new Types.Bool(false),
         },
     },
     BufferGeometry: {
@@ -379,6 +380,7 @@ module.exports = {
             //groups:             new Types.GeometryGroup(),
             //drawRange:          new Types.DrawRange(),
             _ref_geometry:      new Types.ThreeType(['BaseGeometry', 'BaseBufferGeometry']),
+            _store_ref:      new Types.Bool(false),
         },
     },
     InstancedBufferAttribute: {
