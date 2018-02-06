@@ -9,4 +9,6 @@ The widgets have been embedded into the page.
 .. toctree::
     :glob:
 
-    *
+    Geometries
+    Animation
+    Textures
