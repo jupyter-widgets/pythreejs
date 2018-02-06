@@ -31,6 +31,5 @@ htmlcov/
 
 docs/source/_static/jupyter-threejs.js
 docs/source/_static/three.js
-docs/source/examples/img
 
 js/lab-dist
