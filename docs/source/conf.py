@@ -209,9 +209,21 @@ def setup(app):
             os.chdir(popd)
 
     app.setup_extension('jupyter_sphinx.embed_widgets')
+
     def add_scripts(app):
         for fname in ['jupyter-threejs.js']:
             if not os.path.exists(os.path.join(here, '_static', fname)):
                 app.warn('missing javascript file: %s' % fname)
             app.add_javascript(fname)
+
+    def add_images(app):
+        # TODO: Add all images automatically by dir
+        for img_name in ('earth.jpg', 'checkerboard.png'):
+            img = os.path.join('examples', 'img', img_name)
+            app.builder.images[img] = img_name
+
     app.connect('builder-inited', add_scripts)
+    
+    if on_rtd:
+        # Ensure example image resources are available. This requires a redirect on RTD.
+        app.connect('builder-inited', add_images)

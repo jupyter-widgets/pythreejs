@@ -13,7 +13,7 @@ const buildDir = path.resolve(baseDir, 'dist');
 const docStaticDir = path.resolve(baseDir, '..', 'docs', 'source', '_static');
 
 const exampleImagesSrcDir = path.resolve(baseDir, '..', 'examples', 'img');
-const exampleImagesDstDir = path.resolve(docStaticDir, 'examples', 'img');
+const exampleImagesDstDir = path.resolve(baseDir, '..', 'docs', 'source', 'examples', 'img');
 
 
 function copyThree() {
