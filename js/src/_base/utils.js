@@ -376,6 +376,31 @@ function getModelScene(model) {
 }
 
 
+var three_reverse_lut;
+
+/**
+ * Fund the unminified name of the constructor of a three object.
+ */
+function lookupThreeConstructorName(obj) {
+    var name = obj.constructor.name;
+    if (THREE[name] !== undefined) {
+        return name;
+    }
+    // Assume constructor name is minified, try a reverse lookup
+    if (!three_reverse_lut) {
+        // Build reverse LUT and store it
+        three_reverse_lut = Object.keys(THREE).reduce(function(res, key) {
+            var value = THREE[key];
+            if (!!value.prototype && !!value.prototype.constructor.name) {
+                res[value.prototype.constructor.name] = key;
+            }
+            return res;
+        }, {});
+    }
+    return three_reverse_lut[name];
+}
+
+
 module.exports = {
     createModel: createModel,
     computeBoundingSphere: computeBoundingSphere,
@@ -389,4 +414,5 @@ module.exports = {
     nestedDiff: nestedDiff,
     getObjectScene: getObjectScene,
     getModelScene: getModelScene,
+    lookupThreeConstructorName: lookupThreeConstructorName,
 };

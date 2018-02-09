@@ -188,7 +188,7 @@ var ThreeModel = widgets.WidgetModel.extend({
             this.initialized_from_three[propName] = true;
             var obj = this.obj[propName];
             // First, we need to figure out which model constructor to use
-            var ctorName = obj.constructor.name + 'Model';
+            var ctorName = utils.lookupThreeConstructorName(obj) + 'Model';
             var index = require('../');
             var ctor = index[ctorName];
             // Create the model

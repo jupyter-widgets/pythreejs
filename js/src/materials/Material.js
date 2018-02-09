@@ -11,7 +11,6 @@ var MaterialModel = MaterialAutogen.extend({
             break;
         default:
             MaterialAutogen.prototype.onCustomMessage.call(arguments);
-
         }
     },
 
