@@ -165,7 +165,7 @@ var RendererView = RenderableView.extend({
 
         // We need to ensure that renderer properties are applied
         // (we have no idea where the renderer has been...)
-        this.applyBackground();
+        this.updateProperties(true);
     },
 
 });

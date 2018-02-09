@@ -211,8 +211,10 @@ var RenderableView = widgets.DOMWidgetView.extend({
                 return;
             }
             if (!converterName) {
-                obj[propName] = this.model.get(propName);
-                changes = true;
+                if (obj[propName] !== this.model.get(propName)) {
+                    obj[propName] = this.model.get(propName);
+                    changes = true;
+                }
                 return;
             }
             var converterFn;
@@ -226,8 +228,11 @@ var RenderableView = widgets.DOMWidgetView.extend({
             if (!converterFn) {
                 throw new Error('invalid converter name: ' + converterName);
             }
-            obj[propName] = converterFn(model.get(propName), propName);
-            changes = true;
+            var converted = converterFn(model.get(propName), propName);
+            if (obj[propName] !== converted) {
+                obj[propName] = converted;
+                changes = true;
+            }
         }, this);
         if (changes) {
             obj.needsUpdate = true;
