@@ -18,7 +18,7 @@ const exampleImagesDstDir = path.resolve(baseDir, '..', 'docs', 'source', 'examp
 
 function copyThree() {
     return fse.copy(
-        path.resolve(threeBuildDir, 'three.js'),
+        path.resolve(threeBuildDir, 'three.min.js'),
         path.resolve(staticDir, 'three.js')
     ).then(function() {
         console.log('Copied three.js to static folder');

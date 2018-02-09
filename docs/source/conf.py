@@ -223,7 +223,7 @@ def setup(app):
             app.builder.images[img] = img_name
 
     app.connect('builder-inited', add_scripts)
-    
+
     if on_rtd:
         # Ensure example image resources are available. This requires a redirect on RTD.
         app.connect('builder-inited', add_images)
