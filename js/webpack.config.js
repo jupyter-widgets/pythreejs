@@ -45,19 +45,6 @@ module.exports = [
             extensions: [ ".autogen.js", ".js" ]
         },
 
-    },
-    {
-        // embeddable jupyter-threejs bundle
-        entry: './src/index.js',
-        output: {
-            filename: 'index.standalone.js',
-            path: path.resolve(__dirname, 'dist'),
-        },
-        devtool: 'source-map',
-        resolve: {
-            extensions: [ ".autogen.js", ".js" ]
-        },
-
     }
 
 ];
