@@ -34,7 +34,7 @@ Upgrading to 1.x
 ================
 
 If you are upgrading to version 1.x from a verion prior to 1.0, there are certain
-backwards-incompatible changes that you should note::
+backwards-incompatible changes that you should note:
 
 - ``Plain[Buffer]Geometry`` was renamed to ``[Buffer]Geometry``. This was done in
   order to be more consistent with the names used in threejs. The base classes for
