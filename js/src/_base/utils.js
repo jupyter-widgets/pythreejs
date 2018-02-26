@@ -336,9 +336,6 @@ function nestedDiff(newObj, oldObj) {
         added: childModelsNested(diff.added),
         removed: childModelsNested(diff.removed),
     };
-    ret.kept = _.flatten(diff.kept.map(function(child) {
-        return nestedDiff(child);
-    }), true);
     return ret;
 }
 
