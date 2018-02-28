@@ -48,4 +48,4 @@ backwards-incompatible changes that you should note:
 
 .. links
 
-.. _`appropriate flag`: https://jupyter-notebook.readthedocs.io/en/stable/extending/frontend_extensions.html#Installing-and-enabling-extensions
+.. _`appropriate flag`: https://jupyter-notebook.readthedocs.io/en/stable/extending/frontend_extensions.html#installing-and-enabling-extensions
