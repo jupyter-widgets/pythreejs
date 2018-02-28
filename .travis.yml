@@ -31,5 +31,5 @@ script:
       make linkcheck || EXIT_STATUS=$?
       cd ..
       python -m pytest_check_links || EXIT_STATUS=$?
-      exit $EXIT_STATUS;
+      (exit $EXIT_STATUS)
     fi
