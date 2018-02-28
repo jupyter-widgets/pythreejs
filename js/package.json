@@ -34,7 +34,7 @@
     "@jupyter-widgets/base": "^1.1.8",
     "bluebird": "^3.5.1",
     "jupyter-dataserializers": "^1.1.0",
-    "three": "^0.88.0",
+    "three": "^0.90.0",
     "underscore": "^1.8.3"
   },
   "keywords": [
