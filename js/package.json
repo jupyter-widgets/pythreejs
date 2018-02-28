@@ -27,7 +27,8 @@
     "glob": "^7.1.2",
     "handlebars": "^4.0.11",
     "rimraf": "^2.6.2",
-    "webpack": "^3.10.0"
+    "webpack": "^4.0.1",
+    "webpack-cli": "^2.0.9"
   },
   "dependencies": {
     "@jupyter-widgets/base": "^1.1.8",
