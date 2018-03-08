@@ -528,6 +528,8 @@ var TrackballControls = function ( object, domElement ) {
 
 		if ( _this.enabled === false ) return;
 
+		if ( _this.noZoom === true ) return;
+
 		event.preventDefault();
 		event.stopPropagation();
 

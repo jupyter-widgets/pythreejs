@@ -30,6 +30,6 @@ script:
       make html || EXIT_STATUS=$?
       make linkcheck || EXIT_STATUS=$?
       cd ..
-      python -m pytest_check_links || EXIT_STATUS=$?
+      python -m pytest_check_links || EXIT_STATUS=$? ;
       (exit $EXIT_STATUS)
     fi

@@ -56,11 +56,23 @@ class SurfaceGeometry(BufferGeometry):
     z = List(CFloat, [0] * 100)
     width = CInt(10)
     height = CInt(10)
-    width_segments = CInt(10)
-    height_segments = CInt(10)
+    width_segments = CInt(10, read_only=True)
+    height_segments = CInt(10, read_only=True)
 
-    @observe('z', 'width', 'height', 'width_segments', 'height_segments')
-    def _update_surface(self, change):
+    def __init__(self, **kwargs):
+        for key in ['width_segments', 'height_segments']:
+            if key in kwargs:
+                self.set_trait(key, kwargs.pop(key))
+        super(SurfaceGeometry, self).__init__(**kwargs)
+        self._update_surface()
+
+    @observe('z', 'width', 'height')
+    def _on_change(self, change):
+        # Only trigger automatically after initial creation
+        if 'position' in self.attributes:
+            self._update_surface()
+
+    def _update_surface(self):
         nx = self.width_segments + 1
         ny = self.height_segments + 1
         x = np.linspace(-self.width/2, self.width/2, nx)
@@ -79,12 +91,21 @@ class SurfaceGeometry(BufferGeometry):
 
         indices = np.array(tuple(grid_indices_gen(nx, ny)), dtype=np.uint16).ravel()
 
-        self.attributes = {
-            'position': BufferAttribute(positions),
-            'index': BufferAttribute(indices),
-            'normal': BufferAttribute(normals),
-            'uv': BufferAttribute(uvs),
-        }
+        if 'position' not in self.attributes:
+            # Initial values:
+            self.attributes = {
+                'position': BufferAttribute(positions),
+                'index': BufferAttribute(indices),
+                'normal': BufferAttribute(normals),
+                'uv': BufferAttribute(uvs),
+            }
+        else:
+            # We're updating
+            with self.hold_trait_notifications():
+                self.attributes['position'].array = positions
+                self.attributes['index'].array = indices
+                self.attributes['normal'].array = normals
+                self.attributes['uv'].array = uvs
 
 
 def SurfaceGrid(geometry, material, **kwargs):
@@ -103,6 +124,16 @@ def SurfaceGrid(geometry, material, **kwargs):
     for y in range(ny):
         g = Geometry(vertices=[vertices[y * nx + x, :].tolist() for x in range(nx)])
         lines.append(Line(g, material))
+
+    def _update_lines(change):
+        vertices = geometry.attributes['position'].array
+        for x in range(nx):
+            g = lines[x].geometry
+            g.vertices = [vertices[y * nx + x, :].tolist() for y in range(ny)]
+        for y in range(ny):
+            g = lines[nx + y].geometry
+            g.vertices = [vertices[y * nx + x, :].tolist() for x in range(nx)]
+    geometry.attributes['position'].observe(_update_lines, names=('array'))
 
     return Group(children=lines, **kwargs)
 

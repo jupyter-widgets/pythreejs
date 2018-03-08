@@ -479,12 +479,6 @@ module.exports = {
     Uniform: {
         relativePath: './core/Uniform',
     },
-    SceneUtils: {
-        relativePath: './extras/SceneUtils',
-    },
-    ShapeUtils: {
-        relativePath: './extras/ShapeUtils',
-    },
     AmbientLight: {
         relativePath: './lights/AmbientLight',
         superClass: 'Light',
@@ -544,6 +538,11 @@ module.exports = {
     RectAreaLight: {
         relativePath: './lights/RectAreaLight',
         superClass: 'Light',
+        properties: {
+            width:      new Types.Float(10),
+            height:     new Types.Float(10),
+        },
+        constructorArgs: [ 'color', 'intensity', 'width', 'height' ],
     },
     SpotLight: {
         relativePath: './lights/SpotLight',
@@ -594,6 +593,9 @@ module.exports = {
     },
     ImageLoader: {
         relativePath: './loaders/ImageLoader',
+    },
+    ImageBitmapLoader: {
+        relativePath: './loaders/ImageBitmapLoader',
     },
     JSONLoader: {
         relativePath: './loaders/JSONLoader',
@@ -665,23 +667,24 @@ module.exports = {
             depthFunc:              new Types.Enum('DepthMode', 'LessEqualDepth'),
             depthTest:              new Types.Bool(true),
             depthWrite:             new Types.Bool(true),
+            dithering:              new Types.Bool(false),
+            flatShading:            new Types.Bool(false),
             fog:                    new Types.Bool(true),
             lights:                 new Types.Bool(true),
             name:                   new Types.String(''),
+            opacity:                new Types.Float(1.0),
             overdraw:               new Types.Float(0),
             polygonOffset:          new Types.Bool(false),
             polygonOffsetFactor:    new Types.Float(0),
             polygonOffsetUnits:     new Types.Float(0),
             precision:              new Types.String(null, {nullable: true}),
             premultipliedAlpha:     new Types.Bool(false),
-            dithering:              new Types.Bool(false),
-            flatShading:            new Types.Bool(false),
+            shadowSide:             new Types.Enum('Side', null, {nullable: true}),
             side:                   new Types.Enum('Side', 'FrontSide'),
             transparent:            new Types.Bool(false),
             type:                   new Types.String(''),
             vertexColors:           new Types.Enum('Colors', 'NoColors'),
             visible:                new Types.Bool(true),
-            opacity:                new Types.Float(1.0),
         },
         propsDefinedByThree: [ 'type' ]
     },
@@ -896,8 +899,8 @@ module.exports = {
             morphNormals:       new Types.Bool(false),
             morphTargets:       new Types.Bool(false),
             flatShading:        new Types.Bool(false),
-            //shading:            new Types.Enum('Shading', 'SmoothShading'),  // Deprecated in three
             skinning:           new Types.Bool(false),
+            uniformsNeedUpdate: new Types.Bool(false),
             vertexShader:       new Types.String(''),
             wireframe:          new Types.Bool(false),
             wireframeLinewidth: new Types.Float(1.0),
@@ -1041,9 +1044,6 @@ module.exports = {
     LOD: {
         relativePath: './objects/LOD',
     },
-    LensFlare: {
-        relativePath: './objects/LensFlare',
-    },
     Line: {
         relativePath: './objects/Line',
         superClass: 'Object3D',
@@ -1106,7 +1106,8 @@ module.exports = {
         superClass: 'Object3D',
         constructorArgs: [ 'material' ],
         properties: {
-            material: new Types.ThreeType('SpriteMaterial'),
+            material:   new Types.ThreeType('SpriteMaterial'),
+            center:     new Types.Vector2(0.5, 0.5),
         },
         propsDefinedByThree: ['skeleton'],
     },
@@ -1932,8 +1933,6 @@ module.exports = {
         properties: {
             enabled: new Types.Bool(false),
             type: new Types.Enum('ShadowTypes', 'PCFShadowMap'),
-            renderReverseSided: new Types.Bool(false),
-            renderSingleSided: new Types.Bool(true),
         }
     },
     // TODO:

@@ -40,6 +40,30 @@ var GeometryModel = AutogenGeometryModel.extend({
 
     },
 
+    onChange: function(model, options) {
+        if (options !== 'pushFromThree') {
+            if (this.hasChanged('vertices')) {
+                this.obj.verticesNeedUpdate = true;
+            }
+            if (this.hasChanged('colors')) {
+                this.obj.colorsNeedUpdate = true;
+            }
+            if (this.hasChanged('faces')) {
+                this.obj.elementsNeedUpdate = true;
+            }
+            if (this.hasChanged('faceVertexUvs')) {
+                this.obj.uvsNeedUpdate = true;
+            }
+            if (this.hasChanged('normals')) {
+                this.obj.normalsNeedUpdate = true;
+            }
+            if (this.hasChanged('morphTargets') || this.hasChanged('morphNormals')) {
+                this.obj.morphTargetsNeedUpdate = true;
+            }
+        }
+        AutogenGeometryModel.prototype.onChange.call(this, model, options);
+    }
+
 });
 
 module.exports = {

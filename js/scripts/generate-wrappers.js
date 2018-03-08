@@ -48,8 +48,6 @@ const IGNORE_FILES = [
     '**/polyfills.js',      // Polyfill of JS methods, nothing to export
     '**/utils.js',          // Utility functions, no objects to export
     '**/constants.js',      // Processed into enums in separate script
-    '**/animation/KeyframeTrackConstructor.js',     // Sub-part of one object, ignore
-    '**/animation/KeyframeTrackPrototype.js',       // Sub-part of one object, ignore
     '**/audio/AudioContext.js',             // JS API for audio, nothing to expose
     '**/core/Face3.js',     // Implemented as trait only, not widget model
     '**/geometries/Geometries.js',          // index.js like file, nothing new here
@@ -71,14 +69,18 @@ const IGNORE_FILES = [
     '**/renderers/webgl/WebGLFlareRenderer.js',
     '**/renderers/webgl/WebGLMorphtargets.js',
     '**/renderers/webgl/WebGLRenderLists.js',
+    '**/renderers/webgl/WebGLRenderStates.js',
     '**/renderers/webgl/WebGLSpriteRenderer.js',
     '**/renderers/webgl/WebGLTextures.js',
     '**/renderers/webgl/WebGLUniforms.js',
     '**/renderers/webgl/WebGLUtils.js',
     '**/renderers/webvr/**',
     '**/renderers/shaders/**',
+    '**/extras/curves/Curves.js',                  // index.js like file, nothing new here
+    '**/loaders/LoaderUtils.js',            // Only functions, nothing to export
+    '**/extras/Earcut.js',                  // Only functions, nothing to export
+    '**/extras/ShapeUtils.js',              // Only functions, nothing to export
     '**/extras/core/Interpolations.js',     // Only functions, nothing to export
-    '**/extras/core/PathPrototype.js',      // Sub-part of one object, ignore
     '**/textures/CanvasTexture.js'          // Canvases are not referenceable from python
 ];
 
@@ -919,9 +921,18 @@ function createPythonWrapper(modulePath, className) {
 
 function createPythonModuleInitFile(modulePath) {
 
-    const dirname = path.dirname(modulePath);
-    const pyInitFilePath = path.resolve(pySrcDir, dirname, '__init__.py');
-    return fse.ensureFile(pyInitFilePath);
+    let dirname = path.dirname(path.resolve(pySrcDir, modulePath));
+    let pyInitFilePath;
+    const promises = [];
+    while (dirname !== pySrcDir) {
+        pyInitFilePath = path.join(dirname, '__init__.py');
+        promises.push(fse.ensureFile(pyInitFilePath));
+        if (dirname === path.dirname(dirname)) {
+            throw new Error(`${dirname}, ${path.dirname(dirname)}`);
+        }
+        dirname = path.dirname(dirname);
+    }
+    return Promise.all(promises);
 }
 
 

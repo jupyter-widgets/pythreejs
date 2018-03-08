@@ -1,6 +1,5 @@
 //
 // This file auto-generated with generate-enums.js
-// Date: Wed Nov 15 2017 17:14:48 GMT+0100 (W. Europe Standard Time)
 //
 
 
@@ -129,15 +128,29 @@ var DepthFormats = {
 };
 
 var CompressedTextureFormats = {
-    2001: 'RGB_S3TC_DXT1_Format',
-    2002: 'RGBA_S3TC_DXT1_Format',
-    2003: 'RGBA_S3TC_DXT3_Format',
-    2004: 'RGBA_S3TC_DXT5_Format',
-    2100: 'RGB_PVRTC_4BPPV1_Format',
-    2101: 'RGB_PVRTC_2BPPV1_Format',
-    2102: 'RGBA_PVRTC_4BPPV1_Format',
-    2103: 'RGBA_PVRTC_2BPPV1_Format',
-    2151: 'RGB_ETC1_Format',
+    33776: 'RGB_S3TC_DXT1_Format',
+    33777: 'RGBA_S3TC_DXT1_Format',
+    33778: 'RGBA_S3TC_DXT3_Format',
+    33779: 'RGBA_S3TC_DXT5_Format',
+    35840: 'RGB_PVRTC_4BPPV1_Format',
+    35841: 'RGB_PVRTC_2BPPV1_Format',
+    35842: 'RGBA_PVRTC_4BPPV1_Format',
+    35843: 'RGBA_PVRTC_2BPPV1_Format',
+    36196: 'RGB_ETC1_Format',
+    37808: 'RGBA_ASTC_4x4_Format',
+    37809: 'RGBA_ASTC_5x4_Format',
+    37810: 'RGBA_ASTC_5x5_Format',
+    37811: 'RGBA_ASTC_6x5_Format',
+    37812: 'RGBA_ASTC_6x6_Format',
+    37813: 'RGBA_ASTC_8x5_Format',
+    37814: 'RGBA_ASTC_8x6_Format',
+    37815: 'RGBA_ASTC_8x8_Format',
+    37816: 'RGBA_ASTC_10x5_Format',
+    37817: 'RGBA_ASTC_10x6_Format',
+    37818: 'RGBA_ASTC_10x8_Format',
+    37819: 'RGBA_ASTC_10x10_Format',
+    37820: 'RGBA_ASTC_12x10_Format',
+    37821: 'RGBA_ASTC_12x12_Format',
 };
 
 var TextureEncodings = {
