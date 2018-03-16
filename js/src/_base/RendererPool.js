@@ -26,7 +26,7 @@ _.extend(KeyedCollection.prototype, {
     pop: function(key) {
         for (var i=0, l=this._collection.length; i < l; ++i) {
             var el = this._collection[i];
-            if (el.key == key) {
+            if (_.isEqual(el.key, key)) {
                 this._collection.splice(i, 1);
                 return el.value;
             }
