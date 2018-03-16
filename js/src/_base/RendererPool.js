@@ -101,6 +101,9 @@ _.extend(RendererPool.prototype, {
         if (this.freePool.length() > 0) {
 
             renderer = this.freePool.pop(config);
+            if (renderer) {
+                renderer = renderer.renderer;
+            }
             if (!renderer) {
                 var oldRenderer = this.freePool.shift();
                 renderer = this._replaceRenderer(oldRenderer, config);
