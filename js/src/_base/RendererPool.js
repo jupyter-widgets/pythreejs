@@ -55,6 +55,10 @@ _.extend(KeyedCollection.prototype, {
         }
         return null;
     },
+
+    length: function() {
+        return this._collection.length;
+    },
 });
 
 function RendererPool() {
@@ -94,7 +98,7 @@ _.extend(RendererPool.prototype, {
         var renderer;
         console.debug('RendererPool.acquiring...');
 
-        if (this.freePool.length > 0) {
+        if (this.freePool.length() > 0) {
 
             renderer = this.freePool.pop(config);
             if (!renderer) {
