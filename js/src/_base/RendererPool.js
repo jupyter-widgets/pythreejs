@@ -84,11 +84,11 @@ _.extend(RendererPool.prototype, {
         return renderer;
     },
 
-    _replaceRenderer: function(oldToken, config) {
-        var id = oldToken.poolId;
-        oldToken.dispose();
+    _replaceRenderer: function(renderer, config) {
+        var id = renderer.poolId;
+        renderer.dispose();
         this.numCreated--;
-        var renderer = this._createRenderer(config);
+        renderer = this._createRenderer(config);
         renderer.poolId = id;
         return renderer;
     },
@@ -110,7 +110,7 @@ _.extend(RendererPool.prototype, {
                 // We need to replace one of the free renderers to get
                 // the right config:
                 freeToken = this.freePool.shift();
-                renderer = this._replaceRenderer(freeToken, config);
+                renderer = this._replaceRenderer(freeToken.renderer, config);
             }
 
         } else if (this.numCreated < MAX_RENDERERS) {
@@ -136,7 +136,7 @@ _.extend(RendererPool.prototype, {
             }
             // Recreate renderer if no appropriate config:
             if (recreate) {
-                renderer = this._replaceRenderer(claimedToken, config);
+                renderer = this._replaceRenderer(claimedToken.renderer, config);
             }
 
         }
