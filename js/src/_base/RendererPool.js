@@ -84,11 +84,11 @@ _.extend(RendererPool.prototype, {
         return renderer;
     },
 
-    _replaceRenderer: function(renderer, config) {
-        var id = renderer.poolId;
-        renderer.dispose();
+    _replaceRenderer: function(oldToken, config) {
+        var id = oldToken.poolId;
+        oldToken.dispose();
         this.numCreated--;
-        renderer = this._createRenderer(config);
+        var renderer = this._createRenderer(config);
         renderer.poolId = id;
         return renderer;
     },
@@ -99,44 +99,47 @@ _.extend(RendererPool.prototype, {
         console.debug('RendererPool.acquiring...');
 
         if (this.freePool.length() > 0) {
+            // We have one or more free renderers
+            // (previously used renderers that have been released)
 
-            renderer = this.freePool.pop(config);
-            if (renderer) {
-                renderer = renderer.renderer;
-            }
-            if (!renderer) {
-                var oldRenderer = this.freePool.shift();
-                renderer = this._replaceRenderer(oldRenderer, config);
+            var freeToken = this.freePool.pop(config);
+            if (freeToken) {
+                // We have a free renderer with the correct config
+                renderer = freeToken.renderer;
+            } else {
+                // We need to replace one of the free renderers to get
+                // the right config:
+                freeToken = this.freePool.shift();
+                renderer = this._replaceRenderer(freeToken, config);
             }
 
         } else if (this.numCreated < MAX_RENDERERS) {
 
+            // We have not yet reached max capacity, create a new renderer:
             renderer = this._createRenderer(config);
 
         } else {
 
             // reclaim token
-            var claimedRenderer = this.claimedPool.pop(config);
-            var recreate = claimedRenderer === null;
+            var claimedToken = this.claimedPool.pop(config);
+            var recreate = claimedToken === null;
             if (recreate) {
-                claimedRenderer = this.claimedPool.shift();
+                claimedToken = this.claimedPool.shift();
             }
-            renderer = claimedRenderer.renderer;
+            renderer = claimedToken.renderer;
             try {
-                claimedRenderer.onReclaim();
+                claimedToken.onReclaim();
             } catch (e) {
                 // Ensure we do not lose the renderer:
-                this.freePool.push(renderer);
+                this.freePool.push(null, renderer);
                 throw e;
             }
             // Recreate renderer if no appropriate config:
             if (recreate) {
-                renderer = this._replaceRenderer(renderer, config);
+                renderer = this._replaceRenderer(claimedToken, config);
             }
 
         }
-
-        // Ensure aliasing state matches, or remake
 
         console.debug('RendererPool.acquire(id=' + renderer.poolId + ')');
         this.claimedPool.push(config, makeRendererClaimToken(renderer, onReclaim));
