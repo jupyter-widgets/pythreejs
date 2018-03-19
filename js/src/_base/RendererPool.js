@@ -26,7 +26,7 @@ _.extend(KeyedCollection.prototype, {
     pop: function(key) {
         for (var i=0, l=this._collection.length; i < l; ++i) {
             var el = this._collection[i];
-            if (el.key == key) {
+            if (_.isEqual(el.key, key)) {
                 this._collection.splice(i, 1);
                 return el.value;
             }
@@ -54,6 +54,10 @@ _.extend(KeyedCollection.prototype, {
             }
         }
         return null;
+    },
+
+    length: function() {
+        return this._collection.length;
     },
 });
 
@@ -94,9 +98,12 @@ _.extend(RendererPool.prototype, {
         var renderer;
         console.debug('RendererPool.acquiring...');
 
-        if (this.freePool.length > 0) {
+        if (this.freePool.length() > 0) {
 
             renderer = this.freePool.pop(config);
+            if (renderer) {
+                renderer = renderer.renderer;
+            }
             if (!renderer) {
                 var oldRenderer = this.freePool.shift();
                 renderer = this._replaceRenderer(oldRenderer, config);
