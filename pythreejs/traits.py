@@ -158,7 +158,6 @@ class WebGLDataUnion(DataUnion):
     """
     def validate(self, obj, value):
         was_original_array = isinstance(value, np.ndarray)
-        print(value, was_original_array)
         value = super(WebGLDataUnion, self).validate(obj, value)
         array = value.array if isinstance(value, NDArrayWidget) else value
 
