@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from collections import namedtuple, Sequence
+import warnings
 
 from traitlets import (
     Unicode, Int, CInt, Instance, Enum, List, Dict, Float, CFloat,
@@ -11,6 +12,8 @@ from traitlets import (
 from ipywidgets import widget_serialization
 
 from ipydatawidgets import DataUnion, NDArrayWidget
+
+import numpy as np
 
 
 def _castable_namedtuple(typename, field_names):
@@ -154,15 +157,25 @@ class WebGLDataUnion(DataUnion):
     Also constrains the use of 64-bit arrays, as this is not supported by WebGL.
     """
     def validate(self, obj, value):
+        was_original_array = isinstance(value, np.ndarray)
+        print(value, was_original_array)
         value = super(WebGLDataUnion, self).validate(obj, value)
         array = value.array if isinstance(value, NDArrayWidget) else value
 
-        if array is not Undefined and str(array.dtype) == 'float64':
+        dtype_str = str(array.dtype) if array is not Undefined else ''
+        if dtype_str == 'float64' or dtype_str.endswith('int64'):
             if isinstance(value, NDArrayWidget):
-                raise TraitError('Cannot use a float64 data widget as a BufferAttribute source.')
+                raise TraitError(
+                    'Cannot use a %s data widget as a WebGL source.' %
+                    (dtype_str,))
             else:
                 # 64-bit not supported, coerce to 32-bit
-                value = value.astype('float32')
+                # If original was another array, warn about casting,
+                # as it might otherwise silently increase memory usage:
+                if was_original_array:
+                    warnings.warn('64-bit data types not supported for WebGL '
+                                  'data, casting to 32-bit.')
+                value = value.astype(dtype_str.replace('64', '32'))
         return value
 
 
