@@ -1170,7 +1170,7 @@ module.exports = {
         relativePath: './scenes/Scene',
         superClass: 'Object3D',
         properties: {
-            fog: new Types.ThreeType('Fog'),
+            fog: new Types.ThreeType(['Fog', 'FogExp2']),
             overrideMaterial: new Types.ThreeType('Material'),
             autoUpdate: new Types.Bool(true),
             background: new Types.Color(null, {nullable: true}),
