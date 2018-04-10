@@ -56,7 +56,6 @@ cmdclass['js'] = combine_commands(
         name + '/static/index.js',
         'js/src/core/BufferAttribute.autogen.js',
         name + '/core/BufferAttribute_autogen.py',
-        'docs/source/_static/jupyter-threejs.js',
     ]),
 )
 
