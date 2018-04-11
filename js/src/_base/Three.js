@@ -499,19 +499,28 @@ var ThreeModel = widgets.WidgetModel.extend({
     },
 
     convertBoolThreeToModel: function(v) {
+        if (v === null) {
+            return null;
+        }
         // Coerce falsy/truthy:
         return !!v;
     },
 
     // Enum
     convertEnumModelToThree: function(e) {
+        if (e === null) {
+            return null;
+        }
         return THREE[e];
     },
 
     convertEnumThreeToModel: function(e, propName) {
+        if (e === null) {
+            return null;
+        }
         var enumType = this.enum_property_types[propName];
         var enumValues = Enums[enumType];
-        var enumValueName = enumValues[this.obj[propName]];
+        var enumValueName = enumValues[e];
         return enumValueName;
     },
 
@@ -705,6 +714,9 @@ var ThreeModel = widgets.WidgetModel.extend({
     },
 
     convertUniformDictModelToThree: function(modelDict) {
+        if (modelDict === null) {
+            return null;
+        }
         // Convert any strings to THREE.Color
         // Just modify dict in-place, as it should serialize the same
         Object.keys(modelDict).forEach(function(k) {
@@ -772,6 +784,9 @@ var ThreeModel = widgets.WidgetModel.extend({
 
     // ArrayBuffer
     convertArrayBufferModelToThree: function(arr) {
+        if (arr === null) {
+            return null;
+        }
         if (arr instanceof widgets.WidgetModel) {
             return arr.get('array').data;
         }
@@ -779,16 +794,25 @@ var ThreeModel = widgets.WidgetModel.extend({
     },
 
     convertArrayBufferThreeToModel: function(arrBuffer) {
+        if (arrBuffer === null) {
+            return null;
+        }
         // Never back-convert to a new widget
         return ndarray(arrBuffer);
     },
 
     // Color
     convertColorModelToThree: function(c) {
+        if (c === null) {
+            return null;
+        }
         return new THREE.Color(c);
     },
 
     convertColorThreeToModel: function(c) {
+        if (c === null) {
+            return null;
+        }
         return '#' + c.getHexString();
     },
 
