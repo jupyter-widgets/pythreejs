@@ -19,8 +19,8 @@ class WebGLRenderer(RenderableWidget):
     width = CInt(200)
     height = CInt(200)
 
-    def __init__(self, antialias=False, **kwargs):
-        super(WebGLRenderer, self).__init__(_antialias=antialias, **kwargs)
+    def __init__(self, antialias=False, alpha=False, **kwargs):
+        super(WebGLRenderer, self).__init__(_antialias=antialias, _alpha=alpha, **kwargs)
         link((self, 'width'), (self, '_width'))
         link((self, 'height'), (self, '_height'))
 
