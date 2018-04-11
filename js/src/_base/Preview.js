@@ -68,13 +68,13 @@ var PreviewView = RenderableView.extend({
             if (this.model.get('_flat')) {
                 material = new THREE.MeshPhongMaterial({
                     color: '#ffffff',
-                    shading: THREE.FlatShading,
+                    flatShading: true,
                 });
             } else if (this.model.get('_wire') || obj.type === 'WireframeGeometry') {
                 material = new THREE.MeshBasicMaterial({
                     color: '#888888',
                     wireframe: true,
-                    shading: THREE.FlatShading,
+                    flatShading: true,
                 });
             } else {
                 material = new THREE.MeshLambertMaterial({
