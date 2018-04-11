@@ -296,6 +296,7 @@ var RenderableView = widgets.DOMWidgetView.extend({
 
         var config = {
             antialias: this.model.get('_antialias'),
+            alpha: this.model.get('_alpha'),
         };
         this.renderer = RendererPool.acquire(
             config,

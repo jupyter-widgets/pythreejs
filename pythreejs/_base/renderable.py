@@ -20,6 +20,7 @@ class RenderableWidget(DOMWidget):
     _width = CInt(200).tag(sync=True)
     _height = CInt(200).tag(sync=True)
     _antialias = Bool(False).tag(sync=True)
+    _alpha = Bool(False).tag(sync=True)
 
     autoClear = Bool(True).tag(sync=True)
     autoClearColor = Bool(True).tag(sync=True)

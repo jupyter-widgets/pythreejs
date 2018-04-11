@@ -17,6 +17,8 @@ var RendererModel = RenderableModel.extend({
 
             _view_name: 'RendererView',
             _model_name: 'RendererModel',
+            _antialias: false,
+            _alpha: false,
 
             scene: null,
             camera: null,

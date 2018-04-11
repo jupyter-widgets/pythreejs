@@ -32,12 +32,13 @@ class Renderer(RenderableWidget):
     background = Color('black', allow_none=True).tag(sync=True)
     background_opacity = Float(1.0, min=0.0, max=1.0).tag(sync=True)
 
-    def __init__(self, scene, camera, controls=None, antialias=False, **kwargs):
+    def __init__(self, scene, camera, controls=None, antialias=False, alpha=False, **kwargs):
         super(Renderer, self).__init__(
             scene=scene,
             camera=camera,
             controls=controls or [],
             _antialias=antialias,
+            _alpha=alpha,
             **kwargs)
         link((self, 'width'), (self, '_width'))
         link((self, 'height'), (self, '_height'))
