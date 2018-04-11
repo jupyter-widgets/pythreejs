@@ -12,3 +12,4 @@ The widgets have been embedded into the page.
     Geometries
     Animation
     Textures
+    Renderer
