@@ -94,7 +94,7 @@ setup_args = {
     'cmdclass': cmdclass,
     'author': 'PyThreejs Development Team',
     'author_email': 'jason@jasongrout.org',
-    'url': 'https://github.com/jovyan/pythreejs',
+    'url': 'https://github.com/jupyter-widgets/pythreejs',
     'keywords': ['ipython', 'jupyter', 'widgets', 'webgl', 'graphics', '3d'],
     'classifiers': [
         'Development Status :: 5 - Production/Stable',

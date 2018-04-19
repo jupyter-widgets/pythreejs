@@ -4,7 +4,7 @@ Jupyter ThreeJS Widget
 Interactive Threejs widget for the Jupyter notebook
 
 The reference Python backend, `pythreejs` is available
-[here](https://github.com/jovyan/pythreejs), with examples.
+[here](https://github.com/jupyter-widgets/pythreejs), with examples.
 
 Package Install
 ---------------
