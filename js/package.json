@@ -31,7 +31,7 @@
     "webpack-cli": "^2.0.10"
   },
   "dependencies": {
-    "@jupyter-widgets/base": "^1.1.9",
+    "@jupyter-widgets/base": "^1.1.10",
     "bluebird": "^3.5.1",
     "jupyter-dataserializers": "^1.1.2",
     "three": "^0.90.0",

@@ -68,7 +68,7 @@ setup_args = {
     'license': 'BSD',
     'include_package_data': True,
     'install_requires': [
-        'ipywidgets>=7.2',
+        'ipywidgets>=7.2.1',
         'ipydatawidgets>=1.1.1',
         'numpy',
     ],
