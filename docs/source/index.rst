@@ -57,6 +57,7 @@ Contents
    :maxdepth: 2
    :caption: Development
 
+   extending
    develop-install
 
 
