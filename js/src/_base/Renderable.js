@@ -119,6 +119,44 @@ var RenderableView = widgets.DOMWidgetView.extend({
         }
     },
 
+    processPhosphorMessage: function(msg) {
+        widgets.DOMWidgetView.prototype.processPhosphorMessage.call(this, msg);
+        switch (msg.type) {
+        case 'after-attach':
+            this.el.addEventListener('contextmenu', this, true);
+            break;
+        case 'before-detach':
+            this.el.removeEventListener('contextmenu', this, true);
+            break;
+        }
+    },
+
+    handleEvent: function(event) {
+        switch (event.type) {
+        case 'contextmenu':
+            this.handleContextMenu(event);
+            break;
+        default:
+            widgets.DOMWidgetView.prototype.handleEvent.call(this, event);
+            break;
+        }
+    },
+
+    handleContextMenu: function(event) {
+        // Cancel context menu if on renderer:
+        var candidates = [];
+        if (this.renderer) {
+            candidates.push(this.renderer.domElement);
+        }
+        if (this.$frozenRenderer) {
+            candidates.push(this.$frozenRenderer[0]);
+        }
+        if (candidates.indexOf(event.target) !== -1) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    },
+
     render: function() {
         this.doRender();
     },
