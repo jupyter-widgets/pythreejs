@@ -44,6 +44,7 @@ Python::
     import pythreejs
 
     class CubicLattice(pythreejs.Blackbox):
+        _model_name: traitlets.Unicode('CubicLatticeModel').tag(sync=True)
         _model_module = traitlets.Unicode('my_module_name').tag(sync=True)
 
         basis = traitlets.List(
