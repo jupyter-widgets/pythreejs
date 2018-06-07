@@ -1,6 +1,6 @@
 {
   "name": "jupyter-threejs",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "jupyter - threejs bridge",
   "author": "Jupyter-Threejs development team",
   "license": "BSD-3-Clause",

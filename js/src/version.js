@@ -9,4 +9,4 @@
  * Update this value when attributes are added/removed from
  * the widget models, or if the serialized format changes.
  */
-module.exports['EXTENSION_SPEC_VERSION'] = '1.0.0';
+module.exports['EXTENSION_SPEC_VERSION'] = '1.1.0';
