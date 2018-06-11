@@ -47,6 +47,22 @@
     "three"
   ],
   "jupyterlab": {
-    "extension": "src/jupyterlab-plugin"
+    "extension": "src/jupyterlab-plugin",
+    "discovery": {
+      "kernel": [
+        {
+          "kernel_spec": {
+            "language": "^python"
+          },
+          "base": {
+            "name": "pythreejs"
+          },
+          "managers": [
+              "pip",
+              "conda"
+          ]
+        }
+      ]
+    }
   }
 }
