@@ -22,3 +22,21 @@ class AnimationAction(AnimationActionBase, DOMWidget):
 
     # Normally an int, but can also be inf:
     repititions = Union([CInt(), CFloat()], default_value=float('inf'), allow_none=False).tag(sync=True)
+
+    def play(self):
+        content = {
+            "type": "play",
+        }
+        self.send(content=content, buffers=None)
+
+    def pause(self):
+        content = {
+            "type": "pause",
+        }
+        self.send(content=content, buffers=None)
+
+    def stop(self):
+        content = {
+            "type": "stop",
+        }
+        self.send(content=content, buffers=None)
