@@ -103,7 +103,23 @@ var AnimationActionModel = AnimationActionAutogen.extend({
         if (scene) {
             this.stopListening(scene, 'afterRender');
         }
-    }
+    },
+
+    onCustomMessage: function(content, buffers) {
+        switch(content.type) {
+        case 'play':
+            this.play();
+            break;
+        case 'pause':
+            this.pause();
+            break;
+        case 'stop':
+            this.stop();
+            break;
+        default:
+            AnimationActionAutogen.prototype.onCustomMessage.call(arguments);
+        }
+    },
 }, {
     serializers: _.extend({
 
