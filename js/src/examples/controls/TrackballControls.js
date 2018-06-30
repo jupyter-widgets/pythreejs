@@ -367,8 +367,7 @@ var TrackballControls = function ( object, domElement ) {
 
 		_this.domElement.addEventListener( 'mousedown', mousedown, false );
 
-		_this.domElement.addEventListener( 'mousewheel', mousewheel, false );
-		_this.domElement.addEventListener( 'DOMMouseScroll', mousewheel, false ); // firefox
+		_this.domElement.addEventListener( 'mousewheel', mousewheel, { passive: false } );
 
 		_this.domElement.addEventListener( 'touchstart', touchstart, false );
 		_this.domElement.addEventListener( 'touchend', touchend, false );
@@ -384,8 +383,7 @@ var TrackballControls = function ( object, domElement ) {
 
 		_this.domElement.removeEventListener( 'mousedown', mousedown, false );
 
-		_this.domElement.removeEventListener( 'mousewheel', mousewheel, false );
-		_this.domElement.removeEventListener( 'DOMMouseScroll', mousewheel, false ); // firefox
+		_this.domElement.removeEventListener( 'mousewheel', mousewheel, { passive: false } );
 
 		_this.domElement.removeEventListener( 'touchstart', touchstart, false );
 		_this.domElement.removeEventListener( 'touchend', touchend, false );
@@ -525,13 +523,14 @@ var TrackballControls = function ( object, domElement ) {
 	}
 
 	function mousewheel( event ) {
-
 		if ( _this.enabled === false ) return;
 
 		if ( _this.noZoom === true ) return;
 
 		event.preventDefault();
 		event.stopPropagation();
+
+		_this.dispatchEvent( startEvent );
 
 		var delta = 0;
 
@@ -546,7 +545,8 @@ var TrackballControls = function ( object, domElement ) {
 		}
 
 		_zoomStart.y += delta * 0.01;
-		_this.dispatchEvent( startEvent );
+		_this.update();
+
 		_this.dispatchEvent( endEvent );
 
 	}

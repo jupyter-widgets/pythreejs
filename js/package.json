@@ -35,7 +35,8 @@
     "bluebird": "^3.5.1",
     "jupyter-dataserializers": "^1.1.2",
     "three": "^0.90.0",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "screenfull": "^3.3.2"
   },
   "keywords": [
     "jupyterlab",

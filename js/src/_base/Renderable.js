@@ -11,6 +11,8 @@ var RendererPool = require('./RendererPool');
 
 var ThreeModel = require('./Three').ThreeModel;
 
+var screenfull = require('screenfull');
+
 var RenderableModel = widgets.DOMWidgetModel.extend({
 
     defaults: function() {
@@ -124,9 +126,12 @@ var RenderableView = widgets.DOMWidgetView.extend({
         switch (msg.type) {
         case 'after-attach':
             this.el.addEventListener('contextmenu', this, true);
+            this.el.addEventListener('dblclick', this, true);
+
             break;
         case 'before-detach':
             this.el.removeEventListener('contextmenu', this, true);
+            this.el.removeEventListener('dblclick', this, true);
             break;
         }
     },
@@ -136,6 +141,31 @@ var RenderableView = widgets.DOMWidgetView.extend({
         case 'contextmenu':
             this.handleContextMenu(event);
             break;
+        case 'dblclick': {
+            if (!screenfull.isFullscreen) {
+                var old_width = this.model.get('_width');
+                var old_height = this.model.get('_height');
+                var changed = function() {
+                    var width, height;
+                    if (screenfull.isFullscreen) {
+                        width = window.innerWidth;
+                        height = window.innerHeight;
+                    }
+                    else {
+                        width  = old_width;
+                        height = old_height;
+                    }
+                    this.renderer.setSize(width, height);
+                    this.model.set('_width', width);
+                    this.model.set('_height', height);
+                    this.touch();
+                }.bind(this);
+                screenfull.onchange(changed);
+            }
+            screenfull.toggle(event.target);
+
+            break;
+        }
         default:
             widgets.DOMWidgetView.prototype.handleEvent.call(this, event);
             break;
@@ -284,7 +314,7 @@ var RenderableView = widgets.DOMWidgetView.extend({
     },
 
     renderScene: function(scene, camera) {
-        this.debug('renderScene');
+        this.debug('renderScene with width ' + this.model.get('_width') + ', height ' + this.model.get('_height'));
 
         scene = scene || this.scene;
         camera = camera || this.camera;
