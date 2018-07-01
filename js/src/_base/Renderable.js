@@ -155,7 +155,6 @@ var RenderableView = widgets.DOMWidgetView.extend({
                         width  = old_width;
                         height = old_height;
                     }
-                    this.renderer.setSize(width, height);
                     this.model.set('_width', width);
                     this.model.set('_height', height);
                     this.touch();
@@ -460,11 +459,11 @@ var RenderableView = widgets.DOMWidgetView.extend({
     },
 
     log: function(str) {
-        console.log('TV(' + this.id + '): ' + str);
+        // console.log('TV(' + this.id + '): ' + str);
     },
 
     debug: function(str) {
-        console.debug('TV(' + this.id + '): ' + str);
+        // console.debug('TV(' + this.id + '): ' + str);
     },
 
     lazyRendererSetup: function() {
