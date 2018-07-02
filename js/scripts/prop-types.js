@@ -1,6 +1,6 @@
 'use strict';
 
-const WIDGET_SERIALIZER = '{ deserialize: widgets.unpack_models }';
+const JS_WIDGET_SERIALIZER = '{ deserialize: unpackThreeModel }';
 
 class BaseType {
     constructor(options) {
@@ -75,7 +75,7 @@ class ThreeType extends BaseType {
         super(options);
         this.typeName = typeName || '';
         this.defaultValue = null;
-        this.serializer = WIDGET_SERIALIZER;
+        this.serializer = JS_WIDGET_SERIALIZER;
         this.nullable = options.nullable !== false;
         this.args = options.args;
         this.kwargs = options.kwargs;
@@ -149,7 +149,7 @@ class ThreeTypeArray extends BaseType {
         super(options);
         this.typeName = typeName;
         this.defaultValue = [];
-        this.serializer = WIDGET_SERIALIZER;
+        this.serializer = JS_WIDGET_SERIALIZER;
         this.nullable = options.nullable !== false;
         this.allow_single = options.allow_single === true;
     }
@@ -185,7 +185,7 @@ class ThreeTypeDict extends BaseType {
         super(options);
         this.typeName = typeName;
         this.defaultValue = {};
-        this.serializer = WIDGET_SERIALIZER;
+        this.serializer = JS_WIDGET_SERIALIZER;
     }
     getTagParts() {
         return super.getTagParts().concat(['**widget_serialization']);
@@ -214,7 +214,7 @@ class BufferMorphAttributes extends BaseType {
     constructor(options) {
         super(options);
         this.defaultValue = {};
-        this.serializer = WIDGET_SERIALIZER;
+        this.serializer = JS_WIDGET_SERIALIZER;
     }
     getTagParts() {
         return super.getTagParts().concat(['**widget_serialization']);

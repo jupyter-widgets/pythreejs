@@ -81,6 +81,15 @@ function listenNested(model, propNames, callback) {
 }
 
 
+function unpackThreeModel(value, manager) {
+    return widgets.unpack_models(value, manager).then(function(model) {
+        return model.initPromise.then(function () {
+            return model;
+        });
+    });
+}
+
+
 var ThreeModel = widgets.WidgetModel.extend({
 
     defaults: function() {
@@ -824,4 +833,5 @@ var ThreeModel = widgets.WidgetModel.extend({
 
 module.exports = {
     ThreeModel: ThreeModel,
+    unpackThreeModel: unpackThreeModel,
 };
