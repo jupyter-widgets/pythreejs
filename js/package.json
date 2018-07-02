@@ -58,8 +58,8 @@
             "name": "pythreejs"
           },
           "managers": [
-              "pip",
-              "conda"
+            "pip",
+            "conda"
           ]
         }
       ]
