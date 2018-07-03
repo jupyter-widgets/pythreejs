@@ -83,9 +83,21 @@ function listenNested(model, propNames, callback) {
 
 function unpackThreeModel(value, manager) {
     return widgets.unpack_models(value, manager).then(function(model) {
-        return model.initPromise.then(function () {
+        if (Array.isArray(model)) {
+            return Promise.all(model.map(function (subValue) {
+                return unpackThreeModel(subValue, manager);
+            }));
+        } else if (model instanceof widgets.WidgetModel) {
+            return model.initPromise.then(function () {
+                return model;
+            });
+        } else if (model instanceof Object) {
+            return Promise.all(Object.keys(model).map(function(key) {
+                return unpackThreeModel(model[key], manager);
+            }));
+        } else {
             return model;
-        });
+        }
     });
 }
 
