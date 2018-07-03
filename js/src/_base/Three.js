@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var widgets = require('@jupyter-widgets/base');
+var resolvePromisesDict = require('@jupyter-widgets/base/lib/utils').resolvePromisesDict;
 var Promise = require('bluebird');
 var ndarray = require('ndarray');
 var dataserializers = require('jupyter-dataserializers');
@@ -92,7 +93,7 @@ function unpackThreeModel(value, manager) {
                 return model;
             });
         } else if (model instanceof Object) {
-            return Promise.all(Object.keys(model).map(function(key) {
+            return resolvePromisesDict(Object.keys(model).map(function(key) {
                 return unpackThreeModel(model[key], manager);
             }));
         } else {
