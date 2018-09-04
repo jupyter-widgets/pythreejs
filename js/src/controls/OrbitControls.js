@@ -38,6 +38,11 @@ var OrbitControlsModel = OrbitControlsAutogen.OrbitControlsModel.extend({
             'pushFromThree'
         );
         controlling.save_changes();
+
+        // Also update the target
+        this.set({
+            target: this.obj.target,
+        }, 'pushFromThree');
     },
 
 });
