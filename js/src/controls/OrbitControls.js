@@ -43,6 +43,7 @@ var OrbitControlsModel = OrbitControlsAutogen.OrbitControlsModel.extend({
         this.set({
             target: this.obj.target,
         }, 'pushFromThree');
+        this.save_changes();
     },
 
 });

@@ -41,6 +41,7 @@ var TrackballControlsModel = TrackballControlsAutogen.TrackballControlsModel.ext
         this.set({
             target: this.obj.target,
         }, 'pushFromThree');
+        this.save_changes();
     },
 
 });
