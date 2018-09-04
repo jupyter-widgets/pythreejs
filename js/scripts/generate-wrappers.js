@@ -733,6 +733,7 @@ class PythonWrapper {
             dependencies: this.dependencies,
             hasOverride: this.hasOverride,
             isCustom: this.isCustom,
+            todo: this.config.todo || false,
         };
 
         // Render template

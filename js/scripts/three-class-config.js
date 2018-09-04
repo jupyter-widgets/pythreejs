@@ -1458,11 +1458,13 @@ module.exports = {
     },
     // TODO:
     EdgesGeometry: {
+        todo: true,
         relativePath: './geometries/EdgesGeometry',
         superClass: 'BaseGeometry',
     },
     // TODO:
     ExtrudeGeometry: {
+        todo: true,
         relativePath: './geometries/ExtrudeGeometry',
         superClass: 'BaseGeometry',
     },
@@ -1627,6 +1629,7 @@ module.exports = {
     },
     // TODO:
     TextGeometry: {
+        todo: true,
         relativePath: './geometries/TextGeometry',
         superClass: 'BaseGeometry',
     },
@@ -1866,66 +1869,82 @@ module.exports = {
     },
     // TODO:
     ImmediateRenderObject: {
+        todo: true,
         relativePath: './extras/objects/ImmediateRenderObject',
     },
     // TODO:
     CubicInterpolant: {
+        todo: true,
         relativePath: './math/interpolants/CubicInterpolant',
     },
     // TODO:
     DiscreteInterpolant: {
+        todo: true,
         relativePath: './math/interpolants/DiscreteInterpolant',
     },
     // TODO:
     LinearInterpolant: {
+        todo: true,
         relativePath: './math/interpolants/LinearInterpolant',
     },
     // TODO:
     QuaternionLinearInterpolant: {
+        todo: true,
         relativePath: './math/interpolants/QuaternionLinearInterpolant',
     },
     // TODO:
     WebGLBufferRenderer: {
+        todo: true,
         relativePath: './renderers/webgl/WebGLBufferRenderer',
     },
     // TODO:
     WebGLCapabilities: {
+        todo: true,
         relativePath: './renderers/webgl/WebGLCapabilities',
     },
     // TODO:
     WebGLExtensions: {
+        todo: true,
         relativePath: './renderers/webgl/WebGLExtensions',
     },
     // TODO:
     WebGLGeometries: {
+        todo: true,
         relativePath: './renderers/webgl/WebGLGeometries',
     },
     // TODO:
     WebGLIndexedBufferRenderer: {
+        todo: true,
         relativePath: './renderers/webgl/WebGLIndexedBufferRenderer',
     },
     // TODO:
     WebGLLights: {
+        todo: true,
         relativePath: './renderers/webgl/WebGLLights',
     },
     // TODO:
     WebGLObjects: {
+        todo: true,
         relativePath: './renderers/webgl/WebGLObjects',
     },
     // TODO:
     WebGLProgram: {
+        todo: true,
         relativePath: './renderers/webgl/WebGLProgram',
     },
     // TODO:
     WebGLPrograms: {
+        todo: true,
         relativePath: './renderers/webgl/WebGLPrograms',
     },
     // TODO:
     WebGLProperties: {
+        todo: true,
         relativePath: './renderers/webgl/WebGLProperties',
     },
     // TODO:
     WebGLShader: {
+        todo: true,
         relativePath: './renderers/webgl/WebGLShader',
     },
     WebGLShadowMap: {
@@ -1937,6 +1956,7 @@ module.exports = {
     },
     // TODO:
     WebGLState: {
+        todo: true,
         relativePath: './renderers/webgl/WebGLState',
     },
 };
