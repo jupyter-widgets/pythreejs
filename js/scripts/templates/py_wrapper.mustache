@@ -30,6 +30,11 @@ class {{ className }}({{ superClass.className }}):
     {{/if}}
     """
 
+    {{#if todo}}
+    def __init__(self, **kwargs):
+        raise NotImplementedError('{{ className }} is not yet implemented!')
+
+    {{else}}
     {{#unless constructor.hasParameters}}
     def __init__(self, {{#each constructor.args as |arg|}}{{{ arg.name }}}{{#if arg.prop.defaultJson}}={{{ arg.prop.defaultJson }}}{{/if}}, {{/each}}**kwargs):
         {{#each constructor.args as |arg|}}
@@ -38,6 +43,7 @@ class {{ className }}({{ superClass.className }}):
         super({{ className }}, self).__init__(**kwargs)
 
     {{/unless}}
+    {{/if}}
     _model_name = Unicode('{{ modelName }}').tag(sync=True)
 
     {{#each properties as |prop propName|}}
