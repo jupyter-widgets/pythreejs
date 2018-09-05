@@ -1,9 +1,12 @@
 import six
-from ipywidgets import Widget, DOMWidget, widget_serialization, Color, register
+from ipywidgets import (
+    Widget, DOMWidget, widget_serialization, Color, register
+)
+from ipywidgets.widgets.trait_types import TypedTuple
 from traitlets import (
     Unicode, Int, CInt, Instance, ForwardDeclaredInstance, This, Enum,
     Tuple, List, Dict, Float, CFloat, Bool, Union, Any,
-    )
+)
 
 from {{ py_base_relative_path }}_base.Three import ThreeWidget
 from {{ py_base_relative_path }}enums import *

@@ -224,7 +224,7 @@ class BufferMorphAttributes extends BaseType {
         const instances = typeNames.map(function(typeName) {
             return `        Instance(${typeName})`;
         });
-        return 'Dict(Tuple(Union([\n' + instances.join(',\n') + '\n    ])))' + this.getTagString();
+        return 'Dict(TypedTuple(Union([\n' + instances.join(',\n') + '\n    ])))' + this.getTagString();
     }
     getPropArrayName() {
         return 'three_nested_properties';
@@ -499,7 +499,7 @@ class FaceArray extends BaseType {
         this.defaultValue = [];
     }
     getTraitlet() {
-        return `Tuple(trait=Face3())${this.getTagString()}`;
+        return `TypedTuple(trait=Face3())${this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertFaceArray';
