@@ -195,7 +195,8 @@ class ThreeTypeDict extends BaseType {
             const instances = this.typeName.map(function(typeName) {
                 return `        Instance(${typeName})`;
             });
-            return `Dict(Union([\n${instances.join(',\n')}\n    ]))${this.getTagString()}`;
+            return `Dict(Union([\n${
+                instances.join(',\n')}\n    ]))${this.getTagString()}`;
         }
         if (this.typeName === 'this') {
             return `Dict(This())${this.getTagString()}`;
@@ -224,7 +225,8 @@ class BufferMorphAttributes extends BaseType {
         const instances = typeNames.map(function(typeName) {
             return `        Instance(${typeName})`;
         });
-        return 'Dict(TypedTuple(Union([\n' + instances.join(',\n') + '\n    ])))' + this.getTagString();
+        return 'Dict(TypedTuple(Union([\n' +
+            instances.join(',\n') + '\n    ])))' + this.getTagString();
     }
     getPropArrayName() {
         return 'three_nested_properties';
@@ -241,7 +243,8 @@ class Bool extends BaseType {
     }
     getTraitlet() {
         const nullableStr = this.getNullableStr();
-        return `Bool(${this.getPythonDefaultValue()}, ${nullableStr})${this.getTagString()}`;
+        return `Bool(${this.getPythonDefaultValue()}, ${nullableStr})${
+            this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertBool';
@@ -315,7 +318,9 @@ class Enum extends BaseType {
     }
     getTraitlet() {
         const nullableStr = this.getNullableStr();
-        return `Enum(${this.enumTypeName}, ${this.getPythonDefaultValue()}, ${nullableStr})${this.getTagString()}`;
+        return `Enum(${this.enumTypeName}, ${
+            this.getPythonDefaultValue()}, ${nullableStr})${
+            this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertEnum';
@@ -329,7 +334,9 @@ class Color extends BaseType {
     }
     getTraitlet() {
         const nullableStr = this.getNullableStr();
-        return `Unicode(${this.getPythonDefaultValue()}, ${nullableStr})${this.getTagString()}`;
+        return `Unicode(${
+            this.getPythonDefaultValue()}, ${nullableStr})${
+            this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertColor';
@@ -342,7 +349,8 @@ class ColorArray extends BaseType {
         this.defaultValue = defaultValue || ['#ffffff'];
     }
     getTraitlet() {
-        return `List(trait=Unicode(), default_value=${this.getPythonDefaultValue()})${this.getTagString()}`;
+        return `List(trait=Unicode(), default_value=${
+            this.getPythonDefaultValue()})${this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertColorArray';
@@ -400,7 +408,9 @@ class DictType extends BaseType {
     }
     getTraitlet() {
         const nullableStr = this.getNullableStr();
-        return `Dict(default_value=${this.getPythonDefaultValue()}, ${nullableStr})${this.getTagString()}`;
+        return `Dict(default_value=${
+            this.getPythonDefaultValue()}, ${nullableStr})${
+            this.getTagString()}`;
     }
     getPropertyAssignmentFn() {
         return 'assignDict';
@@ -419,7 +429,8 @@ class FunctionType extends BaseType {
         this.defaultValue = fn || function() {};
     }
     getTraitlet() {
-        return `Unicode('${this.defaultValue.toString()}')${this.getTagString()}`;
+        return `Unicode('${
+            this.defaultValue.toString()}')${this.getTagString()}`;
     }
     getJSPropertyValue() {
         return this.defaultValue.toString();
@@ -435,7 +446,8 @@ class Vector2 extends BaseType {
         this.defaultValue = [ x||0, y||0 ];
     }
     getTraitlet() {
-        return `Vector2(default_value=${JSON.stringify(this.defaultValue)})${this.getTagString()}`;
+        return `Vector2(default_value=${
+            JSON.stringify(this.defaultValue)})${this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertVector';
@@ -451,7 +463,8 @@ class Vector3 extends BaseType {
         this.defaultValue = [ x||0, y||0, z||0 ];
     }
     getTraitlet() {
-        return `Vector3(default_value=${JSON.stringify(this.defaultValue)})${this.getTagString()}`;
+        return `Vector3(default_value=${
+            JSON.stringify(this.defaultValue)})${this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertVector';
@@ -467,7 +480,8 @@ class Vector4 extends BaseType {
         this.defaultValue = [ x||0, y||0, z||0, w||0 ];
     }
     getTraitlet() {
-        return `Vector4(default_value=${JSON.stringify(this.defaultValue)})${this.getTagString()}`;
+        return `Vector4(default_value=${
+            JSON.stringify(this.defaultValue)})${this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertVector';
@@ -519,7 +533,8 @@ class Matrix3 extends BaseType {
         ];
     }
     getTraitlet() {
-        return `Matrix3(default_value=${JSON.stringify(this.defaultValue)})${this.getTagString()}`;
+        return `Matrix3(default_value=${
+            JSON.stringify(this.defaultValue)})${this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertMatrix';
@@ -540,7 +555,8 @@ class Matrix4 extends BaseType {
         ];
     }
     getTraitlet() {
-        return `Matrix4(default_value=${JSON.stringify(this.defaultValue)})${this.getTagString()}`;
+        return `Matrix4(default_value=${
+            JSON.stringify(this.defaultValue)})${this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertMatrix';
@@ -558,7 +574,8 @@ class Euler extends BaseType {
     }
 
     getTraitlet() {
-        return `Euler(default_value=${JSON.stringify(this.defaultValue)})${this.getTagString()}`;
+        return `Euler(default_value=${
+            JSON.stringify(this.defaultValue)})${this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertEuler';
