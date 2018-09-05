@@ -22,8 +22,9 @@ var TrackballControlsModel = TrackballControlsAutogen.TrackballControlsModel.ext
     },
 
     update_controlled: function() {
-        // Since TrackballControlsView changes the position of the object, we update the position when we've stopped moving the object
-        // it's probably prohibitive to update it in real-time
+        // Since TrackballControlsView changes the position of the object,
+        // we update the position when we've stopped moving the object.
+        // It's probably prohibitive to update it in real-time
         var controlling = this.get('controlling');
         var pos = controlling.obj.position;
         var qat = controlling.obj.quaternion;
@@ -35,6 +36,12 @@ var TrackballControlsModel = TrackballControlsAutogen.TrackballControlsModel.ext
             'pushFromThree'
         );
         controlling.save_changes();
+
+        // Also update the target
+        this.set({
+            target: this.obj.target,
+        }, 'pushFromThree');
+        this.save_changes();
     },
 
 });
