@@ -245,7 +245,7 @@ function createModel(constructor, widget_manager, obj) {
 
 /**
  * Gets the child models of an arbitrarily nested combination of
- * arrays an dicts (hash maps).
+ * arrays and dicts (hash maps).
  *
  * @param {any} obj nested array/dict structure with WidgetModels as leaf nodes.
  * @returns The child models

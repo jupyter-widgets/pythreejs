@@ -1,6 +1,6 @@
 const path = require('path');
 
-var externals = ['@jupyter-widgets/base', 'three'];
+const externals = ['@jupyter-widgets/base', 'three'];
 
 module.exports = [
     {
