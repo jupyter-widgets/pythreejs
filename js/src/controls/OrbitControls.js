@@ -31,8 +31,8 @@ var OrbitControlsModel = OrbitControlsAutogen.OrbitControlsModel.extend({
         var qat = controlling.obj.quaternion;
         controlling.set(
             {
-                position: [pos.x, pos.y, pos.z],
-                quaternion: [qat._x, qat._y, qat._z, qat._w],
+                position: pos.toArray(),
+                quaternion: qat.toArray(),
                 zoom: controlling.obj.zoom,
             },
             'pushFromThree'
@@ -41,7 +41,7 @@ var OrbitControlsModel = OrbitControlsAutogen.OrbitControlsModel.extend({
 
         // Also update the target
         this.set({
-            target: this.obj.target,
+            target: this.obj.target.toArray(),
         }, 'pushFromThree');
         this.save_changes();
     },
