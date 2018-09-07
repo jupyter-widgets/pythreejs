@@ -30,8 +30,8 @@ var TrackballControlsModel = TrackballControlsAutogen.TrackballControlsModel.ext
         var qat = controlling.obj.quaternion;
         controlling.set(
             {
-                position: [pos.x, pos.y, pos.z],
-                quaternion: [qat._x, qat._y, qat._z, qat._w],
+                position: pos.toArray(),
+                quaternion: qat.toArray(),
             },
             'pushFromThree'
         );
@@ -39,7 +39,7 @@ var TrackballControlsModel = TrackballControlsAutogen.TrackballControlsModel.ext
 
         // Also update the target
         this.set({
-            target: this.obj.target,
+            target: this.obj.target.toArray(),
         }, 'pushFromThree');
         this.save_changes();
     },
