@@ -1,0 +1,13 @@
+# xthreejs cmake module
+# This module sets the following variables in your project::
+#
+#   xthreejs_FOUND - true if xthreejs found on the system
+#   xthreejs_INCLUDE_DIRS - the directory containing xthreejs headers
+#   xthreejs_LIBRARY - empty
+
+@PACKAGE_INIT@
+
+set(PN xthreejs)
+set_and_check(${PN}_INCLUDE_DIRS "${PACKAGE_PREFIX_DIR}/@CMAKE_INSTALL_INCLUDEDIR@")
+set(${PN}_LIBRARY "")
+check_required_components(${PN})

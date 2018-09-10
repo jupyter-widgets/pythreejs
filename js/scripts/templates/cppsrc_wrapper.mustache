@@ -1,0 +1,19 @@
+{{#unless hasOverride}}
+#include "xthreejs/{{ hppfile }}"
+
+xeus::xjson mime_bundle_repr(xw::xmaterialize<xthree::{{ xclassName }}>& widget)
+{
+    if (not widget.pre)
+        widget.pre = std::make_shared<xthree::preview>(xthree::preview(widget));
+    return mime_bundle_repr(*widget.pre);
+}
+
+#ifdef XTHREEJS_PRECOMPILED
+    template class xw::xmaterialize<xthree::{{ xclassName }}>;
+    template xw::xmaterialize<xthree::{{ xclassName }}>::xmaterialize();
+    template class xw::xtransport<xw::xmaterialize<xthree::{{ xclassName }}>>;
+    template class xw::xgenerator<xthree::{{ xclassName }}>;
+    template xw::xgenerator<xthree::{{ xclassName }}>::xgenerator();
+    template class xw::xtransport<xw::xgenerator<xthree::{{ xclassName }}>>;
+#endif
+{{/unless}}

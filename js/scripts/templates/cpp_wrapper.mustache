@@ -1,0 +1,131 @@
+#ifndef {{ header }}
+#define {{ header }}
+
+#include "xtl/xoptional.hpp"
+#include "xwidgets/xeither.hpp"
+#include "xwidgets/xwidget.hpp"
+
+#include "{{ cpp_base_relative_path }}/base/xenums.hpp"
+#include "{{ cpp_base_relative_path }}/base/xthree_types.hpp"
+#include "{{ superClass.cppRelativePath }}.hpp"
+#include "{{ cpp_base_relative_path }}/base/xrender.hpp"
+
+namespace xthree
+{
+    //
+    // {{ className }} declaration
+    //
+
+    template<class D>
+    class {{ xclassName }} : public {{ superClass.xclassName }}<D>
+    {
+    public:
+
+        using base_type = {{ superClass.xclassName }}<D>;
+        using derived_type = D;
+
+        void serialize_state(xeus::xjson&, xeus::buffer_sequence&) const;
+        void apply_patch(const xeus::xjson&, const xeus::buffer_sequence&);
+
+        {{#each properties as |prop propName|}}
+        {{{ prop.xproperty }}}
+        {{/each}}
+
+        {{#if hasBuffer}}
+        const std::vector<xw::xjson_path_type>& buffer_paths() const;
+        {{/if}}
+
+        std::shared_ptr<xw::xmaterialize<xpreview>> pre = nullptr;
+
+    protected:
+
+        {{ xclassName }}();
+        using base_type::base_type;
+        
+    private:
+
+        void set_defaults();
+    };
+
+    using {{ className }} = xw::xmaterialize<{{ xclassName }}>;
+
+    using {{ className }}_generator = xw::xgenerator<{{ xclassName }}>;
+
+    //
+    // {{ className }} implementation
+    //
+
+    {{#if hasBuffer}}
+    template <class D>
+    inline const std::vector<xw::xjson_path_type>&  {{ xclassName }}<D>::buffer_paths() const
+    {
+        static const std::vector<xw::xjson_path_type> default_buffer_paths = { 
+        {{#each properties as |prop propName|}}
+        {{#if prop.isBinaryBuffer}}
+            { "{{ propName }}", "buffer" },
+        {{/if}}
+        {{/each}}
+        };
+        return default_buffer_paths;
+    }
+    {{/if}}
+
+    template <class D>
+    inline void {{ xclassName }}<D>::serialize_state(xeus::xjson& state, xeus::buffer_sequence& buffers) const
+    {
+        base_type::serialize_state(state, buffers);
+
+        {{#each properties as |prop propName|}}
+         {{#if prop.xproperty}}
+        xw::set_patch_from_property({{ propName }}, state, buffers);
+         {{/if}}
+        {{/each}}
+    }
+
+    template <class D>
+    inline void {{ xclassName }}<D>::apply_patch(const xeus::xjson& patch, const xeus::buffer_sequence& buffers)
+    {
+        base_type::apply_patch(patch, buffers);
+
+        {{#each properties as |prop propName|}}
+         {{#if prop.xproperty}}
+        xw::set_property_from_patch({{ propName }}, patch, buffers);
+         {{/if}}
+        {{/each}}
+    }
+
+    template <class D>
+    inline {{ xclassName }}<D>::{{ xclassName }}()
+        : base_type()
+    {
+        set_defaults();
+    }
+
+    template <class D>
+    inline void {{ xclassName }}<D>::set_defaults()
+    {
+        this->_model_name() = "{{ modelName }}";
+        this->_view_name() = "";
+    }
+}
+
+{{#unless hasOverride}}
+xeus::xjson mime_bundle_repr(xw::xmaterialize<xthree::{{ xclassName }}>& widget);
+{{/unless}}
+
+/*********************
+ * precompiled types *
+ *********************/
+
+#ifdef XTHREEJS_PRECOMPILED
+    #ifndef _WIN32
+        extern template class xw::xmaterialize<xthree::{{ xclassName }}>;
+        extern template xw::xmaterialize<xthree::{{ xclassName }}>::xmaterialize();
+        extern template class xw::xtransport<xw::xmaterialize<xthree::{{ xclassName }}>>;
+        extern template class xw::xgenerator<xthree::{{ xclassName }}>;
+        extern template xw::xgenerator<xthree::{{ xclassName }}>::xgenerator();
+        extern template class xw::xtransport<xw::xgenerator<xthree::{{ xclassName }}>>;
+    #endif
+#endif
+
+#endif

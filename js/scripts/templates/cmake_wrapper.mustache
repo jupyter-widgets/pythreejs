@@ -1,0 +1,173 @@
+cmake_minimum_required(VERSION 3.1)
+project(xthreejs)
+
+message(STATUS "Forcing tests build type to Release")
+set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
+
+set(XTHREEJS_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+set(XTHREEJS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+# Configuration
+# =============
+
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
+set(XTHREEJS_INSTALL_LIBRARY_DIR "\"${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}\"")
+
+configure_file (
+    "${XTHREEJS_INCLUDE_DIR}/xthreejs/xthreejs_config.hpp.in"
+    "${XTHREEJS_INCLUDE_DIR}/xthreejs/xthreejs_config.hpp"
+)
+
+# Versionning
+# ===========
+
+file(STRINGS "${XTHREEJS_INCLUDE_DIR}/xthreejs/xthreejs_config.hpp" xthreejs_version_defines
+     REGEX "#define XTHREEJS_VERSION_(MAJOR|MINOR|PATCH)")
+foreach(ver ${xthreejs_version_defines})
+    if(ver MATCHES "#define XTHREEJS_VERSION_(MAJOR|MINOR|PATCH) +([^ ]+)$")
+        set(XTHREEJS_VERSION_${CMAKE_MATCH_1} "${CMAKE_MATCH_2}" CACHE INTERNAL "")
+    endif()
+endforeach()
+set(XTHREEJS_VERSION
+    ${XTHREEJS_VERSION_MAJOR}.${XTHREEJS_VERSION_MINOR}.${XTHREEJS_VERSION_PATCH})
+message(STATUS "xthreejs version: v${XTHREEJS_VERSION}")
+
+# Binary version
+# See the following URL for explanations about the binary versionning
+# https://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html#Updating-version-info
+file(STRINGS "${XTHREEJS_INCLUDE_DIR}/xthreejs/xthreejs_config.hpp" xthreejs_version_defines
+    REGEX "#define XTHREEJS_BINARY_(CURRENT|REVISION|AGE)")
+foreach(ver ${xthreejs_version_defines})
+    if(ver MATCHES "#define XTHREEJS_BINARY_(CURRENT|REVISION|AGE) +([^ ]+)$")
+        set(XTHREEJS_BINARY_${CMAKE_MATCH_1} "${CMAKE_MATCH_2}" CACHE INTERNAL "")
+    endif()
+endforeach()
+set(XTHREEJS_BINARY_VERSION
+    ${XTHREEJS_BINARY_CURRENT}.${XTHREEJS_BINARY_REVISION}.${XTHREEJS_BINARY_AGE})
+message(STATUS "xthreejs binary version: v${XTHREEJS_BINARY_VERSION}")
+
+# Dependencies
+# ============
+
+find_package(cppzmq 4.2.3 REQUIRED)
+find_package(xtl 0.4 REQUIRED)
+find_package(xeus 0.10.1 REQUIRED)
+find_package(xwidgets 0.7 REQUIRED)
+find_package(xproperty 0.7 REQUIRED)
+
+# Source files
+# ============
+
+set(XTHREEJS_HEADERS
+    {{#each hppfiles as |file|}}
+    ${XTHREEJS_INCLUDE_DIR}/xthreejs/{{{ file }}}
+    {{/each}}
+    ${XTHREEJS_INCLUDE_DIR}/xthreejs/xthreejs_config.hpp
+)
+
+set(XTHREEJS_SOURCES
+    {{#each cppfiles as |file|}}
+    ${XTHREEJS_SOURCE_DIR}/{{{ file }}}
+    {{/each}}
+)
+
+# Output
+# ======
+
+OPTION(XTHREEJS_PRECOMPILED "precompile xthreejs instances" ON)
+if(XTHREEJS_PRECOMPILED)
+    add_definitions(-DXTHREEJS_PRECOMPILED)
+endif()
+
+add_library(xthreejs SHARED ${XTHREEJS_SOURCES} ${XTHREEJS_HEADERS})
+
+target_include_directories(xthreejs PUBLIC $<BUILD_INTERFACE:${XTHREEJS_INCLUDE_DIR}>
+                                           $<INSTALL_INTERFACE:include>)
+
+target_link_libraries(xthreejs
+                      PUBLIC xtl
+                      PUBLIC xwidgets
+                      PRIVATE xeus)
+
+set_target_properties(xthreejs PROPERTIES
+                      PUBLIC_HEADER "${XTHREEJS_HEADERS}"
+                      COMPILE_DEFINITIONS "XTHREEJS_EXPORTS"
+                      PREFIX ""
+                      VERSION ${XTHREEJS_BINARY_VERSION}
+                      SOVERSION ${XTHREEJS_BINARY_CURRENT}
+                      OUTPUT_NAME "libxthreejs")
+
+# Compilation flags
+# =================
+
+include(CheckCXXCompilerFlag)
+string(TOUPPER "${CMAKE_BUILD_TYPE}" U_CMAKE_BUILD_TYPE)
+OPTION(DISABLE_ARCH_NATIVE "disable -march=native flag" OFF)
+
+set_target_properties(xthreejs PROPERTIES
+    CXX_EXTENSIONS OFF
+    CXX_STANDARD_REQUIRED 14)
+
+target_compile_features(xthreejs PRIVATE cxx_std_14)
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Intel")
+    target_compile_options(xthreejs PUBLIC -Wunused-parameter -Wextra -Wreorder)
+    if (DISABLE_ARCH_NATIVE)
+        target_compile_options(xthreejs PUBLIC -mtune=generic)
+    else()
+        target_compile_options(xthreejs PUBLIC -march=native)
+    endif()
+
+    # Enable link time optimization and set the default symbol
+    # visibility to hidden (very important to obtain small binaries)
+    if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
+        # Check for Link Time Optimization support
+        # (GCC/Clang)
+        CHECK_CXX_COMPILER_FLAG("-flto" HAS_LTO_FLAG)
+        if (HAS_LTO_FLAG)
+            target_compile_options(xthreejs PUBLIC -flto)
+        endif()
+
+        # Intel equivalent to LTO is called IPO
+        if (CMAKE_CXX_COMPILER_ID MATCHES "Intel")
+            CHECK_CXX_COMPILER_FLAG("-ipo" HAS_IPO_FLAG)
+            if (HAS_IPO_FLAG)
+                target_compile_options(xthreejs PUBLIC -ipo)
+            endif()
+        endif()
+    endif()
+    message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+endif()
+
+# Installation
+# ============
+
+set(XTHREEJS_CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}" CACHE STRING "install path for xthreejsConfig.cmake")
+
+install(DIRECTORY ${XTHREEJS_INCLUDE_DIR}/xthreejs DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+install(TARGETS xthreejs
+        EXPORT ${PROJECT_NAME}-targets
+        #PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/xthreejs
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+# Makes the project importable from the build directory
+export(EXPORT ${PROJECT_NAME}-targets
+       FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
+
+configure_package_config_file(${PROJECT_NAME}Config.cmake.in
+                              "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+                              INSTALL_DESTINATION ${XTHREEJS_CMAKECONFIG_INSTALL_DIR})
+write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+                                 VERSION ${XTHREEJS_VERSION}
+                                 COMPATIBILITY AnyNewerVersion)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+              ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+              DESTINATION ${XTHREEJS_CMAKECONFIG_INSTALL_DIR})
+install(EXPORT ${PROJECT_NAME}-targets
+        FILE ${PROJECT_NAME}Targets.cmake
+DESTINATION ${XTHREEJS_CMAKECONFIG_INSTALL_DIR})
