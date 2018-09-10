@@ -28,10 +28,12 @@ var TrackballControlsModel = TrackballControlsAutogen.TrackballControlsModel.ext
         var controlling = this.get('controlling');
         var pos = controlling.obj.position;
         var qat = controlling.obj.quaternion;
+        var  up = controlling.obj.up;
         controlling.set(
             {
-                position: pos.toArray(),
+                position:   pos.toArray(),
                 quaternion: qat.toArray(),
+                up:          up.toArray(),
             },
             'pushFromThree'
         );

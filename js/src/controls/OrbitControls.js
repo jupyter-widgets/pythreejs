@@ -29,11 +29,13 @@ var OrbitControlsModel = OrbitControlsAutogen.OrbitControlsModel.extend({
         var controlling = this.get('controlling');
         var pos = controlling.obj.position;
         var qat = controlling.obj.quaternion;
+        var  up = controlling.obj.up;
         controlling.set(
             {
-                position: pos.toArray(),
+                position:   pos.toArray(),
                 quaternion: qat.toArray(),
-                zoom: controlling.obj.zoom,
+                up:          up.toArray(),
+                zoom:       controlling.obj.zoom,
             },
             'pushFromThree'
         );
