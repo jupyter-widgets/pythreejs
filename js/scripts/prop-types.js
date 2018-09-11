@@ -9,6 +9,9 @@ class BaseType {
         this.nullable = options.nullable === true;
     }
     getJSPropertyValue() {
+        if (this.defaultValue === Infinity || this.defaultValue === -Infinity) {
+            return this.defaultValue.toString();
+        }
         return JSON.stringify(this.defaultValue);
     }
     getPropArrayName() {
