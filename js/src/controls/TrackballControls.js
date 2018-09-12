@@ -21,6 +21,22 @@ var TrackballControlsModel = TrackballControlsAutogen.TrackballControlsModel.ext
         });
     },
 
+    // push data from model to the three object
+    syncToThreeObj: function() {
+        TrackballControlsAutogen.TrackballControlsModel.prototype.syncToThreeObj.apply(this, arguments);
+
+        // We want updates to, e.g., 'target' from the Python side to take
+        // effect immediately so that there isn't a jump at the start of the
+        // next user interaction. This is especially important for the changes
+        // made when reconstructing an embedded widget.
+        this.obj.update();
+
+        // Updating the target alone doesn't change the controlled object's
+        // position, so TrackballControls::update won't dispatch a changeEvent;
+        // we need to emit one manually.
+        this.obj.dispatchEvent({type: 'change'});
+    },
+
     update_controlled: function() {
         // Since TrackballControlsView changes the position of the object,
         // we update the position when we've stopped moving the object.
@@ -45,7 +61,6 @@ var TrackballControlsModel = TrackballControlsAutogen.TrackballControlsModel.ext
         }, 'pushFromThree');
         this.save_changes();
     },
-
 });
 
 module.exports = {
