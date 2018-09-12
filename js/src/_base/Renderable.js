@@ -148,7 +148,7 @@ var RenderableView = widgets.DOMWidgetView.extend({
                 var changed = function() {
                     var width, height;
                     if (screenfull.isFullscreen) {
-                        width = window.innerWidth;
+                        width  = window.innerWidth;
                         height = window.innerHeight;
                     }
                     else {
@@ -228,6 +228,16 @@ var RenderableView = widgets.DOMWidgetView.extend({
             this.$frozenRenderer.width(width).height(height);
         } else {
             this.renderer.setSize(width, height);
+        }
+        if (this.camera !== undefined) {
+            // Update the camera's aspect to match the canvas aspect ratio.
+            this.camera.aspect = width / height;
+            this.camera.updateProjectionMatrix();
+            if (this.camera.ipymodel !== undefined) {
+                // Sync new aspect back to Python (if the camera has a model)
+                this.camera.ipymodel.set('aspect', this.camera.aspect, 'pushFromThree');
+                this.camera.ipymodel.save_changes();
+            }
         }
     },
 
