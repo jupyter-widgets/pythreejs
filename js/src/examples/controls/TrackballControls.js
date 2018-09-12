@@ -19,7 +19,12 @@ var TrackballControls = function ( object, domElement ) {
 
 	this.screen = { left: 0, top: 0, width: 0, height: 0 };
 
-	this.rotateSpeed = 1.0;
+	// Note: rotateSpeed must be 2.0 to avoid hysteresis (so that dragging the
+	// mouse around any closed path, no matter how vigorously, leaves the
+	// rotation unchanged). Other values will cause the object's rotation to
+	// drift counter-intuitively.
+	// For a mathematical explanation, see Shoemake 1992: ARCBALL.
+	this.rotateSpeed = 2.0;
 	this.zoomSpeed = 1.2;
 	this.panSpeed = 0.3;
 
@@ -28,7 +33,10 @@ var TrackballControls = function ( object, domElement ) {
 	this.noPan = false;
 	this.noRoll = false;
 
-	this.staticMoving = false;
+	// staticMoving must also be true to avoid hysteresis in the rotation gesture (see above).
+	// Also disabling staticMoving makes the zoom/pan gestures almost unusable
+	// since pythreejs doesn't call controls.update() with a timer.
+	this.staticMoving = true;
 	this.dynamicDampingFactor = 0.2;
 
 	this.minDistance = 0;
@@ -76,7 +84,10 @@ var TrackballControls = function ( object, domElement ) {
 
 	// methods
 
-	this.handleResize = function () {
+	// Note: this method must be called not only when the canvas is resized, but also
+	// when the page is scrolled! Instead of using it as a callback, we just
+	// update the bounds whenever a mouse/touch interaction begins.
+	this.updateBounds = function () {
 
 		if ( this.domElement === document ) {
 
@@ -133,7 +144,6 @@ var TrackballControls = function ( object, domElement ) {
 		var mouseOnBall = new THREE.Vector3();
 
 		return function ( pageX, pageY ) {
-
 			mouseOnBall.set(
 				( pageX - _this.screen.width * 0.5 - _this.screen.left ) / (_this.screen.width*.5),
 				( _this.screen.height * 0.5 + _this.screen.top - pageY ) / (_this.screen.height*.5),
@@ -447,6 +457,10 @@ var TrackballControls = function ( object, domElement ) {
 
 		if ( _this.enabled === false ) return;
 
+		// Make sure we know the current canvas bounds so that
+		// mouse coordinates are computed properly during this interaction.
+		_this.updateBounds();
+
 		event.preventDefault();
 		event.stopPropagation();
 
@@ -555,6 +569,10 @@ var TrackballControls = function ( object, domElement ) {
 
 		if ( _this.enabled === false ) return;
 
+		// Make sure we know the current canvas bounds so that
+		// mouse coordinates are computed properly during this interaction.
+		_this.updateBounds();
+
 		switch ( event.touches.length ) {
 
 		case 1:
@@ -643,7 +661,7 @@ var TrackballControls = function ( object, domElement ) {
 
 	this.connectEvents();
 
-	this.handleResize();
+	this.updateBounds();
 
 	// force an update at start
 	this.update();
