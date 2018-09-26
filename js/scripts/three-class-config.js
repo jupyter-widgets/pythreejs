@@ -315,7 +315,7 @@ module.exports = {
             dynamic:     new Types.Bool(false),
             //itemSize:    new Types.Int(1),   // inferred from array
             needsUpdate: new Types.Bool(false),
-            normalized:  new Types.Bool(true),
+            normalized:  new Types.Bool(false),
             version:     new Types.Int(-1),
         },
         constructorArgs: [ 'array', 'normalized' ],
