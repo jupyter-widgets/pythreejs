@@ -1574,7 +1574,7 @@ module.exports = {
         superClass: 'BaseGeometry',
         constructorArgs: [ 'func', 'slices', 'stacks' ],
         properties: {
-            func:   new Types.Function(function(u,v) { return THREE.Vector3(); }),
+            func:   new Types.Function(function(u, v, vec) { }),
             slices: new Types.Int(3), // NOTE: default not specified in three.js
             stacks: new Types.Int(3), // NOTE: default not specified in three.js
         },
