@@ -375,12 +375,13 @@ module.exports = {
             index:              new Types.ThreeType(['BufferAttribute', 'InterleavedBufferAttribute']),
             attributes:         new Types.ThreeTypeDict(['BufferAttribute', 'InterleavedBufferAttribute']),
             morphAttributes:    new Types.BufferMorphAttributes(),
+            userData:           new Types.Dict(),
             MaxIndex:           new Types.Int(65535),
             // TODO: These likely require special types:
             //groups:             new Types.GeometryGroup(),
             //drawRange:          new Types.DrawRange(),
             _ref_geometry:      new Types.ThreeType(['BaseGeometry', 'BaseBufferGeometry']),
-            _store_ref:      new Types.Bool(false),
+            _store_ref:         new Types.Bool(false),
         },
     },
     InstancedBufferAttribute: {
@@ -761,6 +762,28 @@ module.exports = {
         },
         constructorArgs: [ 'parameters' ],
     },
+    MeshMatcapMaterial: {
+        relativePath: './materials/MeshMatcapMaterial',
+        superClass: 'Material',
+        properties: {
+            alphaMap:           new Types.ThreeType('Texture'),
+            bumpMap:            new Types.ThreeType('Texture'),
+            bumpScale:          new Types.Float(1.0),
+            color:              new Types.Color('#ffffff'),
+            displacementMap:    new Types.ThreeType('Texture'),
+            displacementScale:  new Types.Float(1.0),
+            displacementBias:   new Types.Float(0.0),
+            lights:             new Types.Bool(false),
+            map:                new Types.ThreeType('Texture'),
+            matcap:             new Types.ThreeType('Texture'),
+            morphNormals:       new Types.Bool(false),
+            morphTargets:       new Types.Bool(false),
+            normalMap:          new Types.ThreeType('Texture'),
+            normalScale:        new Types.Vector2(1, 1),
+            skinning:           new Types.Bool(false),
+        },
+        constructorArgs: [ 'parameters' ],
+    },
     MeshNormalMaterial: {
         relativePath: './materials/MeshNormalMaterial',
         superClass: 'Material',
@@ -874,6 +897,7 @@ module.exports = {
             color:           new Types.Color('#ffffff'),
             lights:          new Types.Bool(false),
             map:             new Types.ThreeType('Texture'),
+            morphTargets:    new Types.Bool(false),
             size:            new Types.Float(1.0),
             sizeAttenuation: new Types.Bool(true),
         },
@@ -925,6 +949,7 @@ module.exports = {
             lights:   new Types.Bool(false),
             map:      new Types.ThreeType('Texture'),
             rotation: new Types.Float(0.0),
+            sizeAttenuation: new Types.Bool(true),
         },
         constructorArgs: [ 'parameters' ],
     },
@@ -1232,6 +1257,22 @@ module.exports = {
         },
         constructorArgs: [ 'data', 'format', 'type', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter', 'anisotropy' ],
     },
+    DataTexture3D: {
+        relativePath: './textures/DataTexture3D',
+        superClass: 'Texture',
+        properties: {
+            // this.image = { data: data, width: width, height: height, depth: depth };
+            data:            new Types.ArrayBuffer(),
+            // width:           new Types.Int(0),   // inferred from data
+            // height:          new Types.Int(0),   // inferred from data
+            // depth:           new Types.Int(0),   // inferred from data
+            minFilter:       new Types.Enum('Filters', 'NearestFilter'), // override default
+            magFilter:       new Types.Enum('Filters', 'NearestFilter'), // override default
+            flipY:           new Types.Bool(false), // override default
+            generateMipmaps: new Types.Bool(false),
+        },
+        constructorArgs: [ 'data', 'format', 'type', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter', 'anisotropy' ],
+    },
     DepthTexture: {
         relativePath: './textures/DepthTexture',
         superClass: 'Texture',
@@ -1371,6 +1412,19 @@ module.exports = {
     BoxGeometry: {
         relativePath: './geometries/BoxGeometry',
         superClass: 'BaseGeometry',
+        constructorArgs: [ 'width', 'height', 'depth', 'widthSegments', 'heightSegments', 'depthSegments' ],
+        properties: {
+            width:          new Types.Float(1.0),
+            height:         new Types.Float(1.0),
+            depth:          new Types.Float(1.0),
+            widthSegments:  new Types.Int(1),
+            heightSegments: new Types.Int(1),
+            depthSegments:  new Types.Int(1),
+        },
+    },
+    BoxLineGeometry: {
+        relativePath: './geometries/BoxGeometry',
+        superClass: 'BaseBufferGeometry',
         constructorArgs: [ 'width', 'height', 'depth', 'widthSegments', 'heightSegments', 'depthSegments' ],
         properties: {
             width:          new Types.Float(1.0),
