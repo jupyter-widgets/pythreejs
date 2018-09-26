@@ -180,36 +180,43 @@ module.exports = {
         relativePath: './controls/OrbitControls',
         superClass: 'Controls',
         properties: {
-            enabled: new Types.Bool(true),
-
-            minDistance: new Types.Float(0),
-            maxDistance: new Types.Float(Infinity),
-
-            minZoom: new Types.Float(0),
-            maxZoom: new Types.Float(Infinity),
-
-            minPolarAngle: new Types.Float(0), // radians
-            maxPolarAngle: new Types.Float(Math.PI), // radians
-
-            minAzimuthAngle: new Types.Float(-Infinity), // radians
-            maxAzimuthAngle: new Types.Float(Infinity), // radians
-
-            enableDamping: new Types.Bool(false),
-            dampingFactor: new Types.Float(0.25),
-
-            enableZoom: new Types.Bool(true),
-            zoomSpeed: new Types.Float(1.0),
-
-            enableRotate: new Types.Bool(true),
-            rotateSpeed: new Types.Float(1.0),
-
-            enablePan: new Types.Bool(true),
-            keyPanSpeed: new Types.Float(7.0), // pixels moved per arrow key push
-
             autoRotate: new Types.Bool(false),
+
             autoRotateSpeed: new Types.Float(2.0), // 30 seconds per round when fps is 60
 
+            dampingFactor: new Types.Float(0.25),
+
+            enabled: new Types.Bool(true),
+
+            enableDamping: new Types.Bool(false),
             enableKeys: new Types.Bool(true),
+            enablePan: new Types.Bool(true),
+            enableRotate: new Types.Bool(true),
+            enableZoom: new Types.Bool(true),
+
+            keyPanSpeed: new Types.Float(7.0), // pixels moved per arrow key push
+
+            // keys: new Types.KeyDict(),
+
+            maxAzimuthAngle: new Types.Float(Infinity), // radians
+            maxDistance: new Types.Float(Infinity),
+            maxPolarAngle: new Types.Float(Math.PI), // radians
+            maxZoom: new Types.Float(Infinity),
+
+            minAzimuthAngle: new Types.Float(-Infinity), // radians
+            minDistance: new Types.Float(0),
+            minPolarAngle: new Types.Float(0), // radians
+            minZoom: new Types.Float(0),
+
+            // mouseButtons: new Types.MouseButtonDict(),
+
+            panSpeed: new Types.Float(1.0),
+
+            rotateSpeed: new Types.Float(1.0),
+
+            screenSpacePanning: new Types.Bool(false),
+
+            zoomSpeed: new Types.Float(1.0),
 
             target: new Types.Vector3(0, 0, 0),
         },

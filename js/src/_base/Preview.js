@@ -163,6 +163,8 @@ var PreviewView = RenderableView.extend({
         // Allow user to inspect object with mouse/scrollwheel
         this.debug('setting up controls');
         var control = new OrbitControls(this.camera, this.renderer.domElement);
+        control.screenSpacePanning = false;
+
         control.target.set(0, 0, 0);
         control.update();
         this.controls = [control];

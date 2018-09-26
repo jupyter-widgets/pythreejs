@@ -31,12 +31,6 @@ var FlyControls = function ( object, domElement ) {
 
 	this.mouseStatus = 0;
 
-	this.handleEvent = function ( event ) {
-		if ( typeof this[ event.type ] == 'function' ) {
-			this[ event.type ]( event );
-		}
-	};
-
 	this.update = function( delta ) {
 
 		var moveMult = delta * this.movementSpeed;
@@ -60,8 +54,8 @@ var FlyControls = function ( object, domElement ) {
 		return false;
 	};
 
-	this.dispose = function() {};
-	this.connectEvents = function(element) {
+	this.dispose = function () {};
+	this.connectEvents = function (element) {
 		if (element) {
 			scope.domElement = element;
 		}

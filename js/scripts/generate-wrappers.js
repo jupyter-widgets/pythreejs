@@ -64,9 +64,11 @@ const IGNORE_FILES = [
     '**/renderers/WebGL2Renderer.js',       //   render is not exposed.
     //'**/renderers/webgl/**',
     '**/renderers/webgl/WebGLAttributes.js',
+    '**/renderers/webgl/WebGLAnimation.js',
     '**/renderers/webgl/WebGLBackground.js',
     '**/renderers/webgl/WebGLClipping.js',
     '**/renderers/webgl/WebGLFlareRenderer.js',
+    '**/renderers/webgl/WebGLInfo.js',
     '**/renderers/webgl/WebGLMorphtargets.js',
     '**/renderers/webgl/WebGLRenderLists.js',
     '**/renderers/webgl/WebGLRenderStates.js',
@@ -80,6 +82,7 @@ const IGNORE_FILES = [
     '**/loaders/LoaderUtils.js',            // Only functions, nothing to export
     '**/extras/Earcut.js',                  // Only functions, nothing to export
     '**/extras/ShapeUtils.js',              // Only functions, nothing to export
+    '**/extras/ImageUtils.js',              // Only functions, nothing to export
     '**/extras/core/Interpolations.js',     // Only functions, nothing to export
     '**/textures/CanvasTexture.js'          // Canvases are not referenceable from python
 ];
