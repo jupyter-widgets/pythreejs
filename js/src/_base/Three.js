@@ -768,11 +768,17 @@ var ThreeModel = widgets.WidgetModel.extend({
         return arr && arr.data;
     },
 
-    convertArrayBufferThreeToModel: function(arrBuffer) {
+    convertArrayBufferThreeToModel: function(arrBuffer, propName) {
         if (arrBuffer === null) {
             return null;
         }
-        // Never back-convert to a new widget
+        var current = this.get(propName);
+        var currentArray = dataserializers.getArray(current);
+        if (currentArray && (currentArray.data === arrBuffer)) {
+            // Unchanged, do nothing
+            return current;
+        }
+        // Never create a new widget, even if current is one
         return ndarray(arrBuffer);
     },
 

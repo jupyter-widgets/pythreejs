@@ -13,7 +13,7 @@ from traitlets import (
 
 from ipywidgets import widget_serialization
 
-from ipydatawidgets import DataUnion, NDArrayWidget
+from ipydatawidgets import DataUnion, NDArrayWidget, shape_constraints
 
 import numpy as np
 

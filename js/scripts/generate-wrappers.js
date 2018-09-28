@@ -40,6 +40,11 @@ const CUSTOM_CLASSES = [
     'core/BaseBufferGeometry.js',
     'objects/CloneArray.js',
     'objects/Blackbox.js',
+    'objects/Line2.js',
+    'objects/LineSegments2.js',
+    'geometries/LineGeometry.js',
+    'geometries/LineSegmentsGeometry.js',
+    'materials/LineMaterial.js',
 ];
 
 const IGNORE_FILES = [
