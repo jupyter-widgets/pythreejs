@@ -418,14 +418,13 @@ module.exports = {
         relativePath: './core/InterleavedBuffer',
         properties: {
             array:          new Types.ArrayBuffer(),
-            stride:         new Types.Int(null),
             dynamic:        new Types.Bool(false),
             // updateRange: new Types.UpdateRange(),
             version:        new Types.Int(0),
             needsUpdate:    new Types.Bool(false),
         },
         propsDefinedByThree: ['version', 'needsUpdate'],
-        constructorArgs: ['array', 'stride'],
+        constructorArgs: ['array'],
     },
     InterleavedBufferAttribute: {
         relativePath: './core/InterleavedBufferAttribute',
@@ -433,7 +432,7 @@ module.exports = {
             data:           new Types.ThreeType('InterleavedBuffer'),
             itemSize:       new Types.Int(0),
             offset:         new Types.Int(0),
-            normalized:     new Types.Bool(true),
+            normalized:     new Types.Bool(false),
         },
         constructorArgs: ['data', 'itemSize', 'offset', 'normalized']
     },

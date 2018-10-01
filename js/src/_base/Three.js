@@ -805,14 +805,9 @@ var ThreeModel = widgets.WidgetModel.extend({
     },
 
     // ArrayBuffer
-    convertArrayBufferModelToThree: function(arr) {
-        if (arr === null) {
-            return null;
-        }
-        if (arr instanceof widgets.WidgetModel) {
-            return arr.get('array').data;
-        }
-        return arr.data;
+    convertArrayBufferModelToThree: function(ref, propName) {
+        var arr = dataserializers.getArray(ref);
+        return arr && arr.data;
     },
 
     convertArrayBufferThreeToModel: function(arrBuffer) {
