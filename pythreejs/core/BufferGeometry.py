@@ -66,7 +66,13 @@ def _dict_is_default(ht, name):
     )
 
 def _attr_value_repr(v):
-    array = get_union_array(v.array)
+    try:
+        array = get_union_array(v.array)
+    except AttributeError:
+        from .InterleavedBufferAttribute_autogen import InterleavedBufferAttribute
+        if not isinstance(v, InterleavedBufferAttribute):
+            raise
+        return repr(v)
     # Return full repr if array size is small:
     if array.size < 50:
         return repr(v)
