@@ -1,6 +1,6 @@
 'use strict';
 
-const JS_WIDGET_SERIALIZER = '{ deserialize: unpackThreeModel }';
+const JS_WIDGET_SERIALIZER = '{ deserialize: serializers.unpackThreeModel }';
 
 class BaseType {
     constructor(options) {
@@ -337,7 +337,7 @@ class Color extends BaseType {
     }
     getTraitlet() {
         const nullableStr = this.getNullableStr();
-        return `Unicode(${
+        return `Color(${
             this.getPythonDefaultValue()}, ${nullableStr})${
             this.getTagString()}`;
     }
@@ -421,8 +421,21 @@ class DictType extends BaseType {
 }
 
 class UniformDict extends DictType {
-    getPropertyConverterFn() {
-        return 'convertUniformDict';
+    constructor(defaultValue={}, options) {
+        super(defaultValue, options);
+        this.serializer = '{ serialize: serializers.serializeUniforms, ' +
+            'deserialize: serializers.deserializeUniforms }';
+    }
+    getTraitlet() {
+        const nullableStr = this.getNullableStr();
+        return `Dict(default_value=${
+            this.getPythonDefaultValue()
+        }, trait=Uniform(allow_none=True), ${
+            nullableStr
+        })${this.getTagString()}`;
+    }
+    getTagParts() {
+        return super.getTagParts().concat(['**uniforms_serialization']);
     }
 }
 

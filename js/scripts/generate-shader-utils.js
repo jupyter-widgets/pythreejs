@@ -4,16 +4,18 @@ const path = require('path');
 const fse = require('fs-extra');
 const Handlebars = require('handlebars');
 
-var shaderUtilsConfig = require('./three-shader-utils-config');
+const shaderUtilsConfig = require('./three-shader-utils-config');
 
-var scriptDir = __dirname;
-var baseDir = path.resolve(scriptDir, '..');
+const serializeUniforms = require('../src/_base/serializers').serializeUniforms;
 
-var pySrcDir = path.resolve(baseDir, '..', 'pythreejs');
-var templateDir = path.resolve(scriptDir, 'templates');
+const scriptDir = __dirname;
+const baseDir = path.resolve(scriptDir, '..');
 
-var AUTOGEN_EXT = 'autogen';
-var JSON_AUTOGEN_EXT = '.' + AUTOGEN_EXT + '.json';
+const pySrcDir = path.resolve(baseDir, '..', 'pythreejs');
+const templateDir = path.resolve(scriptDir, 'templates');
+
+const AUTOGEN_EXT = 'autogen';
+const JSON_AUTOGEN_EXT = '.' + AUTOGEN_EXT + '.json';
 
 
 // We actually need access to THREE data here
@@ -58,13 +60,31 @@ function mapPromiseFnOverObject(object, mapFn) {
 
 function createPythonWrapper(name, relativePath) {
 
-    var data = THREE[name];
+    const data = THREE[name];
+    let serialized;
+    if (name === 'UniformsLib') {
+        serialized = {};
+        for (let section in data) {
+            serialized[section] = serializeUniforms(data[section]);
+        }
+    } else if (name === 'ShaderLib') {
+        serialized = {};
+        for (let section in data) {
+            if (data[section]['uniforms'] === undefined) {
+                continue;
+            }
+            serialized[section] = Object.assign({}, data[section]);
+            serialized[section]['uniforms'] = serializeUniforms(data[section]['uniforms']);
+        }
+    } else {
+        serialized = data;
+    }
 
-    var jsonPath = path.resolve(pySrcDir, relativePath + JSON_AUTOGEN_EXT);
-    var promises = [fse.outputFile(jsonPath, JSON.stringify(data, null, 4))];
+    const jsonPath = path.resolve(pySrcDir, relativePath + JSON_AUTOGEN_EXT);
+    const promises = [fse.outputFile(jsonPath, JSON.stringify(serialized, null, 4))];
 
-    var pyPath = path.resolve(pySrcDir, relativePath + '_' + AUTOGEN_EXT + '.py');
-    var output = pyWrapperTemplate({
+    const pyPath = path.resolve(pySrcDir, relativePath + '_' + AUTOGEN_EXT + '.py');
+    const output = pyWrapperTemplate({
         name: name,
         jsonPath: name + JSON_AUTOGEN_EXT,
 

@@ -317,7 +317,7 @@ class JavascriptWrapper {
 
         this.jsDestPath = path.resolve(jsSrcDir, modulePath);
         this.destDir = path.dirname(this.jsDestPath);
-        this.relativePathToBase = path.relative(this.destDir, jsSrcDir).split(pathSep).join('/');
+        this.relativePathToBase = path.relative(this.destDir, jsSrcDir).replace(pathSep, '/');
 
         this.jsAutoDestPath = path.resolve(
             this.destDir,
@@ -355,6 +355,7 @@ class JavascriptWrapper {
         this.context = {
             now: new Date(),
             generatorScriptName: path.basename(__filename),
+            relativePathToBase: this.relativePathToBase,
 
             className: this.className,
             viewName: this.viewName,
@@ -369,7 +370,6 @@ class JavascriptWrapper {
             serialized_props: this.serializedProps,
             enum_properties: this.enum_properties,
             override_class: this.overrideClass, // { relativePath }
-            relativePathToBase: this.relativePathToBase,
         };
 
         // Render template
