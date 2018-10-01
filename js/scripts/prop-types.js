@@ -337,7 +337,7 @@ class Color extends BaseType {
     }
     getTraitlet() {
         const nullableStr = this.getNullableStr();
-        return `Unicode(${
+        return `Color(${
             this.getPythonDefaultValue()}, ${nullableStr})${
             this.getTagString()}`;
     }

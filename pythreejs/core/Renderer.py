@@ -2,7 +2,7 @@
 """
 
 import six
-from ipywidgets import widget_serialization, Color
+from ipywidgets import widget_serialization
 from traitlets import (
     Unicode, CInt, Instance, Float, Tuple, Undefined, link)
 
