@@ -180,36 +180,43 @@ module.exports = {
         relativePath: './controls/OrbitControls',
         superClass: 'Controls',
         properties: {
-            enabled: new Types.Bool(true),
-
-            minDistance: new Types.Float(0),
-            maxDistance: new Types.Float(Infinity),
-
-            minZoom: new Types.Float(0),
-            maxZoom: new Types.Float(Infinity),
-
-            minPolarAngle: new Types.Float(0), // radians
-            maxPolarAngle: new Types.Float(Math.PI), // radians
-
-            minAzimuthAngle: new Types.Float(-Infinity), // radians
-            maxAzimuthAngle: new Types.Float(Infinity), // radians
-
-            enableDamping: new Types.Bool(false),
-            dampingFactor: new Types.Float(0.25),
-
-            enableZoom: new Types.Bool(true),
-            zoomSpeed: new Types.Float(1.0),
-
-            enableRotate: new Types.Bool(true),
-            rotateSpeed: new Types.Float(1.0),
-
-            enablePan: new Types.Bool(true),
-            keyPanSpeed: new Types.Float(7.0), // pixels moved per arrow key push
-
             autoRotate: new Types.Bool(false),
+
             autoRotateSpeed: new Types.Float(2.0), // 30 seconds per round when fps is 60
 
+            dampingFactor: new Types.Float(0.25),
+
+            enabled: new Types.Bool(true),
+
+            enableDamping: new Types.Bool(false),
             enableKeys: new Types.Bool(true),
+            enablePan: new Types.Bool(true),
+            enableRotate: new Types.Bool(true),
+            enableZoom: new Types.Bool(true),
+
+            keyPanSpeed: new Types.Float(7.0), // pixels moved per arrow key push
+
+            // keys: new Types.KeyDict(),
+
+            maxAzimuthAngle: new Types.Float(Infinity), // radians
+            maxDistance: new Types.Float(Infinity),
+            maxPolarAngle: new Types.Float(Math.PI), // radians
+            maxZoom: new Types.Float(Infinity),
+
+            minAzimuthAngle: new Types.Float(-Infinity), // radians
+            minDistance: new Types.Float(0),
+            minPolarAngle: new Types.Float(0), // radians
+            minZoom: new Types.Float(0),
+
+            // mouseButtons: new Types.MouseButtonDict(),
+
+            panSpeed: new Types.Float(1.0),
+
+            rotateSpeed: new Types.Float(1.0),
+
+            screenSpacePanning: new Types.Bool(false),
+
+            zoomSpeed: new Types.Float(1.0),
 
             target: new Types.Vector3(0, 0, 0),
         },
@@ -375,12 +382,13 @@ module.exports = {
             index:              new Types.ThreeType(['BufferAttribute', 'InterleavedBufferAttribute']),
             attributes:         new Types.ThreeTypeDict(['BufferAttribute', 'InterleavedBufferAttribute']),
             morphAttributes:    new Types.BufferMorphAttributes(),
+            userData:           new Types.Dict(),
             MaxIndex:           new Types.Int(65535),
             // TODO: These likely require special types:
             //groups:             new Types.GeometryGroup(),
             //drawRange:          new Types.DrawRange(),
             _ref_geometry:      new Types.ThreeType(['BaseGeometry', 'BaseBufferGeometry']),
-            _store_ref:      new Types.Bool(false),
+            _store_ref:         new Types.Bool(false),
         },
     },
     InstancedBufferAttribute: {
@@ -761,6 +769,28 @@ module.exports = {
         },
         constructorArgs: [ 'parameters' ],
     },
+    MeshMatcapMaterial: {
+        relativePath: './materials/MeshMatcapMaterial',
+        superClass: 'Material',
+        properties: {
+            alphaMap:           new Types.ThreeType('Texture'),
+            bumpMap:            new Types.ThreeType('Texture'),
+            bumpScale:          new Types.Float(1.0),
+            color:              new Types.Color('#ffffff'),
+            displacementMap:    new Types.ThreeType('Texture'),
+            displacementScale:  new Types.Float(1.0),
+            displacementBias:   new Types.Float(0.0),
+            lights:             new Types.Bool(false),
+            map:                new Types.ThreeType('Texture'),
+            matcap:             new Types.ThreeType('Texture'),
+            morphNormals:       new Types.Bool(false),
+            morphTargets:       new Types.Bool(false),
+            normalMap:          new Types.ThreeType('Texture'),
+            normalScale:        new Types.Vector2(1, 1),
+            skinning:           new Types.Bool(false),
+        },
+        constructorArgs: [ 'parameters' ],
+    },
     MeshNormalMaterial: {
         relativePath: './materials/MeshNormalMaterial',
         superClass: 'Material',
@@ -874,6 +904,7 @@ module.exports = {
             color:           new Types.Color('#ffffff'),
             lights:          new Types.Bool(false),
             map:             new Types.ThreeType('Texture'),
+            morphTargets:    new Types.Bool(false),
             size:            new Types.Float(1.0),
             sizeAttenuation: new Types.Bool(true),
         },
@@ -925,6 +956,7 @@ module.exports = {
             lights:   new Types.Bool(false),
             map:      new Types.ThreeType('Texture'),
             rotation: new Types.Float(0.0),
+            sizeAttenuation: new Types.Bool(true),
         },
         constructorArgs: [ 'parameters' ],
     },
@@ -1232,6 +1264,22 @@ module.exports = {
         },
         constructorArgs: [ 'data', 'format', 'type', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter', 'anisotropy' ],
     },
+    DataTexture3D: {
+        relativePath: './textures/DataTexture3D',
+        superClass: 'Texture',
+        properties: {
+            // this.image = { data: data, width: width, height: height, depth: depth };
+            data:            new Types.ArrayBuffer(),
+            // width:           new Types.Int(0),   // inferred from data
+            // height:          new Types.Int(0),   // inferred from data
+            // depth:           new Types.Int(0),   // inferred from data
+            minFilter:       new Types.Enum('Filters', 'NearestFilter'), // override default
+            magFilter:       new Types.Enum('Filters', 'NearestFilter'), // override default
+            flipY:           new Types.Bool(false), // override default
+            generateMipmaps: new Types.Bool(false),
+        },
+        constructorArgs: [ 'data', 'format', 'type', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter', 'anisotropy' ],
+    },
     DepthTexture: {
         relativePath: './textures/DepthTexture',
         superClass: 'Texture',
@@ -1381,6 +1429,19 @@ module.exports = {
             depthSegments:  new Types.Int(1),
         },
     },
+    BoxLineGeometry: {
+        relativePath: './geometries/BoxGeometry',
+        superClass: 'BaseBufferGeometry',
+        constructorArgs: [ 'width', 'height', 'depth', 'widthSegments', 'heightSegments', 'depthSegments' ],
+        properties: {
+            width:          new Types.Float(1.0),
+            height:         new Types.Float(1.0),
+            depth:          new Types.Float(1.0),
+            widthSegments:  new Types.Int(1),
+            heightSegments: new Types.Int(1),
+            depthSegments:  new Types.Int(1),
+        },
+    },
     CircleBufferGeometry: {
         relativePath: './geometries/CircleGeometry',
         superClass: 'BaseBufferGeometry',
@@ -1513,7 +1574,7 @@ module.exports = {
         superClass: 'BaseGeometry',
         constructorArgs: [ 'func', 'slices', 'stacks' ],
         properties: {
-            func:   new Types.Function(function(u,v) { return THREE.Vector3(); }),
+            func:   new Types.Function(function(u, v, vec) { }),
             slices: new Types.Int(3), // NOTE: default not specified in three.js
             stacks: new Types.Int(3), // NOTE: default not specified in three.js
         },

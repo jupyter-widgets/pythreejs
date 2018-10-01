@@ -120,6 +120,7 @@ var PixelFormats = {
     1025: 'LuminanceAlphaFormat',
     1026: 'DepthFormat',
     1027: 'DepthStencilFormat',
+    1028: 'RedFormat',
 };
 
 var DepthFormats = {
@@ -162,6 +163,8 @@ var TextureEncodings = {
     3005: 'RGBM16Encoding',
     3006: 'RGBDEncoding',
     3007: 'GammaEncoding',
+    3200: 'BasicDepthPacking',
+    3201: 'RGBADepthPacking',
 };
 
 var CullFaceModes = {
