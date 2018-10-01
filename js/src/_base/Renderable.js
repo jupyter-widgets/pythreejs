@@ -1,15 +1,14 @@
 var _ = require('underscore');
 var widgets = require('@jupyter-widgets/base');
-var Promise = require('bluebird');
 var $ = require('jquery');
-
-var THREE = require('three');
 
 var pkgName = require('../../package.json').name;
 var EXTENSION_SPEC_VERSION = require('../version').EXTENSION_SPEC_VERSION;
 var RendererPool = require('./RendererPool');
 
 var ThreeModel = require('./Three').ThreeModel;
+var unpackThreeModel = require('./Three').unpackThreeModel;
+
 
 var RenderableModel = widgets.DOMWidgetModel.extend({
 
@@ -93,8 +92,8 @@ var RenderableModel = widgets.DOMWidgetModel.extend({
 
 }, {
     serializers: _.extend({
-        clippingPlanes: { deserialize: widgets.unpack_models },
-        shadowMap: { deserialize: widgets.unpack_models },
+        clippingPlanes: { deserialize: unpackThreeModel },
+        shadowMap: { deserialize: unpackThreeModel },
     }, widgets.DOMWidgetModel.serializers)
 });
 

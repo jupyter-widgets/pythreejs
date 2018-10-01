@@ -7,6 +7,8 @@ var THREE = require('three');
 var widgets = require('@jupyter-widgets/base');
 var dataserializers = require('jupyter-dataserializers');
 
+var unpackThreeModel = require('{{ relativePathToBase }}/_base/Three').unpackThreeModel;
+
 var {{ superClass.modelName }} = require('{{ superClass.requirePath }}').{{ superClass.modelName }};
 
 {{#each dependencies as |dep depName|}}

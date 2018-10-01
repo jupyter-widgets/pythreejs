@@ -4,11 +4,11 @@
 //
 
 var _ = require('underscore');
-var widgets = require('@jupyter-widgets/base');
 var Promise = require('bluebird');
 
 var RenderableModel = require('../_base/Renderable').RenderableModel;
 var RenderableView = require('../_base/Renderable').RenderableView;
+var unpackThreeModel = require('../_base/Three').unpackThreeModel;
 
 
 var WebGLRendererModel = RenderableModel.extend({
@@ -24,7 +24,7 @@ var WebGLRendererModel = RenderableModel.extend({
 
 }, {
     serializers: _.extend({
-        clippingPlanes: { deserialize: widgets.unpack_models },
+        clippingPlanes: { deserialize: unpackThreeModel },
     }, RenderableModel.serializers)
 });
 
@@ -41,7 +41,7 @@ var WebGLRendererView = RenderableView.extend({
     },
 
     objFromCommWidgetId: function(commWidgetId) {
-        var modelPromise = widgets.unpack_models(
+        var modelPromise = unpackThreeModel(
             commWidgetId, this.model.widget_manager);
         return modelPromise.then(function(model) {
             return model.obj;

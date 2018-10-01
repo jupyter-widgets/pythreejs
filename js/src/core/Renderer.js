@@ -4,11 +4,11 @@
 //
 
 var _ = require('underscore');
-var widgets = require('@jupyter-widgets/base');
 
 var RenderableModel = require('../_base/Renderable').RenderableModel;
 var RenderableView = require('../_base/Renderable').RenderableView;
 var ThreeModel = require('../_base/Three').ThreeModel;
+var unpackThreeModel = require('../_base/Three').unpackThreeModel;
 
 var RendererModel = RenderableModel.extend({
 
@@ -60,10 +60,10 @@ var RendererModel = RenderableModel.extend({
 }, {
 
     serializers: _.extend({
-        scene: { deserialize: widgets.unpack_models },
-        camera: { deserialize: widgets.unpack_models },
-        controls: { deserialize: widgets.unpack_models },
-        effect: { deserialize: widgets.unpack_models },
+        scene: { deserialize: unpackThreeModel },
+        camera: { deserialize: unpackThreeModel },
+        controls: { deserialize: unpackThreeModel },
+        effect: { deserialize: unpackThreeModel },
     }, RenderableModel.serializers),
 
 });

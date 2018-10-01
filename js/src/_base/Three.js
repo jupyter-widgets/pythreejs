@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var widgets = require('@jupyter-widgets/base');
+var resolvePromisesDict = require('@jupyter-widgets/base/lib/utils').resolvePromisesDict;
 var Promise = require('bluebird');
 var ndarray = require('ndarray');
 var dataserializers = require('jupyter-dataserializers');
@@ -77,6 +78,27 @@ function listenNested(model, propNames, callback) {
                 });
             }
         });
+    });
+}
+
+
+function unpackThreeModel(value, manager) {
+    return widgets.unpack_models(value, manager).then(function(model) {
+        if (Array.isArray(model)) {
+            return Promise.all(model.map(function (subValue) {
+                return unpackThreeModel(subValue, manager);
+            }));
+        } else if (model instanceof widgets.WidgetModel) {
+            return model.initPromise.then(function () {
+                return model;
+            });
+        } else if (model instanceof Object) {
+            return resolvePromisesDict(Object.keys(model).map(function(key) {
+                return unpackThreeModel(model[key], manager);
+            }));
+        } else {
+            return model;
+        }
     });
 }
 
@@ -824,4 +846,5 @@ var ThreeModel = widgets.WidgetModel.extend({
 
 module.exports = {
     ThreeModel: ThreeModel,
+    unpackThreeModel: unpackThreeModel,
 };
