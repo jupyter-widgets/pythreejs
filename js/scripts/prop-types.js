@@ -421,8 +421,13 @@ class DictType extends BaseType {
 }
 
 class UniformDict extends DictType {
-    getPropertyConverterFn() {
-        return 'convertUniformDict';
+    constructor(defaultValue={}, options) {
+        super(defaultValue, options);
+        this.serializer = '{ serialize: serializers.serializeUniforms, ' +
+            'deserialize: serializers.deserializeUniforms }';
+    }
+    getTagParts() {
+        return super.getTagParts().concat(['**uniforms_serialization']);
     }
 }
 
