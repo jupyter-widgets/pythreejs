@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from collections import namedtuple, Sequence
+import six
+import re
 import warnings
 
 from traitlets import (
@@ -233,3 +235,16 @@ class Color(Unicode):
                 return value
         self.error(obj, value)
 
+
+class Uniform(Dict):
+    """A dict holding uniforms for a ShaderMaterial"""
+
+    def __init__(self, default_value=Undefined, **kwargs):
+        super(Uniform, self).__init__(traits=dict(
+            value=Union((
+                Int(), Float(), Color(), Instance('pythreejs.Texture'),
+                List(trait=Union((
+                    Int(), Float(), Color(), Instance('pythreejs.Texture')))),
+            ), allow_none=True),
+            type=Unicode()
+        ), default_value=default_value, **kwargs)

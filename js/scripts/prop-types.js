@@ -426,6 +426,14 @@ class UniformDict extends DictType {
         this.serializer = '{ serialize: serializers.serializeUniforms, ' +
             'deserialize: serializers.deserializeUniforms }';
     }
+    getTraitlet() {
+        const nullableStr = this.getNullableStr();
+        return `Dict(default_value=${
+            this.getPythonDefaultValue()
+        }, trait=Uniform(allow_none=True), ${
+            nullableStr
+        })${this.getTagString()}`;
+    }
     getTagParts() {
         return super.getTagParts().concat(['**uniforms_serialization']);
     }
