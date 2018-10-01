@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var MaterialAutogen = require('./Material.autogen').MaterialModel;
 
 var MaterialModel = MaterialAutogen.extend({
