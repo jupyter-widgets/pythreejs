@@ -1,6 +1,6 @@
 'use strict';
 
-const JS_WIDGET_SERIALIZER = '{ deserialize: unpackThreeModel }';
+const JS_WIDGET_SERIALIZER = '{ deserialize: serializers.unpackThreeModel }';
 
 class BaseType {
     constructor(options) {

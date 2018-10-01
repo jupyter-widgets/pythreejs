@@ -8,7 +8,7 @@ var _ = require('underscore');
 var RenderableModel = require('../_base/Renderable').RenderableModel;
 var RenderableView = require('../_base/Renderable').RenderableView;
 var ThreeModel = require('../_base/Three').ThreeModel;
-var unpackThreeModel = require('../_base/Three').unpackThreeModel;
+var unpackThreeModel = require('../_base/serializers').unpackThreeModel;
 
 var RendererModel = RenderableModel.extend({
 

@@ -7,7 +7,7 @@ var EXTENSION_SPEC_VERSION = require('../version').EXTENSION_SPEC_VERSION;
 var RendererPool = require('./RendererPool');
 
 var ThreeModel = require('./Three').ThreeModel;
-var unpackThreeModel = require('./Three').unpackThreeModel;
+var unpackThreeModel = require('./serializers').unpackThreeModel;
 
 
 var RenderableModel = widgets.DOMWidgetModel.extend({

@@ -7,7 +7,7 @@ var RenderableView = Renderable.RenderableView;
 var RenderableModel = Renderable.RenderableModel;
 var OrbitControls = require('../examples/controls/OrbitControls.js').OrbitControls;
 var utils = require('./utils.js');
-var unpackThreeModel = require('./Three').unpackThreeModel;
+var unpackThreeModel = require('./serializers').unpackThreeModel;
 
 
 var BLACK = new THREE.Color('black');
