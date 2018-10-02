@@ -1,4 +1,6 @@
 var Promise = require('bluebird');
+var dataserializers = require('jupyter-dataserializers');
+var ndarray = require('ndarray');
 var LineSegmentsGeometry = require('../examples/lines/LineSegmentsGeometry.js').LineSegmentsGeometry;
 var LineSegmentsGeometryAutogen = require('./LineSegmentsGeometry.autogen').LineSegmentsGeometryModel;
 
@@ -25,26 +27,19 @@ var LineSegmentsGeometryModel = LineSegmentsGeometryAutogen.extend({
 
     assignLineAttribute: function(obj, key, value) {
         if (key === 'positions') {
-            obj.setPositions(value);
+            obj.setPositions(value || []);
         } else if (key === 'colors') {
-            obj.setColors(value);
+            if (value) {
+                obj.setColors(value);
+            }
         } else {
             throw new Error(`Unknown line attribute key: ${key}`);
         }
     },
 
     convertArrayBufferThreeToModel: function(arrBuffer, propName) {
-        if (arrBuffer === null) {
-            return null;
-        }
-        var current = this.get(propName);
-        var currentArray = dataserializers.getArray(current);
-        if (currentArray && (currentArray.data === arrBuffer)) {
-            // Unchanged, do nothing
-            return current;
-        }
-        // Never create a new widget, even if current is one
-        return ndarray(arrBuffer, currentArray && currentArray.shape);
+        // This property is write-only, so always return current value.
+        return this.get(propName);
     },
 
 });

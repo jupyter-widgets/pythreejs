@@ -27,6 +27,9 @@ class BaseType {
         if (this.defaultValue === Infinity || this.defaultValue === -Infinity) {
             return this.defaultValue.toString();
         }
+        if (this.defaultValue === undefined) {
+            return 'undefined';
+        }
         return JSON.stringify(this.defaultValue);
     }
     getPropArrayName() {
@@ -264,7 +267,7 @@ class Bool extends BaseType {
 class Int extends BaseType {
     constructor(defaultValue, options) {
         options = options || {};
-        super();
+        super(options);
         this.minValue = options.minValue;
         this.maxValue = options.maxValue;
         this.defaultValue = (defaultValue === null || defaultValue === undefined) && !this.nullable ? 0 : defaultValue ;
