@@ -19,7 +19,7 @@ const JSON_AUTOGEN_EXT = '.' + AUTOGEN_EXT + '.json';
 
 
 // We actually need access to THREE data here
-var THREE = require('three');
+const THREE = require('three');
 
 
 //
@@ -28,13 +28,13 @@ var THREE = require('three');
 
 function compileTemplate(templateName) {
     templateName = path.basename(templateName, '.mustache');
-    var templatePath = path.resolve(templateDir, templateName + '.mustache');
+    const templatePath = path.resolve(templateDir, templateName + '.mustache');
     return Handlebars.compile(fse.readFileSync(templatePath, {
         encoding: 'utf-8'
     }));
 }
 
-var pyWrapperTemplate = compileTemplate('py_shader_utils');
+const pyWrapperTemplate = compileTemplate('py_shader_utils');
 
 
 //
@@ -42,11 +42,11 @@ var pyWrapperTemplate = compileTemplate('py_shader_utils');
 //
 
 function mapPromiseFnOverObject(object, mapFn) {
-    var promises = [];
+    let promises = [];
 
     Object.keys(object).forEach(function(key) {
-        var value = object[key];
-        var result = mapFn(key, value);
+        const value = object[key];
+        const result = mapFn(key, value);
         if (result instanceof Array) {
             promises = promises.concat(result);
         } else {
@@ -97,8 +97,8 @@ function createPythonWrapper(name, relativePath) {
 
 function createPythonModuleInitFile(modulePath) {
 
-    var dirname = path.dirname(modulePath);
-    var pyInitFilePath = path.resolve(pySrcDir, dirname, '__init__.py');
+    const dirname = path.dirname(modulePath);
+    const pyInitFilePath = path.resolve(pySrcDir, dirname, '__init__.py');
     return fse.ensureFile(pyInitFilePath);
 
 }
@@ -111,7 +111,7 @@ function createPythonFiles() {
     }
 
     return mapPromiseFnOverObject(shaderUtilsConfig, function(name, configObj) {
-        var relativePath = configObj.relativePath;
+        const relativePath = configObj.relativePath;
         return createPythonWrapper(name, relativePath).then(function() {
             // ensures each dir has empty __init__.py file for proper importing of sub dirs
             return createPythonModuleInitFile(relativePath);

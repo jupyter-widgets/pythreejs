@@ -2,6 +2,21 @@
 
 const JS_WIDGET_SERIALIZER = '{ deserialize: serializers.unpackThreeModel }';
 
+
+function pythonify(value) {
+    if (value === false) { return 'False'; }
+    if (value === true) { return 'True'; }
+    if (value === Infinity) { return "float('inf')"; }
+    if (value === -Infinity) { return "-float('inf')"; }
+    if (value === undefined || value === null) { return 'None'; }
+    if (Array.isArray(value)) {
+        return `[${
+            value.map(function(v) { return pythonify(v); }).join(', ')
+        }]`;
+    }
+    return JSON.stringify(value);
+}
+
 class BaseType {
     constructor(options) {
         options = options || {};
@@ -12,21 +27,16 @@ class BaseType {
         if (this.defaultValue === Infinity || this.defaultValue === -Infinity) {
             return this.defaultValue.toString();
         }
+        if (this.defaultValue === undefined) {
+            return 'undefined';
+        }
         return JSON.stringify(this.defaultValue);
     }
     getPropArrayName() {
         return null;
     }
     getPythonDefaultValue() {
-        if (this.defaultValue === false) { return 'False'; }
-        if (this.defaultValue === true) { return 'True'; }
-        if (this.defaultValue === 0) { return '0'; }
-        if (this.defaultValue === '') { return "''"; }
-        if (this.defaultValue === Infinity) { return "float('inf')"; }
-        if (this.defaultValue === -Infinity) { return "-float('inf')"; }
-        if (!this.defaultValue) { return 'None'; }
-
-        return JSON.stringify(this.defaultValue);
+        return pythonify(this.defaultValue);
     }
     getPropertyConverterFn() {
         return null;
@@ -257,7 +267,7 @@ class Bool extends BaseType {
 class Int extends BaseType {
     constructor(defaultValue, options) {
         options = options || {};
-        super();
+        super(options);
         this.minValue = options.minValue;
         this.maxValue = options.maxValue;
         this.defaultValue = (defaultValue === null || defaultValue === undefined) && !this.nullable ? 0 : defaultValue ;
@@ -382,16 +392,24 @@ class ArrayBufferType extends BaseType {
         super(options);
         this.arrayType = arrayType;
         this.shapeConstraint = shapeConstraint;
-        this.defaultValue = null;
+        this.defaultValue = options && options.nullable ? null : undefined;
         this.serializer = 'dataserializers.data_union_serialization';
     }
     getTraitlet() {
         const args = [];
+        if (this.defaultValue !== undefined) {
+            args.push(pythonify(this.defaultValue));
+        }
         if (this.arrayType) {
-            args.push(`dtype=${this.arrayType}`);
+            args.push(`dtype=${pythonify(this.arrayType)}`);
         }
         if (this.shapeConstraint) {
-            args.push(`shape_constraint=${this.shapeConstraint}`);
+            args.push(`shape_constraint=shape_constraints(${
+                this.shapeConstraint.map(function(v) { return pythonify(v); }).join(', ')
+            })`);
+        }
+        if (this.nullable) {
+            args.push(this.getNullableStr());
         }
 
         return `WebGLDataUnion(${args.join(', ')})${this.getTagString()}`;
@@ -463,7 +481,7 @@ class Vector2 extends BaseType {
     }
     getTraitlet() {
         return `Vector2(default_value=${
-            JSON.stringify(this.defaultValue)})${this.getTagString()}`;
+            pythonify(this.defaultValue)})${this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertVector';
@@ -480,7 +498,7 @@ class Vector3 extends BaseType {
     }
     getTraitlet() {
         return `Vector3(default_value=${
-            JSON.stringify(this.defaultValue)})${this.getTagString()}`;
+            pythonify(this.defaultValue)})${this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertVector';
@@ -497,7 +515,7 @@ class Vector4 extends BaseType {
     }
     getTraitlet() {
         return `Vector4(default_value=${
-            JSON.stringify(this.defaultValue)})${this.getTagString()}`;
+            pythonify(this.defaultValue)})${this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertVector';
@@ -550,7 +568,7 @@ class Matrix3 extends BaseType {
     }
     getTraitlet() {
         return `Matrix3(default_value=${
-            JSON.stringify(this.defaultValue)})${this.getTagString()}`;
+            pythonify(this.defaultValue)})${this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertMatrix';
@@ -572,7 +590,7 @@ class Matrix4 extends BaseType {
     }
     getTraitlet() {
         return `Matrix4(default_value=${
-            JSON.stringify(this.defaultValue)})${this.getTagString()}`;
+            pythonify(this.defaultValue)})${this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertMatrix';
@@ -591,7 +609,7 @@ class Euler extends BaseType {
 
     getTraitlet() {
         return `Euler(default_value=${
-            JSON.stringify(this.defaultValue)})${this.getTagString()}`;
+            pythonify(this.defaultValue)})${this.getTagString()}`;
     }
     getPropertyConverterFn() {
         return 'convertEuler';

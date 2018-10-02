@@ -653,6 +653,20 @@ module.exports = {
         },
         constructorArgs: [ 'parameters' ],
     },
+    LineMaterial: {
+        relativePath: './materials/LineMaterial',
+        superClass: 'Material',
+        properties: {
+            color:        new Types.Color('#ffffff'),
+            fog:          new Types.Bool(false),
+            lights:       new Types.Bool(false),
+            linewidth:    new Types.Float(1.0),
+            dashScale:    new Types.Float(1.0),
+            dashSize:     new Types.Float(1.0),
+            gapSize:      new Types.Float(1.0),
+        },
+        constructorArgs: [ 'parameters' ],
+    },
     Material: {
         relativePath: './materials/Material',
         properties: {
@@ -1154,6 +1168,26 @@ module.exports = {
         constructorArgs: [ 'original', 'positions', 'merge' ],
         // TODO: Add restriction: Source cannot use strip/fan draw modes
     },
+    Line2: {
+        relativePath: './objects/Line2',
+        superClass: 'Mesh',
+        properties: {
+            material: new Types.InitializedThreeType('LineMaterial', {nullable: true}),
+            geometry: new Types.InitializedThreeType('LineGeometry', {nullable: true}),
+        },
+        constructorArgs: [ 'geometry', 'material' ],
+        propsDefinedByThree: [ 'geometry', 'material' ],
+    },
+    LineSegments2: {
+        relativePath: './objects/LineSegments2',
+        superClass: 'Mesh',
+        properties: {
+            material: new Types.InitializedThreeType('LineMaterial', {nullable: true}),
+            geometry: new Types.InitializedThreeType('LineSegmentsGeometry', {nullable: true}),
+        },
+        constructorArgs: [ 'geometry', 'material' ],
+        propsDefinedByThree: [ 'geometry', 'material' ],
+    },
     WebGLRenderTarget: {
         relativePath: './renderers/WebGLRenderTarget',
     },
@@ -1557,6 +1591,24 @@ module.exports = {
             segments:  new Types.Int(12),
             phiStart:  new Types.Float(0.0),
             phiLength: new Types.Float(Math.PI * 2.0),
+        },
+    },
+    LineGeometry: {
+        relativePath: './geometries/LineGeometry',
+        superClass: 'LineSegmentsGeometry',
+        constructorArgs: [],
+        properties: {
+            positions: new Types.ArrayBuffer('float32', [null, 3]),
+            colors:    new Types.ArrayBuffer('float32', [null, 3], {nullable: true}),
+        },
+    },
+    LineSegmentsGeometry: {
+        relativePath: './geometries/LineSegmentsGeometry',
+        superClass: 'BaseBufferGeometry',
+        constructorArgs: [],
+        properties: {
+            positions: new Types.ArrayBuffer('float32', [null, 2, 3]),
+            colors:    new Types.ArrayBuffer('float32', [null, 2, 3], {nullable: true}),
         },
     },
     OctahedronGeometry: {

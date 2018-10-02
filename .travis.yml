@@ -18,7 +18,7 @@ cache:
     - ~/.npm  # NPM cache
 before_install:
   - pip install -U pip setuptools
-  - nvm install 6
+  - nvm install 8
 install:
   - pip install --upgrade -e ".[test, examples, docs]"
 script:
