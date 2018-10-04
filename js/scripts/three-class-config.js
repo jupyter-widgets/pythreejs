@@ -483,9 +483,6 @@ module.exports = {
         },
         constructorArgs: [ 'origin', 'direction', 'near', 'far' ],
     },
-    Uniform: {
-        relativePath: './core/Uniform',
-    },
     AmbientLight: {
         relativePath: './lights/AmbientLight',
         superClass: 'Light',

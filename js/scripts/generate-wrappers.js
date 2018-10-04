@@ -55,6 +55,7 @@ const IGNORE_FILES = [
     '**/constants.js',      // Processed into enums in separate script
     '**/audio/AudioContext.js',             // JS API for audio, nothing to expose
     '**/core/Face3.js',     // Implemented as trait only, not widget model
+    '**/core/Uniform.js',   // Implemented as trait only, not widget model
     '**/geometries/Geometries.js',          // index.js like file, nothing new here
     '**/materials/Materials.js',            // index.js like file, nothing new here
     '**/materials/MeshDistanceMaterial.js', // TODO: Undocumented as of yet
