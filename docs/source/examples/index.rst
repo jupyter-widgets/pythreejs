@@ -13,3 +13,4 @@ The widgets have been embedded into the page.
     Animation
     Textures
     Renderer
+    ThickLines
