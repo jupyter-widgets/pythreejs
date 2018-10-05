@@ -2,7 +2,7 @@ sudo port install py36-pip
 sudo pip-3.6 install jupyterlab
 sudo port install npm5          # npm3 doesn't work!
 
-# To fix potential permissions issues:
+# Fix potential permissions issues caused by MacPorts pip
 sudo chmod -R a+rX /opt/local/Library/Frameworks/Python.framework/Versions/3.6
 
 git clone https://github.com/jpanetta/pythreejs
@@ -12,4 +12,8 @@ pip-3.6 install -e . --user
 # make "jupyter" binary accessible from the search path
 # Preferably add this to your shell rc file.
 export PATH=$PATH:/opt/local/Library/Frameworks/Python.framework/Versions/3.6/bin 
-jupyter labextension link ./js
+sudo jupyter labextension link ./js
+sudo jupyter labextension install @jupyter-widgets/jupyterlab-manager
+
+# (Again) fix potential permissions issues caused by MacPorts pip
+sudo chmod -R a+rX /opt/local/Library/Frameworks/Python.framework/Versions/3.6
