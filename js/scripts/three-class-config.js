@@ -214,7 +214,7 @@ module.exports = {
 
             rotateSpeed: new Types.Float(1.0),
 
-            screenSpacePanning: new Types.Bool(false),
+            screenSpacePanning: new Types.Bool(true),
 
             zoomSpeed: new Types.Float(1.0),
 
