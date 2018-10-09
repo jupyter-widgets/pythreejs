@@ -465,7 +465,7 @@ module.exports = {
             frustumCulled:          new Types.Bool(true),
             renderOrder:            new Types.Int(0),
         },
-        propsDefinedByThree: [ 'type', 'rotation', 'quaternion', 'matrixWorldNeedsUpdate' ]
+        propsDefinedByThree: [ 'type', 'matrixWorldNeedsUpdate' ]
     },
     Blackbox: {
         superClass: 'Object3D',
