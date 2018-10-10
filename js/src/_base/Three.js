@@ -624,11 +624,13 @@ var ThreeModel = widgets.WidgetModel.extend({
             f.a,
             f.b,
             f.c,
-            f.normal.toArray(),
-            this.convertColorThreeToModel(f.color),
+            f.vertexNormals.length > 0
+                ? this.convertVectorArrayThreeToModel(f.vertexNormals)
+                : f.normal.toArray(),
+            f.vertexColors.length > 0
+                ? this.convertColorArrayThreeToModel(f.vertexColors)
+                : this.convertColorThreeToModel(f.color),
             f.materialIndex,
-            this.convertVectorArrayThreeToModel(f.vertexNormals),
-            this.convertColorArrayThreeToModel(f.vertexColors),
         ];
     },
 
