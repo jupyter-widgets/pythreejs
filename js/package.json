@@ -15,7 +15,7 @@
     "autogen:shaders": "node ./scripts/generate-shader-utils.js",
     "autogen:wrappers": "node ./scripts/generate-wrappers.js",
     "autogen": "npm run autogen:shaders && npm run autogen:wrappers",
-    "build:bundles": "webpack -d && node ./scripts/copy-files.js",
+    "build:bundles": "webpack -d && node ./scripts/copy-files.js --debug",
     "build:bundles-prod": "webpack -p && node ./scripts/copy-files.js",
     "build:labextension": "rimraf lab-dist && mkdirp lab-dist && cd lab-dist && npm pack ..",
     "build:all": "npm run build:labextension",

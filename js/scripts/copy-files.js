@@ -16,12 +16,19 @@ const exampleImagesSrcDir = path.resolve(baseDir, '..', 'examples', 'img');
 const exampleImagesDstDir = path.resolve(baseDir, '..', 'docs', 'source', 'examples', 'img');
 
 
+const DEBUG = process.argv.slice(2).indexOf('--debug') !== -1;
+
+
 function copyThree() {
     return fse.copy(
-        path.resolve(threeBuildDir, 'three.min.js'),
+        path.resolve(threeBuildDir, DEBUG ? 'three.js' : 'three.min.js'),
         path.resolve(staticDir, 'three.js')
     ).then(function() {
-        console.log('Copied three.js to static folder');
+        if (DEBUG) {
+            console.log('Copied three.js to NB extension static folder');
+        } else {
+            console.log('Copied minified three.js to NB extension static folder');
+        }
     });
 }
 
