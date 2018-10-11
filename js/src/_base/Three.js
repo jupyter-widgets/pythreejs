@@ -186,7 +186,7 @@ var ThreeModel = widgets.WidgetModel.extend({
 
         // Handle changes in data widgets/union properties
         this.datawidget_properties.forEach(function(propName) {
-            dataserializers.listenToUnion(this, propName, this.onChildChanged.bind(this), false);
+            dataserializers.listenToUnion(this, propName, this.onDataChanged.bind(this), false);
         }, this);
 
         this.on('change', this.onChange, this);
@@ -345,6 +345,16 @@ var ThreeModel = widgets.WidgetModel.extend({
 
     onChildChanged: function(model) {
         console.debug('child changed: ' + model.model_id);
+        // Propagate up hierarchy:
+        this.trigger('childchange', this);
+    },
+
+    onDataChanged: function(model, options) {
+        console.debug('child data changed: ' + model.model_id);
+        // Treat a data widget change as if data attribute changed
+        // Note: hasChanged() etc won't identify the attribute, so
+        // property_mappers should be used for union properties.
+        this.onChange(model, options);
         // Propagate up hierarchy:
         this.trigger('childchange', this);
     },
