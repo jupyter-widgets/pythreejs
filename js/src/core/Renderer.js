@@ -130,6 +130,7 @@ var RendererView = RenderableView.extend({
         this.model.get('controls').forEach(function (controlModel) {
             controls.push(controlModel.obj);
         });
+        this.controls = controls;
 
         if (!this.isFrozen) {
             this.enableControls();
