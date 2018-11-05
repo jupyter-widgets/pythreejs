@@ -395,11 +395,12 @@ var RenderableView = widgets.DOMWidgetView.extend({
 
     enableControls: function() {
         this.debug('Enable controls');
+        this.boundTick = this.tick.bind(this);
         var that = this;
         this.controls.forEach(function(control) {
             control.enabled = true;
             control.connectEvents(that.$renderer[0]);
-            control.addEventListener('change', that.tick.bind(that));
+            control.addEventListener('change', that.boundTick);
         });
     },
 
@@ -409,7 +410,7 @@ var RenderableView = widgets.DOMWidgetView.extend({
         this.controls.forEach(function(control) {
             control.enabled = false;
             control.dispose();  // Disconnect from DOM events
-            control.removeEventListener('change', that.tick.bind(that));
+            control.removeEventListener('change', that.boundTick);
         });
     },
 
