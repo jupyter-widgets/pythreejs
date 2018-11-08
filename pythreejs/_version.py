@@ -2,8 +2,15 @@ version_info = (2, 0, 3, 'dev')
 
 _specifier_ = {'alpha': 'a', 'beta': 'b', 'candidate': 'rc', 'final': '', 'dev': 'dev'}
 
-__version__ = '%s.%s.%s%s'%(version_info[0], version_info[1], version_info[2],
-          '' if version_info[3]=='final' else _specifier_[version_info[3]]+str(version_info[4]))
+postfix = ''
+if version_info[3] != 'final':
+    if version_info[3] == 'dev' and len(version_info) < 4:
+        postfix = 'dev0'
+    else:
+        postfix = _specifier_[version_info[3]] + str(version_info[4]))
+
+__version__ = '%s.%s.%s%s' % (version_info[0], version_info[1], version_info[2], postfix)
+
 
 # The version of the attribute spec that this package
 # implements. This is the value used in
