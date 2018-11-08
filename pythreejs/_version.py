@@ -4,10 +4,10 @@ _specifier_ = {'alpha': 'a', 'beta': 'b', 'candidate': 'rc', 'final': '', 'dev':
 
 postfix = ''
 if version_info[3] != 'final':
-    if version_info[3] == 'dev' and len(version_info) < 4:
+    if version_info[3] == 'dev' and len(version_info) < 5:
         postfix = 'dev0'
     else:
-        postfix = _specifier_[version_info[3]] + str(version_info[4]))
+        postfix = _specifier_[version_info[3]] + str(version_info[4])
 
 __version__ = '%s.%s.%s%s' % (version_info[0], version_info[1], version_info[2], postfix)
 
