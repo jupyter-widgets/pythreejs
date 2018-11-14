@@ -22,7 +22,7 @@ var ImageTextureModel = ImageTextureBase.ImageTextureModel.extend({
                     },
                     function(xhr) {
                         console.log('Error loading texture: ' + imageUri);
-                        return reject(xhr);
+                        return reject(new Error(xhr));
                     }
                 );
             }, reject);
