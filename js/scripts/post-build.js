@@ -19,39 +19,34 @@ const exampleImagesDstDir = path.resolve(baseDir, '..', 'docs', 'source', 'examp
 const DEBUG = process.argv.slice(2).indexOf('--debug') !== -1;
 
 
-function copyThree() {
-    return fse.copy(
+async function copyThree() {
+    await fse.copy(
         path.resolve(threeBuildDir, DEBUG ? 'three.js' : 'three.min.js'),
         path.resolve(staticDir, 'three.js')
-    ).then(function() {
-        if (DEBUG) {
-            console.log('Copied three.js to NB extension static folder');
-        } else {
-            console.log('Copied minified three.js to NB extension static folder');
-        }
-    });
+    );
+    if (DEBUG) {
+        console.log('Copied three.js to NB extension static folder');
+    } else {
+        console.log('Copied minified three.js to NB extension static folder');
+    }
 }
 
-function copyBundleToDocs() {
-    return fse.copy(
+async function copyBundleToDocs() {
+    await fse.copy(
         path.resolve(buildDir, 'index.js'),
         path.resolve(docStaticDir, 'jupyter-threejs.js')
-    ).then(function() {
-        console.log('Copied bundle to docs folder');
-    });
+    console.log('Copied bundle to docs folder');
 }
 
-function copyExampleImagesToDocs() {
-    return fse.readdir(exampleImagesSrcDir).then((dirFiles) => {
-        return Promise.all(dirFiles.map(filePath => {
-            return fse.copy(
-                path.resolve(exampleImagesSrcDir, filePath),
-                path.resolve(exampleImagesDstDir, filePath)
-            ).then(function() {
-                console.log(`Copied ${filePath} to docs examples' image folder`);
-            });
-        }));
-    });
+async function copyExampleImagesToDocs() {
+    const dirFiles = await fse.readdir(exampleImagesSrcDir);
+    await Promise.all(dirFiles.map(async (filePath) => {
+        await fse.copy(
+            path.resolve(exampleImagesSrcDir, filePath),
+            path.resolve(exampleImagesDstDir, filePath)
+        )
+        console.log(`Copied ${filePath} to docs examples' image folder`);
+    }));
 }
 
 
