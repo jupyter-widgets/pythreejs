@@ -36,7 +36,9 @@ class Vector2(Tuple):
     default_value = (0, 0)
     info_text = 'a two-element vector'
 
-    def __init__(self, trait=CFloat, default_value=Undefined, **kwargs):
+    def __init__(self, trait=Undefined, default_value=Undefined, **kwargs):
+        if trait is Undefined:
+            trait = CFloat()
         if default_value is Undefined:
             default_value = self.default_value
         super(Vector2, self).__init__(*(trait, trait), default_value=default_value, **kwargs)
@@ -49,7 +51,9 @@ class Vector3(Tuple):
     default_value = (0, 0, 0)
     info_text = 'a three-element vector'
 
-    def __init__(self, trait=CFloat, default_value=Undefined, **kwargs):
+    def __init__(self, trait=Undefined, default_value=Undefined, **kwargs):
+        if trait is Undefined:
+            trait = CFloat()
         if default_value is Undefined:
             default_value = self.default_value
         super(Vector3, self).__init__(*(trait, trait, trait), default_value=default_value, **kwargs)
@@ -62,7 +66,9 @@ class Vector4(Tuple):
     default_value = (0, 0, 0, 0)
     info_text = 'a four-element vector'
 
-    def __init__(self, trait=CFloat, default_value=Undefined, **kwargs):
+    def __init__(self, trait=Undefined, default_value=Undefined, **kwargs):
+        if trait is Undefined:
+            trait = CFloat()
         if default_value is Undefined:
             default_value = self.default_value
         super(Vector4, self).__init__(*(trait, trait, trait, trait), default_value=default_value, **kwargs)
@@ -79,7 +85,9 @@ class Matrix3(Tuple):
         )
     info_text = 'a three-by-three matrix (9 element tuple)'
 
-    def __init__(self, trait=CFloat, default_value=Undefined, **kwargs):
+    def __init__(self, trait=Undefined, default_value=Undefined, **kwargs):
+        if trait is Undefined:
+            trait = CFloat()
         if default_value is Undefined:
             default_value = self.default_value
         super(Matrix3, self).__init__(*((trait,) * 9), default_value=default_value, **kwargs)
@@ -97,7 +105,9 @@ class Matrix4(Tuple):
         )
     info_text = 'a four-by-four matrix (16 element tuple)'
 
-    def __init__(self, trait=CFloat, default_value=Undefined, **kwargs):
+    def __init__(self, trait=Undefined, default_value=Undefined, **kwargs):
+        if trait is Undefined:
+            trait = CFloat()
         if default_value is Undefined:
             default_value = self.default_value
         super(Matrix4, self).__init__(*((trait,) * 16), default_value=default_value, **kwargs)
