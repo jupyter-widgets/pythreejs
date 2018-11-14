@@ -211,7 +211,7 @@ def setup(app):
     app.setup_extension('jupyter_sphinx.embed_widgets')
 
     def add_scripts(app):
-        for fname in ['helper.js', 'jupyter-threejs.js']:
+        for fname in ['jupyter-threejs.js']:
             if not os.path.exists(os.path.join(here, '_static', fname)):
                 app.warn('missing javascript file: %s' % fname)
             app.add_javascript(fname)
