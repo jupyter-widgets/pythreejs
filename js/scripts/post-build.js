@@ -2,10 +2,12 @@
 
 const path = require('path');
 const fse = require('fs-extra');
+const Handlebars = require('handlebars');
 
 const scriptDir = __dirname;
 const baseDir = path.resolve(scriptDir, '..');
 
+const templateDir = path.resolve(scriptDir, 'templates');
 const threeBuildDir = path.resolve(baseDir, 'node_modules', 'three', 'build');
 const staticDir = path.resolve(baseDir, '..', 'pythreejs', 'static');
 
@@ -15,8 +17,34 @@ const docStaticDir = path.resolve(baseDir, '..', 'docs', 'source', '_static');
 const exampleImagesSrcDir = path.resolve(baseDir, '..', 'examples', 'img');
 const exampleImagesDstDir = path.resolve(baseDir, '..', 'docs', 'source', 'examples', 'img');
 
+const threejsSemver = require('../package.json')['dependencies']['three'];
+
 
 const DEBUG = process.argv.slice(2).indexOf('--debug') !== -1;
+
+
+function compileTemplate(templateName) {
+    templateName = path.basename(templateName, '.mustache');
+    const templatePath = path.resolve(templateDir, templateName + '.mustache');
+    return Handlebars.compile(fse.readFileSync(templatePath, {
+        encoding: 'utf-8',
+        debug: DEBUG,
+    }));
+}
+
+
+const jsBundleIndexTemplate = compileTemplate('js_bundle_helper');
+
+
+async function generateBundleHelper(outputPath) {
+    // render template
+    const context = {
+        threejsSemver: threejsSemver,
+    };
+    const output = jsBundleIndexTemplate(context);
+
+    return fse.outputFile(outputPath, output);
+}
 
 
 async function copyThree() {
@@ -32,9 +60,14 @@ async function copyThree() {
 }
 
 async function copyBundleToDocs() {
-    await fse.copy(
-        path.resolve(buildDir, 'index.js'),
-        path.resolve(docStaticDir, 'jupyter-threejs.js')
+    const calls = [
+        generateBundleHelper(path.resolve(docStaticDir, 'helper.js')),
+        fse.copy(
+            path.resolve(buildDir, 'index.js'),
+            path.resolve(docStaticDir, 'jupyter-threejs.js')
+        ),
+    ];
+    await Promise.all(calls);
     console.log('Copied bundle to docs folder');
 }
 
