@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var widgets = require('@jupyter-widgets/base');
 var $ = require('jquery');
+var Promise = require('bluebird');
 
 var pkgName = require('../../package.json').name;
 var EXTENSION_SPEC_VERSION = require('../version').EXTENSION_SPEC_VERSION;
@@ -88,6 +89,83 @@ var RenderableModel = widgets.DOMWidgetModel.extend({
         console.debug('child changed: ' + model.model_id);
         // Let listeners (e.g. views) know:
         this.trigger('childchange', this);
+    },
+
+    /**
+     * Find a view, preferrably a live one
+     */
+    _findView: function() {
+        var viewPromises = Object.keys(this.views).map(function(key) {
+            return this.views[key];
+        }, this);
+        return Promise.all(viewPromises).then(function(views) {
+            for (var i=0; i<views.length; ++i) {
+                var view = views[i];
+                if (!view.isFrozen) {
+                    return view;
+                }
+            }
+            return views[0];
+        });
+    },
+
+    /**
+     * Interface for jupyter-webrtc.
+     */
+    captureStream: function(fps) {
+        var stream = new MediaStream();
+
+        var that = this;
+        var canvasStream = null;
+
+        function updateStream() {
+            return that._findView().then(function(view) {
+                if (canvasStream !== null) {
+                    // Stop and remove tracks from previous canvas
+                    stream.getTracks().forEach(function(track) {
+                        track.stop();
+                        stream.removeTrack(track);
+                        canvasStream.removeTrack(track);
+                    });
+                    canvasStream = null;
+                }
+                var canvas;
+                if (view.isFrozen) {
+                    canvas = document.createElement('canvas');
+                    canvas.width = view.$frozenRenderer.width();
+                    canvas.height = view.$frozenRenderer.height();
+                    var ctx = canvas.getContext('2d');
+                    ctx.drawImage(view.$frozenRenderer[0], 0, 0);
+                } else {
+                    canvas = view.renderer.domElement;
+                }
+                // Add tracks from canvas to stream
+                canvasStream = canvas.captureStream(fps);
+                canvasStream.getTracks().forEach(function(track) {
+                    stream.addTrack(track);
+                    if (track.requestFrame) {
+                        (function() {
+                            var orig = track.requestFrame.bind(track);
+                            track.requestFrame = function() {
+                                orig();
+                                // Ensure we redraw to make stream pickup first frame on Chrome
+                                // https://bugs.chromium.org/p/chromium/issues/detail?id=903832
+                                view.tick();
+                            };
+                            track.requestFrame();
+
+                        }());
+                    }
+                });
+
+                // If renderer status changes, update stream
+                that.listenToOnce(view, 'updatestream', updateStream);
+            });
+        }
+
+        return updateStream().then(function() {
+            return stream;
+        });
     },
 
 }, {
@@ -199,6 +277,7 @@ var RenderableView = widgets.DOMWidgetView.extend({
         } else {
             this.renderer.setSize(width, height);
         }
+        this.trigger('updatestream');
     },
 
     updateProperties: function(force) {

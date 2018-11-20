@@ -20,7 +20,8 @@
     "build:labextension": "rimraf lab-dist && mkdirp lab-dist && cd lab-dist && npm pack ..",
     "build:all": "npm run build:labextension",
     "prepare": "npm run autogen",
-    "prepack": "npm run build:bundles-prod"
+    "prepack": "npm run build:bundles-prod",
+    "watch": "webpack -d -w"
   },
   "devDependencies": {
     "eslint": "^5.6.0",
