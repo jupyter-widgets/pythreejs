@@ -80,7 +80,8 @@ setup_args = {
         'examples': [
             'scipy',
             'matplotlib',
-            'scikit-image'
+            'scikit-image',
+            'ipywebrtc',
         ],
         'docs': [
             'sphinx>=1.5',
