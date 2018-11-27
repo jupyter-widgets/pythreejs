@@ -173,7 +173,7 @@ texinfo_documents = [
 
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/': None}
+intersphinx_mapping = {'https://docs.python.org/3/': None}
 
 # Read The Docs
 # on_rtd is whether we are on readthedocs.org, this line of code grabbed from
@@ -203,8 +203,8 @@ def setup(app):
         popd = os.path.abspath(os.curdir)
         os.chdir(os.path.join(here, '..', '..', 'js'))
         try:
-            # This assumes that autogen and build is also triggered postinstall:
             check_call(['npm', 'install'])
+            check_call(['npm', 'run', 'build:bundles-prod'])
         finally:
             os.chdir(popd)
 

@@ -1,5 +1,4 @@
 var _ = require('underscore');
-var widgets = require('@jupyter-widgets/base');
 
 var THREE = require('three');
 
@@ -8,6 +7,7 @@ var RenderableView = Renderable.RenderableView;
 var RenderableModel = Renderable.RenderableModel;
 var OrbitControls = require('../examples/controls/OrbitControls.js').OrbitControls;
 var utils = require('./utils.js');
+var unpackThreeModel = require('./serializers').unpackThreeModel;
 
 
 var BLACK = new THREE.Color('black');
@@ -163,6 +163,8 @@ var PreviewView = RenderableView.extend({
         // Allow user to inspect object with mouse/scrollwheel
         this.debug('setting up controls');
         var control = new OrbitControls(this.camera, this.renderer.domElement);
+        control.screenSpacePanning = false;
+
         control.target.set(0, 0, 0);
         control.update();
         this.controls = [control];
@@ -268,7 +270,7 @@ var PreviewModel = RenderableModel.extend({
 }, {
 
     serializers: _.extend({
-        child: { deserialize: widgets.unpack_models },
+        child: { deserialize: unpackThreeModel },
     }, RenderableModel.serializers),
 
 });

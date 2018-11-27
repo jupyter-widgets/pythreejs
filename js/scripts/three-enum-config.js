@@ -123,6 +123,7 @@ var PixelFormats = [
     "LuminanceAlphaFormat",
     "DepthFormat",
     "DepthStencilFormat",
+    "RedFormat",
 ];
 
 var DepthFormats = [
@@ -167,6 +168,8 @@ var TextureEncodings = [
     "RGBM16Encoding",
     "RGBDEncoding",
     "GammaEncoding",
+    "BasicDepthPacking",
+    "RGBADepthPacking",
 ];
 
 // WebGLRenderer constants

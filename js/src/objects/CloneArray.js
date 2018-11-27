@@ -2,6 +2,8 @@ var Promise = require('bluebird');
 var THREE = require('three');
 var CloneArrayAutogen = require('./CloneArray.autogen').CloneArrayModel;
 
+var utils = require('../_base/utils');
+
 
 function ThreeCloneArray(original, positions, merge) {
     THREE.Object3D.call(this);
@@ -148,6 +150,8 @@ var CloneArrayModel = CloneArrayAutogen.extend({
     }
 
 });
+
+utils.customModelsLut[ThreeCloneArray.prototype.constructor.name] = 'CloneArray';
 
 module.exports = {
     CloneArrayModel: CloneArrayModel,

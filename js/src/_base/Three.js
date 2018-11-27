@@ -186,7 +186,7 @@ var ThreeModel = widgets.WidgetModel.extend({
 
         // Handle changes in data widgets/union properties
         this.datawidget_properties.forEach(function(propName) {
-            dataserializers.listenToUnion(this, propName, this.onChildChanged.bind(this), false);
+            dataserializers.listenToUnion(this, propName, this.onDataChanged.bind(this), false);
         }, this);
 
         this.on('change', this.onChange, this);
@@ -345,6 +345,16 @@ var ThreeModel = widgets.WidgetModel.extend({
 
     onChildChanged: function(model) {
         console.debug('child changed: ' + model.model_id);
+        // Propagate up hierarchy:
+        this.trigger('childchange', this);
+    },
+
+    onDataChanged: function(model, options) {
+        console.debug('child data changed: ' + model.model_id);
+        // Treat a data widget change as if data attribute changed
+        // Note: hasChanged() etc won't identify the attribute, so
+        // property_mappers should be used for union properties.
+        this.onChange(model, options);
         // Propagate up hierarchy:
         this.trigger('childchange', this);
     },
@@ -624,11 +634,13 @@ var ThreeModel = widgets.WidgetModel.extend({
             f.a,
             f.b,
             f.c,
-            f.normal.toArray(),
-            this.convertColorThreeToModel(f.color),
+            f.vertexNormals.length > 0
+                ? this.convertVectorArrayThreeToModel(f.vertexNormals)
+                : f.normal.toArray(),
+            f.vertexColors.length > 0
+                ? this.convertColorArrayThreeToModel(f.vertexColors)
+                : this.convertColorThreeToModel(f.color),
             f.materialIndex,
-            this.convertVectorArrayThreeToModel(f.vertexNormals),
-            this.convertColorArrayThreeToModel(f.vertexColors),
         ];
     },
 
@@ -713,26 +725,6 @@ var ThreeModel = widgets.WidgetModel.extend({
         Object.assign(obj[key], value);
     },
 
-    convertUniformDictModelToThree: function(modelDict) {
-        if (modelDict === null) {
-            return null;
-        }
-        // Convert any strings to THREE.Color
-        // Just modify dict in-place, as it should serialize the same
-        Object.keys(modelDict).forEach(function(k) {
-            var value = modelDict[k].value;
-            if (value && (typeof value === 'string' || value instanceof String)) {
-                modelDict[k].value = new THREE.Color(value);
-            }
-        });
-        return modelDict;
-    },
-
-    convertUniformDictThreeToModel: function(threeDict) {
-        // No-op
-        return threeDict;
-    },
-
     // ThreeTypeArray
     convertThreeTypeArrayModelToThree: function(modelArr, propName) {
         if (!Array.isArray(modelArr)) {
@@ -783,21 +775,22 @@ var ThreeModel = widgets.WidgetModel.extend({
     },
 
     // ArrayBuffer
-    convertArrayBufferModelToThree: function(arr) {
-        if (arr === null) {
-            return null;
-        }
-        if (arr instanceof widgets.WidgetModel) {
-            return arr.get('array').data;
-        }
-        return arr.data;
+    convertArrayBufferModelToThree: function(ref, propName) {
+        var arr = dataserializers.getArray(ref);
+        return arr && arr.data;
     },
 
-    convertArrayBufferThreeToModel: function(arrBuffer) {
+    convertArrayBufferThreeToModel: function(arrBuffer, propName) {
         if (arrBuffer === null) {
             return null;
         }
-        // Never back-convert to a new widget
+        var current = this.get(propName);
+        var currentArray = dataserializers.getArray(current);
+        if (currentArray && (currentArray.data === arrBuffer)) {
+            // Unchanged, do nothing
+            return current;
+        }
+        // Never create a new widget, even if current is one
         return ndarray(arrBuffer);
     },
 

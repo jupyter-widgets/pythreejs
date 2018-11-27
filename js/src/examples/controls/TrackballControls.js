@@ -110,16 +110,6 @@ var TrackballControls = function ( object, domElement ) {
 
 	};
 
-	this.handleEvent = function ( event ) {
-
-		if ( typeof this[ event.type ] == 'function' ) {
-
-			this[ event.type ]( event );
-
-		}
-
-	};
-
 	var getMouseOnScreen = ( function () {
 
 		var vector = new THREE.Vector2();
@@ -186,7 +176,7 @@ var TrackballControls = function ( object, domElement ) {
 
 	}() );
 
-	this.rotateCamera = (function(){
+	this.rotateCamera = (function (){
 
 		var axis = new THREE.Vector3(),
 			quaternion = new THREE.Quaternion();
@@ -257,7 +247,7 @@ var TrackballControls = function ( object, domElement ) {
 
 	};
 
-	this.panCamera = (function(){
+	this.panCamera = (function (){
 
 		var mouseChange = new THREE.Vector2(),
 			objectUp = new THREE.Vector3(),
@@ -369,7 +359,7 @@ var TrackballControls = function ( object, domElement ) {
 
 	};
 
-	this.connectEvents = function(element) {
+	this.connectEvents = function (element) {
 		if (element) {
 			_this.domElement = element;
 		}
@@ -387,7 +377,7 @@ var TrackballControls = function ( object, domElement ) {
 		_this.domElement.addEventListener( 'keyup', keyup, false );
 	};
 
-	this.dispose = function() {
+	this.dispose = function () {
 
 		_this.domElement.removeEventListener( 'contextmenu', contextmenu, false );
 
@@ -572,6 +562,7 @@ var TrackballControls = function ( object, domElement ) {
 		// Make sure we know the current canvas bounds so that
 		// mouse coordinates are computed properly during this interaction.
 		_this.updateBounds();
+		event.preventDefault();
 
 		switch ( event.touches.length ) {
 

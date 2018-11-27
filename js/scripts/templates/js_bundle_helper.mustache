@@ -1,0 +1,7 @@
+if (window.requirejs) {
+    window.requirejs.config({
+        paths: {
+            'three': ['three', 'https://unpkg.com/three@{{ threejsSemver }}/build/three{{#if debug}}.min {{/if}}']
+        }
+    });
+}

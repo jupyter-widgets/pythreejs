@@ -1,15 +1,14 @@
 var _ = require('underscore');
 var widgets = require('@jupyter-widgets/base');
-var Promise = require('bluebird');
 var $ = require('jquery');
-
-var THREE = require('three');
 
 var pkgName = require('../../package.json').name;
 var EXTENSION_SPEC_VERSION = require('../version').EXTENSION_SPEC_VERSION;
 var RendererPool = require('./RendererPool');
 
 var ThreeModel = require('./Three').ThreeModel;
+var unpackThreeModel = require('./serializers').unpackThreeModel;
+
 
 var screenfull = require('screenfull');
 
@@ -95,8 +94,8 @@ var RenderableModel = widgets.DOMWidgetModel.extend({
 
 }, {
     serializers: _.extend({
-        clippingPlanes: { deserialize: widgets.unpack_models },
-        shadowMap: { deserialize: widgets.unpack_models },
+        clippingPlanes: { deserialize: unpackThreeModel },
+        shadowMap: { deserialize: unpackThreeModel },
     }, widgets.DOMWidgetModel.serializers)
 });
 
@@ -435,11 +434,12 @@ var RenderableView = widgets.DOMWidgetView.extend({
 
     enableControls: function() {
         this.debug('Enable controls');
+        this.boundTick = this.tick.bind(this);
         var that = this;
         this.controls.forEach(function(control) {
             control.enabled = true;
             control.connectEvents(that.$renderer[0]);
-            control.addEventListener('change', that.tick.bind(that));
+            control.addEventListener('change', that.boundTick);
         });
     },
 
@@ -449,7 +449,7 @@ var RenderableView = widgets.DOMWidgetView.extend({
         this.controls.forEach(function(control) {
             control.enabled = false;
             control.dispose();  // Disconnect from DOM events
-            control.removeEventListener('change', that.tick.bind(that));
+            control.removeEventListener('change', that.boundTick);
         });
     },
 

@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from collections import namedtuple, Sequence
+import six
+import re
 import warnings
 
 from traitlets import (
@@ -11,7 +13,7 @@ from traitlets import (
 
 from ipywidgets import widget_serialization
 
-from ipydatawidgets import DataUnion, NDArrayWidget
+from ipydatawidgets import DataUnion, NDArrayWidget, shape_constraints
 
 import numpy as np
 
@@ -34,7 +36,9 @@ class Vector2(Tuple):
     default_value = (0, 0)
     info_text = 'a two-element vector'
 
-    def __init__(self, trait=CFloat, default_value=Undefined, **kwargs):
+    def __init__(self, trait=Undefined, default_value=Undefined, **kwargs):
+        if trait is Undefined:
+            trait = CFloat()
         if default_value is Undefined:
             default_value = self.default_value
         super(Vector2, self).__init__(*(trait, trait), default_value=default_value, **kwargs)
@@ -47,7 +51,9 @@ class Vector3(Tuple):
     default_value = (0, 0, 0)
     info_text = 'a three-element vector'
 
-    def __init__(self, trait=CFloat, default_value=Undefined, **kwargs):
+    def __init__(self, trait=Undefined, default_value=Undefined, **kwargs):
+        if trait is Undefined:
+            trait = CFloat()
         if default_value is Undefined:
             default_value = self.default_value
         super(Vector3, self).__init__(*(trait, trait, trait), default_value=default_value, **kwargs)
@@ -60,7 +66,9 @@ class Vector4(Tuple):
     default_value = (0, 0, 0, 0)
     info_text = 'a four-element vector'
 
-    def __init__(self, trait=CFloat, default_value=Undefined, **kwargs):
+    def __init__(self, trait=Undefined, default_value=Undefined, **kwargs):
+        if trait is Undefined:
+            trait = CFloat()
         if default_value is Undefined:
             default_value = self.default_value
         super(Vector4, self).__init__(*(trait, trait, trait, trait), default_value=default_value, **kwargs)
@@ -77,7 +85,9 @@ class Matrix3(Tuple):
         )
     info_text = 'a three-by-three matrix (9 element tuple)'
 
-    def __init__(self, trait=CFloat, default_value=Undefined, **kwargs):
+    def __init__(self, trait=Undefined, default_value=Undefined, **kwargs):
+        if trait is Undefined:
+            trait = CFloat()
         if default_value is Undefined:
             default_value = self.default_value
         super(Matrix3, self).__init__(*((trait,) * 9), default_value=default_value, **kwargs)
@@ -95,7 +105,9 @@ class Matrix4(Tuple):
         )
     info_text = 'a four-by-four matrix (16 element tuple)'
 
-    def __init__(self, trait=CFloat, default_value=Undefined, **kwargs):
+    def __init__(self, trait=Undefined, default_value=Undefined, **kwargs):
+        if trait is Undefined:
+            trait = CFloat()
         if default_value is Undefined:
             default_value = self.default_value
         super(Matrix4, self).__init__(*((trait,) * 16), default_value=default_value, **kwargs)
@@ -195,3 +207,54 @@ unitialized_serialization = {
     }
 
 UninitializedSentinel = Uninitialized()
+
+
+# Color trait. In process of being upstreamed to ipywidgets
+
+_color_names = ['aliceblue', 'antiquewhite', 'aqua', 'aquamarine', 'azure', 'beige', 'bisque', 'black', 'blanchedalmond', 'blue', 'blueviolet', 'brown', 'burlywood', 'cadetblue', 'chartreuse', 'chocolate', 'coral', 'cornflowerblue', 'cornsilk', 'crimson', 'cyan', 'darkblue', 'darkcyan', 'darkgoldenrod', 'darkgray', 'darkgreen', 'darkkhaki', 'darkmagenta', 'darkolivegreen', 'darkorange', 'darkorchid', 'darkred', 'darksalmon', 'darkseagreen', 'darkslateblue', 'darkslategray', 'darkturquoise', 'darkviolet', 'deeppink', 'deepskyblue', 'dimgray', 'dodgerblue', 'firebrick', 'floralwhite', 'forestgreen', 'fuchsia', 'gainsboro', 'ghostwhite', 'gold', 'goldenrod', 'gray', 'green', 'greenyellow', 'honeydew', 'hotpink', 'indianred ', 'indigo ', 'ivory', 'khaki', 'lavender', 'lavenderblush', 'lawngreen', 'lemonchiffon', 'lightblue', 'lightcoral', 'lightcyan', 'lightgoldenrodyellow', 'lightgray', 'lightgreen', 'lightpink', 'lightsalmon', 'lightseagreen', 'lightskyblue', 'lightslategray', 'lightsteelblue', 'lightyellow', 'lime', 'limegreen', 'linen', 'magenta', 'maroon', 'mediumaquamarine', 'mediumblue', 'mediumorchid', 'mediumpurple', 'mediumseagreen', 'mediumslateblue', 'mediumspringgreen', 'mediumturquoise', 'mediumvioletred', 'midnightblue', 'mintcream', 'mistyrose', 'moccasin', 'navajowhite', 'navy', 'oldlace', 'olive', 'olivedrab', 'orange', 'orangered', 'orchid', 'palegoldenrod', 'palegreen', 'paleturquoise', 'palevioletred', 'papayawhip', 'peachpuff', 'peru', 'pink', 'plum', 'powderblue', 'purple', 'rebeccapurple', 'red', 'rosybrown', 'royalblue', 'saddlebrown', 'salmon', 'sandybrown', 'seagreen', 'seashell', 'sienna', 'silver', 'skyblue', 'slateblue', 'slategray', 'snow', 'springgreen', 'steelblue', 'tan', 'teal', 'thistle', 'tomato', 'transparent', 'turquoise', 'violet', 'wheat', 'white', 'whitesmoke', 'yellow', 'yellowgreen']
+_color_re = re.compile(r'#[a-fA-F0-9]{3}(?:[a-fA-F0-9]{3})?$')
+
+_color_hexa_re = re.compile(r'^#[a-fA-F0-9]{4}(?:[a-fA-F0-9]{4})?$')
+
+_color_frac_percent = r'\s*(\d+(\.\d*)?|\.\d+)?%?\s*'
+_color_int_percent = r'\s*\d+%?\s*'
+
+_color_rgb = r'rgb\({ip},{ip},{ip}\)'
+_color_rgba = r'rgba\({ip},{ip},{ip},{fp}\)'
+_color_hsl = r'hsl\({fp},{fp},{fp}\)'
+_color_hsla = r'hsla\({fp},{fp},{fp},{fp}\)'
+
+_color_rgbhsl_re = re.compile('({0})|({1})|({2})|({3})'.format(
+    _color_rgb, _color_rgba, _color_hsl, _color_hsla
+).format(ip=_color_int_percent, fp=_color_frac_percent))
+
+
+class Color(Unicode):
+    """A string holding a valid HTML color such as 'blue', '#060482', '#A80'"""
+
+    info_text = 'a valid HTML color'
+    default_value = Undefined
+
+    def validate(self, obj, value):
+        if value is None and self.allow_none:
+            return value
+        if isinstance(value, six.string_types):
+            if value.lower() in _color_names or _color_re.match(value):
+                return value
+            elif _color_hexa_re.match(value) or _color_rgbhsl_re.match(value):
+                return value
+        self.error(obj, value)
+
+
+class Uniform(Dict):
+    """A dict holding uniforms for a ShaderMaterial"""
+
+    def __init__(self, default_value=Undefined, **kwargs):
+        super(Uniform, self).__init__(traits=dict(
+            value=Union((
+                Int(), Float(), Color(), Instance('pythreejs.Texture'),
+                List(trait=Union((
+                    Int(), Float(), Color(), Instance('pythreejs.Texture')))),
+            ), allow_none=True),
+            type=Unicode()
+        ), default_value=default_value, **kwargs)

@@ -40,6 +40,11 @@ const CUSTOM_CLASSES = [
     'core/BaseBufferGeometry.js',
     'objects/CloneArray.js',
     'objects/Blackbox.js',
+    'objects/Line2.js',
+    'objects/LineSegments2.js',
+    'geometries/LineGeometry.js',
+    'geometries/LineSegmentsGeometry.js',
+    'materials/LineMaterial.js',
 ];
 
 const IGNORE_FILES = [
@@ -50,6 +55,7 @@ const IGNORE_FILES = [
     '**/constants.js',      // Processed into enums in separate script
     '**/audio/AudioContext.js',             // JS API for audio, nothing to expose
     '**/core/Face3.js',     // Implemented as trait only, not widget model
+    '**/core/Uniform.js',   // Implemented as trait only, not widget model
     '**/geometries/Geometries.js',          // index.js like file, nothing new here
     '**/materials/Materials.js',            // index.js like file, nothing new here
     '**/materials/MeshDistanceMaterial.js', // TODO: Undocumented as of yet
@@ -64,9 +70,11 @@ const IGNORE_FILES = [
     '**/renderers/WebGL2Renderer.js',       //   render is not exposed.
     //'**/renderers/webgl/**',
     '**/renderers/webgl/WebGLAttributes.js',
+    '**/renderers/webgl/WebGLAnimation.js',
     '**/renderers/webgl/WebGLBackground.js',
     '**/renderers/webgl/WebGLClipping.js',
     '**/renderers/webgl/WebGLFlareRenderer.js',
+    '**/renderers/webgl/WebGLInfo.js',
     '**/renderers/webgl/WebGLMorphtargets.js',
     '**/renderers/webgl/WebGLRenderLists.js',
     '**/renderers/webgl/WebGLRenderStates.js',
@@ -80,6 +88,7 @@ const IGNORE_FILES = [
     '**/loaders/LoaderUtils.js',            // Only functions, nothing to export
     '**/extras/Earcut.js',                  // Only functions, nothing to export
     '**/extras/ShapeUtils.js',              // Only functions, nothing to export
+    '**/extras/ImageUtils.js',              // Only functions, nothing to export
     '**/extras/core/Interpolations.js',     // Only functions, nothing to export
     '**/textures/CanvasTexture.js'          // Canvases are not referenceable from python
 ];
@@ -314,7 +323,7 @@ class JavascriptWrapper {
 
         this.jsDestPath = path.resolve(jsSrcDir, modulePath);
         this.destDir = path.dirname(this.jsDestPath);
-        this.relativePathToBase = path.relative(this.destDir, jsSrcDir);
+        this.relativePathToBase = path.relative(this.destDir, jsSrcDir).replace(pathSep, '/');
 
         this.jsAutoDestPath = path.resolve(
             this.destDir,
@@ -352,6 +361,7 @@ class JavascriptWrapper {
         this.context = {
             now: new Date(),
             generatorScriptName: path.basename(__filename),
+            relativePathToBase: this.relativePathToBase,
 
             className: this.className,
             viewName: this.viewName,

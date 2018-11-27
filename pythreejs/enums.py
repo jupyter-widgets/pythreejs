@@ -137,6 +137,7 @@ PixelFormats = EnumNamespace(
     LuminanceAlphaFormat='LuminanceAlphaFormat',
     DepthFormat='DepthFormat',
     DepthStencilFormat='DepthStencilFormat',
+    RedFormat='RedFormat',
 )
 
 DepthFormats = EnumNamespace(
@@ -179,6 +180,8 @@ TextureEncodings = EnumNamespace(
     RGBM16Encoding='RGBM16Encoding',
     RGBDEncoding='RGBDEncoding',
     GammaEncoding='GammaEncoding',
+    BasicDepthPacking='BasicDepthPacking',
+    RGBADepthPacking='RGBADepthPacking',
 )
 
 CullFaceModes = EnumNamespace(

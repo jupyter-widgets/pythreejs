@@ -58,7 +58,9 @@ var DataTextureModel = DataTextureBase.extend({
     mapDataTextureDataModelToThree: function() {
         var imageRecord = this.obj.image;
         var data = this.decodeData();
-        if (imageRecord.width !== data.width || imageRecord.height !== imageRecord.height) {
+        if (imageRecord.width !== data.width ||
+            imageRecord.height !== data.height
+        ) {
             throw new Error('Cannot change the dimensions of a DataTexture!');
         }
         this.obj.image.data.set(data.data);
@@ -73,7 +75,10 @@ var DataTextureModel = DataTextureBase.extend({
             var rawData = dataserializers.getArray(modelNDArray);
             rawData.data.set(imageRecord.data);
         } else {
-            this.set('data', ndarray(imageRecord.data, [imageRecord.width, imageRecord.height]));
+            this.set('data', ndarray(
+                imageRecord.data,
+                [imageRecord.width, imageRecord.height]
+            ));
         }
     },
 
