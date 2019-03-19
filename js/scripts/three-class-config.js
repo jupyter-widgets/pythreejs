@@ -1547,11 +1547,14 @@ module.exports = {
             detail: new Types.Int(0.0),
         },
     },
-    // TODO:
     EdgesGeometry: {
-        todo: true,
         relativePath: './geometries/EdgesGeometry',
-        superClass: 'BaseGeometry',
+        superClass: 'BaseBufferGeometry',
+        constructorArgs: [ 'geometry', 'thresholdAngle' ],
+        properties: {
+            geometry:       new Types.ThreeType(['BaseGeometry', 'BaseBufferGeometry']),
+            thresholdAngle: new Types.Float(1),
+        }
     },
     // TODO:
     ExtrudeGeometry: {
