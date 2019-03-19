@@ -131,6 +131,16 @@ Handlebars.registerHelper('rst', function (data, indent) {
     return new Handlebars.SafeString(out);
 });
 
+Handlebars.registerHelper('notSuper', function (v1, options) {
+    if (v1 === (
+        options.data.root.superClass.modelName ||
+        options.data.root.superClass.className
+    )) {
+        return options.inverse(this);
+    }
+    return options.fn(this);
+});
+
 //
 // Helper Functions
 //
