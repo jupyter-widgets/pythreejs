@@ -72,7 +72,7 @@ def json_cone(t):
     return CylinderGeometry(radiusTop=0,
                              radiusBottom=t['bottomradius'],
                              height=t['height'],
-                             radiusSegments=50)
+                             radialSegments=50)
 
 def json_cylinder(t):
     return CylinderGeometry(radiusTop=t['radius'],
@@ -99,7 +99,7 @@ def json_line(t):
                                                  radiusBottom=.02*tree_geometry['thickness'],
                                                  height=height,
                                                  up=[1,0,0],
-                                                 radiusSegments=50))
+                                                 radialSegments=50))
         c.look_at(path[-1], path[-2])
         q1 = c.quaternion
         q2 = [0.7071067811865475, 0.0, 0.0, 0.7071067811865476]
