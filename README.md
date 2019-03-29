@@ -1,5 +1,9 @@
 # pythreejs
 
+
+[![Documentation Status](https://readthedocs.org/projects/pythreejs/badge/?version=stable)](https://pythreejs.readthedocs.io/en/stable/?badge=stable)
+
+
 A Python / ThreeJS bridge utilizing the Jupyter widget infrastructure.
 
 ![Screencast](screencast.gif)
