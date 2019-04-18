@@ -109,10 +109,8 @@ function writeJavascriptFile() {
     return fse.outputFile(jsEnumDst, content);
 }
 
-function createJavascriptFiles() {
-    return new Promise(function(resolve) {
-        resolve(writeJavascriptFile());
-    });
+async function createJavascriptFiles() {
+    return await writeJavascriptFile();
 }
 
 function writePythonFile() {
@@ -144,10 +142,8 @@ function writePythonFile() {
     return fse.outputFile(pyEnumDst, content);
 }
 
-function createPythonFiles() {
-    return new Promise(function(resolve) {
-        resolve(writePythonFile());
-    });
+async function createPythonFiles() {
+    return await writePythonFile();
 }
 
 function generateFiles() {
