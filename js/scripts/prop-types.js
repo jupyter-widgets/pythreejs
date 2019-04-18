@@ -374,9 +374,9 @@ class ColorArray extends BaseType {
 }
 
 class ArrayType extends BaseType {
-    constructor(options) {
+    constructor(defaultValue, options) {
         super(options);
-        this.defaultValue = [];
+        this.defaultValue = defaultValue === undefined ? [] : defaultValue;
     }
     getTraitlet() {
         return `List()${this.getTagString()}`;

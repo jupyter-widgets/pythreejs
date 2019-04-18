@@ -289,14 +289,14 @@ module.exports = {
                 nullable: true,
                 help: 'The index of the face picked (null if no face picked)',
             }),
-            modifiers: new Types.Array({
+            modifiers: new Types.Array(undefined, {
                 help: 'The keyboard modifiers held at the pick event in the following order: [SHIFT, CTRL, ALT, META]',
             }),
             object: new Types.ThreeType('Object3D', {
                 nullable: true,
                 help: 'The picked object (null if no object picked)',
             }),
-            picked: new Types.Array({
+            picked: new Types.Array(undefined, {
                 help: 'The other fields on the picker will always be for the first object intersection. ' +
                       'If ``all`` is set true, this field will be an array containing the same information ' +
                       'for all intersections.',
@@ -304,7 +304,7 @@ module.exports = {
             uv: new Types.Vector2(0, 0, {
                 help: 'The UV coordinate picked (all zero if invalid pick)',
             }),
-            indices: new Types.Array({
+            indices: new Types.Array(undefined, {
                 help: 'The vertex indices of the picked face (empty if no face picked)',
             }),
         },
@@ -365,7 +365,7 @@ module.exports = {
             vertices:       new Types.VectorArray(),
             colors:         new Types.ColorArray(),
             faces:          new Types.FaceArray(),
-            faceVertexUvs:  new Types.Array(),
+            faceVertexUvs:  new Types.Array([[]]),
             lineDistances:  new Types.Array(),
             morphTargets:   new Types.Array(),
             morphNormals:   new Types.Array(),
