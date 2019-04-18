@@ -1511,12 +1511,12 @@ module.exports = {
     CylinderBufferGeometry: {
         relativePath: './geometries/CylinderGeometry',
         superClass: 'BaseBufferGeometry',
-        constructorArgs: [ 'radiusTop', 'radiusBottom', 'height', 'radiusSegments', 'heightSegments', 'openEnded', 'thetaStart', 'thetaLength' ],
+        constructorArgs: [ 'radiusTop', 'radiusBottom', 'height', 'radialSegments', 'heightSegments', 'openEnded', 'thetaStart', 'thetaLength' ],
         properties: {
             radiusTop:      new Types.Float(1.0),
             radiusBottom:   new Types.Float(1.0),
             height:         new Types.Float(1.0),
-            radiusSegments: new Types.Int(8),
+            radialSegments: new Types.Int(8),
             heightSegments: new Types.Int(1),
             openEnded:      new Types.Bool(false),
             thetaStart:     new Types.Float(0.0),
@@ -1526,12 +1526,12 @@ module.exports = {
     CylinderGeometry: {
         relativePath: './geometries/CylinderGeometry',
         superClass: 'BaseGeometry',
-        constructorArgs: [ 'radiusTop', 'radiusBottom', 'height', 'radiusSegments', 'heightSegments', 'openEnded', 'thetaStart', 'thetaLength' ],
+        constructorArgs: [ 'radiusTop', 'radiusBottom', 'height', 'radialSegments', 'heightSegments', 'openEnded', 'thetaStart', 'thetaLength' ],
         properties: {
             radiusTop:      new Types.Float(1.0),
             radiusBottom:   new Types.Float(1.0),
             height:         new Types.Float(1.0),
-            radiusSegments: new Types.Int(8),
+            radialSegments: new Types.Int(8),
             heightSegments: new Types.Int(1),
             openEnded:      new Types.Bool(false),
             thetaStart:     new Types.Float(0.0),
@@ -1547,11 +1547,14 @@ module.exports = {
             detail: new Types.Int(0.0),
         },
     },
-    // TODO:
     EdgesGeometry: {
-        todo: true,
         relativePath: './geometries/EdgesGeometry',
-        superClass: 'BaseGeometry',
+        superClass: 'BaseBufferGeometry',
+        constructorArgs: [ 'geometry', 'thresholdAngle' ],
+        properties: {
+            geometry:       new Types.ThreeType(['BaseGeometry', 'BaseBufferGeometry']),
+            thresholdAngle: new Types.Float(1),
+        }
     },
     // TODO:
     ExtrudeGeometry: {
@@ -1795,12 +1798,12 @@ module.exports = {
     TubeGeometry: {
         relativePath: './geometries/TubeGeometry',
         superClass: 'BaseGeometry',
-        constructorArgs: [ 'path', 'segments', 'radius', 'radiusSegments', 'close' ],
+        constructorArgs: [ 'path', 'segments', 'radius', 'radialSegments', 'close' ],
         properties: {
             path:           new Types.ThreeType('Curve'),
             segments:       new Types.Int(64),
             radius:         new Types.Float(1.0),
-            radiusSegments: new Types.Int(8),
+            radialSegments: new Types.Int(8),
             close:          new Types.Bool(false),
         },
     },
