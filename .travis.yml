@@ -5,6 +5,7 @@ python:
   - 3.5
   - 2.7
 sudo: false
+dist: xenial
 env:
   matrix:
     - GROUP=python
