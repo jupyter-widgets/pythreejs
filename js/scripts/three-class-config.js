@@ -1817,15 +1817,16 @@ module.exports = {
     },
     ArrowHelper: {
         relativePath: './helpers/ArrowHelper',
-        superClass: 'Object3D',
+        superClass: 'Blackbox',
         properties: {
-            dir: new Types.Vector3(1, 0, 0),
+            dir: new Types.Vector3(0, 0, 1),
             origin: new Types.Vector3(0, 0, 0),
             length: new Types.Float(1.0),
-            hex: new Types.Int(0),
-            headLength: new Types.Float(null, {nullable: true}),
-            headWidth: new Types.Float(null, {nullable: true}),
+            color: new Types.Color('#ffff00'),
+            headLength: new Types.Float(undefined, {nullable: true}),
+            headWidth: new Types.Float(undefined, {nullable: true}),
         },
+        constructorArgs: ['dir', 'origin', 'length', 'color', 'headLength', 'headWidth'],
     },
     AxesHelper: {
         relativePath: './helpers/AxesHelper',
