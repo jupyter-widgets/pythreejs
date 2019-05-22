@@ -11,7 +11,13 @@ var TrackballControls = function ( object, domElement ) {
 	var STATE = { NONE: -1, ROTATE: 0, ZOOM: 1, PAN: 2, TOUCH_ROTATE: 3, TOUCH_ZOOM_PAN: 4 };
 
 	this.object = object;
+
+    // This controls object may be asked to feed information to a shader about the
+    // viewport and the distance to the target.
+    this.shaderMaterial = null;
+
 	this.domElement = ( domElement !== undefined ) ? domElement : document;
+    this.object.controls = this; // link controlled object to this controller; allow access to target vector...
 
 	// API
 
@@ -81,7 +87,6 @@ var TrackballControls = function ( object, domElement ) {
 	var startEvent = { type: 'start'};
 	var endEvent = { type: 'end'};
 
-
 	// methods
 
 	// Note: this method must be called not only when the canvas is resized, but also
@@ -108,7 +113,17 @@ var TrackballControls = function ( object, domElement ) {
 
 		}
 
+        if (_this.shaderMaterial) {
+            if (this.screen.width != _this.shaderMaterial.uniforms.rendererWidth.value) {
+                _this.shaderMaterial.uniforms.rendererWidth.value = this.screen.width;
+                _this.shaderMaterial.needsUpdate = true;
+            }
+        }
 	};
+
+    // This callback will be called from RenderableView::updateSize
+    // in 'js/src/_base/Renderable.js'
+    this.handleResize = function() { this.updateBounds(); };
 
 	var getMouseOnScreen = ( function () {
 
@@ -303,7 +318,6 @@ var TrackballControls = function ( object, domElement ) {
 	};
 
 	this.update = function () {
-
 		_eye.subVectors( _this.object.position, _this.target );
 
 		if ( !_this.noRotate ) {
@@ -338,6 +352,12 @@ var TrackballControls = function ( object, domElement ) {
 
 		}
 
+        if (_this.shaderMaterial) {
+            v = new THREE.Vector3(),
+			v.copy( _this.object.position ).sub( _this.target );
+            _this.shaderMaterial.uniforms.targetDepth.value = v.length();
+            _this.shaderMaterial.needsUpdate = true;
+        }
 	};
 
 	this.reset = function () {

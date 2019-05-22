@@ -88,7 +88,7 @@ var RenderableModel = widgets.DOMWidgetModel.extend({
     },
 
     onChildChanged: function(model, options) {
-        console.debug('child changed: ' + model.model_id);
+        // console.debug('child changed: ' + model.model_id);
         // Let listeners (e.g. views) know:
         this.trigger('childchange', this);
     },
@@ -314,6 +314,13 @@ var RenderableView = widgets.DOMWidgetView.extend({
                 // Sync new aspect back to Python (if the camera has a model)
                 this.camera.ipymodel.set('aspect', this.camera.aspect, 'pushFromThree');
                 this.camera.ipymodel.save_changes();
+            }
+        }
+        if (this.controls !== undefined) {
+            for (var i=0; i < this.controls.length; ++i) {
+                var c = this.controls[i];
+                if (c.handleResize !== undefined)
+                    c.handleResize();
             }
         }
         this.trigger('updatestream');
