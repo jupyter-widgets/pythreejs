@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from collections import namedtuple, Sequence
+from collections import namedtuple
+try:
+    from collections.abc import Sequence  # python3
+except ImportError:
+    from collections import Sequence  # python2
 import six
 import re
 import warnings
