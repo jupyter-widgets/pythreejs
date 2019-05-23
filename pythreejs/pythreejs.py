@@ -53,7 +53,7 @@ class SurfaceGeometry(BufferGeometry):
     """
     A regular grid with heights
     """
-    z = List(CFloat, [0] * 100)
+    z = List(CFloat(), [0] * 100)
     width = CInt(10)
     height = CInt(10)
     width_segments = CInt(10, read_only=True)
