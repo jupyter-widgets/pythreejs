@@ -73,7 +73,7 @@ var computeBoundingSphere = function() {
 
                 // Calculate new bounding-sphere:
                 boundingSphere.radius = 0.5 * (rA + rB + d);
-                boundingSphere.center.addScaledVector(vAB, 0.5 + rB);
+                boundingSphere.center.addScaledVector(vAB, 0.5);
             }
         });
         return boundingSphere;
