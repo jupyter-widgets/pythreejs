@@ -1,6 +1,6 @@
 {
   "name": "jupyter-threejs",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "jupyter - threejs bridge",
   "author": "Jupyter-Threejs development team",
   "license": "BSD-3-Clause",
@@ -34,9 +34,9 @@
     "webpack-cli": "^3.3.4"
   },
   "dependencies": {
-    "@jupyter-widgets/base": "^1.2.5",
+    "@jupyter-widgets/base": "^1.2.5 || ^2.0.0",
     "bluebird": "^3.5.5",
-    "jupyter-dataserializers": "^1.1.2",
+    "jupyter-dataserializers": "^2.1.0",
     "three": "^0.97.0",
     "underscore": "^1.8.3"
   },
