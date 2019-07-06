@@ -16,7 +16,9 @@ from {{ py_base_relative_path }}traits import *
 from {{ superClass.pyRelativePath }} import {{ superClass.className }}
 
 {{#each dependencies as |dep depName|}}
+{{#notSuper dep.className}}
 from {{ dep.pyRelativePath }} import {{ dep.className }}
+{{/notSuper}}
 {{/each}}
 
 {{#unless hasOverride}}

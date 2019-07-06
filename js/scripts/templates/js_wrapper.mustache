@@ -3,6 +3,7 @@
 //
 
 var _ = require('underscore');
+var Promise = require('bluebird');
 var THREE = require('three');
 var widgets = require('@jupyter-widgets/base');
 var dataserializers = require('jupyter-dataserializers');
@@ -11,7 +12,9 @@ var serializers = require('{{ relativePathToBase }}/_base/serializers');
 var {{ superClass.modelName }} = require('{{ superClass.requirePath }}').{{ superClass.modelName }};
 
 {{#each dependencies as |dep depName|}}
+{{#notSuper dep.modelName}}
 var {{ dep.modelName }} = require('{{ dep.requirePath }}').{{ dep.modelName }};
+{{/notSuper}}
 {{/each}}
 
 var {{ modelName }} = {{ superClass.modelName }}.extend({

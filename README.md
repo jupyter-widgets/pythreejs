@@ -1,5 +1,9 @@
 # pythreejs
 
+
+[![Documentation Status](https://readthedocs.org/projects/pythreejs/badge/?version=stable)](https://pythreejs.readthedocs.io/en/stable/?badge=stable)
+
+
 A Python / ThreeJS bridge utilizing the Jupyter widget infrastructure.
 
 ![Screencast](screencast.gif)
@@ -12,8 +16,17 @@ Using pip:
 
 ```bash
 pip install pythreejs
+```
+
+And then install the extension for jupyter notebooks
+```
 jupyter nbextension install --py --symlink --sys-prefix pythreejs
 jupyter nbextension enable --py --sys-prefix pythreejs
+```
+
+Or for jupyter lab:
+```
+jupyter labextension install jupyter-threejs
 ```
 
 Note for developers: the `--symlink` argument on Linux or OS X allows one to

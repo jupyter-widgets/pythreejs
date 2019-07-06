@@ -58,7 +58,7 @@ function mapPromiseFnOverObject(object, mapFn) {
 }
 
 
-function createPythonWrapper(name, relativePath) {
+async function createPythonWrapper(name, relativePath) {
 
     const data = THREE[name];
     let serialized;
@@ -92,14 +92,14 @@ function createPythonWrapper(name, relativePath) {
         generatorScriptName: path.basename(__filename),
     });
     promises.push(fse.outputFile(pyPath, output));
-    return Promise.all(promises);
+    await Promise.all(promises);
 }
 
-function createPythonModuleInitFile(modulePath) {
+async function createPythonModuleInitFile(modulePath) {
 
     const dirname = path.dirname(modulePath);
     const pyInitFilePath = path.resolve(pySrcDir, dirname, '__init__.py');
-    return fse.ensureFile(pyInitFilePath);
+    await fse.ensureFile(pyInitFilePath);
 
 }
 
@@ -110,12 +110,12 @@ function createPythonFiles() {
         return Promise.resolve();
     }
 
-    return mapPromiseFnOverObject(shaderUtilsConfig, function(name, configObj) {
+    return mapPromiseFnOverObject(shaderUtilsConfig, async function(name, configObj) {
         const relativePath = configObj.relativePath;
-        return createPythonWrapper(name, relativePath).then(function() {
-            // ensures each dir has empty __init__.py file for proper importing of sub dirs
-            return createPythonModuleInitFile(relativePath);
-        });
+        await createPythonWrapper(name, relativePath);
+
+        // ensures each dir has empty __init__.py file for proper importing of sub dirs
+        await createPythonModuleInitFile(relativePath);
     });
 }
 

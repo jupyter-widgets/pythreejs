@@ -289,14 +289,14 @@ module.exports = {
                 nullable: true,
                 help: 'The index of the face picked (null if no face picked)',
             }),
-            modifiers: new Types.Array({
+            modifiers: new Types.Array(undefined, {
                 help: 'The keyboard modifiers held at the pick event in the following order: [SHIFT, CTRL, ALT, META]',
             }),
             object: new Types.ThreeType('Object3D', {
                 nullable: true,
                 help: 'The picked object (null if no object picked)',
             }),
-            picked: new Types.Array({
+            picked: new Types.Array(undefined, {
                 help: 'The other fields on the picker will always be for the first object intersection. ' +
                       'If ``all`` is set true, this field will be an array containing the same information ' +
                       'for all intersections.',
@@ -304,7 +304,7 @@ module.exports = {
             uv: new Types.Vector2(0, 0, {
                 help: 'The UV coordinate picked (all zero if invalid pick)',
             }),
-            indices: new Types.Array({
+            indices: new Types.Array(undefined, {
                 help: 'The vertex indices of the picked face (empty if no face picked)',
             }),
         },
@@ -365,7 +365,7 @@ module.exports = {
             vertices:       new Types.VectorArray(),
             colors:         new Types.ColorArray(),
             faces:          new Types.FaceArray(),
-            faceVertexUvs:  new Types.Array(),
+            faceVertexUvs:  new Types.Array([[]]),
             lineDistances:  new Types.Array(),
             morphTargets:   new Types.Array(),
             morphNormals:   new Types.Array(),
@@ -1511,12 +1511,12 @@ module.exports = {
     CylinderBufferGeometry: {
         relativePath: './geometries/CylinderGeometry',
         superClass: 'BaseBufferGeometry',
-        constructorArgs: [ 'radiusTop', 'radiusBottom', 'height', 'radiusSegments', 'heightSegments', 'openEnded', 'thetaStart', 'thetaLength' ],
+        constructorArgs: [ 'radiusTop', 'radiusBottom', 'height', 'radialSegments', 'heightSegments', 'openEnded', 'thetaStart', 'thetaLength' ],
         properties: {
             radiusTop:      new Types.Float(1.0),
             radiusBottom:   new Types.Float(1.0),
             height:         new Types.Float(1.0),
-            radiusSegments: new Types.Int(8),
+            radialSegments: new Types.Int(8),
             heightSegments: new Types.Int(1),
             openEnded:      new Types.Bool(false),
             thetaStart:     new Types.Float(0.0),
@@ -1526,12 +1526,12 @@ module.exports = {
     CylinderGeometry: {
         relativePath: './geometries/CylinderGeometry',
         superClass: 'BaseGeometry',
-        constructorArgs: [ 'radiusTop', 'radiusBottom', 'height', 'radiusSegments', 'heightSegments', 'openEnded', 'thetaStart', 'thetaLength' ],
+        constructorArgs: [ 'radiusTop', 'radiusBottom', 'height', 'radialSegments', 'heightSegments', 'openEnded', 'thetaStart', 'thetaLength' ],
         properties: {
             radiusTop:      new Types.Float(1.0),
             radiusBottom:   new Types.Float(1.0),
             height:         new Types.Float(1.0),
-            radiusSegments: new Types.Int(8),
+            radialSegments: new Types.Int(8),
             heightSegments: new Types.Int(1),
             openEnded:      new Types.Bool(false),
             thetaStart:     new Types.Float(0.0),
@@ -1547,11 +1547,14 @@ module.exports = {
             detail: new Types.Int(0.0),
         },
     },
-    // TODO:
     EdgesGeometry: {
-        todo: true,
         relativePath: './geometries/EdgesGeometry',
-        superClass: 'BaseGeometry',
+        superClass: 'BaseBufferGeometry',
+        constructorArgs: [ 'geometry', 'thresholdAngle' ],
+        properties: {
+            geometry:       new Types.ThreeType(['BaseGeometry', 'BaseBufferGeometry']),
+            thresholdAngle: new Types.Float(1),
+        }
     },
     // TODO:
     ExtrudeGeometry: {
@@ -1795,12 +1798,12 @@ module.exports = {
     TubeGeometry: {
         relativePath: './geometries/TubeGeometry',
         superClass: 'BaseGeometry',
-        constructorArgs: [ 'path', 'segments', 'radius', 'radiusSegments', 'close' ],
+        constructorArgs: [ 'path', 'segments', 'radius', 'radialSegments', 'close' ],
         properties: {
             path:           new Types.ThreeType('Curve'),
             segments:       new Types.Int(64),
             radius:         new Types.Float(1.0),
-            radiusSegments: new Types.Int(8),
+            radialSegments: new Types.Int(8),
             close:          new Types.Bool(false),
         },
     },
@@ -1814,15 +1817,16 @@ module.exports = {
     },
     ArrowHelper: {
         relativePath: './helpers/ArrowHelper',
-        superClass: 'Object3D',
+        superClass: 'Blackbox',
         properties: {
-            dir: new Types.Vector3(1, 0, 0),
+            dir: new Types.Vector3(0, 0, 1),
             origin: new Types.Vector3(0, 0, 0),
             length: new Types.Float(1.0),
-            hex: new Types.Int(0),
-            headLength: new Types.Float(null, {nullable: true}),
-            headWidth: new Types.Float(null, {nullable: true}),
+            color: new Types.Color('#ffff00'),
+            headLength: new Types.Float(undefined, {nullable: true}),
+            headWidth: new Types.Float(undefined, {nullable: true}),
         },
+        constructorArgs: ['dir', 'origin', 'length', 'color', 'headLength', 'headWidth'],
     },
     AxesHelper: {
         relativePath: './helpers/AxesHelper',
