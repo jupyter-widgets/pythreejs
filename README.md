@@ -26,6 +26,7 @@ jupyter nbextension enable --py --sys-prefix pythreejs
 
 Or for jupyter lab:
 ```
+jupyter labextension install @jupyter-widgets/jupyterlab-manager 
 jupyter labextension install jupyter-threejs
 ```
 
