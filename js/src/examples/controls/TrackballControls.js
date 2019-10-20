@@ -386,12 +386,12 @@ var TrackballControls = function ( object, domElement ) {
 		_this.domElement.addEventListener( 'contextmenu', contextmenu, false );
 
 		_this.domElement.addEventListener( 'mousedown', mousedown, false );
-
 		_this.domElement.addEventListener( 'mousewheel', mousewheel, { passive: false } );
+		_this.domElement.addEventListener( 'MozMousePixelScroll', mousewheel, { passive: false } ); // firefox
 
-		_this.domElement.addEventListener( 'touchstart', touchstart, false );
+		_this.domElement.addEventListener( 'touchstart', touchstart, { passive: true } );
 		_this.domElement.addEventListener( 'touchend', touchend, false );
-		_this.domElement.addEventListener( 'touchmove', touchmove, false );
+		_this.domElement.addEventListener( 'touchmove', touchmove, { passive: false} );
 
 		_this.domElement.addEventListener( 'keydown', keydown, false );
 		_this.domElement.addEventListener( 'keyup', keyup, false );
@@ -404,6 +404,7 @@ var TrackballControls = function ( object, domElement ) {
 		_this.domElement.removeEventListener( 'mousedown', mousedown, false );
 
 		_this.domElement.removeEventListener( 'mousewheel', mousewheel, { passive: false } );
+		_this.domElement.removeEventListener( 'MozMousePixelScroll', mousewheel, { passive: false } ); // firefox
 
 		_this.domElement.removeEventListener( 'touchstart', touchstart, false );
 		_this.domElement.removeEventListener( 'touchend', touchend, false );
@@ -576,98 +577,94 @@ var TrackballControls = function ( object, domElement ) {
 	}
 
 	function touchstart( event ) {
-
 		if ( _this.enabled === false ) return;
 
 		// Make sure we know the current canvas bounds so that
 		// mouse coordinates are computed properly during this interaction.
 		_this.updateBounds();
+
 		event.preventDefault();
+        event.stopPropagation();
 
 		switch ( event.touches.length ) {
+            case 1:
+                _state = STATE.TOUCH_ROTATE;
+                _rotateStart.copy( getMouseProjectionOnBall( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY ) );
+                _rotateEnd.copy( _rotateStart );
+                break;
 
-		case 1:
-			_state = STATE.TOUCH_ROTATE;
-			_rotateStart.copy( getMouseProjectionOnBall( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY ) );
-			_rotateEnd.copy( _rotateStart );
-			break;
+            case 2:
+                _state = STATE.TOUCH_ZOOM_PAN;
+                var p1 = getMouseOnScreen(event.touches[0].pageX, event.touches[0].pageY);
+                var p2 = getMouseOnScreen(event.touches[1].pageX, event.touches[1].pageY);
 
-		case 2:
-			_state = STATE.TOUCH_ZOOM_PAN;
-			var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-			var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
-			_touchZoomDistanceEnd = _touchZoomDistanceStart = Math.sqrt( dx * dx + dy * dy );
+                var vector = new THREE.Vector2();
+                vector.subVectors(p1, p2);
 
-			var x = ( event.touches[ 0 ].pageX + event.touches[ 1 ].pageX ) / 2;
-			var y = ( event.touches[ 0 ].pageY + event.touches[ 1 ].pageY ) / 2;
-			_panStart.copy( getMouseOnScreen( x, y ) );
-			_panEnd.copy( _panStart );
-			break;
+                var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+                var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+                _touchZoomDistanceEnd = _touchZoomDistanceStart = Math.sqrt( dx * dx + dy * dy );
+                // _touchZoomDistanceEnd = _touchZoomDistanceStart = vector.length();
 
-		default:
-			_state = STATE.NONE;
+                vector.addVectors(p1, p2);
+                vector.multiplyScalar(0.5);
+                _panStart.copy(vector);
+                _panEnd.copy(vector);
+                break
 
+            default:
+                _state = STATE.NONE;
 		}
+
 		_this.dispatchEvent( startEvent );
-
-
 	}
 
 	function touchmove( event ) {
-
 		if ( _this.enabled === false ) return;
 
 		event.preventDefault();
 		event.stopPropagation();
 
 		switch ( event.touches.length ) {
+            case 1:
+                _rotateEnd.copy( getMouseProjectionOnBall( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY ) );
+                break;
 
-		case 1:
-			_rotateEnd.copy( getMouseProjectionOnBall( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY ) );
-			break;
+            case 2:
+                var p1 = getMouseOnScreen(event.touches[0].pageX, event.touches[0].pageY);
+                var p2 = getMouseOnScreen(event.touches[1].pageX, event.touches[1].pageY);
 
-		case 2:
-			var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-			var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
-			_touchZoomDistanceEnd = Math.sqrt( dx * dx + dy * dy );
+                var vector = new THREE.Vector2();
+                vector.subVectors(p1, p2);
 
-			var x = ( event.touches[ 0 ].pageX + event.touches[ 1 ].pageX ) / 2;
-			var y = ( event.touches[ 0 ].pageY + event.touches[ 1 ].pageY ) / 2;
-			_panEnd.copy( getMouseOnScreen( x, y ) );
-			break;
+                var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+                var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+                _touchZoomDistanceEnd = Math.sqrt( dx * dx + dy * dy );
+                // _touchZoomDistanceEnd = vector.length();
 
-		default:
-			_state = STATE.NONE;
+                vector.addVectors(p1, p2);
+                vector.multiplyScalar(0.5);
+                _panEnd.copy(vector);
+                break;
 
+            default:
+                _state = STATE.NONE;
 		}
 
+		_this.update();
 	}
 
 	function touchend( event ) {
 
 		if ( _this.enabled === false ) return;
 
-		switch ( event.touches.length ) {
+		event.preventDefault();
+		event.stopPropagation();
 
-		case 1:
-			_rotateEnd.copy( getMouseProjectionOnBall( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY ) );
-			_rotateStart.copy( _rotateEnd );
-			break;
-
-		case 2:
-			_touchZoomDistanceStart = _touchZoomDistanceEnd = 0;
-
-			var x = ( event.touches[ 0 ].pageX + event.touches[ 1 ].pageX ) / 2;
-			var y = ( event.touches[ 0 ].pageY + event.touches[ 1 ].pageY ) / 2;
-			_panEnd.copy( getMouseOnScreen( x, y ) );
-			_panStart.copy( _panEnd );
-			break;
-
-		}
+		_this.update();
 
 		_state = STATE.NONE;
 		_this.dispatchEvent( endEvent );
-
 	}
 
 	this.connectEvents();

@@ -65,6 +65,18 @@ class RenderableWidget(DOMWidget):
         }
         self.send(content)
 
+    def pauseRendering(self):
+        content = {
+            "type": "pauseRendering"
+        }
+        self.send(content)
+
+    def resumeRendering(self):
+        content = {
+            "type": "resumeRendering"
+        }
+        self.send(content)
+
 
 class Preview(RenderableWidget):
     # renderer properties

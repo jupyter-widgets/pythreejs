@@ -187,6 +187,10 @@ var RenderableView = widgets.DOMWidgetView.extend({
         this.isFrozen = true;
         this.id = Math.floor(Math.random() * 1000000);
         this._ticking = false;
+
+        // JP: hack to support pausing the rendering while Python code updates the scene
+        // (to prevent display of partial updates).
+        this.renderingPaused = false;
     },
 
     remove: function() {
@@ -213,33 +217,41 @@ var RenderableView = widgets.DOMWidgetView.extend({
         }
     },
 
+    toggleFullscreen: function() {
+        // Note: this function only works when called from the event handler
+        // triggered by a user's gesture. Otherwise, the fullscreen request
+        // is blocked for security reasons.
+        if (!screenfull.isFullscreen) {
+            var old_width  = this.model.get('_width');
+            var old_height = this.model.get('_height');
+            console.log("old_width", old_width);
+            console.log("old_height", old_height);
+            var changed = function() {
+                var width, height;
+                if (screenfull.isFullscreen) {
+                    width  = window.innerWidth;
+                    height = window.innerHeight;
+                }
+                else {
+                    width  = old_width;
+                    height = old_height;
+                }
+                this.model.set('_width', width);
+                this.model.set('_height', height);
+                this.touch();
+            }.bind(this);
+            screenfull.onchange(changed);
+        }
+        screenfull.toggle(this.el);
+    },
+
     handleEvent: function(event) {
         switch (event.type) {
         case 'contextmenu':
             this.handleContextMenu(event);
             break;
         case 'dblclick': {
-            if (!screenfull.isFullscreen) {
-                var old_width = this.model.get('_width');
-                var old_height = this.model.get('_height');
-                var changed = function() {
-                    var width, height;
-                    if (screenfull.isFullscreen) {
-                        width  = window.innerWidth;
-                        height = window.innerHeight;
-                    }
-                    else {
-                        width  = old_width;
-                        height = old_height;
-                    }
-                    this.model.set('_width', width);
-                    this.model.set('_height', height);
-                    this.touch();
-                }.bind(this);
-                screenfull.onchange(changed);
-            }
-            screenfull.toggle(event.target);
-
+            this.toggleFullscreen();
             break;
         }
         default:
@@ -410,6 +422,8 @@ var RenderableView = widgets.DOMWidgetView.extend({
     renderScene: function(scene, camera) {
         this.debug('renderScene with width ' + this.model.get('_width') + ', height ' + this.model.get('_height'));
 
+        if (this.renderingPaused) return;
+
         scene = scene || this.scene;
         camera = camera || this.camera;
 
@@ -417,7 +431,7 @@ var RenderableView = widgets.DOMWidgetView.extend({
             this.unfreeze();
         }
 
-        if (this.renderer.context.isContextLost()) {
+        if (this.renderer.getContext().isContextLost()) {
             // Context is invalid, freeze for now
             this.freeze();
             return;
@@ -450,6 +464,15 @@ var RenderableView = widgets.DOMWidgetView.extend({
         if (this.controls) {
             this.enableControls();
         }
+    },
+
+    pauseRendering: function() {
+        this.renderingPaused = true;
+    },
+
+    resumeRendering: function() {
+        this.renderingPaused = false;
+        this.tick();
     },
 
     acquireRenderer: function() {
@@ -543,6 +566,12 @@ var RenderableView = widgets.DOMWidgetView.extend({
         switch(content.type) {
         case 'freeze':
             this.freeze();
+            break;
+        case 'pauseRendering':
+            this.pauseRendering();
+            break;
+        case 'resumeRendering':
+            this.resumeRendering();
             break;
         default:
         }

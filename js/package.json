@@ -27,19 +27,19 @@
     "eslint": "^5.16.0",
     "fs-extra": "^7.0.1",
     "glob": "^7.1.4",
-    "handlebars": "^4.1.2",
+    "handlebars": "^4.4.3",
     "mkdirp": "^0.5.1",
     "rimraf": "^2.6.3",
-    "webpack": "^4.34.0",
-    "webpack-cli": "^3.3.4"
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.9"
   },
   "dependencies": {
-    "@jupyter-widgets/base": "^1.2.5 || ^2.0.0",
-    "bluebird": "^3.5.5",
+    "@jupyter-widgets/base": "^2.0.1",
+    "bluebird": "^3.7.1",
     "jupyter-dataserializers": "^2.1.0",
-    "three": "^0.97.0",
-    "underscore": "^1.8.3",
-    "screenfull": "^3.3.2"
+    "screenfull": "^3.3.2",
+    "three": "^0.107.0",
+    "underscore": "^1.8.3"
   },
   "keywords": [
     "jupyterlab",

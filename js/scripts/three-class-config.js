@@ -691,7 +691,7 @@ module.exports = {
             lights:                 new Types.Bool(true),
             name:                   new Types.String(''),
             opacity:                new Types.Float(1.0),
-            overdraw:               new Types.Float(0),
+            // overdraw:               new Types.Float(0), // removed in https://github.com/mrdoob/three.js/commit/8f2439c2d0c71113c8c57096dc1c038260b83520 
             polygonOffset:          new Types.Bool(false),
             polygonOffsetFactor:    new Types.Float(0),
             polygonOffsetUnits:     new Types.Float(0),
@@ -2072,4 +2072,73 @@ module.exports = {
         todo: true,
         relativePath: './renderers/webgl/WebGLState',
     },
+
+    // JP: Added for compatibility with r109
+
+    // TODO
+    AmbientLightProbe: {
+        todo: true,
+        relativePath: './lights/AmbientLightProbe',
+    },
+    // TODO
+    AmbientLightProbe: {
+        todo: true,
+        relativePath: './lights/AmbientLightProbe',
+    },
+    // TODO
+    HemisphereLightProbe: {
+        todo: true,
+        relativePath: './lights/HemisphereLightProbe',
+    },
+    // TODO
+    LightProbe: {
+        todo: true,
+        relativePath: './lights/LightProbe',
+    },
+    // TODO
+    PointLightShadow: {
+        todo: true,
+        relativePath: './lights/PointLightShadow',
+    },
+    // TODO
+    LightProbeHelper: {
+        todo: true,
+        relativePath: './helpers/LightProbeHelper',
+    },
+    // TODO
+    PositionalAudioHelper: {
+        todo: true,
+        relativePath: './helpers/PositionalAudioHelper',
+    },
+    // TODO
+    SphericalHarmonics3: {
+        todo: true,
+        relativePath: './math/SphericalHarmonics3',
+    },
+    // TODO
+    InstancedMesh: {
+        todo: true,
+        relativePath: './objects/InstancedMesh',
+    },
+    // TODO
+    WebGLMultisampleRenderTarget: {
+        todo: true,
+        relativePath: './renderers/WebGLMultisampleRenderTarget',
+    },
+    // TODO
+    WebGLMultiviewRenderTarget: {
+        todo: true,
+        relativePath: './renderers/WebGLMultiviewRenderTarget',
+    },
+    // TODO
+    DataTexture2DArray: {
+        todo: true,
+        relativePath: './textures/DataTexture2DArray',
+    },
+    // TODO
+    WebGLMultiview: {
+        todo: true,
+        relativePath: './renderers/webgl/WebGLMultiview',
+    },
+
 };

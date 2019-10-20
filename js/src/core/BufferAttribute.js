@@ -9,7 +9,6 @@ var BufferAttributeModel = BufferAttributeAutogen.extend({
     createPropertiesArrays: function() {
         BufferAttributeAutogen.prototype.createPropertiesArrays.call(this);
 
-        // three.js DataTexture stores the data, width, and height props together in a dict called 'image'
         this.property_mappers['BufferAttributeArray'] = 'mapBufferAttributeArray';
         delete this.property_converters['array'];
     },

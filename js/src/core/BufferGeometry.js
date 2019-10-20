@@ -132,16 +132,24 @@ var BufferGeometryModel = AutogenBufferGeometryModel.extend({
         var removed = _.difference(oldKeys, newKeys);
         var common = _.intersection(oldKeys, newKeys);
 
-        if (removed.length > 0) {
-            console.warn('Cannot remove buffer geometry attributes:', removed);
-        }
+        removed.forEach(function(key) {
+            obj.removeAttribute(key);
+        });
+
         added.forEach(function(key) {
+            // Note: since 'index' is not added to the three object's attributes list,
+            // it will always be considered as added.
             if (key === 'index') {
                 obj.setIndex(value[key]);
             } else {
                 obj.addAttribute(key, value[key]);
             }
         });
+
+        // Allow removing the index buffer.
+        if (!newKeys.includes('index')) {
+            obj.setIndex(null);
+        }
 
         var commonChanged = _.filter(common, function(key) {
             return obj.getAttribute(key) !== value[key];

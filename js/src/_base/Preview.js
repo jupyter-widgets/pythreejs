@@ -203,7 +203,7 @@ var PreviewView = RenderableView.extend({
             this.unfreeze();
         }
 
-        if (this.renderer.context.isContextLost()) {
+        if (this.renderer.getContext().isContextLost()) {
             // Context is invalid, freeze for now (stops animation etc)
             this.freeze();
             return;
