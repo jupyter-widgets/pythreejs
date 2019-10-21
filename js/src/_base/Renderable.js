@@ -472,7 +472,9 @@ var RenderableView = widgets.DOMWidgetView.extend({
 
     resumeRendering: function() {
         this.renderingPaused = false;
-        this.tick();
+        // render immediately so that the newly updated scene is guaranteed to
+        // be drawn before the next update begins.
+        this.tock();
     },
 
     acquireRenderer: function() {
