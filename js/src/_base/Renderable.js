@@ -413,6 +413,7 @@ var RenderableView = widgets.DOMWidgetView.extend({
         var config = {
             antialias: this.model.get('_antialias'),
             alpha: this.model.get('_alpha'),
+            webglVersion: this.model.get('_webgl_version'),
         };
         this.renderer = RendererPool.acquire(
             config,

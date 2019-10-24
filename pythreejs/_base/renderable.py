@@ -1,5 +1,5 @@
 from ipywidgets import DOMWidget, Widget, widget_serialization
-from traitlets import Unicode, CInt, CFloat, Enum, Bool, Instance, List
+from traitlets import Unicode, CInt, CFloat, Enum, Bool, Int, Instance, List
 
 from .._package import npm_pkg_name
 from .._version import EXTENSION_SPEC_VERSION
@@ -21,6 +21,7 @@ class RenderableWidget(DOMWidget):
     _height = CInt(200).tag(sync=True)
     _antialias = Bool(False).tag(sync=True)
     _alpha = Bool(False).tag(sync=True)
+    _webgl_version = Int(2).tag(sync=True)
 
     autoClear = Bool(True).tag(sync=True)
     autoClearColor = Bool(True).tag(sync=True)
