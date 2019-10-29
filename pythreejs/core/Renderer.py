@@ -2,6 +2,7 @@
 """
 
 import six
+from contextlib import contextmanager
 from ipywidgets import widget_serialization
 from traitlets import (
     Unicode, CInt, Instance, Float, Tuple, Undefined, link)
@@ -22,6 +23,7 @@ class Renderer(RenderableWidget):
 
     _view_name = Unicode('RendererView').tag(sync=True)
     _model_name = Unicode('RendererModel').tag(sync=True)
+    _pause_autorender = Bool(False).tag(sync=True)
 
     width = CInt(200)
     height = CInt(200)
@@ -56,6 +58,14 @@ class Renderer(RenderableWidget):
             "type": "freeze"
         }
         self.send(content)
+
+    @contextmanager
+    def hold(self):
+        self._pause_autorender = True
+        try:
+            yield
+        finally:
+            self._pause_autorender = False
 
 
 if six.PY3:
