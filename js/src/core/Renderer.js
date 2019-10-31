@@ -163,7 +163,9 @@ var RendererView = RenderableView.extend({
     },
 
     update: function() {
-        this.tick();
+        if (!this.model.get('_pause_autorender')) {
+            this.tick();
+        }
     },
 
     acquireRenderer: function() {
