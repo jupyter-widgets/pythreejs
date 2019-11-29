@@ -191,6 +191,7 @@ var ThreeModel = widgets.WidgetModel.extend({
 
         this.on('change', this.onChange, this);
         this.on('msg:custom', this.onCustomMessage, this);
+        this.on('destroy', this.onDestroy, this);
 
     },
 
@@ -246,6 +247,15 @@ var ThreeModel = widgets.WidgetModel.extend({
     // Over-ride this method to customize how THREE object is created
 
     constructThreeObject: function() {},
+
+    onDestroy: function() {
+        if (this.obj) {
+            if (this.obj.dispose) {
+                this.obj.dispose();
+            }
+            delete this.obj;
+        }
+    },
 
 
     //
