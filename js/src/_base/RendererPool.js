@@ -61,6 +61,22 @@ _.extend(KeyedCollection.prototype, {
     },
 });
 
+var isWebgl2Available = (function() {
+    var isAvailable;
+    function inner() {
+        if (isAvailable === undefined) {
+            try {
+                var canvas = document.createElement( 'canvas' );
+                isAvailable = !! ( window.WebGL2RenderingContext && canvas.getContext( 'webgl2' ) );
+            } catch ( e ) {
+                isAvailable = false;
+            }
+        }
+        return isAvailable;
+    }
+    return inner;
+})();
+
 function RendererPool() {
     this.numCreated = 0;
     this.freePool = new KeyedCollection();
@@ -69,6 +85,25 @@ function RendererPool() {
 _.extend(RendererPool.prototype, {
 
     _createRenderer: function(config) {
+        config = _.extend({}, config);
+        var webglVersion = config.webglVersion;
+        delete config.webglVersion;
+
+        if (webglVersion === 2 && isWebgl2Available()) {
+            // We need to map the right config for the context ourselves:
+            var canvas = document.createElement('canvas');
+            config =_.extend({
+                depth: true,
+                stencil: true,
+                premultipliedAlpha: true,
+                preserveDrawingBuffer: false,
+                powerPreference: 'default'
+            }, config);
+            var context = canvas.getContext('webgl2', config);
+            config.canvas = canvas;
+            config.context = context;
+        }
+
         var renderer = new THREE.WebGLRenderer(
             _.extend({},
                 config,
