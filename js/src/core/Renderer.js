@@ -19,6 +19,7 @@ var RendererModel = RenderableModel.extend({
             _model_name: 'RendererModel',
             _antialias: false,
             _alpha: false,
+            _pause_autorender: false,
 
             scene: null,
             camera: null,
@@ -54,7 +55,9 @@ var RendererModel = RenderableModel.extend({
 
     onChildChanged: function(model, options) {
         RenderableModel.prototype.onChildChanged.apply(this, arguments);
-        this.trigger('rerender', this, {});
+        if (!this.get('_pause_autorender')) {
+            this.trigger('rerender', this, {});
+        }
     },
 
 }, {
@@ -160,7 +163,9 @@ var RendererView = RenderableView.extend({
     },
 
     update: function() {
-        this.tick();
+        if (!this.model.get('_pause_autorender')) {
+            this.tick();
+        }
     },
 
     acquireRenderer: function() {
