@@ -86,7 +86,6 @@ setup_args = {
         'docs': [
             'sphinx>=1.5',
             'nbsphinx>=0.2.13',
-            'jupyter_sphinx',
             'nbsphinx-link',
         ]
     },
