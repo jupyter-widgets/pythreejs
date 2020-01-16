@@ -31,7 +31,6 @@ extensions = [
     'sphinx.ext.todo',
     'autodoc_traits',
     'nbsphinx',
-    'jupyter_sphinx.embed_widgets',
     'nbsphinx_link',
 ]
 
@@ -207,8 +206,6 @@ def setup(app):
             check_call(['npm', 'run', 'build:bundles-prod'])
         finally:
             os.chdir(popd)
-
-    app.setup_extension('jupyter_sphinx.embed_widgets')
 
     def add_scripts(app):
         for fname in ['jupyter-threejs.js']:

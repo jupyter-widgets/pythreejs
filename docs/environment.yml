@@ -11,4 +11,3 @@ dependencies:
 - scikit-image
 - sphinx
 - nbsphinx
-- jupyter_sphinx
