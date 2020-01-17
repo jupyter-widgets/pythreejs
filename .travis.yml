@@ -23,7 +23,8 @@ before_install:
 install:
   - pip install --upgrade -e ".[test, examples, docs]"
 script:
-  - if [[ $GROUP == python ]]; then
+  - |
+    if [[ $GROUP == python ]]; then
       py.test -l --nbval-lax --current-env examples;
     elif [[ $GROUP == docs ]]; then
       EXIT_STATUS=0
