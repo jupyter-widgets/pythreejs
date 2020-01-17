@@ -87,6 +87,7 @@ setup_args = {
             'sphinx>=1.5',
             'nbsphinx>=0.2.13',
             'nbsphinx-link',
+            'sphinx-rtd-theme',
         ]
     },
     'packages': [name],  # Manually specify here, update after autogen
