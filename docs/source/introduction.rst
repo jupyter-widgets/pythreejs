@@ -75,4 +75,4 @@ Other notable deviations from the threejs API are listed below:
 
 .. _`threejs animation`: https://threejs.org/docs/#manual/introduction/Animation-system
 
-.. _`numpy arrays`: https://www.numpy.org/
+.. _`numpy arrays`: https://numpy.org/

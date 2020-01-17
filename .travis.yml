@@ -18,11 +18,10 @@ matrix:
           packages:
             - pandoc
       script:
+        - python -m pytest_check_links
         - cd docs
         - make html
         - make linkcheck
-        - cd ..
-        - python -m pytest_check_links
 cache:
   pip: true
   directories:
