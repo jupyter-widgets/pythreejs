@@ -2,44 +2,6 @@
   "name": "jupyter-threejs",
   "version": "2.1.1",
   "description": "jupyter - threejs bridge",
-  "author": "Jupyter-Threejs development team",
-  "license": "BSD-3-Clause",
-  "main": "dist/index.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/jupyter-widgets/pythreejs.git"
-  },
-  "scripts": {
-    "clean": "rimraf dist && rimraf ../pythreejs/static && rimraf lab-dist && node ./scripts/clean-generated-files.js",
-    "autogen:enums": "node ./scripts/generate-enums.js",
-    "autogen:shaders": "node ./scripts/generate-shader-utils.js",
-    "autogen:wrappers": "node ./scripts/generate-wrappers.js",
-    "autogen": "npm run autogen:shaders && npm run autogen:wrappers",
-    "build:bundles": "webpack -d && node ./scripts/post-build.js --debug",
-    "build:bundles-prod": "webpack -p && node ./scripts/post-build.js",
-    "build:labextension": "rimraf lab-dist && mkdirp lab-dist && cd lab-dist && npm pack ..",
-    "build:all": "npm run build:labextension",
-    "prepare": "npm run autogen",
-    "prepack": "npm run build:bundles-prod",
-    "watch": "webpack -d -w"
-  },
-  "devDependencies": {
-    "eslint": "^5.16.0",
-    "fs-extra": "^7.0.1",
-    "glob": "^7.1.4",
-    "handlebars": "^4.1.2",
-    "mkdirp": "^0.5.1",
-    "rimraf": "^2.6.3",
-    "webpack": "^4.34.0",
-    "webpack-cli": "^3.3.4"
-  },
-  "dependencies": {
-    "@jupyter-widgets/base": "^1.2.5 || ^2.0.0",
-    "bluebird": "^3.5.5",
-    "jupyter-dataserializers": "^2.1.0",
-    "three": "^0.97.0",
-    "underscore": "^1.8.3"
-  },
   "keywords": [
     "jupyterlab",
     "extension",
@@ -49,6 +11,46 @@
     "widgets",
     "three"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jupyter-widgets/pythreejs.git"
+  },
+  "license": "BSD-3-Clause",
+  "author": "Jupyter-Threejs development team",
+  "main": "dist/index.js",
+  "scripts": {
+    "autogen": "npm run autogen:shaders && npm run autogen:wrappers",
+    "autogen:enums": "node ./scripts/generate-enums.js",
+    "autogen:shaders": "node ./scripts/generate-shader-utils.js",
+    "autogen:wrappers": "node ./scripts/generate-wrappers.js",
+    "build:all": "npm run build:labextension",
+    "build:bundles": "webpack -d && node ./scripts/post-build.js --debug",
+    "build:bundles-prod": "webpack -p && node ./scripts/post-build.js",
+    "build:labextension": "rimraf lab-dist && mkdirp lab-dist && cd lab-dist && npm pack ..",
+    "clean": "rimraf dist && rimraf ../pythreejs/static && rimraf lab-dist && node ./scripts/clean-generated-files.js",
+    "prepack": "npm run build:bundles-prod",
+    "prepare": "npm run autogen",
+    "update:deps": "update-dependency --minimal --regex \"^(?!@jupyter-widgets|three)\"",
+    "watch": "webpack -d -w"
+  },
+  "dependencies": {
+    "@jupyter-widgets/base": "^1.2.5 || ^2.0.0 || ^3.0.0",
+    "bluebird": "^3.5.5",
+    "jupyter-dataserializers": "^2.2.0",
+    "three": "^0.97.0",
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {
+    "@jupyterlab/buildutils": "^2.0.2",
+    "eslint": "^6.8.0",
+    "fs-extra": "^8.1.0",
+    "glob": "^7.1.4",
+    "handlebars": "^4.1.2",
+    "mkdirp": "^1.0.3",
+    "rimraf": "^3.0.2",
+    "webpack": "^4.34.0",
+    "webpack-cli": "^3.3.4"
+  },
   "jupyterlab": {
     "extension": "src/jupyterlab-plugin",
     "discovery": {

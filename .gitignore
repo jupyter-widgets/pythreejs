@@ -34,3 +34,4 @@ docs/source/_static/three.js
 docs/source/examples/img
 
 js/lab-dist
+js/package-lock.json
