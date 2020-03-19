@@ -1,6 +1,6 @@
 {
   "name": "jupyter-threejs",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "jupyter - threejs bridge",
   "keywords": [
     "jupyterlab",

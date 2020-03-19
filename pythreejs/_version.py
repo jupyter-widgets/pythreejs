@@ -1,4 +1,4 @@
-version_info = (2, 1, 2, 'dev')
+version_info = (2, 2, 0, 'final')
 
 _specifier_ = {'alpha': 'a', 'beta': 'b', 'candidate': 'rc', 'final': '', 'dev': 'dev'}
 
@@ -18,4 +18,6 @@ __version__ = '%s.%s.%s%s' % (version_info[0], version_info[1], version_info[2],
 #
 # Update this value when attributes are added/removed from
 # the widget models, or if the serialized format changes.
+#
+# The major version needs to match that of the JS package.
 EXTENSION_SPEC_VERSION = '^2.1.0'
