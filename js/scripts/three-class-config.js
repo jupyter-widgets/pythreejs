@@ -74,6 +74,14 @@ module.exports = {
     PropertyMixer: {
         relativePath: './animation/PropertyMixer',
     },
+    GLTFAsset: {
+        relativePath: './textures/GLTFAsset',
+        properties: {
+            scene: new Types.ThreeType('Scene', {use_instancedict: true}),
+            gltfUri: new Types.String(''),
+        },
+        constructorArgs: [ 'gltfUri' ],
+    },
     Audio: {
         relativePath: './audio/Audio',
     },

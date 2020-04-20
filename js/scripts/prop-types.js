@@ -55,14 +55,18 @@ class BaseType {
     }
 }
 
-function genInstanceTraitlet(typeName, nullable, args, kwargs, tagParts) {
+function genInstanceTraitlet(typeName, nullable, args, kwargs, tagParts, use_instancedict) {
+    let traitType = 'Instance';
+    if (use_instancedict === true) {
+        traitType = 'InstanceDict'
+    }
     const nullableStr = `allow_none=${nullable === true ? 'True' : 'False'}`;
     tagParts = tagParts.concat(['**widget_serialization']);
     const tagStr = `.tag(${tagParts.join(', ')})`;
     // allow type unions
     if (typeName instanceof Array) {
         const instances = typeName.map(function(tname) {
-            return `        Instance(${tname}, ${nullableStr})`;
+            return `        ${traitType}(${tname}, ${nullableStr})`;
         });
         return `Union([\n${instances.join(',\n')}\n    ])${tagStr}`;
     }
@@ -71,7 +75,7 @@ function genInstanceTraitlet(typeName, nullable, args, kwargs, tagParts) {
         return `This()${tagStr}`;
     }
 
-    let ret = `Instance(${typeName}`;
+    let ret = `${traitType}(${typeName}`;
     if (args !== undefined) {
         ret += `, args=${args}`;
     }
@@ -90,6 +94,7 @@ class ThreeType extends BaseType {
         this.defaultValue = null;
         this.serializer = JS_WIDGET_SERIALIZER;
         this.nullable = options.nullable !== false;
+        this.use_instancedict = options.use_instancedict === true;
         this.args = options.args;
         this.kwargs = options.kwargs;
     }
@@ -103,7 +108,7 @@ class ThreeType extends BaseType {
             typeName = `${typeName || 'ThreeWidget'}`;
         }
         return genInstanceTraitlet(
-            typeName, this.nullable, this.args, this.kwargs, this.getTagParts());
+            typeName, this.nullable, this.args, this.kwargs, this.getTagParts(), this.use_instancedict);
     }
     getPropArrayName() {
         return 'three_properties';
