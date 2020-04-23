@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var Promise = require('bluebird');
 var GLTFAssetBase = require('./GLTFAsset.autogen');
 
@@ -36,12 +37,24 @@ var GLTFAssetModel = GLTFAssetBase.GLTFAssetModel.extend({
             }, reject);
         });
         return p.bind(this).then(function(gltf) {
-            this.set({ scene: gltf.scene }, 'pushFromThree');
+            //this.set({ scene: gltf.scene }, 'pushFromThree');
+            //this.syncToThreeObj();
             return gltf;
         });
         
     },
+    createPropertiesArrays: function() {
 
+        GLTFAssetBase.GLTFAssetModel.prototype.createPropertiesArrays.call(this);
+
+        this.props_created_by_three['scene'] = true;
+        /*_.each(this.property_converters, function(converterName, propName) {
+            if (converterName !== undefined && propName != 'gltfUri') {
+                this.props_created_by_three[propName] = true;
+            }
+        }, this);*/
+
+    },
 });
 
 module.exports = {

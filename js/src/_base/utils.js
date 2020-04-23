@@ -205,6 +205,9 @@ function createModel(constructor, widget_manager, obj) {
     widget_model.name = constructor.model_name;
     widget_model.module = constructor.model_module;
 
+
+    console.debug("createModel: " + widget_model.name);
+
     var modelPromise = widget_model.initPromise.then(function() {
         var split = widgets.remove_buffers(
             widget_model.serialize(widget_model.get_state(true)));
@@ -235,8 +238,13 @@ function createModel(constructor, widget_manager, obj) {
 
         widget_model.comm_live = true;
 
+        console.debug("createModel: done " + widget_model.name);
+
+        widget_model.save_changes();
+
         return widget_model;
     });
+    widget_model.initPromise = modelPromise;
     widget_manager.register_model(id, modelPromise);
 
     return modelPromise;

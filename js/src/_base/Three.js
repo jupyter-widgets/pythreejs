@@ -196,7 +196,7 @@ var ThreeModel = widgets.WidgetModel.extend({
     },
 
     processNewObj: function(obj) {
-
+        console.debug("processNewObj: " + this.name);
         obj.ipymodelId = this.model_id; // brand that sucker
         obj.ipymodel = this;
 
@@ -206,14 +206,17 @@ var ThreeModel = widgets.WidgetModel.extend({
     },
 
     createUninitializedChildren: function() {
+        console.debug("createUninitializedChildren: " + this.name);
 
         // Get any properties to create from this side
         var uninit = _.filter(this.three_properties, function(propName) {
-            return this.get(propName) === 'uninitialized';
+            modelProp = this.get(propName);
+            return modelProp === 'uninitialized' ||
+                (this.obj[propName] != null && modelProp == null);
         }, this);
 
-        // Return promise for their creation
-        return Promise.all(_.map(uninit, function(propName) {
+        // Standard properties
+        var p1 = Promise.all(_.map(uninit, function(propName) {
             this.initialized_from_three[propName] = true;
             var obj = this.obj[propName];
             // First, we need to figure out which model constructor to use
@@ -224,6 +227,54 @@ var ThreeModel = widgets.WidgetModel.extend({
             var modelPromise = utils.createModel(ctor, this.widget_manager, obj);
             return modelPromise;
         }, this));
+
+        // Nested properties
+        var p2 = Promise.all(_.map(this.three_nested_properties, function(propName) {
+            this.initialized_from_three[propName] = true;
+
+            var collection = this.obj[propName];
+
+            if (collection == null)
+            {
+                return Promise.resolve();
+            }
+
+            var children;
+
+            if (Array.isArray(collection)) {
+                children = collection;
+            } else if (collection.constructor.name == 'Object') {
+                children = Object.keys(collection).map(function(childModelKey) {
+                    return collection[childModelKey];
+                });
+            } else {
+                // TODO: Check if this is actually an instance of an object -- ThreeTypeArray(allow_single = true)
+                var obj = collection;
+                // First, we need to figure out which model constructor to use
+                var ctorName = utils.lookupThreeConstructorName(obj) + 'Model';
+                var index = require('../');
+                var ctor = index[ctorName];
+                // Create the model
+                return utils.createModel(ctor, this.widget_manager, obj);
+            }
+
+            return Promise.all(_.map(children, function(childObj) {
+                    // Already has a model
+                    if (childObj.ipymodel !== undefined) {
+                        return Promise.resolve(childObj.ipymodel);
+                    }
+                    // First, we need to figure out which model constructor to use
+                    var ctorName = utils.lookupThreeConstructorName(childObj) + 'Model';
+                    var index = require('../');
+                    var ctor = index[ctorName];
+                    // Create the model
+                    var modelPromise = utils.createModel(ctor, this.widget_manager, childObj);
+                    return modelPromise;
+                }, this));
+
+        }, this));
+
+        return Promise.all(p1, p2);
     },
 
     createThreeObjectAsync: function() {
@@ -371,6 +422,7 @@ var ThreeModel = widgets.WidgetModel.extend({
 
     // push data from model to three object
     syncToThreeObj: function(force) {
+        console.debug("syncToThreeObj: " + this.name);
 
         _.each(this.property_converters, function(converterName, propName) {
             if (!force && !this.hasChanged(propName)) {
@@ -411,6 +463,7 @@ var ThreeModel = widgets.WidgetModel.extend({
 
     // push data from three object to model
     syncToModel: function(syncAllProps) {
+        console.debug("syncToModel: " + this.name);
 
         syncAllProps = syncAllProps === null ? false : syncAllProps;
 
@@ -424,6 +477,10 @@ var ThreeModel = widgets.WidgetModel.extend({
                 } else {
                     return;
                 }
+            }
+
+            if (this.obj[propName] === undefined) {
+                return;
             }
 
             if (!converterName) {

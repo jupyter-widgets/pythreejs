@@ -55,11 +55,8 @@ class BaseType {
     }
 }
 
-function genInstanceTraitlet(typeName, nullable, args, kwargs, tagParts, use_instancedict) {
+function genInstanceTraitlet(typeName, nullable, args, kwargs, tagParts) {
     let traitType = 'Instance';
-    if (use_instancedict === true) {
-        traitType = 'InstanceDict'
-    }
     const nullableStr = `allow_none=${nullable === true ? 'True' : 'False'}`;
     tagParts = tagParts.concat(['**widget_serialization']);
     const tagStr = `.tag(${tagParts.join(', ')})`;
@@ -68,7 +65,7 @@ function genInstanceTraitlet(typeName, nullable, args, kwargs, tagParts, use_ins
         const instances = typeName.map(function(tname) {
             return `        ${traitType}(${tname}, ${nullableStr})`;
         });
-        return `Union([\n${instances.join(',\n')}\n    ])${tagStr}`;
+        return `Union([\n${instances.join(',\n')}\n    ], ${nullableStr})${tagStr}`;
     }
 
     if (typeName.toLowerCase() === 'this') {
@@ -94,7 +91,6 @@ class ThreeType extends BaseType {
         this.defaultValue = null;
         this.serializer = JS_WIDGET_SERIALIZER;
         this.nullable = options.nullable !== false;
-        this.use_instancedict = options.use_instancedict === true;
         this.args = options.args;
         this.kwargs = options.kwargs;
     }
@@ -108,7 +104,7 @@ class ThreeType extends BaseType {
             typeName = `${typeName || 'ThreeWidget'}`;
         }
         return genInstanceTraitlet(
-            typeName, this.nullable, this.args, this.kwargs, this.getTagParts(), this.use_instancedict);
+            typeName, this.nullable, this.args, this.kwargs, this.getTagParts());
     }
     getPropArrayName() {
         return 'three_properties';
@@ -175,20 +171,17 @@ class ThreeTypeArray extends BaseType {
         return super.getTagParts().concat(['**widget_serialization']);
     }
     getTraitlet() {
-        let baseType = 'Tuple()';
+        const nullableStr = this.getNullableStr();
+        let baseType = 'Instance(' + this.typeName + ')' + this.getTagString();
+        if (this.typeName == 'this') {
+            baseType = 'This()' + this.getTagString();
+        }
+
         if (this.allow_single) {
-            if (this.typeName === 'this') {
-                baseType = 'Union([This, ' + baseType + '])';
-            } else {
-                baseType = 'Union([Instance(' + this.typeName + '), ' + baseType + '])';
-            }
+            return 'Union([' + baseType + ', List(trait=' + baseType + ', default_value=[])])';
+        } else {
+            return 'List(trait=' + baseType + ', default_value=[])';
         }
-        if (this.typeName === 'this') {
-            // return 'List(trait=This(), default_value=[]).tag(sync=True, **widget_serialization)';
-            return baseType + this.getTagString();
-        }
-        // return 'List(trait=Instance(' + this.typeName + ')).tag(sync=True, **widget_serialization)';
-        return baseType + this.getTagString();
     }
     getPropArrayName() {
         return 'three_nested_properties';
