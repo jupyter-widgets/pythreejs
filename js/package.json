@@ -33,12 +33,12 @@
     "watch": "webpack -d -w"
   },
   "dependencies": {
-    "@jupyter-widgets/base": "^2.0.0",
-    "bluebird": "^3.7.1",
+    "@jupyter-widgets/base": "^1.2.5 || ^2.0.0 || ^3.0.0",
+    "bluebird": "^3.5.5",
     "jupyter-dataserializers": "^2.2.0",
-    "screenfull": "^3.3.2",
-    "three": "^0.107.0",
-    "underscore": "^1.8.3"
+    "three": "^0.97.0",
+    "underscore": "^1.8.3",
+    "screenfull": "^5.0.0"
   },
   "devDependencies": {
     "eslint": "^5.16.0",
