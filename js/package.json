@@ -1,7 +1,16 @@
 {
   "name": "jupyter-threejs",
-  "version": "2.1.1",
+  "version": "2.1.10",
   "description": "jupyter - threejs bridge",
+  "keywords": [
+    "jupyterlab",
+    "extension",
+    "jupyterlab-extension",
+    "notebook",
+    "jupyter",
+    "widgets",
+    "three"
+  ],
   "author": "Jupyter-Threejs development team",
   "license": "BSD-3-Clause",
   "main": "dist/index.js",
@@ -23,6 +32,14 @@
     "prepack": "npm run build:bundles-prod",
     "watch": "webpack -d -w"
   },
+  "dependencies": {
+    "@jupyter-widgets/base": "^2.0.0",
+    "bluebird": "^3.7.1",
+    "jupyter-dataserializers": "^2.2.0",
+    "screenfull": "^3.3.2",
+    "three": "^0.107.0",
+    "underscore": "^1.8.3"
+  },
   "devDependencies": {
     "eslint": "^5.16.0",
     "fs-extra": "^7.0.1",
@@ -33,23 +50,6 @@
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.9"
   },
-  "dependencies": {
-    "@jupyter-widgets/base": "^2.0.1",
-    "bluebird": "^3.7.1",
-    "jupyter-dataserializers": "^2.1.0",
-    "screenfull": "^3.3.2",
-    "three": "^0.107.0",
-    "underscore": "^1.8.3"
-  },
-  "keywords": [
-    "jupyterlab",
-    "extension",
-    "jupyterlab-extension",
-    "notebook",
-    "jupyter",
-    "widgets",
-    "three"
-  ],
   "jupyterlab": {
     "extension": "src/jupyterlab-plugin",
     "discovery": {

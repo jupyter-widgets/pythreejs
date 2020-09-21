@@ -1,4 +1,7 @@
-version_info = (2, 1, 2, 'dev')
+#version_info = (2, 1, 3, 'dev')
+#PB bumped version to get it to work on WSL with Jupyter lab 2.2(.8)
+# not really final - attempting to get rid of semver errors in js
+version_info = (2, 1, 3, 'final')
 
 _specifier_ = {'alpha': 'a', 'beta': 'b', 'candidate': 'rc', 'final': '', 'dev': 'dev'}
 
@@ -10,6 +13,7 @@ if version_info[3] != 'final':
         postfix = _specifier_[version_info[3]] + str(version_info[4])
 
 __version__ = '%s.%s.%s%s' % (version_info[0], version_info[1], version_info[2], postfix)
+
 
 
 # The version of the attribute spec that this package
