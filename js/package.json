@@ -45,7 +45,7 @@
     "fs-extra": "^7.0.1",
     "glob": "^7.1.4",
     "handlebars": "^4.4.3",
-    "mkdirp": "^0.5.1",
+    "mkdirp": "^1.0.4",
     "rimraf": "^2.6.3",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.9"
