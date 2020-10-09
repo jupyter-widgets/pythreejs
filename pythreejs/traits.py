@@ -37,14 +37,14 @@ class Vector2(Tuple):
     """A trait for a 2-tuple corresponding to a three.js Vector2.
     """
 
-    default_value = (0, 0)
+    _default_value = (0, 0)
     info_text = 'a two-element vector'
 
     def __init__(self, trait=Undefined, default_value=Undefined, **kwargs):
         if trait is Undefined:
             trait = CFloat()
         if default_value is Undefined:
-            default_value = self.default_value
+            default_value = self._default_value
         super(Vector2, self).__init__(*(trait, trait), default_value=default_value, **kwargs)
 
 
@@ -52,14 +52,14 @@ class Vector3(Tuple):
     """A trait for a 3-tuple corresponding to a three.js Vector3.
     """
 
-    default_value = (0, 0, 0)
+    _default_value = (0, 0, 0)
     info_text = 'a three-element vector'
 
     def __init__(self, trait=Undefined, default_value=Undefined, **kwargs):
         if trait is Undefined:
             trait = CFloat()
         if default_value is Undefined:
-            default_value = self.default_value
+            default_value = self._default_value
         super(Vector3, self).__init__(*(trait, trait, trait), default_value=default_value, **kwargs)
 
 
@@ -67,14 +67,14 @@ class Vector4(Tuple):
     """A trait for a 4-tuple corresponding to a three.js Vector4.
     """
 
-    default_value = (0, 0, 0, 0)
+    _default_value = (0, 0, 0, 0)
     info_text = 'a four-element vector'
 
     def __init__(self, trait=Undefined, default_value=Undefined, **kwargs):
         if trait is Undefined:
             trait = CFloat()
         if default_value is Undefined:
-            default_value = self.default_value
+            default_value = self._default_value
         super(Vector4, self).__init__(*(trait, trait, trait, trait), default_value=default_value, **kwargs)
 
 
@@ -82,7 +82,7 @@ class Matrix3(Tuple):
     """A trait for a 9-tuple corresponding to a three.js Matrix3.
     """
 
-    default_value = (
+    _default_value = (
             1, 0, 0,
             0, 1, 0,
             0, 0, 1
@@ -93,7 +93,7 @@ class Matrix3(Tuple):
         if trait is Undefined:
             trait = CFloat()
         if default_value is Undefined:
-            default_value = self.default_value
+            default_value = self._default_value
         super(Matrix3, self).__init__(*((trait,) * 9), default_value=default_value, **kwargs)
 
 
@@ -101,7 +101,7 @@ class Matrix4(Tuple):
     """A trait for a 16-tuple corresponding to a three.js Matrix4.
     """
 
-    default_value = (
+    _default_value = (
             1, 0, 0, 0,
             0, 1, 0, 0,
             0, 0, 1, 0,
@@ -113,7 +113,7 @@ class Matrix4(Tuple):
         if trait is Undefined:
             trait = CFloat()
         if default_value is Undefined:
-            default_value = self.default_value
+            default_value = self._default_value
         super(Matrix4, self).__init__(*((trait,) * 16), default_value=default_value, **kwargs)
 
 
@@ -154,13 +154,13 @@ class Euler(Tuple):
     """
 
     info_text = 'a set of Euler angles'
-    default_value = (0, 0, 0, 'XYZ')
+    _default_value = (0, 0, 0, 'XYZ')
 
     _accepted_orders = ['XYZ', 'YZX', 'ZXY', 'XZY', 'YXZ', 'ZYX']
 
     def __init__(self, default_value=Undefined, **kwargs):
         if default_value is Undefined:
-            default_value = self.default_value
+            default_value = self._default_value
         super(Euler, self).__init__(
             CFloat(), CFloat(), CFloat(),
             Enum(self._accepted_orders, self._accepted_orders[0]),
