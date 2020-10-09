@@ -78,7 +78,7 @@ class TraitDocumenter(AttributeDocumenter):
         return self.objpath[-1]
 
     def add_directive_header(self, sig):
-        default = self.object.get_default_value()
+        default = self.object.default_value
         if default is Undefined:
             default_s = ''
         else:

@@ -45,6 +45,8 @@ class Vector2(Tuple):
             trait = CFloat()
         if default_value is Undefined:
             default_value = self.default_value
+        else:
+            self.default_value = default_value
         super(Vector2, self).__init__(*(trait, trait), default_value=default_value, **kwargs)
 
 
@@ -60,6 +62,8 @@ class Vector3(Tuple):
             trait = CFloat()
         if default_value is Undefined:
             default_value = self.default_value
+        else:
+            self.default_value = default_value
         super(Vector3, self).__init__(*(trait, trait, trait), default_value=default_value, **kwargs)
 
 
@@ -75,6 +79,8 @@ class Vector4(Tuple):
             trait = CFloat()
         if default_value is Undefined:
             default_value = self.default_value
+        else:
+            self.default_value = default_value
         super(Vector4, self).__init__(*(trait, trait, trait, trait), default_value=default_value, **kwargs)
 
 
@@ -94,6 +100,8 @@ class Matrix3(Tuple):
             trait = CFloat()
         if default_value is Undefined:
             default_value = self.default_value
+        else:
+            self.default_value = default_value
         super(Matrix3, self).__init__(*((trait,) * 9), default_value=default_value, **kwargs)
 
 
@@ -114,6 +122,8 @@ class Matrix4(Tuple):
             trait = CFloat()
         if default_value is Undefined:
             default_value = self.default_value
+        else:
+            self.default_value = default_value
         super(Matrix4, self).__init__(*((trait,) * 16), default_value=default_value, **kwargs)
 
 
@@ -161,6 +171,8 @@ class Euler(Tuple):
     def __init__(self, default_value=Undefined, **kwargs):
         if default_value is Undefined:
             default_value = self.default_value
+        else:
+            self.default_value = default_value
         super(Euler, self).__init__(
             CFloat(), CFloat(), CFloat(),
             Enum(self._accepted_orders, self._accepted_orders[0]),
