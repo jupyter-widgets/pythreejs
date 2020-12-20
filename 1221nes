@@ -1,0 +1,22 @@
+import PIL
+# import Image
+import pytesseract
+from PIL import Image
+# image = Image.open('sssa.png')
+# image = Image.open('SSA.png')
+# code = pytesseract.image_to_string(image, lang='eng')
+# print(code)
+# print(image)
+
+img = Image.open('SSA.png')
+ocr_str = pytesseract.image_to_string(img, lang="eng", config="--psm 7")
+print(ocr_str)
+
+
+# ocr_str = pytesseract.image_to_string(image, lang='eng')
+# print(ocr_str)
+
+# images=Image.open('sssa.png')
+# print(images.size)
+# text=pytesseract.image_to_string(images)
+# print(text)
