@@ -74,4 +74,8 @@ jupyter nbextension install --py --symlink --sys-prefix pythreejs
 # To clean out generated files, run:
 npm run clean
 
+# To symlink the jupyter lab extension
+jupyter labextension develop .. --overwrite
+
+
 ```

@@ -16,9 +16,11 @@ from setupbase import (
 from setuptools import setup
 
 
-log.set_verbosity(log.DEBUG)
-log.info('setup.py entered')
-log.info('$PATH=%s' % os.environ['PATH'])
+# due to https://github.com/jupyterlab/jupyterlab/blob/136d2ec216ebfc429a696e6ee75fee5f8ead73e2/jupyterlab/federated_labextensions.py#L347
+# we should not print out anything, otherwise setup.py --name gives noise
+# log.set_verbosity(log.DEBUG)
+# log.info('setup.py entered')
+# log.info('$PATH=%s' % os.environ['PATH'])
 
 LONG_DESCRIPTION = 'A Python/ThreeJS bridge utilizing the Jupyter widget infrastructure.'
 
