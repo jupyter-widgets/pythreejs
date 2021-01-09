@@ -4,27 +4,20 @@ from __future__ import print_function
 import os
 import sys
 
-from setupbase import (
-    log,
+from jupyter_packaging import (
     create_cmdclass,
     install_npm,
-    combine_commands,
     ensure_targets,
+    combine_commands,
     get_version,
 )
 
 from setuptools import setup
 
 
-# due to https://github.com/jupyterlab/jupyterlab/blob/136d2ec216ebfc429a696e6ee75fee5f8ead73e2/jupyterlab/federated_labextensions.py#L347
-# we should not print out anything, otherwise setup.py --name gives noise
-# log.set_verbosity(log.DEBUG)
-# log.info('setup.py entered')
-# log.info('$PATH=%s' % os.environ['PATH'])
-
 LONG_DESCRIPTION = 'A Python/ThreeJS bridge utilizing the Jupyter widget infrastructure.'
 
-here = os.path.abspath(os.path.dirname(sys.argv[0]))
+here = os.path.dirname(os.path.abspath(__file__))
 name = 'pythreejs'
 version = get_version(os.path.join(here, name, '_version.py'))
 
