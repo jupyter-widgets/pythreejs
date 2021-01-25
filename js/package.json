@@ -34,14 +34,14 @@
     "watch": "webpack -d -w"
   },
   "dependencies": {
-    "@jupyter-widgets/base": "^1.2.5 || ^2.0.0 || ^3.0.0 || ^4.0.0-alpha.2",
+    "@jupyter-widgets/base": "^1.2.5 || ^2.0.0 || ^3.0.0 || ^4.0.0",
     "bluebird": "^3.5.5",
     "jupyter-dataserializers": "^2.2.0",
     "three": "^0.97.0",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
-    "@jupyterlab/builder": "^3.0.0-rc.13",
+    "@jupyterlab/builder": "^3.0.0",
     "@jupyterlab/buildutils": "^2.0.2",
     "eslint": "^6.8.0",
     "fs-extra": "^8.1.0",
