@@ -20,12 +20,13 @@ jobs:
     name: build
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python
+    - name: Check out
+      uses: actions/checkout@v2
+    - name: Set up python
       uses: actions/setup-python@v2
       with:
         python-version: 3.9
-    - name: Set up Node
+    - name: Set up node
       uses: actions/setup-node@v2
       with:
         node: 14.x
@@ -59,12 +60,13 @@ jobs:
     name: docs
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Check out
+        uses: actions/checkout@v2
       - name: Install apt dependencies
         run: |
           set -eux
           sudo apt install pandoc
-      - name: Set up Python
+      - name: Set up python
         uses: actions/setup-python@v2
         with:
           python-version: 3.9
@@ -72,7 +74,7 @@ jobs:
         run: |
           set -eux
           python -m pip install -vv -U --user pip wheel setuptools
-      - name: Set up Node
+      - name: Set up node
         uses: actions/setup-node@v2
         with:
           node: 14.x
@@ -129,12 +131,19 @@ jobs:
           - os: ubuntu
             py_cmd: python
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python
+    - name: Check out
+      uses: actions/checkout@v2
+    - name: Set up python
       uses: actions/setup-python@v2
       with:
         python-version: 3.8
-    - uses: actions/download-artifact@v2
+    - if: ${{ matrix.node }}
+      name: Set up node
+      uses: actions/setup-node@v2
+      with:
+        node: ${{ matrix.node }}
+    - name: Download distributions
+      uses: actions/download-artifact@v2
       with:
         name: dist ${{ github.run_number }}
         path: ./dist
@@ -161,25 +170,24 @@ jobs:
       # explicit file installs don't support extras, skimage brings most along
       run: |
         set -eux
-        ${{ matrix.py_cmd }} -m pip install -vv nbval scikit-image ipywebrtc
+        ${{ matrix.py_cmd }} -m pip install -vv nbval scikit-image ipywebrtc pytest-cov codecov
     - name: Run python tests
       # remove the source directory to avoid surprises
       run: |
         set -eux
         rm -rf pythreejs
-        ${{ matrix.py_cmd }} -m pytest -vv -l --nbval-lax --current-env .
-    - name: Check nbextension
+        ${{ matrix.py_cmd }} -m pytest -vv -l --nbval-lax --current-env . --cov pythreejs --cov-report term-missing:skip-covered --no-cov-on-fail
+    - name: Upload coverage
+      run: |
+        set -eux
+        codecov
+    - name: Check notebook extension
       run: |
         set -eux
         jupyter nbextension list
         jupyter nbextension list 2>&1 | grep -ie "jupyter-threejs/extension.*enabled" -
     - if: ${{ matrix.node }}
-      name: Set up Node
-      uses: actions/setup-node@v2
-      with:
-        node: ${{ matrix.node }}
-    - if: ${{ matrix.node }}
-      name: Install labextension
+      name: Install lab extension
       run: |
         set -eux
         jupyter labextension install --no-build --debug ./dist/*.tgz @jupyter-widgets/jupyterlab-manager
@@ -191,7 +199,7 @@ jobs:
         set -eux
         jupyter lab build --debug
     - if: ${{ matrix.lab }}
-      name: Check labextension
+      name: Check lab extension
       run: |
         set -eux
         jupyter labextension list
