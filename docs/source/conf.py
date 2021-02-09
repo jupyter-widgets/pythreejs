@@ -37,6 +37,8 @@ extensions = [
 # Ensure our extension is available:
 import sys
 from os.path import dirname, join as pjoin
+from sphinx.util import logging
+logger = logging.getLogger(__name__)
 docs = dirname(dirname(__file__))
 root = dirname(docs)
 sys.path.insert(0, root)
@@ -210,7 +212,7 @@ def setup(app):
     def add_scripts(app):
         for fname in ['jupyter-threejs.js']:
             if not os.path.exists(os.path.join(here, '_static', fname)):
-                app.warn('missing javascript file: %s' % fname)
+                logger.warn('missing javascript file: %s' % fname)
             app.add_javascript(fname)
 
     def add_images(app):

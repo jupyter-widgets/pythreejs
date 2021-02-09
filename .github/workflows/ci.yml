@@ -1,0 +1,198 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: '*'
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: 1
+  PYTHONUNBUFFERED: 1
+  PYTHONIOENCODING: utf-8
+
+defaults:
+  run:
+    shell: bash -l {0}
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+    - name: Set up Node
+      uses: actions/setup-node@v2
+      with:
+        node: 14.x
+    - name: Install packaging dependencies
+      run: |
+        set -eux
+        python -m pip install -vv -U --user pip wheel setuptools
+        yarn --version || npm install -g yarn
+    - name: Pre-install node dependencies
+      run: |
+        set -eux
+        cd js
+        yarn --ignore-optional
+    - name: Build sdist
+      run: python setup.py sdist
+    - name: Build wheel
+      run: python setup.py bdist_wheel
+    - name: Collect and hash distributions
+      run: |
+        set -eux
+        cp js/lab-dist/jupyter-threejs-*.tgz dist
+        cd dist
+        sha256sum * | tee SHA256SUMS
+    - name: Upload distributions
+      uses: actions/upload-artifact@v2
+      with:
+        name: dist ${{ github.run_number }}
+        path: ./dist
+
+  docs:
+    name: docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install apt dependencies
+        run: |
+          set -eux
+          sudo apt install pandoc
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Install packaging dependencies
+        run: |
+          set -eux
+          python -m pip install -vv -U --user pip wheel setuptools
+      - name: Set up Node
+        uses: actions/setup-node@v2
+        with:
+          node: 14.x
+      - name: Install package and docs dependencies
+        run: |
+          set -eux
+          pip install -vv -U .[docs,examples,test] requests_cache 'traitlets==4.*'
+      - name: Build docs
+        run: |
+          set -eux
+          cd docs
+          make html
+      - name: Upload docs
+        uses: actions/upload-artifact@v2
+        with:
+          name: docs ${{ github.run_number }}
+          path: ./docs/build
+      - name: Cache links
+        uses: actions/cache@v1
+        with:
+          path: ./build/links
+          key: ${{ runner.os }}-links
+      - name: Check links
+        run: |
+          set -eux
+          mkdir -p build/links/cache
+          cd docs
+          pytest-check-links --check-links-cache --check-links-cache-name ../build/links/cache
+
+  test:
+    name: test ${{ matrix.os }}${{ matrix.python }} ${{ matrix.node }} ${{ matrix.lab }}
+    needs: [build]
+    runs-on: ${{ matrix.os }}-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu, macos, windows]
+        python: [3.6, 3.8, 3.9]
+        include:
+          - python: 3.6
+            dist: 'pythreejs*.tar.gz'
+          - python: 3.8
+            dist: 'pythreejs*.whl'
+            lab: 1
+            node: 10
+          - python: 3.9
+            dist: 'pythreejs*.whl'
+            lab: 2
+            node: 14
+          - os: windows
+            py_cmd: python
+          - os: macos
+            py_cmd: python3
+          - os: ubuntu
+            py_cmd: python
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - uses: actions/download-artifact@v2
+      with:
+        name: dist ${{ github.run_number }}
+        path: ./dist
+    - name: Install installation dependencies
+      run: |
+        set -eux
+        ${{ matrix.py_cmd }} -m pip install -vv --user -U pip wheel setuptools
+    - name: Install package (maybe lab)
+      run: |
+        set -eux
+        cd dist
+        ${{ matrix.py_cmd }} -m pip install -vv ${{ matrix.dist }}
+    - name: Validate environment
+      run: |
+        set -eux
+        ${{ matrix.py_cmd }} -m pip freeze
+        ${{ matrix.py_cmd }} -m pip check
+    - if: ${{ matrix.lab }}
+      name: Install lab
+      run: |
+        set -eux
+        ${{ matrix.py_cmd }} -m pip install -vv 'jupyterlab==${{ matrix.lab }}.*'
+    - name: Install test dependencies
+      # explicit file installs don't support extras, skimage brings most along
+      run: |
+        set -eux
+        ${{ matrix.py_cmd }} -m pip install -vv nbval scikit-image ipywebrtc
+    - name: Run python tests
+      # remove the source directory to avoid surprises
+      run: |
+        set -eux
+        rm -rf pythreejs
+        ${{ matrix.py_cmd }} -m pytest -vv -l --nbval-lax --current-env .
+    - name: Check nbextension
+      run: |
+        set -eux
+        jupyter nbextension list
+        jupyter nbextension list 2>&1 | grep -ie "jupyter-threejs/extension.*enabled" -
+    - if: ${{ matrix.node }}
+      name: Set up Node
+      uses: actions/setup-node@v2
+      with:
+        node: ${{ matrix.node }}
+    - if: ${{ matrix.node }}
+      name: Install labextension
+      run: |
+        set -eux
+        jupyter labextension install --no-build --debug ./dist/*.tgz @jupyter-widgets/jupyterlab-manager
+        jupyter labextension list
+        jupyter labextension list 2>&1 | grep -ie "jupyter-threejs" -
+    - if: ${{ matrix.node }}
+      name: Build lab
+      run: |
+        set -eux
+        jupyter lab build --debug
+    - if: ${{ matrix.lab }}
+      name: Check labextension
+      run: |
+        set -eux
+        jupyter labextension list
+        jupyter labextension list 2>&1 | grep -ie "jupyter-threejs.*enabled.*ok" -
