@@ -101,8 +101,7 @@ jobs:
         run: |
           set -eux
           mkdir -p build/links/cache
-          cd docs
-          pytest-check-links --check-links-cache --check-links-cache-name ../build/links/cache
+          pytest-check-links --check-links-cache --check-links-cache-name ./build/links/cache
 
   test:
     name: test ${{ matrix.os }}${{ matrix.python }} ${{ matrix.node }} ${{ matrix.lab }}
