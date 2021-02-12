@@ -54,7 +54,7 @@
   },
   "jupyterlab": {
     "extension": "src/jupyterlab-plugin",
-    "outputDir": "../share/jupyter/labextensions/jupyter-threejs",
+    "outputDir": "../pythreejs/labextension",
     "sharedPackages": {
       "@jupyter-widgets/base": {
         "bundled": false,
