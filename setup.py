@@ -24,7 +24,7 @@ from setuptools import setup
 
 LONG_DESCRIPTION = 'A Python/ThreeJS bridge utilizing the Jupyter widget infrastructure.'
 
-here = os.path.abspath(os.path.dirname(sys.argv[0]))
+here = os.path.dirname(os.path.abspath(__file__))
 name = 'pythreejs'
 version = get_version(os.path.join(here, name, '_version.py'))
 
