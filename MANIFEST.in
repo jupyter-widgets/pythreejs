@@ -2,8 +2,6 @@ recursive-include pythreejs/static *.*
 
 include setupbase.py
 
-include LICENSE
-include README.md
 include pytest.ini
 include screencast.gif
 
