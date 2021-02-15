@@ -42,16 +42,16 @@ cmdclass = create_cmdclass(
 )
 cmdclass['js'] = combine_commands(
     install_npm(
-        path=HERE/'js',
-        build_dir=HERE/'name'/'static',
-        source_dir=HERE/'js',
+        path=str(HERE/'js'),
+        build_dir=str(HERE/'name'/'static'),
+        source_dir=str(HERE/'js'),
         build_cmd='build:all'
     ),
     ensure_targets([
-        name + '/static/extension.js',
-        name + '/static/index.js',
-        'js/src/core/BufferAttribute.autogen.js',
-        name + '/core/BufferAttribute_autogen.py',
+        str(HERE/name/'static'/'extension.js'),
+        str(HERE/name/'static'/'index.js'),
+        str(HERE/'js'/'src'/'core'/'BufferAttribute.autogen.js'),
+        str(HERE/name/'core'/'BufferAttribute_autogen.py'),
     ]),
 )
 
