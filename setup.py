@@ -35,7 +35,9 @@ cmdclass = create_cmdclass(
         # Support JupyterLab 2.x
         ('share/jupyter/lab/extensions', str(HERE/'js'/'lab-dist'), 'jupyter-threejs-*.tgz'),
         # Support Jupyter Notebook
-        ('etc/jupyter/nbconfig', str(HERE/'jupyter-config'), '**/*.json')
+        ('etc/jupyter/nbconfig', str(HERE/'jupyter-config'), '**/*.json'),
+        ('share/jupyter/nbextensions/jupyter-threejs', str(HERE/name/'static'), '**/*.js'),
+        ('share/jupyter/nbextensions/jupyter-threejs', str(HERE/name/'static'), '**/*.js.map')
     ],
 )
 cmdclass['js'] = combine_commands(
