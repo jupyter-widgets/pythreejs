@@ -22,7 +22,9 @@ LONG_DESCRIPTION = 'A Python/ThreeJS bridge utilizing the Jupyter widget infrast
 
 HERE = Path(__file__).parent.resolve()
 name = 'pythreejs'
-lab_path = (HERE / name / "labextension")
+py_path = (HERE / name)
+js_path = (HERE / "js")
+lab_path = (py_path / "labextension")
 
 version = get_version(HERE / name / '_version.py')
 
@@ -33,25 +35,25 @@ cmdclass = create_cmdclass(
         ("share/jupyter/labextensions/jupyter-threejs", str(lab_path), "**"),
         ("share/jupyter/labextensions/jupyter-threejs", str(HERE), "install.json"),
         # Support JupyterLab 2.x
-        ('share/jupyter/lab/extensions', str(HERE/'js'/'lab-dist'), 'jupyter-threejs-*.tgz'),
+        ('share/jupyter/lab/extensions', str(js_path/'lab-dist'), 'jupyter-threejs-*.tgz'),
         # Support Jupyter Notebook
         ('etc/jupyter/nbconfig', str(HERE/'jupyter-config'), '**/*.json'),
-        ('share/jupyter/nbextensions/jupyter-threejs', str(HERE/name/'static'), '**/*.js'),
-        ('share/jupyter/nbextensions/jupyter-threejs', str(HERE/name/'static'), '**/*.js.map')
+        ('share/jupyter/nbextensions/jupyter-threejs', str(py_path/'static'), '**/*.js'),
+        ('share/jupyter/nbextensions/jupyter-threejs', str(py_path/'static'), '**/*.js.map')
     ],
 )
 cmdclass['js'] = combine_commands(
     install_npm(
-        path=str(HERE/'js'),
-        build_dir=str(HERE/'name'/'static'),
-        source_dir=str(HERE/'js'),
+        path=str(js_path),
+        build_dir=str(py_path/'static'),
+        source_dir=str(js_path),
         build_cmd='build:all'
     ),
     ensure_targets([
-        str(HERE/name/'static'/'extension.js'),
-        str(HERE/name/'static'/'index.js'),
-        str(HERE/'js'/'src'/'core'/'BufferAttribute.autogen.js'),
-        str(HERE/name/'core'/'BufferAttribute_autogen.py'),
+        str(py_path/'static'/'extension.js'),
+        str(py_path/'static'/'index.js'),
+        str(js_path/'src'/'core'/'BufferAttribute.autogen.js'),
+        str(py_path/'core'/'BufferAttribute_autogen.py'),
     ]),
 )
 
