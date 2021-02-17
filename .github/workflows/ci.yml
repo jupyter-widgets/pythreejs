@@ -105,11 +105,20 @@ jobs:
         with:
           name: docs ${{ github.run_number }}
           path: ./docs/build
+      - name: Get current date
+        id: date
+        run: |
+          echo "::set-output name=year::$(date +'%Y')"
+          echo "::set-output name=week::$(date +'%U')"
       - name: Cache links
         uses: actions/cache@v1
         with:
           path: ./build/links
-          key: ${{ runner.os }}-links
+          key: |
+            ${{ env.CACHE_EPOCH }}-${{ runner.os }}-links-${{ steps.date.outputs.year }}-${{ steps.date.outputs.week }}
+          restore-keys: |
+            ${{ env.CACHE_EPOCH }}-${{ runner.os }}-links-${{ steps.date.outputs.year }}-
+            ${{ env.CACHE_EPOCH }}-${{ runner.os }}-links-
       - name: Check links
         run: |
           set -eux
