@@ -30,11 +30,15 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node: 14.x
+    - name: Install installation dependencies
+      run: |
+        set -eux
+        python -m pip install -vv -U --user pip wheel setuptools
+        yarn --version || npm install -g yarn
     - name: Install packaging dependencies
       run: |
         set -eux
-        python -m pip install -vv -U --user pip wheel setuptools 'jupyterlab~=3.0'
-        yarn --version || npm install -g yarn
+        python -m pip install -vv 'jupyterlab~=3.0'
     - name: Pre-install node dependencies
       run: |
         set -eux
@@ -70,7 +74,7 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.9
-      - name: Install packaging dependencies
+      - name: Install installation dependencies
         run: |
           set -eux
           python -m pip install -vv -U --user pip wheel setuptools
@@ -153,7 +157,7 @@ jobs:
       run: |
         set -eux
         ${{ matrix.py_cmd }} -m pip install -vv --user -U pip wheel setuptools
-    - name: Install package (maybe lab)
+    - name: Install package
       run: |
         set -eux
         cd dist
@@ -164,7 +168,7 @@ jobs:
         ${{ matrix.py_cmd }} -m pip freeze
         ${{ matrix.py_cmd }} -m pip check
     - if: ${{ matrix.lab }}
-      name: Install lab
+      name: Install JupyterLab
       run: |
         set -eux
         ${{ matrix.py_cmd }} -m pip install -vv 'jupyterlab==${{ matrix.lab }}.*'
