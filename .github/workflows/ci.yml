@@ -39,8 +39,6 @@ jobs:
           ${{ env.CACHE_EPOCH }}-${{ runner.os }}-pip-build-${{ hashFiles('setup.py', 'pyproject.toml') }}
         restore-keys: |
           ${{ env.CACHE_EPOCH }}-${{ runner.os }}-pip-build-
-          ${{ env.CACHE_EPOCH }}-${{ runner.os }}-pip-build-
-    - name: Cache npm packages
     - name: Install installation dependencies
       run: |
         set -eux
