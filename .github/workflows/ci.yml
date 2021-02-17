@@ -10,6 +10,7 @@ env:
   PIP_DISABLE_PIP_VERSION_CHECK: 1
   PYTHONUNBUFFERED: 1
   PYTHONIOENCODING: utf-8
+  CACHE_EPOCH: 0
 
 defaults:
   run:
@@ -30,6 +31,16 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node: 14.x
+    - name: Cache pip packages
+      uses: actions/cache@v1
+      with:
+        path: ~/.cache/pip
+        key: |
+          ${{ env.CACHE_EPOCH }}-${{ runner.os }}-pip-build-${{ hashFiles('setup.py', 'pyproject.toml') }}
+        restore-keys: |
+          ${{ env.CACHE_EPOCH }}-${{ runner.os }}-pip-build-
+          ${{ env.CACHE_EPOCH }}-${{ runner.os }}-pip-build-
+    - name: Cache npm packages
     - name: Install installation dependencies
       run: |
         set -eux
