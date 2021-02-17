@@ -112,18 +112,21 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu, macos, windows]
-        python: [3.6, 3.8, 3.9]
+        python: [3.6, 3.7, 3.8, 3.9]
         include:
           - python: 3.6
             dist: 'pythreejs*.tar.gz'
-          - python: 3.8
+          - python: 3.7
             dist: 'pythreejs*.whl'
             lab: 1
             node: 10
-          - python: 3.9
+          - python: 3.8
             dist: 'pythreejs*.whl'
             lab: 2
             node: 14
+          - python: 3.9
+            dist: 'pythreejs*.whl'
+            lab: 3
           - os: windows
             py_cmd: python
           - os: macos
@@ -191,8 +194,6 @@ jobs:
       run: |
         set -eux
         jupyter labextension install --no-build --debug ./dist/*.tgz @jupyter-widgets/jupyterlab-manager
-        jupyter labextension list
-        jupyter labextension list 2>&1 | grep -ie "jupyter-threejs" -
     - if: ${{ matrix.node }}
       name: Build lab
       run: |
