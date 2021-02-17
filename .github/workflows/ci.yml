@@ -94,7 +94,7 @@ jobs:
       - name: Install package and docs dependencies
         run: |
           set -eux
-          pip install -vv -U .[docs,examples,test] requests_cache 'traitlets==4.*'
+          pip install -vv -U -e .[docs,examples,test] requests_cache 'traitlets==4.*'
       - name: Build docs
         run: |
           set -eux
