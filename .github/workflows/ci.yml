@@ -33,7 +33,7 @@ jobs:
     - name: Install packaging dependencies
       run: |
         set -eux
-        python -m pip install -vv -U --user pip wheel setuptools
+        python -m pip install -vv -U --user pip wheel setuptools 'jupyterlab~=3.0'
         yarn --version || npm install -g yarn
     - name: Pre-install node dependencies
       run: |
@@ -73,7 +73,7 @@ jobs:
       - name: Install packaging dependencies
         run: |
           set -eux
-          python -m pip install -vv -U --user pip wheel setuptools 'jupyterlab~=3.0'
+          python -m pip install -vv -U --user pip wheel setuptools
       - name: Set up node
         uses: actions/setup-node@v2
         with:
