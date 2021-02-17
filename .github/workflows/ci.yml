@@ -73,7 +73,7 @@ jobs:
       - name: Install packaging dependencies
         run: |
           set -eux
-          python -m pip install -vv -U --user pip wheel setuptools
+          python -m pip install -vv -U --user pip wheel setuptools 'jupyterlab~=3.0'
       - name: Set up node
         uses: actions/setup-node@v2
         with:
