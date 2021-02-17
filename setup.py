@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-
-from __future__ import print_function
-import os
-import sys
+from pathlib import Path
 
 from setupbase import (
     log,
@@ -12,50 +9,45 @@ from setupbase import (
     ensure_targets,
     get_version,
 )
+import setuptools
 
-from setuptools import setup
-
-
-log.set_verbosity(log.DEBUG)
-log.info('setup.py entered')
-log.info('$PATH=%s' % os.environ['PATH'])
 
 LONG_DESCRIPTION = 'A Python/ThreeJS bridge utilizing the Jupyter widget infrastructure.'
 
-here = os.path.abspath(os.path.dirname(sys.argv[0]))
+HERE = Path(__file__).parent.resolve()
 name = 'pythreejs'
-version = get_version(os.path.join(here, name, '_version.py'))
+py_path = (HERE / name)
+js_path = (HERE / "js")
+lab_path = (py_path / "labextension")
 
+version = get_version(HERE / name / '_version.py')
 
 cmdclass = create_cmdclass(
     'js',
     data_files_spec=[
-        ('share/jupyter/nbextensions/jupyter-threejs',
-         name + '/static',
-         '*.js'),
-        ('share/jupyter/nbextensions/jupyter-threejs',
-         name + '/static',
-         '*.js.map'),
-        ('share/jupyter/lab/extensions',
-         'js/lab-dist',
-         'jupyter-threejs-*.tgz'),
-        ('etc/jupyter/nbconfig',
-         'jupyter-config',
-         '**/*.json'),
+        # Support JupyterLab 3.x prebuilt extension
+        ("share/jupyter/labextensions/jupyter-threejs", str(lab_path), "**"),
+        ("share/jupyter/labextensions/jupyter-threejs", str(HERE), "install.json"),
+        # Support JupyterLab 2.x
+        ('share/jupyter/lab/extensions', str(js_path/'lab-dist'), 'jupyter-threejs-*.tgz'),
+        # Support Jupyter Notebook
+        ('etc/jupyter/nbconfig', str(HERE/'jupyter-config'), '**/*.json'),
+        ('share/jupyter/nbextensions/jupyter-threejs', str(py_path/'static'), '**/*.js'),
+        ('share/jupyter/nbextensions/jupyter-threejs', str(py_path/'static'), '**/*.js.map')
     ],
 )
 cmdclass['js'] = combine_commands(
     install_npm(
-        path=os.path.join(here, 'js'),
-        build_dir=os.path.join(here, name, 'static'),
-        source_dir=os.path.join(here, 'js'),
+        path=str(js_path),
+        build_dir=str(py_path/'static'),
+        source_dir=str(js_path),
         build_cmd='build:all'
     ),
     ensure_targets([
-        name + '/static/extension.js',
-        name + '/static/index.js',
-        'js/src/core/BufferAttribute.autogen.js',
-        name + '/core/BufferAttribute_autogen.py',
+        str(py_path/'static'/'extension.js'),
+        str(py_path/'static'/'index.js'),
+        str(js_path/'src'/'core'/'BufferAttribute.autogen.js'),
+        str(py_path/'core'/'BufferAttribute_autogen.py'),
     ]),
 )
 
@@ -109,4 +101,6 @@ setup_args = {
     ],
 }
 
-setup(**setup_args)
+
+if __name__ == "__main__":
+    setuptools.setup(**setup_args)

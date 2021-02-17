@@ -19,7 +19,7 @@ module.exports = {
                             console.error(err);
                             reject(err);
                         },
-                        'jupyter-threejs'
+                        'jupyter-threejs-chunk'
                     );
                 });
             }
