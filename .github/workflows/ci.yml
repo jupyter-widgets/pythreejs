@@ -30,7 +30,7 @@ jobs:
     - name: Set up node
       uses: actions/setup-node@v2
       with:
-        node: 14.x
+        node-version: 14.x
     - name: Cache pip packages
       uses: actions/cache@v1
       with:
@@ -90,7 +90,7 @@ jobs:
       - name: Set up node
         uses: actions/setup-node@v2
         with:
-          node: 14.x
+          node-version: 14.x
       - name: Install package and docs dependencies
         run: |
           set -eux
@@ -156,7 +156,7 @@ jobs:
       name: Set up node
       uses: actions/setup-node@v2
       with:
-        node: ${{ matrix.node }}
+        node-version: ${{ matrix.node }}
     - name: Download distributions
       uses: actions/download-artifact@v2
       with:
