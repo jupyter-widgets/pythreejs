@@ -92,9 +92,13 @@ jobs:
         with:
           node-version: 14.x
       - name: Install package and docs dependencies
+        # run: |
+        #  set -eux
+        #  pip install -vv -U .[docs,examples,test] requests_cache 'traitlets==4.*'
+        # TODO: uncomment above, remove below to get docs to build, add link to issue
         run: |
           set -eux
-          pip install -vv -U .[docs,examples,test] requests_cache 'traitlets==4.*'
+          pip install -vv -U .[docs,examples,test] requests_cache
       - name: Build docs
         run: |
           set -eux
