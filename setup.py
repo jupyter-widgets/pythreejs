@@ -3,12 +3,7 @@ from pathlib import Path
 
 HERE = Path(__file__).parent.resolve()
 
-try:
-    import setupbase
-except:
-    import sys
-    import os
-    sys.path += [str(HERE)]
+import setupbase
 
 from setupbase import (
     log,
