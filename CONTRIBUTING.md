@@ -16,9 +16,9 @@ A full development environment will require:
 - `jupyterlab >=3`
   - once built, `jupyterlab` version `1` or `2` may be used
 - `nodejs >=12` e.g. via
-    ```bash
-    conda install -c conda-forge 'nodejs>=12'
-    ```
+  ```bash
+  conda install -c conda-forge 'nodejs>=12'
+  ```
 
 ## Development Tasks
 
