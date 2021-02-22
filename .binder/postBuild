@@ -3,17 +3,10 @@ set -eux
 
 pushd js
 jlpm --ignore-optional
-jlpm build:bundles
-jlpm build:all
 popd
 
-python -m pip install -vv -e . --no-deps --ignore-installed
-python -m pip check
-
-# install labextension
-pushd js
-jupyter labextension develop . --overwrite
-popd
+python setup.py sdist
+python -m pip install -v dist/pythreejs*.tar.gz --no-deps --ignore-installed
 
 # validate
 jupyter nbextension list

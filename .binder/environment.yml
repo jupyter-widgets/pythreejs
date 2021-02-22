@@ -5,8 +5,10 @@ channels:
 dependencies:
   # runtimes
   - python >=3.6
-  - nodejs >=12
+  - nodejs >=12,!=13,<15  # prefer LTS
   - pip
+  - wheel
+  - setuptools
   # dependencies
   - ipydatawidgets >=1.1.1
   - ipywidgets >=7.2.1
