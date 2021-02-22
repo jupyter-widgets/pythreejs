@@ -11,9 +11,15 @@ popd
 
 # install and validate python environment
 python setup.py sdist
-python -m pip install -v dist/pythreejs*.tar.gz --no-deps
-python -m pip install -e .[test,examples,docs]
+
+pushd dist
+python -m pip install -v pythreejs*.tar.gz --no-deps
+popd
+
 python -m pip check || echo "uh oh"
+
+# ensure labextension is linked
+jupyter labextension develop . --overwrite
 
 # build docs
 pushd docs
