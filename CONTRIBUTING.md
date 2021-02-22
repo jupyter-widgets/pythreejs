@@ -74,7 +74,6 @@ npm run clean
 ### Symlink the JupyterLab 3 federated extension
 
 ```bash
-cd js
 jupyter labextension develop . --overwrite
 ```
 
@@ -101,7 +100,7 @@ python -m pip install -e .[examples]
 
 And then:
 
-```
+```bash
 jupyter notebook --debug
 # or
 jupyter lab --no-browser --debug
