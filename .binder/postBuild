@@ -9,17 +9,12 @@ pushd js
 jlpm --ignore-optional
 popd
 
-# install and validate python environment
+# build distribution
 python setup.py sdist
 
 pushd dist
-python -m pip install -v pythreejs*.tar.gz --no-deps
+python -m pip install -v pythreejs*.tar.gz --no-deps --ignore-installed
 popd
-
-python -m pip check || echo "uh oh"
-
-# ensure labextension is linked
-jupyter labextension develop . --overwrite
 
 # build docs
 pushd docs
@@ -29,3 +24,4 @@ popd
 # validate extensions
 jupyter nbextension list
 jupyter labextension list
+python -m pip check || echo "uh oh"
