@@ -74,6 +74,7 @@ npm run clean
 ### Symlink the JupyterLab 3 federated extension
 
 ```bash
+cd js
 jupyter labextension develop . --overwrite
 ```
 

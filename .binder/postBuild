@@ -7,11 +7,13 @@ jlpm build:bundles
 jlpm build:all
 popd
 
-python -m pip install -e . --no-deps --ignore-installed
+python -m pip install -vv -e . --no-deps --ignore-installed
 python -m pip check
 
 # install labextension
+pushd js
 jupyter labextension develop . --overwrite
+popd
 
 # validate
 jupyter nbextension list
