@@ -33,4 +33,4 @@ dependencies:
   - nbsphinx >=0.2.13
   - nbsphinx-link
   - sphinx >=1.5
-  - sphinx-rtd-theme
+  - sphinx_rtd_theme
