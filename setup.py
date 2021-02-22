@@ -15,9 +15,6 @@ from setupbase import (
 )
 import setuptools
 
-
-LONG_DESCRIPTION = 'A Python/ThreeJS bridge utilizing the Jupyter widget infrastructure.'
-
 name = 'pythreejs'
 py_path = (HERE / name)
 js_path = (HERE / "js")
@@ -57,9 +54,13 @@ cmdclass['js'] = combine_commands(
 setup_args = {
     'name': name,
     'version': version,
-    'description': 'Interactive 3d graphics for the Jupyter notebook, using Three.js from Jupyter interactive widgets.',
-    'long_description': LONG_DESCRIPTION,
-    'license': 'BSD',
+    'description': (
+        'Interactive 3D graphics for the Jupyter Notebook and JupyterLab, '
+        'using Three.js and Jupyter Widgets.'
+    ),
+    'long_description': (HERE / "README.md").read_text(encoding="utf-8"),
+    'long_description_content_type': 'text/markdown',
+    'license': 'BSD-3-Clause',
     'include_package_data': True,
     'install_requires': [
         'ipywidgets>=7.2.1',
