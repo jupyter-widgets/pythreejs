@@ -13,7 +13,11 @@ popd
 python setup.py sdist
 
 pushd dist
-python -m pip install -v pythreejs*.tar.gz --no-deps --ignore-installed
+python -m pip install \
+    -v \
+    --no-deps \
+    --no-build-isolation \
+    pythreejs*.tar.gz
 popd
 
 # build docs
