@@ -1,5 +1,6 @@
 # pythreejs
 
+[![Interactive demo on Binder][binder-badge]][binder]
 [![Install from PyPI][pypi-badge]][pypi]
 [![Install from conda-forge][cf-badge]][cf]
 [![Documentation Status][docs-badge]][docs]
@@ -7,6 +8,8 @@
 
 A Python / ThreeJS bridge for [Jupyter Widgets][widgets].
 
+[binder-badge]: https://mybinder.org/badge_logo.svg
+[binder]: https://mybinder.org/v2/gh/jupyter-widgets/pythreejs/HEAD?urlpath=lab%2Ftree%2Fexamples%2FExamples.ipynb
 [pypi-badge]: https://img.shields.io/pypi/v/pythreejs?logo=pypi
 [pypi]: https://pypi.org/project/pythreejs
 [cf-badge]: https://img.shields.io/conda/vn/conda-forge/pythreejs?logo=conda-forge

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -eux
+
+pushd js
+jlpm --ignore-optional
+jlpm build:bundles
+jlpm build:all
+popd
+
+python -m pip install -e . --no-deps --ignore-installed
+python -m pip check
+
+# install labextension
+jupyter labextension develop . --overwrite
+
+# validate
+jupyter nbextension list
+jupyter labextension list

@@ -1,0 +1,24 @@
+name: pythreejs
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  # runtimes
+  - python >=3.6
+  - nodejs >=12
+  # dependencies
+  - ipydatawidgets >=1.1.1
+  - ipywidgets >=7.2.1
+  - numpy >=1.14
+  # clients
+  - jupyterlab >=3,<4
+  - jupyterlab-classic
+  # dev
+  - nbval
+  - pytest-check-links
+  # examples
+  - ipympl
+  - ipywebrtc
+  - matplotlib-base
+  - scikit-image
+  - scipy
