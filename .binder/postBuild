@@ -1,13 +1,25 @@
 #!/usr/bin/env bash
 set -eux
 
+export PIP_DISABLE_PIP_VERSION_CHECK=1
+export PYTHONUNBUFFERED=1
+export PYTHONIOENCODING=utf-8
+
 pushd js
 jlpm --ignore-optional
 popd
 
+# install and validate python environment
 python setup.py sdist
-python -m pip install -v dist/pythreejs*.tar.gz --no-deps --ignore-installed
+python -m pip install -v dist/pythreejs*.tar.gz
+python -m pip install -e .[test,examples,docs] --ignore-installed
+python -m pip check || echo "uh oh"
 
-# validate
+# build docs
+pushd docs
+make html
+popd
+
+# validate extensions
 jupyter nbextension list
 jupyter labextension list

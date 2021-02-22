@@ -1,8 +1,10 @@
-name: pythreejs
+name: pythreejs-binder
+
 channels:
   - conda-forge
   - nodefaults
-dependencies:
+
+  dependencies:
   # runtimes
   - nodejs >=12,!=13,<15  # prefer LTS
   - pip
@@ -27,3 +29,8 @@ dependencies:
   - matplotlib-base
   - scikit-image
   - scipy
+  # docs
+  - nbsphinx >=0.2.13
+  - nbsphinx-link
+  - sphinx >=1.5
+  - sphinx-rtd-theme
