@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 from pathlib import Path
 
+HERE = Path(__file__).parent.resolve()
+
+import setupbase
+
 from setupbase import (
     log,
     create_cmdclass,
@@ -14,7 +18,6 @@ import setuptools
 
 LONG_DESCRIPTION = 'A Python/ThreeJS bridge utilizing the Jupyter widget infrastructure.'
 
-HERE = Path(__file__).parent.resolve()
 name = 'pythreejs'
 py_path = (HERE / name)
 js_path = (HERE / "js")
