@@ -7,8 +7,14 @@ from sphinx.ext.autodoc import ClassDocumenter, AttributeDocumenter
 
 
 def dict_info(trait):
-    trait_base = trait._trait
-    traits = trait._traits
+    try:
+        trait_base = trait._value_trait
+    except AttributeError:
+        trait_base = trait._trait
+    try:
+        traits = trait._per_key_traits
+    except AttributeError:
+        traits = trait._traits
 
     if traits is None and (trait_base is None or isinstance(trait_base, Any)):
         value_string = 'elements of any type'
