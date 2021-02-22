@@ -9,6 +9,7 @@ dependencies:
   - pip
   - wheel
   - setuptools
+  - yarn <2
   # dependencies
   - ipydatawidgets >=1.1.1
   - ipywidgets >=7.2.1
