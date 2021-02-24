@@ -40,22 +40,7 @@ or
 conda install -c conda-forge pythreejs
 ```
 
-## Development Install
-
-### Prerequisites
-
-- [nodejs](http://nodejs.org/)
-
-```bash
-npm install --save jupyter-threejs
-```
-
-`yarn`, or the JupyterLab-bundled version `jlpm`, may be also be used.
-
-```bash
-yarn add jupyter-threejs
-jlpm add jupyter-threejs
-```
+## Development
 
 For more information, see the [contributing guide][contributing].
 
