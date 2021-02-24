@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -eux
+
+export PIP_DISABLE_PIP_VERSION_CHECK=1
+export PYTHONUNBUFFERED=1
+export PYTHONIOENCODING=utf-8
+
+pushd js
+jlpm --ignore-optional
+popd
+
+# build distribution
+python setup.py sdist
+
+pushd dist
+python -m pip install \
+    -v \
+    --no-deps \
+    --no-build-isolation \
+    pythreejs*.tar.gz
+popd
+
+# build docs
+pushd docs
+make html
+popd
+
+# validate extensions
+jupyter nbextension list
+jupyter labextension list
+python -m pip check || echo "uh oh"

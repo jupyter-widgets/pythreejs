@@ -35,4 +35,5 @@ docs/source/examples/img
 
 js/lab-dist
 js/package-lock.json
+js/yarn.lock
 pythreejs/labextension

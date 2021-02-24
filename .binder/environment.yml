@@ -1,0 +1,36 @@
+name: pythreejs-binder
+
+channels:
+  - conda-forge
+  - nodefaults
+
+dependencies:
+  # runtimes
+  - nodejs >=12,!=13,<15  # prefer LTS
+  - pip
+  - python >=3.6,<3.10
+  - yarn <2
+  # packaging dependencies
+  - wheel
+  - setuptools
+  # dependencies
+  - ipydatawidgets >=1.1.1
+  - ipywidgets >=7.2.1
+  - numpy >=1.14
+  # clients
+  - jupyterlab >=3,<4
+  - jupyterlab-classic
+  # dev
+  - nbval
+  - pytest-check-links
+  # examples
+  - ipympl
+  - ipywebrtc
+  - matplotlib-base
+  - scikit-image
+  - scipy
+  # docs
+  - nbsphinx >=0.2.13
+  - nbsphinx-link
+  - sphinx >=1.5
+  - sphinx_rtd_theme

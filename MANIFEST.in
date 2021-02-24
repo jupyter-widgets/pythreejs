@@ -9,6 +9,9 @@ include screencast.gif
 graft docs
 exclude docs/\#*
 
+# demo
+exclude .binder
+
 # docs subdirs we want to skip
 prune docs/build
 prune docs/dist
