@@ -39,7 +39,6 @@ module.exports = [
             library: "jupyter-threejs",
             libraryTarget: 'amd'
         },
-        devtool: 'source-map',
         externals: ['@jupyter-widgets/base'],
         resolve: {
             extensions: [ ".autogen.js", ".js" ]
