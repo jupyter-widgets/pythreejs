@@ -1,6 +1,6 @@
 type: sphinx
 python:
-  version: 3.5
+  version: 3.9
   pip_install: true
   extra_requirements:
     - examples
