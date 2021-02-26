@@ -590,12 +590,15 @@ function writeJavascriptIndexFiles() {
 
     console.log('Writing javascript indices...');
 
+    const dotSlash = '.' + path.sep;
+
     const excludes = [
         /\.swp$/,
         /\.DS_Store$/,
         /index\.js$/,
-        './embed.js',
-        './extension.js',
+        dotSlash + 'embed.js',
+        dotSlash + 'extension.js',
+        dotSlash + path.join('examples', '.eslintrc.js'),
     ];
 
     // Regexp's
@@ -610,7 +613,7 @@ function writeJavascriptIndexFiles() {
 
         // get proper relative path for file
         dirFiles = dirFiles.map(filename => {
-            return './' + path.join(dirPath, filename);
+            return dotSlash + path.join(dirPath, filename);
         });
 
         // filter excluded files
