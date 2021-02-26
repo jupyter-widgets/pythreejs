@@ -4,6 +4,7 @@ include setupbase.py
 
 include pytest.ini
 include screencast.gif
+include CONTRIBUTING.md
 
 # Documentation
 graft docs
