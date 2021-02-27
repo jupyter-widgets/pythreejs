@@ -56,22 +56,23 @@ class BaseType {
 }
 
 function genInstanceTraitlet(typeName, nullable, args, kwargs, tagParts) {
+    let traitType = 'Instance';
     const nullableStr = `allow_none=${nullable === true ? 'True' : 'False'}`;
     tagParts = tagParts.concat(['**widget_serialization']);
     const tagStr = `.tag(${tagParts.join(', ')})`;
     // allow type unions
     if (typeName instanceof Array) {
         const instances = typeName.map(function(tname) {
-            return `        Instance(${tname}, ${nullableStr})`;
+            return `        ${traitType}(${tname}, ${nullableStr})`;
         });
-        return `Union([\n${instances.join(',\n')}\n    ])${tagStr}`;
+        return `Union([\n${instances.join(',\n')}\n    ], ${nullableStr})${tagStr}`;
     }
 
     if (typeName.toLowerCase() === 'this') {
         return `This()${tagStr}`;
     }
 
-    let ret = `Instance(${typeName}`;
+    let ret = `${traitType}(${typeName}`;
     if (args !== undefined) {
         ret += `, args=${args}`;
     }
@@ -170,20 +171,17 @@ class ThreeTypeArray extends BaseType {
         return super.getTagParts().concat(['**widget_serialization']);
     }
     getTraitlet() {
-        let baseType = 'Tuple()';
+        const nullableStr = this.getNullableStr();
+        let baseType = 'Instance(' + this.typeName + ')' + this.getTagString();
+        if (this.typeName == 'this') {
+            baseType = 'This()' + this.getTagString();
+        }
+
         if (this.allow_single) {
-            if (this.typeName === 'this') {
-                baseType = 'Union([This, ' + baseType + '])';
-            } else {
-                baseType = 'Union([Instance(' + this.typeName + '), ' + baseType + '])';
-            }
+            return 'Union([' + baseType + ', List(trait=' + baseType + ', default_value=[])])';
+        } else {
+            return 'List(trait=' + baseType + ', default_value=[])';
         }
-        if (this.typeName === 'this') {
-            // return 'List(trait=This(), default_value=[]).tag(sync=True, **widget_serialization)';
-            return baseType + this.getTagString();
-        }
-        // return 'List(trait=Instance(' + this.typeName + ')).tag(sync=True, **widget_serialization)';
-        return baseType + this.getTagString();
     }
     getPropArrayName() {
         return 'three_nested_properties';

@@ -28,6 +28,7 @@ const JS_AUTOGEN_EXT = '.' + AUTOGEN_EXT + '.js';
  * three.js library.
  */
 const CUSTOM_CLASSES = [
+    'assets/GLTFAsset.js',
     'textures/ImageTexture.js',
     'textures/TextTexture.js',
     'cameras/CombinedCamera.js',
