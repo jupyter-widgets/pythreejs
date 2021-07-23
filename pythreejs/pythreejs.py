@@ -78,7 +78,7 @@ class SurfaceGeometry(BufferGeometry):
         x = np.linspace(-self.width/2, self.width/2, nx)
         y = np.linspace(-self.height/2, self.height/2, ny)
         xx, yy = np.meshgrid(x, y)
-        z = np.array(self.z).reshape((nx, ny))
+        z = np.array(self.z).reshape(xx.shape)
 
         positions = np.dstack((xx, yy, z)).reshape(nx * ny, 3).astype(np.float32)
 
