@@ -430,8 +430,9 @@ var RenderableView = widgets.DOMWidgetView.extend({
     },
 
     freeze: function() {
+        this.log('This is a long message!');
         if (this.isFrozen) {
-            this.log('already frozen...');
+            this.log('This really should log correctly already frozen...');
             return;
         }
 

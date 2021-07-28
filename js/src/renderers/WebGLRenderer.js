@@ -33,7 +33,6 @@ var WebGLRendererView = RenderableView.extend({
 
     //
     // Backbone methods
-    //
 
     lazyRendererSetup: function() {
         // Only do setup when widget is being shown

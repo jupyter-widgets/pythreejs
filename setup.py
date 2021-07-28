@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 from pathlib import Path
 
+import site
+import sys
+site.ENABLE_USER_SITE = "--user" in sys.argv[1:]
+
 HERE = Path(__file__).parent.resolve()
 
 import setupbase
