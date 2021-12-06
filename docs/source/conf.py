@@ -213,7 +213,7 @@ def setup(app):
         for fname in ['jupyter-threejs.js']:
             if not os.path.exists(os.path.join(here, '_static', fname)):
                 logger.warn('missing javascript file: %s' % fname)
-            app.add_javascript(fname)
+            app.add_js_file(fname)
 
     def add_images(app):
         # TODO: Add all images automatically by dir
