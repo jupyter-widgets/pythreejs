@@ -19,6 +19,8 @@ A full development environment will require:
   ```bash
   conda install -c conda-forge 'nodejs>=12'
   ```
+  Or, if you're outside of a conda enviornment, use the node version manager.  See
+  [install nvm](https://github.com/nvm-sh/nvm#install--update-script).
 
 ## Development Tasks
 
@@ -56,6 +58,12 @@ npm run autogen
 cd js
 npm run build:all
 jupyter nbextension install --py --symlink --sys-prefix pythreejs
+```
+
+Or alternatively as a user local installation:
+
+```bash
+jupyter nbextension install --py --symlink --user pythreejs
 ```
 
 ### Build the python distributions
