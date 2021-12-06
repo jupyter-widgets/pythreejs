@@ -22,10 +22,11 @@ var DataTextureModel = DataTextureBase.extend({
         }
         var data = this.convertArrayBufferModelToThree(rawData, 'data');
 
+        // ipydatawidgets uses row-major storage, so "flip" axes dims here:
         return {
             data: data,
-            width: rawData.shape[0],
-            height: rawData.shape[1],
+            width: rawData.shape[1],
+            height: rawData.shape[0],
         };
     },
 
@@ -75,9 +76,10 @@ var DataTextureModel = DataTextureBase.extend({
             var rawData = dataserializers.getArray(modelNDArray);
             rawData.data.set(imageRecord.data);
         } else {
+            // ipydatawidgets uses row-major storage, so "flip" axes dims here:
             this.set('data', ndarray(
                 imageRecord.data,
-                [imageRecord.width, imageRecord.height]
+                [imageRecord.height, imageRecord.width]
             ));
         }
     },
