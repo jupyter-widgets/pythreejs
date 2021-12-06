@@ -199,7 +199,7 @@ jobs:
       # explicit file installs don't support extras, skimage brings most along
       run: |
         set -eux
-        ${{ matrix.py_cmd }} -m pip install -vv nbval scikit-image ipywebrtc pytest-cov codecov
+        ${{ matrix.py_cmd }} -m pip install -vv nbval scikit-image ipywebrtc pytest-cov codecov matplotlib
     - name: Run python tests
       # remove the source directory to avoid surprises
       run: |
