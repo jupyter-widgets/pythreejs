@@ -44,7 +44,7 @@ def grid_indices_gen(nx, ny):
     """
     for x in range(nx - 1):
         for y in range(ny - 1):
-            root = x + y * ny
+            root = x + y * nx
             yield (root, root + 1, root + nx)
             yield (root + nx, root + 1, root + nx + 1)
 
