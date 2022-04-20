@@ -72,6 +72,9 @@ setup_args = {
             'nbval',
             'pytest-check-links',
             'numpy>=1.14',
+            'matplotlib',
+            'ipywebrtc',
+            'scikit-image',
         ],
         'examples': [
             'scipy',
