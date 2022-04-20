@@ -42,3 +42,8 @@ class WebGLRenderer(RenderableWidget):
         }
         self.send(content)
 
+    def resize(self):
+        content = {
+            "type": "resize"
+        }
+        self.send(content)

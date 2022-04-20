@@ -60,6 +60,12 @@ class Renderer(RenderableWidget):
         }
         self.send(content)
 
+    def resize(self):
+        content = {
+            "type": "resize"
+        }
+        self.send(content)
+
     @contextmanager
     def hold(self):
         self._pause_autorender = True

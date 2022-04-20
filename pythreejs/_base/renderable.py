@@ -55,7 +55,7 @@ class RenderableWidget(DOMWidget):
 
     def log(self, msg):
         content = {
-            'type': 'print',
+            'type': 'log',
             'msg': msg
         }
         self.send(content=content, buffers=None)
@@ -63,6 +63,12 @@ class RenderableWidget(DOMWidget):
     def freeze(self):
         content = {
             "type": "freeze"
+        }
+        self.send(content)
+
+    def resize(self):
+        content = {
+            "type": "resize"
         }
         self.send(content)
 

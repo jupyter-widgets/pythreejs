@@ -454,6 +454,29 @@ var RenderableView = widgets.DOMWidgetView.extend({
 
     },
 
+    // resize the renderer
+    resize: function() {
+        const { width, height } = this.el.getBoundingClientRect();
+        this.renderer.setSize(width, height);
+
+        this.camera.aspect = width / height;
+        this.camera.updateProjectionMatrix();
+
+        // if (this.controls) {
+        //     try {
+        //         this.controls.handleResize();
+        //         this.controls.screen.width = width;
+        //         this.controls.screen.height = height;
+        //     } catch (error) {
+        //         this.log("unable to update controls");
+        //         this.log(error);
+        //     }
+        // }
+
+        // finally render
+        this.render()
+    },
+
     teardownViewer: function() {
 
         this.$renderer.off('mouseenter');
@@ -494,10 +517,14 @@ var RenderableView = widgets.DOMWidgetView.extend({
         });
     },
 
+    // Permit custom calls from pythreejs
     onCustomMessage: function(content, buffers) {
         switch(content.type) {
         case 'freeze':
             this.freeze();
+            break;
+        case 'resize':
+            this.resize();
             break;
         default:
         }
