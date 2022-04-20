@@ -55,6 +55,8 @@ var RenderableModel = widgets.DOMWidgetModel.extend({
 
         this.createPropertiesArrays();
         ThreeModel.prototype.setupListeners.call(this);
+
+        window.addEventListener('resize', this.resize, false);
     },
 
     createPropertiesArrays: function() {
@@ -204,6 +206,9 @@ var RenderableView = widgets.DOMWidgetView.extend({
             break;
         case 'before-detach':
             this.el.removeEventListener('contextmenu', this, true);
+            break;
+        case 'resize':
+            this.resize();
             break;
         }
     },
