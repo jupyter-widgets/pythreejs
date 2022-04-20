@@ -55,7 +55,7 @@ class RenderableWidget(DOMWidget):
 
     def log(self, msg):
         content = {
-            'type': 'log',
+            'type': 'print',
             'msg': msg
         }
         self.send(content=content, buffers=None)
