@@ -1,4 +1,5 @@
 *.egg-info/
+.venv/
 .ipynb_checkpoints/
 .tern-project
 npm-debug.log
@@ -27,6 +28,7 @@ docs/source/api/**/index.rst
 .coverage
 .cache
 htmlcov/
+*.done
 
 
 docs/source/_static/jupyter-threejs.js
