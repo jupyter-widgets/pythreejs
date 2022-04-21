@@ -1985,6 +1985,17 @@ module.exports = {
         todo: true,
         relativePath: './extras/objects/ImmediateRenderObject',
     },
+    PMREMGenerator: {
+        relativePath: './extras/PMREMGenerator',
+        superClass: 'Object3D',
+        properties: {
+            scene:          new Types.ThreeType('Scene'),
+            sigma:          new Types.Float(0.0),
+            near:           new Types.Float(0.0),
+            near:           new Types.Float(100),
+        },
+        constructorArgs: ['object', 'size', 'color', 'linewidth'],
+    },    
     // TODO:
     CubicInterpolant: {
         todo: true,
