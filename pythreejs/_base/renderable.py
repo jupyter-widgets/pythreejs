@@ -23,6 +23,7 @@ class RenderableWidget(DOMWidget):
     _alpha = Bool(False).tag(sync=True)
     _webgl_version = Int(2).tag(sync=True)
 
+    autoResize = Bool(False).tag(sync=True)
     autoClear = Bool(True).tag(sync=True)
     autoClearColor = Bool(True).tag(sync=True)
     autoClearDepth = Bool(True).tag(sync=True)
@@ -63,12 +64,6 @@ class RenderableWidget(DOMWidget):
     def freeze(self):
         content = {
             "type": "freeze"
-        }
-        self.send(content)
-
-    def resize(self):
-        content = {
-            "type": "resize"
         }
         self.send(content)
 

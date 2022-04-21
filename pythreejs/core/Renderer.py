@@ -5,7 +5,7 @@ import six
 from contextlib import contextmanager
 from ipywidgets import widget_serialization
 from traitlets import (
-    Unicode, CInt, Instance, Float, Tuple, Undefined, link)
+    Unicode, CInt, Instance, Float, Tuple, Undefined, link, Bool)
 
 from ..traits import *
 
@@ -27,6 +27,7 @@ class Renderer(RenderableWidget):
 
     width = CInt(200)
     height = CInt(200)
+
     scene = Instance(Scene).tag(sync=True, **widget_serialization)
     camera = Instance(Camera).tag(sync=True, **widget_serialization)
     controls = List(Instance(Controls)).tag(sync=True, **widget_serialization)
@@ -34,7 +35,7 @@ class Renderer(RenderableWidget):
     background = Color('black', allow_none=True).tag(sync=True)
     background_opacity = Float(1.0, min=0.0, max=1.0).tag(sync=True)
 
-    def __init__(self, scene, camera, controls=None, antialias=False, alpha=False, webgl_version=2, **kwargs):
+    def __init__(self, scene, camera, controls=None, antialias=False, alpha=False, webgl_version=2, auto_resize=False, **kwargs):
         super(Renderer, self).__init__(
             scene=scene,
             camera=camera,
@@ -42,9 +43,11 @@ class Renderer(RenderableWidget):
             _antialias=antialias,
             _alpha=alpha,
             _webgl_version=webgl_version,
+            auto_resize=False,
             **kwargs)
         link((self, 'width'), (self, '_width'))
         link((self, 'height'), (self, '_height'))
+        self.autoResize = auto_resize
 
     def render(self, scene, camera):
         content = {
@@ -57,12 +60,6 @@ class Renderer(RenderableWidget):
     def freeze(self):
         content = {
             "type": "freeze"
-        }
-        self.send(content)
-
-    def resize(self):
-        content = {
-            "type": "resize"
         }
         self.send(content)
 

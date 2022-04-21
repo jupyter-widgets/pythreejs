@@ -1,5 +1,5 @@
 from ipywidgets import widget_serialization
-from traitlets import Unicode, CInt, link
+from traitlets import Unicode, CInt, link, Bool
 
 from .._base.renderable import RenderableWidget
 
@@ -18,6 +18,7 @@ class WebGLRenderer(RenderableWidget):
 
     width = CInt(200)
     height = CInt(200)
+    autoResize = Bool(False)
 
     def __init__(self, antialias=False, alpha=False, webgl_version=2, **kwargs):
         super(WebGLRenderer, self).__init__(
@@ -39,11 +40,5 @@ class WebGLRenderer(RenderableWidget):
     def freeze(self):
         content = {
             "type": "freeze"
-        }
-        self.send(content)
-
-    def resize(self):
-        content = {
-            "type": "resize"
         }
         self.send(content)

@@ -2,6 +2,7 @@ var _ = require('underscore');
 var widgets = require('@jupyter-widgets/base');
 var $ = require('jquery');
 var Promise = require('bluebird');
+var THREE = require('three');
 
 var pkgName = require('../../package.json').name;
 var EXTENSION_SPEC_VERSION = require('../version').EXTENSION_SPEC_VERSION;
@@ -56,7 +57,6 @@ var RenderableModel = widgets.DOMWidgetModel.extend({
         this.createPropertiesArrays();
         ThreeModel.prototype.setupListeners.call(this);
 
-        window.addEventListener('resize', this.resize, false);
     },
 
     createPropertiesArrays: function() {
@@ -187,6 +187,9 @@ var RenderableView = widgets.DOMWidgetView.extend({
         this.isFrozen = true;
         this.id = Math.floor(Math.random() * 1000000);
         this._ticking = false;
+        if (this.model.get('autoResize')) {
+            window.addEventListener('resize', this.resize.bind(this), false);
+        }
     },
 
     remove: function() {
@@ -198,6 +201,7 @@ var RenderableView = widgets.DOMWidgetView.extend({
         }
     },
 
+    // This allows dynamic messages from jupyterlab
     processPhosphorMessage: function(msg) {
         widgets.DOMWidgetView.prototype.processPhosphorMessage.call(this, msg);
         switch (msg.type) {
@@ -208,7 +212,9 @@ var RenderableView = widgets.DOMWidgetView.extend({
             this.el.removeEventListener('contextmenu', this, true);
             break;
         case 'resize':
-            this.resize();
+            if (this.model.get('autoResize')) {
+                this.resize();
+            }
             break;
         }
     },
@@ -245,7 +251,6 @@ var RenderableView = widgets.DOMWidgetView.extend({
 
     doRender: function() {
         this.el.className = 'jupyter-widget jupyter-threejs';
-
         this.unfreeze();
 
         this.lazyRendererSetup();
@@ -459,27 +464,36 @@ var RenderableView = widgets.DOMWidgetView.extend({
 
     },
 
+    // Get the size of the container, or if that doesn't exist, the window
+    getSize: function() {
+        try {
+            const { width, height } = this.el.getBoundingClientRect();
+            console.log("bounding client size");
+            return [width, height];
+        } catch (error) {
+            // Not using a container for the renderer
+            console.log("Window size");
+            return [window.innerWidth, window.innerHeight]
+        }
+    },
+
     // resize the renderer
     resize: function() {
-        const { width, height } = this.el.getBoundingClientRect();
-        this.renderer.setSize(width, height);
+        let size = this.getSize();
+        const width = size[0],
+              height = size[1];
 
+        if (width === 0){
+            return;
+        }
+        this.renderer.setSize(width, height - 4.4);  // Seems to grow by 4.4 px on each resize
         this.camera.aspect = width / height;
         this.camera.updateProjectionMatrix();
 
-        // if (this.controls) {
-        //     try {
-        //         this.controls.handleResize();
-        //         this.controls.screen.width = width;
-        //         this.controls.screen.height = height;
-        //     } catch (error) {
-        //         this.log("unable to update controls");
-        //         this.log(error);
-        //     }
-        // }
-
-        // finally render
-        this.render()
+        // finally render if not frozen
+        if (!this.isFrozen) {
+            this.render()
+        }
     },
 
     teardownViewer: function() {
