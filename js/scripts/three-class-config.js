@@ -1250,7 +1250,7 @@ module.exports = {
             fog: new Types.ThreeType(['Fog', 'FogExp2']),
             overrideMaterial: new Types.ThreeType('Material'),
             autoUpdate: new Types.Bool(true),
-            background: new Types.Color(null, {nullable: true}),
+            background: new Types.ThreeType(),
         },
     },
     Texture: {
@@ -1291,6 +1291,7 @@ module.exports = {
         superClass: 'Texture',
         properties: {
             imagesUri: new Types.Array,
+            flipY:     new Types.Bool(false),
         },
         constructorArgs: [ 'imagesUri', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter', 'format', 'type', 'anisotropy' ],
     },
