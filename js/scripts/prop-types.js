@@ -619,6 +619,16 @@ class Euler extends BaseType {
     }
 }
 
+class SphericalHarmonics3 extends BaseType {
+    constructor(options) {
+        super(options);
+    }
+
+    getTraitlet() {
+        return `SphericalHarmonics3()${this.getTagString()}`;
+    }
+}
+
 
 module.exports = {
     ThreeType: ThreeType,
@@ -647,4 +657,5 @@ module.exports = {
     Matrix3: Matrix3,
     Matrix4: Matrix4,
     Euler: Euler,
+    SphericalHarmonics3: SphericalHarmonics3,
 };

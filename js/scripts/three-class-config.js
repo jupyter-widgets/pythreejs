@@ -518,6 +518,15 @@ module.exports = {
         },
         constructorArgs: [ 'color', 'intensity' ],
     },
+    LightProbe: {
+        relativePath: './lights/LightProbe',
+        superClass: 'Light',
+        properties: {
+            isLightProbe: new Types.Bool(true),
+            sh:           new Types.SphericalHarmonics3(),
+        },
+        constructorArgs: [ 'sh', 'intensity' ],
+    },
     LightShadow: {
         relativePath: './lights/LightShadow',
         properties: {

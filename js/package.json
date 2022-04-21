@@ -37,7 +37,7 @@
     "@jupyter-widgets/base": "^1.2.5 || ^2.0.0 || ^3.0.0 || ^4.0.0",
     "bluebird": "^3.5.5",
     "jupyter-dataserializers": "^2.2.0",
-    "three": "^0.97.0",
+    "three": "^0.110.0",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
