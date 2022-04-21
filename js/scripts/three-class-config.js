@@ -561,6 +561,14 @@ module.exports = {
         },
         constructorArgs: [ 'color', 'intensity', 'distance', 'angle', 'penumbra', 'decay' ],
     },
+    LightProbe: {
+        relativePath: './lights/LightProbe',
+        superClass: 'Light',
+        properties: {
+            intensity:    new Types.Float(1.0),
+        },
+        // constructorArgs: [ 'intensity' ],
+    },
     SpotLightShadow: {
         relativePath: './lights/SpotLightShadow',
         superClass: 'LightShadow',
@@ -585,6 +593,7 @@ module.exports = {
     },
     CubeTextureLoader: {
         relativePath: './loaders/CubeTextureLoader',
+        superClass: 'Loader',
     },
     DataTextureLoader: {
         relativePath: './loaders/DataTextureLoader',
@@ -606,6 +615,12 @@ module.exports = {
     },
     Loader: {
         relativePath: './loaders/Loader',
+        properties: {
+            path:            new Types.String(null, {nullable: true}),
+            resourcePath:    new Types.String(null, {nullable: true}),
+            crossOrigin:     new Types.String(null, {nullable: true}),
+            withCredentials: new Types.Bool(false),
+        },
     },
     LoadingManager: {
         relativePath: './loaders/LoadingManager',
@@ -1275,9 +1290,9 @@ module.exports = {
         relativePath: './textures/CubeTexture',
         superClass: 'Texture',
         properties: {
-            images: new Types.Array(),
+            imagesUri: new Types.Array,
         },
-        constructorArgs: [ 'images', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter', 'format', 'type', 'anisotropy' ],
+        constructorArgs: [ 'imagesUri', 'mapping', 'wrapS', 'wrapT', 'magFilter', 'minFilter', 'format', 'type', 'anisotropy' ],
     },
     DataTexture: {
         relativePath: './textures/DataTexture',
@@ -1986,15 +2001,12 @@ module.exports = {
         relativePath: './extras/objects/ImmediateRenderObject',
     },
     PMREMGenerator: {
-        relativePath: './extras/PMREMGenerator',
-        superClass: 'Object3D',
-        properties: {
-            scene:          new Types.ThreeType('Scene'),
-            sigma:          new Types.Float(0.0),
-            near:           new Types.Float(0.0),
-            near:           new Types.Float(100),
-        },
-        constructorArgs: ['object', 'size', 'color', 'linewidth'],
+        todo: true,
+        // relativePath: './extras/PMREMGenerator',
+        // properties: {
+        //     renderer:       new Types.ThreeType(),
+        // },
+        // constructorArgs: ['renderer'],
     },    
     // TODO:
     CubicInterpolant: {

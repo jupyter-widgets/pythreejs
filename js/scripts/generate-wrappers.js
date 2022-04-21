@@ -29,6 +29,7 @@ const JS_AUTOGEN_EXT = '.' + AUTOGEN_EXT + '.js';
  */
 const CUSTOM_CLASSES = [
     'textures/ImageTexture.js',
+    'textures/CubeTexture.js',
     'textures/TextTexture.js',
     'cameras/CombinedCamera.js',
     'controls/Controls.js',
