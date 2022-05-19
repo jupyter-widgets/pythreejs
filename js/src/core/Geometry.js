@@ -3,9 +3,9 @@ var THREE = require('three');
 var AutogenGeometryModel = require('../core/Geometry.autogen').GeometryModel;
 
 
-var GeometryModel = AutogenGeometryModel.extend({
+class GeometryModel extends AutogenGeometryModel {
 
-    constructThreeObject: function() {
+    constructThreeObject() {
 
         var result = new THREE.Geometry();
 
@@ -38,9 +38,9 @@ var GeometryModel = AutogenGeometryModel.extend({
 
         return Promise.resolve(result);
 
-    },
+    }
 
-    onChange: function(model, options) {
+    onChange(model, options) {
         if (options !== 'pushFromThree') {
             if (this.hasChanged('vertices')) {
                 this.obj.verticesNeedUpdate = true;
@@ -64,7 +64,7 @@ var GeometryModel = AutogenGeometryModel.extend({
         AutogenGeometryModel.prototype.onChange.call(this, model, options);
     }
 
-});
+}
 
 module.exports = {
     GeometryModel: GeometryModel,

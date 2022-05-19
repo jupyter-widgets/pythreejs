@@ -1,8 +1,8 @@
 var MaterialAutogen = require('./Material.autogen').MaterialModel;
 
-var MaterialModel = MaterialAutogen.extend({
+class MaterialModel extends MaterialAutogen {
 
-    onCustomMessage: function(content, buffers) {
+    onCustomMessage(content, buffers) {
         switch(content.type) {
         case 'needsUpdate':
             this.obj.needsUpdate = true;
@@ -11,9 +11,9 @@ var MaterialModel = MaterialAutogen.extend({
         default:
             MaterialAutogen.prototype.onCustomMessage.call(arguments);
         }
-    },
+    }
 
-});
+}
 
 module.exports = {
     MaterialModel: MaterialModel,

@@ -54,18 +54,18 @@ function listenNested(model, propNames, callback) {
                 return;
             }
             if (prev instanceof ThreeModel) {
-                // Implies curr is array
+                // Implies curr is array/dict
                 utils.childModelsNested(curr).forEach(function(childModel) {
                     model.listenTo(childModel, 'change', callback);
                     model.listenTo(childModel, 'childchange', callback);
                 });
             } else if (curr instanceof ThreeModel) {
-                // Implies prev is array
+                // Implies prev is array/dict
                 utils.childModelsNested(prev).forEach(function(childModel) {
                     model.stopListening(childModel);
                 });
             } else {
-                // Both are arrays
+                // Both are arrays/dicts
                 var diff = utils.nestedDiff(curr, prev);
 
                 diff.added.forEach(function(childModel) {
@@ -81,17 +81,17 @@ function listenNested(model, propNames, callback) {
 }
 
 
-var ThreeModel = widgets.WidgetModel.extend({
+class ThreeModel extends widgets.WidgetModel {
 
-    defaults: function() {
+    defaults() {
         return _.extend(widgets.WidgetModel.prototype.defaults.call(this), {
             _model_name: this.constructor.model_name,
             _model_module: this.constructor.model_module,
             _model_module_version: this.constructor.model_module_version
         });
-    },
+    }
 
-    initialize: function(attributes, options) {
+    initialize(attributes, options) {
         widgets.WidgetModel.prototype.initialize.apply(this, arguments);
 
         this.createPropertiesArrays();
@@ -139,9 +139,9 @@ var ThreeModel = widgets.WidgetModel.extend({
 
         });
 
-    },
+    }
 
-    createPropertiesArrays: function() {
+    createPropertiesArrays() {
         // initialize properties arrays
         this.three_properties = [];
         this.three_nested_properties = [];
@@ -154,9 +154,9 @@ var ThreeModel = widgets.WidgetModel.extend({
         this.property_mappers = {};
 
         this.initialized_from_three = {};
-    },
+    }
 
-    setupListeners: function() {
+    setupListeners() {
 
         // Handle changes in three instance props
         this.three_properties.forEach(function(propName) {
@@ -193,9 +193,9 @@ var ThreeModel = widgets.WidgetModel.extend({
         this.on('msg:custom', this.onCustomMessage, this);
         this.on('destroy', this.onDestroy, this);
 
-    },
+    }
 
-    processNewObj: function(obj) {
+    processNewObj(obj) {
 
         obj.ipymodelId = this.model_id; // brand that sucker
         obj.ipymodel = this;
@@ -203,9 +203,9 @@ var ThreeModel = widgets.WidgetModel.extend({
         this.obj = obj;
         return obj;
 
-    },
+    }
 
-    createUninitializedChildren: function() {
+    createUninitializedChildren() {
 
         // Get any properties to create from this side
         var uninit = _.filter(this.three_properties, function(propName) {
@@ -224,9 +224,9 @@ var ThreeModel = widgets.WidgetModel.extend({
             var modelPromise = utils.createModel(ctor, this.widget_manager, obj);
             return modelPromise;
         }, this));
-    },
+    }
 
-    createThreeObjectAsync: function() {
+    createThreeObjectAsync() {
 
         var objPromise;
 
@@ -242,27 +242,27 @@ var ThreeModel = widgets.WidgetModel.extend({
 
         return objPromise.bind(this).then(this.processNewObj);
 
-    },
+    }
 
     // Over-ride this method to customize how THREE object is created
 
-    constructThreeObject: function() {},
+    constructThreeObject() {}
 
-    onDestroy: function() {
+    onDestroy() {
         if (this.obj) {
             if (this.obj.dispose) {
                 this.obj.dispose();
             }
             delete this.obj;
         }
-    },
+    }
 
 
     //
     // Remote execution of three.js object methods
     //
 
-    onCustomMessage: function(content, buffers) {
+    onCustomMessage(content, buffers) {
         switch(content.type) {
         case 'exec_three_obj_method':
             this.onExecThreeObjMethod(content.method_name, content.args, content.buffers);
@@ -275,9 +275,9 @@ var ThreeModel = widgets.WidgetModel.extend({
         default:
             console.error('ERROR: invalid custom message', content);
         }
-    },
+    }
 
-    onExecThreeObjMethod: function(methodName, args, buffers) {
+    onExecThreeObjMethod(methodName, args, buffers) {
         console.debug('execThreeObjMethod: ' + methodName +
             '(' + args.map(JSON.stringify).join(',') + ')');
 
@@ -339,27 +339,27 @@ var ThreeModel = widgets.WidgetModel.extend({
 
         });
 
-    },
+    }
 
     //
     // Data-binding methods for syncing between model and three.js object
     //
 
-    onChange: function(model, options) {
+    onChange(model, options) {
         if (options !== 'pushFromThree') {
             this.syncToThreeObj();
             // Also sync back out any generated properties:
             this.syncToModel();
         }
-    },
+    }
 
-    onChildChanged: function(model) {
+    onChildChanged(model) {
         console.debug('child changed: ' + model.model_id);
         // Propagate up hierarchy:
         this.trigger('childchange', this);
-    },
+    }
 
-    onDataChanged: function(model, options) {
+    onDataChanged(model, options) {
         console.debug('child data changed: ' + model.model_id);
         // Treat a data widget change as if data attribute changed
         // Note: hasChanged() etc won't identify the attribute, so
@@ -367,10 +367,10 @@ var ThreeModel = widgets.WidgetModel.extend({
         this.onChange(model, options);
         // Propagate up hierarchy:
         this.trigger('childchange', this);
-    },
+    }
 
     // push data from model to three object
-    syncToThreeObj: function(force) {
+    syncToThreeObj(force) {
 
         _.each(this.property_converters, function(converterName, propName) {
             if (!force && !this.hasChanged(propName)) {
@@ -407,10 +407,10 @@ var ThreeModel = widgets.WidgetModel.extend({
 
             mapperFn.bind(this)();
         }, this);
-    },
+    }
 
     // push data from three object to model
-    syncToModel: function(syncAllProps) {
+    syncToModel(syncAllProps) {
 
         syncAllProps = syncAllProps === null ? false : syncAllProps;
 
@@ -462,20 +462,20 @@ var ThreeModel = widgets.WidgetModel.extend({
         }, this);
 
         this.save_changes();
-    },
+    }
 
     //
     // Conversions
     //
 
-    assignDirect: function(obj, key, value) {
+    assignDirect(obj, key, value) {
         obj[key] = value;
-    },
+    }
 
     /**
      * Check if array exists, if so replace content. Otherwise assign value.
      */
-    assignArray: function(obj, key, value) {
+    assignArray(obj, key, value) {
         var existing = obj[key];
         if (existing !== null && existing !== undefined) {
             // existing.splice(0, existing.length, ...value);
@@ -483,10 +483,10 @@ var ThreeModel = widgets.WidgetModel.extend({
         } else {
             obj[key] = value;
         }
-    },
+    }
 
     // Float
-    convertFloatModelToThree: function(v) {
+    convertFloatModelToThree(v) {
         if (typeof v === 'string' || v instanceof String) {
             v = v.toLowerCase();
             if (v === 'inf') {
@@ -498,9 +498,9 @@ var ThreeModel = widgets.WidgetModel.extend({
             }
         }
         return v;
-    },
+    }
 
-    convertFloatThreeToModel: function(v) {
+    convertFloatThreeToModel(v) {
         if (isFinite(v)) { // Most common first
             return v;
         } else if (isNaN(v)) {
@@ -511,30 +511,30 @@ var ThreeModel = widgets.WidgetModel.extend({
             return '-inf';
         }
         return v;
-    },
+    }
 
     // Bool
-    convertBoolModelToThree: function(v) {
+    convertBoolModelToThree(v) {
         return v;
-    },
+    }
 
-    convertBoolThreeToModel: function(v) {
+    convertBoolThreeToModel(v) {
         if (v === null) {
             return null;
         }
         // Coerce falsy/truthy:
         return !!v;
-    },
+    }
 
     // Enum
-    convertEnumModelToThree: function(e) {
+    convertEnumModelToThree(e) {
         if (e === null) {
             return null;
         }
         return THREE[e];
-    },
+    }
 
-    convertEnumThreeToModel: function(e, propName) {
+    convertEnumThreeToModel(e, propName) {
         if (e === null) {
             return null;
         }
@@ -542,10 +542,10 @@ var ThreeModel = widgets.WidgetModel.extend({
         var enumValues = Enums[enumType];
         var enumValueName = enumValues[e];
         return enumValueName;
-    },
+    }
 
     // Vectors
-    convertVectorModelToThree: function(v) {
+    convertVectorModelToThree(v) {
         var result;
         switch(v.length) {
         case 2: result = new THREE.Vector2(); break;
@@ -556,57 +556,57 @@ var ThreeModel = widgets.WidgetModel.extend({
         }
         result.fromArray(v);
         return result;
-    },
+    }
 
-    convertVectorThreeToModel: function(v) {
+    convertVectorThreeToModel(v) {
         return v.toArray();
-    },
+    }
 
-    assignVector: function(obj, key, value) {
+    assignVector(obj, key, value) {
         obj[key].copy(value);
-    },
+    }
 
     // Euler
-    convertEulerModelToThree: function(v) {
+    convertEulerModelToThree(v) {
         return new THREE.Euler().fromArray(v);
-    },
+    }
 
-    convertEulerThreeToModel: function(v) {
+    convertEulerThreeToModel(v) {
         return v.toArray();
-    },
+    }
 
-    assignEuler: function(obj, key, value) {
+    assignEuler(obj, key, value) {
         obj[key].copy(value);
-    },
+    }
 
     // Vector Array
-    convertVectorArrayModelToThree: function(varr, propName) {
+    convertVectorArrayModelToThree(varr, propName) {
         return varr.map(function(v) {
             return this.convertVectorModelToThree(v, propName);
         }, this);
-    },
+    }
 
-    convertVectorArrayThreeToModel: function(varr, propName) {
+    convertVectorArrayThreeToModel(varr, propName) {
         return varr.map(function(v) {
             return this.convertVectorThreeToModel(v, propName);
         }, this);
-    },
+    }
 
     // Color Array
-    convertColorArrayModelToThree: function(carr, propName) {
+    convertColorArrayModelToThree(carr, propName) {
         return carr.map(function(c) {
             return this.convertColorModelToThree(c, propName);
         }, this);
-    },
+    }
 
-    convertColorArrayThreeToModel: function(carr, propName) {
+    convertColorArrayThreeToModel(carr, propName) {
         return carr.map(function(c) {
             return this.convertColorThreeToModel(c, propName);
         }, this);
-    },
+    }
 
     // Faces
-    convertFaceModelToThree: function(f) {
+    convertFaceModelToThree(f) {
         var normal = f[3];
         if (normal !== undefined && normal !== null) {
             if (Array.isArray(normal) && normal.length > 0 && Array.isArray(normal[0])) {
@@ -637,9 +637,9 @@ var ThreeModel = widgets.WidgetModel.extend({
         );
 
         return result;
-    },
+    }
 
-    convertFaceThreeToModel: function(f) {
+    convertFaceThreeToModel(f) {
         return [
             f.a,
             f.b,
@@ -652,23 +652,23 @@ var ThreeModel = widgets.WidgetModel.extend({
                 : this.convertColorThreeToModel(f.color),
             f.materialIndex,
         ];
-    },
+    }
 
     // Face Array
-    convertFaceArrayModelToThree: function(farr, propName) {
+    convertFaceArrayModelToThree(farr, propName) {
         return farr.map(function(f) {
             return this.convertFaceModelToThree(f, propName);
         }, this);
-    },
+    }
 
-    convertFaceArrayThreeToModel: function(farr, propName) {
+    convertFaceArrayThreeToModel(farr, propName) {
         return farr.map(function(f) {
             return this.convertFaceThreeToModel(f, propName);
         }, this);
-    },
+    }
 
     // Matrices
-    convertMatrixModelToThree: function(m) {
+    convertMatrixModelToThree(m) {
         var result;
         switch(m.length) {
         case 9: result = new THREE.Matrix3(); break;
@@ -678,44 +678,44 @@ var ThreeModel = widgets.WidgetModel.extend({
         }
         result.fromArray(m);
         return result;
-    },
+    }
 
-    convertMatrixThreeToModel: function(m) {
+    convertMatrixThreeToModel(m) {
         return m.toArray();
-    },
+    }
 
-    assignMatrix: function(obj, key, value) {
+    assignMatrix(obj, key, value) {
         obj[key].copy(value);
-    },
+    }
 
     // Functions
-    convertFunctionModelToThree: function(fnStr) {
+    convertFunctionModelToThree(fnStr) {
         var fn;
         eval('fn = ' + fnStr);
         return fn;
-    },
+    }
 
-    convertFunctionThreeToModelToThree: function(fn) {
+    convertFunctionThreeToModelToThree(fn) {
         return fn.toString();
-    },
+    }
 
     // ThreeType
-    convertThreeTypeModelToThree: function(model) {
+    convertThreeTypeModelToThree(model) {
         if (model) {
             return model.obj;
         }
         return null;
-    },
+    }
 
-    convertThreeTypeThreeToModel: function(threeType) {
+    convertThreeTypeThreeToModel(threeType) {
         if (!threeType) {
             return threeType;
         }
         return threeType.ipymodel;
-    },
+    }
 
     // Dict
-    assignDict: function(obj, key, value) {
+    assignDict(obj, key, value) {
         if (obj[key] === value) {
             // If instance equality, do nothing.
             return;
@@ -733,64 +733,64 @@ var ThreeModel = widgets.WidgetModel.extend({
         });
         // Put in the new values
         Object.assign(obj[key], value);
-    },
+    }
 
     // ThreeTypeArray
-    convertThreeTypeArrayModelToThree: function(modelArr, propName) {
+    convertThreeTypeArrayModelToThree(modelArr, propName) {
         if (!Array.isArray(modelArr)) {
             return this.convertThreeTypeModelToThree(modelArr, propName);
         }
         return modelArr.map(function(model) {
             return this.convertThreeTypeModelToThree(model, propName);
         }, this);
-    },
+    }
 
-    convertThreeTypeArrayThreeToModel: function(threeTypeArr, propName) {
+    convertThreeTypeArrayThreeToModel(threeTypeArr, propName) {
         if (!Array.isArray(threeTypeArr)) {
             return this.convertThreeTypeThreeToModel(threeTypeArr, propName);
         }
         return threeTypeArr.map(function(threeType) {
             return this.convertThreeTypeThreeToModel(threeType, propName);
         }, this);
-    },
+    }
 
     // ThreeTypeDict
-    convertThreeTypeDictModelToThree: function(modelDict, propName) {
+    convertThreeTypeDictModelToThree(modelDict, propName) {
         return _.mapObject(modelDict, function(model) {
             return this.convertThreeTypeModelToThree(model, propName);
         }, this);
-    },
+    }
 
-    convertThreeTypeDictThreeToModel: function(threeTypeDict, propName) {
+    convertThreeTypeDictThreeToModel(threeTypeDict, propName) {
         return _.mapObject(threeTypeDict, function(threeType) {
             return this.convertThreeTypeThreeToModel(threeType, propName);
         }, this);
-    },
+    }
 
     // BufferMorphAttributes
-    convertMorphAttributesModelToThree: function(modelDict, propName) {
+    convertMorphAttributesModelToThree(modelDict, propName) {
         return _.mapObject(modelDict, function(arr) {
             return arr.map(function(model) {
                 return this.convertThreeTypeModelToThree(model, propName);
             }, this);
         }, this);
-    },
+    }
 
-    convertMorphAttributesThreeToModel: function(threeTypeDict, propName) {
+    convertMorphAttributesThreeToModel(threeTypeDict, propName) {
         return _.mapObject(threeTypeDict, function(arr) {
             return arr.map(function(model) {
                 return this.convertThreeTypeThreeToModel(model, propName);
             }, this);
         }, this);
-    },
+    }
 
     // ArrayBuffer
-    convertArrayBufferModelToThree: function(ref, propName) {
+    convertArrayBufferModelToThree(ref, propName) {
         var arr = dataserializers.getArray(ref);
         return arr && arr.data;
-    },
+    }
 
-    convertArrayBufferThreeToModel: function(arrBuffer, propName) {
+    convertArrayBufferThreeToModel(arrBuffer, propName) {
         if (arrBuffer === null) {
             return null;
         }
@@ -802,28 +802,28 @@ var ThreeModel = widgets.WidgetModel.extend({
         }
         // Never create a new widget, even if current is one
         return ndarray(arrBuffer);
-    },
+    }
 
     // Color
-    convertColorModelToThree: function(c) {
+    convertColorModelToThree(c) {
         if (c === null) {
             return null;
         }
         return new THREE.Color(c);
-    },
+    }
 
-    convertColorThreeToModel: function(c) {
+    convertColorThreeToModel(c) {
         if (c === null) {
             return null;
         }
         return '#' + c.getHexString();
-    },
+    }
 
-}, {
-    model_module: 'jupyter-threejs',
-    model_name: 'ThreeModel',
-    model_module_version: EXTENSION_SPEC_VERSION,
-});
+}
+
+ThreeModel.model_module = 'jupyter-threejs';
+ThreeModel.model_name = 'ThreeModel';
+ThreeModel.model_module_version = EXTENSION_SPEC_VERSION;
 
 module.exports = {
     ThreeModel: ThreeModel,

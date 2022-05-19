@@ -4,9 +4,9 @@ var FlyControls = require('../examples/controls/MomentumCameraControls.js').FlyC
 var FlyControlsAutogen = require('./FlyControls.autogen');
 
 
-var FlyControlsModel = FlyControlsAutogen.FlyControlsModel.extend({
+class FlyControlsModel extends FlyControlsAutogen.FlyControlsModel {
 
-    constructThreeObject: function() {
+    constructThreeObject() {
         this.clock = new THREE.Clock();
         var controlling = this.get('controlling');
         this.renderer = null;
@@ -15,9 +15,9 @@ var FlyControlsModel = FlyControlsAutogen.FlyControlsModel.extend({
         var obj = new FlyControls(controlling.obj);
         obj.dispose();  // Disconnect events, we need to (dis-)connect on freeze/thaw
         return obj;
-    },
+    }
 
-    setupListeners: function() {
+    setupListeners() {
         FlyControlsAutogen.FlyControlsModel.prototype.setupListeners.call(this);
         var that = this;
         this.obj.addEventListener('change', function() {
@@ -30,31 +30,31 @@ var FlyControlsModel = FlyControlsAutogen.FlyControlsModel.extend({
         });
         this.on('enableControl', this.onEnable, this);
         this.on('disableControl', this.onDisable, this);
-    },
+    }
 
-    onEnable: function(renderer) {
+    onEnable(renderer) {
         this.clock.start();
         this.renderer = renderer;
         this._update();
-    },
+    }
 
-    onDisable: function(renderer) {
+    onDisable(renderer) {
         this.clock.stop();
         this.renderer = null;
-    },
+    }
 
-    allowSync: function() {
+    allowSync() {
         this.syncAtWill = true;
-    },
+    }
 
-    _update: function() {
+    _update() {
         if (this.renderer !== null) {
             this.obj.update(this.clock.getDelta());
             requestAnimationFrame(this._update.bind(this));
         }
-    },
+    }
 
-    update_controlled: function() {
+    update_controlled() {
         var controlling = this.get('controlling');
         var pos = controlling.obj.position;
         var qat = controlling.obj.quaternion;
@@ -66,9 +66,9 @@ var FlyControlsModel = FlyControlsAutogen.FlyControlsModel.extend({
             'pushFromThree'
         );
         controlling.save_changes();
-    },
+    }
 
-});
+}
 
 module.exports = {
     FlyControlsModel: FlyControlsModel,

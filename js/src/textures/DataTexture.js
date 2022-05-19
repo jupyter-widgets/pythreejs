@@ -5,17 +5,17 @@ var ndarray = require('ndarray');
 var THREE = require('three');
 var DataTextureBase = require('./DataTexture.autogen').DataTextureModel;
 
-var DataTextureModel = DataTextureBase.extend({
+class DataTextureModel extends DataTextureBase {
 
-    createPropertiesArrays: function() {
+    createPropertiesArrays() {
         DataTextureBase.prototype.createPropertiesArrays.call(this);
 
         // three.js DataTexture stores the data, width, and height props together in a dict called 'image'
         this.property_mappers['DataTextureData'] = 'mapDataTextureData';
         delete this.property_converters['data'];
-    },
+    }
 
-    decodeData: function() {
+    decodeData() {
         var rawData = dataserializers.getArray(this.get('data'));
         if (rawData.dimension < 2 || rawData.dimension > 3) {
             throw Error('DataTexture data dimensions need to be 2 or 3, got:', rawData.dimension);
@@ -28,9 +28,9 @@ var DataTextureModel = DataTextureBase.extend({
             width: rawData.shape[1],
             height: rawData.shape[0],
         };
-    },
+    }
 
-    constructThreeObject: function() {
+    constructThreeObject() {
         var data = this.decodeData();
 
         // Make a copy of buffer
@@ -53,10 +53,10 @@ var DataTextureModel = DataTextureBase.extend({
         result.needsUpdate = true;
         return Promise.resolve(result);
 
-    },
+    }
 
 
-    mapDataTextureDataModelToThree: function() {
+    mapDataTextureDataModelToThree() {
         var imageRecord = this.obj.image;
         var data = this.decodeData();
         if (imageRecord.width !== data.width ||
@@ -67,9 +67,9 @@ var DataTextureModel = DataTextureBase.extend({
         this.obj.image.data.set(data.data);
         this.obj.needsUpdate = true;
         this.set({ version: this.obj.version }, 'pushFromThree');
-    },
+    }
 
-    mapDataTextureDataThreeToModel: function() {
+    mapDataTextureDataThreeToModel() {
         var imageRecord = this.obj.image;
         var modelNDArray = this.get('data');
         if (modelNDArray) {
@@ -82,13 +82,15 @@ var DataTextureModel = DataTextureBase.extend({
                 [imageRecord.height, imageRecord.width]
             ));
         }
-    },
+    }
 
-}, {
-    serializers: _.extend({
-        data: dataserializers.data_union_serialization,
-    }, DataTextureBase.serializers),
-});
+}
+
+
+DataTextureModel.serializers = {
+    ...DataTextureBase.serializers,
+    data: dataserializers.data_union_serialization,
+};
 
 module.exports = {
     DataTextureModel: DataTextureModel,

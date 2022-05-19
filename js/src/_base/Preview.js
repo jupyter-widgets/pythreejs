@@ -13,23 +13,23 @@ var unpackThreeModel = require('./serializers').unpackThreeModel;
 var BLACK = new THREE.Color('black');
 
 
-var PreviewView = RenderableView.extend({
+class PreviewView extends RenderableView {
 
-    initialize: function() {
+    initialize() {
         RenderableView.prototype.initialize.apply(this, arguments);
 
         this._resetCameraNeeded = true;
         this._rebuildNeeded = true;
 
-    },
+    }
 
-    render: function() {
+    render() {
         // ensure that model is fully initialized before attempting render
         return this.model.initPromise.bind(this).then(this.doRender);
-    },
+    }
 
 
-    setupEventListeners: function() {
+    setupEventListeners() {
         RenderableView.prototype.setupEventListeners.call(this);
         var child = this.model.get('child');
         this.listenTo(child, 'change', this.onChildChanged.bind(this));
@@ -38,17 +38,17 @@ var PreviewView = RenderableView.extend({
             // any nested change instead of just rerendering.
             this.listenTo(child, 'childchange', this.onChildChanged.bind(this));
         }
-    },
+    }
 
-    onChildChanged: function() {
+    onChildChanged() {
         // Enabling this line will reset the camera
         // when any changes are made to the child
         //this._resetCameraNeeded = true;
 
         this._rebuildNeeded = true;
-    },
+    }
 
-    constructScene: function() {
+    constructScene() {
 
         var obj = this.model.get('child').obj;
 
@@ -131,9 +131,9 @@ var PreviewView = RenderableView.extend({
         // Clear at end to ensure that any changes to obj does not
         // cause infinite rebuild chain.
         this._rebuildNeeded = false;
-    },
+    }
 
-    resetCamera: function() {
+    resetCamera() {
         // Compute bounding sphere for entire scene
         var sphere = utils.computeBoundingSphere(this.scene);
         if (sphere === null) {
@@ -152,14 +152,14 @@ var PreviewView = RenderableView.extend({
         // Position light up to the left and behind camera
         var dist = 2.5 * (this.camera.position.z - sphere.center.z);
         this.pointLight.position.set(-dist, dist, dist);
-    },
+    }
 
-    clearScene: function() {
+    clearScene() {
         // this.controls.reset();
         this.scene.remove.apply(this.scene, this.scene.children.slice());
-    },
+    }
 
-    setupControls: function() {
+    setupControls() {
         // Allow user to inspect object with mouse/scrollwheel
         this.debug('setting up controls');
         var control = new OrbitControls(this.camera, this.renderer.domElement);
@@ -168,9 +168,9 @@ var PreviewView = RenderableView.extend({
         control.target.set(0, 0, 0);
         control.update();
         this.controls = [control];
-    },
+    }
 
-    lazyRendererSetup: function() {
+    lazyRendererSetup() {
         this.camera = new THREE.PerspectiveCamera(60, 1.0);
         // aspect is updated by this.updateSize()
         // position and lookat target is updated to fit scene
@@ -194,9 +194,9 @@ var PreviewView = RenderableView.extend({
         this.enableControls();
 
         this.renderScene();
-    },
+    }
 
-    renderScene: function() {
+    renderScene() {
         this.debug('renderScene');
 
         if (this.isFrozen) {
@@ -220,9 +220,9 @@ var PreviewView = RenderableView.extend({
         if (this.scene.ipymodel) {
             this.scene.ipymodel.trigger('afterRender', this.scene, this.renderer, this.camera);
         }
-    },
+    }
 
-    updateSize: function() {
+    updateSize() {
         RenderableView.prototype.updateSize.call(this);
         if (this.camera) {
             var width = this.model.get('_width');
@@ -230,14 +230,14 @@ var PreviewView = RenderableView.extend({
             this.camera.aspect = width / height;
             this.camera.updateProjectionMatrix();
         }
-    },
+    }
 
-});
+}
 
 
-var PreviewModel = RenderableModel.extend({
+class PreviewModel extends RenderableModel {
 
-    defaults: function() {
+    defaults() {
         return _.extend(RenderableModel.prototype.defaults.call(this), {
             _model_name: 'PreviewModel',
             _view_name: 'PreviewView',
@@ -246,34 +246,33 @@ var PreviewModel = RenderableModel.extend({
             _wire: false,
             child: null,
         });
-    },
+    }
 
-    initialize: function(attributes, options) {
+    initialize(attributes, options) {
         RenderableModel.prototype.initialize.apply(this, arguments);
 
         // Don't listen to child until it is finished it's setup
         this.initPromise = this.get('child').initPromise.bind(this).then(function() {
             this.setupListeners();
         });
-    },
+    }
 
-    setupListeners: function() {
+    setupListeners() {
         var child = this.get('child');
         this.listenTo(child, 'change', this.onChildChanged.bind(this));
         this.listenTo(child, 'childchange', this.onChildChanged.bind(this));
-    },
+    }
 
-    onChildChanged: function(model, options) {
+    onChildChanged(model, options) {
         this.trigger('rerender', this, {});
-    },
+    }
 
-}, {
+}
 
-    serializers: _.extend({
-        child: { deserialize: unpackThreeModel },
-    }, RenderableModel.serializers),
-
-});
+PreviewModel.serializers = {
+    ...RenderableModel.serializers,
+    child: { deserialize: unpackThreeModel },
+};
 
 
 module.exports = {

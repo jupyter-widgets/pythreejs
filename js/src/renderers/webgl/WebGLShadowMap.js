@@ -10,26 +10,26 @@ var WebGLShadowMapAutogenModel = require('./WebGLShadowMap.autogen').WebGLShadow
  * depending on how many views there are. Much of the sync logic is therefore
  * put in the `Renderable` class instead.
  */
-var WebGLShadowMapModel = WebGLShadowMapAutogenModel.extend({
+class WebGLShadowMapModel extends WebGLShadowMapAutogenModel {
 
-    constructThreeObject: function() {
+    constructThreeObject() {
         // This should never be instantiated directly
         return Promise.resolve(null);
-    },
+    }
 
-    processNewObj: function() {
+    processNewObj() {
         // Leave this to Renderable
-    },
+    }
 
-    syncToThreeObj: function(force) {
+    syncToThreeObj(force) {
         // Leave this to Renderable
-    },
+    }
 
-    synToModel: function(syncAllProps) {
+    synToModel(syncAllProps) {
         // Leave this to Renderable
-    },
+    }
 
-});
+}
 
 module.exports = {
     WebGLShadowMapModel: WebGLShadowMapModel,

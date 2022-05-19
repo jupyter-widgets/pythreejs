@@ -11,60 +11,63 @@ var RenderableView = require('../_base/Renderable').RenderableView;
 var unpackThreeModel = require('../_base/serializers').unpackThreeModel;
 
 
-var WebGLRendererModel = RenderableModel.extend({
+class WebGLRendererModel extends RenderableModel {
 
-    defaults: _.extend({}, RenderableModel.prototype.defaults, {
+    defaults() {
+        return _.extend({}, RenderableModel.prototype.defaults, {
         _view_name: 'WebGLRendererView',
         _model_name: 'WebGLRendererModel',
 
         width: 200,
         height: 200,
 
-    }),
+       });
+    }
 
-}, {
-    serializers: _.extend({
-        clippingPlanes: { deserialize: unpackThreeModel },
-    }, RenderableModel.serializers)
-});
+}
+
+WebGLRendererModel.serializers = {
+    ...RenderableModel.serializers,
+    clippingPlanes: { deserialize: unpackThreeModel },
+}
 
 
-var WebGLRendererView = RenderableView.extend({
+class WebGLRendererView extends RenderableView {
 
     //
     // Backbone methods
     //
 
-    lazyRendererSetup: function() {
+    lazyRendererSetup() {
         // Only do setup when widget is being shown
         // i.e. everything except renderScene
-    },
+    }
 
-    objFromCommWidgetId: function(commWidgetId) {
+    objFromCommWidgetId(commWidgetId) {
         var modelPromise = unpackThreeModel(
             commWidgetId, this.model.widget_manager);
         return modelPromise.then(function(model) {
             return model.obj;
         });
-    },
+    }
 
-    log: function(str) {
+    log(str) {
         console.log('WGLR(' + this.id + '): ' + str);
-    },
+    }
 
-    acquireRenderer: function() {
+    acquireRenderer() {
         RenderableView.prototype.acquireRenderer.call(this);
 
         // We need to ensure that renderer properties are applied
         // (we have no idea where the renderer has been...)
         this.updateProperties();
-    },
+    }
 
     //
     // Handlers
     //
 
-    onCustomMessage: function(content, buffers) {
+    onCustomMessage(content, buffers) {
         switch(content.type) {
 
         case 'render':
@@ -80,9 +83,9 @@ var WebGLRendererView = RenderableView.extend({
             return RenderableView.prototype.onCustomMessage.apply(this, arguments);
 
         }
-    },
+    }
 
-});
+}
 
 
 module.exports = {

@@ -2,9 +2,9 @@ var Promise = require('bluebird');
 var THREE = require('three');
 var ImageTextureBase = require('./ImageTexture.autogen');
 
-var ImageTextureModel = ImageTextureBase.ImageTextureModel.extend({
+class ImageTextureModel extends ImageTextureBase.ImageTextureModel {
 
-    constructThreeObjectAsync: function() {
+    constructThreeObjectAsync() {
 
         var loader = new THREE.TextureLoader();
         // Ensure we resolve any local paths according to current notebook location:
@@ -28,9 +28,9 @@ var ImageTextureModel = ImageTextureBase.ImageTextureModel.extend({
             }, reject);
         });
         return p;
-    },
+    }
 
-});
+}
 
 module.exports = {
     ImageTextureModel: ImageTextureModel,

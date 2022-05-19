@@ -24,33 +24,33 @@
     "autogen:shaders": "node ./scripts/generate-shader-utils.js",
     "autogen:wrappers": "node ./scripts/generate-wrappers.js",
     "build:all": "npm run build:labextension",
-    "build:bundles": "webpack -d && node ./scripts/post-build.js --debug",
-    "build:bundles-prod": "webpack -p && node ./scripts/post-build.js",
+    "build:bundles": "webpack --mode development && node ./scripts/post-build.js --debug",
+    "build:bundles-prod": "webpack --mode production && node ./scripts/post-build.js",
     "build:labextension": "rimraf lab-dist && mkdirp lab-dist && cd lab-dist && npm pack .. && cd .. && jupyter labextension build .",
     "clean": "rimraf dist && rimraf ../pythreejs/static && rimraf lab-dist && node ./scripts/clean-generated-files.js",
     "prepack": "npm run build:bundles-prod",
     "prepare": "npm run autogen",
     "update:deps": "update-dependency --minimal --regex \"^(?!@jupyter-widgets|three)\"",
-    "watch": "webpack -d -w"
+    "watch": "webpack --mode development -w"
   },
   "dependencies": {
-    "@jupyter-widgets/base": "^1.2.5 || ^2.0.0 || ^3.0.0 || ^4.0.0",
+    "@jupyter-widgets/base": "^6.0.0-rc.0",
     "bluebird": "^3.5.5",
-    "jupyter-dataserializers": "^2.2.0",
+    "jupyter-dataserializers": "^3.0.0",
     "three": "^0.97.0",
-    "underscore": "^1.8.3"
+    "underscore": "^1.13.1"
   },
   "devDependencies": {
     "@jupyterlab/builder": "^3.0.0",
-    "@jupyterlab/buildutils": "^2.0.2",
-    "eslint": "^6.8.0",
-    "fs-extra": "^8.1.0",
-    "glob": "^7.1.4",
+    "@jupyterlab/buildutils": "^3.2.4",
+    "eslint": "^8.4.1",
+    "fs-extra": "^10.0.0",
+    "glob": "^8.0.3",
     "handlebars": "^4.1.2",
     "mkdirp": "^1.0.3",
     "rimraf": "^3.0.2",
-    "webpack": "^4.34.0",
-    "webpack-cli": "^3.3.4"
+    "webpack": "^5.65.0",
+    "webpack-cli": "^4.9.1"
   },
   "jupyterlab": {
     "extension": "src/jupyterlab-plugin",

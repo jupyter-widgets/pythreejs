@@ -5,17 +5,17 @@ var LineGeometryAutogen = require('./LineGeometry.autogen');
 var utils = require('../_base/utils');
 
 
-var LineGeometryModel = LineGeometryAutogen.LineGeometryModel.extend({
+class LineGeometryModel extends LineGeometryAutogen.LineGeometryModel {
 
 
-    constructThreeObject: function() {
+    constructThreeObject() {
 
         var result = new LineGeometry();
         return Promise.resolve(result);
 
-    },
+    }
 
-});
+}
 
 utils.customModelsLut[LineGeometry.prototype.constructor.name] = 'LineGeometry';
 

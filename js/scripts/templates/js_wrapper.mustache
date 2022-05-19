@@ -17,9 +17,9 @@ var {{ dep.modelName }} = require('{{ dep.requirePath }}').{{ dep.modelName }};
 {{/notSuper}}
 {{/each}}
 
-var {{ modelName }} = {{ superClass.modelName }}.extend({
+class {{ modelName }} extends {{ superClass.modelName }} {
 
-    defaults: function() {
+    defaults() {
         return _.extend({{ superClass.modelName }}.prototype.defaults.call(this), {
 
             {{#each properties as |prop propName|}}
@@ -27,9 +27,9 @@ var {{ modelName }} = {{ superClass.modelName }}.extend({
             {{/each}}
 
         });
-    },
+    }
 
-    constructThreeObject: function() {
+    constructThreeObject() {
 
         var result = new THREE.{{ className }}({{#if constructor.args}}
         {{#each constructor.args as |arg|}}
@@ -38,9 +38,9 @@ var {{ modelName }} = {{ superClass.modelName }}.extend({
         {{/if}});
         return Promise.resolve(result);
 
-    },
+    }
 
-    createPropertiesArrays: function() {
+    createPropertiesArrays() {
 
         {{ superClass.modelName }}.prototype.createPropertiesArrays.call(this);
         {{#each properties as |prop propName|}}
@@ -70,20 +70,18 @@ var {{ modelName }} = {{ superClass.modelName }}.extend({
         {{/if}}
         {{/each}}
 
-    },
+    }
+}
 
-}, {
-
-    model_name: '{{ modelName }}',
-
-    {{#if serialized_props }}
-    serializers: _.extend({
-        {{#each serialized_props as |serializer propName|}}
-        {{ propName }}: {{ serializer }},
-        {{/each}}
-    }{{#if superClass }},  {{ superClass.modelName }}.serializers){{/if}},
-    {{/if}}
-});
+{{ modelName }}.model_name = '{{ modelName }}';
+{{#if serialized_props }}
+{{ modelName }}.serializers = {
+    {{#if superClass }}...{{ superClass.modelName }}.serializers,{{/if}}
+    {{#each serialized_props as |serializer propName|}}
+    {{ propName }}: {{ serializer }},
+    {{/each}}
+};
+{{/if}}
 
 module.exports = {
     {{ modelName }}: {{ modelName }},

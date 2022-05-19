@@ -22,23 +22,23 @@ var BlackboxAutogen = require('./Blackbox.autogen').BlackboxModel;
  *  - If you do not want a basic Object3D as the "root" of your black
  *    box, you need to override constructThreeObject[Async].
  */
-var BlackboxModel = BlackboxAutogen.extend({
+class BlackboxModel extends BlackboxAutogen {
 
-    defaults: function() {
+    defaults() {
         var superdef = BlackboxAutogen.prototype.defaults.call(this);
         delete superdef['children'];
         return superdef;
-    },
+    }
 
 
-    constructThreeObject: function() {
+    constructThreeObject() {
 
         var result = new THREE.Object3D();
         return Promise.resolve(result);
 
-    },
+    }
 
-    createPropertiesArrays: function() {
+    createPropertiesArrays() {
 
         BlackboxAutogen.prototype.createPropertiesArrays.call(this);
         delete this.three_nested_properties['children'];
@@ -46,7 +46,7 @@ var BlackboxModel = BlackboxAutogen.extend({
 
     }
 
-});
+}
 
 module.exports = {
     BlackboxModel: BlackboxModel,

@@ -2,9 +2,9 @@ var Promise = require('bluebird');
 var CombinedCamera = require('../examples/cameras/CombinedCamera.js').CombinedCamera;
 var CombinedCameraAutogen = require('./CombinedCamera.autogen').CombinedCameraModel;
 
-var CombinedCameraModel = CombinedCameraAutogen.extend({
+class CombinedCameraModel extends CombinedCameraAutogen {
 
-    createPropertiesArrays: function() {
+    createPropertiesArrays() {
         CombinedCameraAutogen.prototype.createPropertiesArrays.call(this);
 
         this.property_mappers['CombinedCamera'] = 'mapCombinedCamera';
@@ -15,9 +15,9 @@ var CombinedCameraModel = CombinedCameraAutogen.extend({
         delete this.property_converters['orthoNear'];
         delete this.property_converters['orthoFar'];
         delete this.property_converters['mode'];
-    },
+    }
 
-    constructThreeObject: function() {
+    constructThreeObject() {
 
         var result = new CombinedCamera(
             this.convertFloatModelToThree(this.get('width'), 'width'),
@@ -32,9 +32,9 @@ var CombinedCameraModel = CombinedCameraAutogen.extend({
             this.get('impersonate'), 'impersonate');
         return Promise.resolve(result);
 
-    },
+    }
 
-    mapCombinedCameraModelToThree: function() {
+    mapCombinedCameraModelToThree() {
 
         var width = this.convertFloatModelToThree(this.get('width'));
         var height = this.convertFloatModelToThree(this.get('height'));
@@ -54,9 +54,9 @@ var CombinedCameraModel = CombinedCameraAutogen.extend({
         if (this.get('mode') === 'orthographic') {
             this.obj.toOrthographic();
         }
-    },
+    }
 
-    mapCombinedCameraThreeToModel: function() {
+    mapCombinedCameraThreeToModel() {
 
         var toSet = {};
         toSet.width = this.convertFloatThreeToModel(this.obj.right - this.obj.left);
@@ -71,8 +71,8 @@ var CombinedCameraModel = CombinedCameraAutogen.extend({
 
         this.set(toSet, 'pushFromThree');
 
-    },
-});
+    }
+}
 
 module.exports = {
     CombinedCameraModel: CombinedCameraModel,

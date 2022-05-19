@@ -307,7 +307,7 @@ function dictDiff(newDict, oldDict) {
 
 /**
  * Get the diff of two arbitrarily nested combinations of
- * arrays an dicts (hash maps).
+ * arrays and dicts (hash maps).
  *
  * Note: This function assumes the structure of both are the same,
  * i.e. they both have the same type at the same nesting level.
@@ -324,7 +324,7 @@ function nestedDiff(newObj, oldObj) {
     } else {
         diff = dictDiff(newObj, oldObj);
     }
-    var all = _.flatten([diff.added, diff.removed, diff.kept]);
+    var all = [...diff.added, ...diff.removed, ...diff.kept];
     if (all.length === 0) {
         return all;
     }

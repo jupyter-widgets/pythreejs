@@ -4,7 +4,7 @@ var version = require('./version');
 module.exports = {
     id: 'jupyter.extensions.jupyter-threejs',
     requires: [base.IJupyterWidgetRegistry],
-    activate: function(app, widgets) {
+    activate: (app, widgets) => {
         widgets.registerWidget({
             name: 'jupyter-threejs',
             version: version.version,
