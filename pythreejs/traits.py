@@ -2,11 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from collections import namedtuple
-try:
-    from collections.abc import Sequence  # python3
-except ImportError:
-    from collections import Sequence  # python2
-import six
+from collections.abc import Sequence
 import re
 import warnings
 
@@ -254,7 +250,7 @@ class Color(Unicode):
     def validate(self, obj, value):
         if value is None and self.allow_none:
             return value
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             if value.lower() in _color_names or _color_re.match(value):
                 return value
             elif _color_hexa_re.match(value) or _color_rgbhsl_re.match(value):

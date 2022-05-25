@@ -1,6 +1,4 @@
 
-from six import string_types
-
 from ipywidgets import Widget, widget_serialization
 
 def serialize_uniforms(uniforms, obj):
@@ -19,7 +17,7 @@ def serialize_uniforms(uniforms, obj):
                 'value': widget_serialization['to_json'](value, None)
             }
 
-        elif isinstance(value, string_types):
+        elif isinstance(value, str):
             serialized[name] = {
                 'type': 'c',
                 'value': value
