@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var MeshAutogen = require('./Mesh.autogen').MeshModel;
 
 
@@ -17,7 +16,7 @@ class MeshModel extends MeshAutogen {
 MeshModel.serializers = {
     ...MeshAutogen.serializers,
     morphTargetInfluences: optionalArraySerializer,
-}
+};
 
 module.exports = {
     MeshModel: MeshModel,

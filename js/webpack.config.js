@@ -12,7 +12,7 @@ module.exports = [
             libraryTarget: 'amd'
         },
         resolve: {
-            extensions: [ ".autogen.js", ".js" ]
+            extensions: [ '.autogen.js', '.js' ]
         },
     },
     {
@@ -26,7 +26,7 @@ module.exports = [
         devtool: 'source-map',
         externals: externals,
         resolve: {
-            extensions: [ ".autogen.js", ".js" ]
+            extensions: [ '.autogen.js', '.js' ]
         },
 
     },
@@ -36,12 +36,12 @@ module.exports = [
         output: {
             filename: 'index.js',
             path: path.resolve(__dirname, 'dist'),
-            library: "jupyter-threejs",
+            library: 'jupyter-threejs',
             libraryTarget: 'amd'
         },
         externals: ['@jupyter-widgets/base'],
         resolve: {
-            extensions: [ ".autogen.js", ".js" ]
+            extensions: [ '.autogen.js', '.js' ]
         },
 
     },

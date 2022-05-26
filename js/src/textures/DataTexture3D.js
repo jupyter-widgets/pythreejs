@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var Promise = require('bluebird');
 var dataserializers = require('jupyter-dataserializers');
 var ndarray = require('ndarray');
@@ -81,7 +80,7 @@ class DataTexture3DModel extends DataTexture3DBase {
 DataTexture3DModel.serializers = {
     ...DataTexture3DBase.serializers,
     data: dataserializers.data_union_serialization,
-}
+};
 
 module.exports = {
     DataTexture3DModel: DataTexture3DModel,

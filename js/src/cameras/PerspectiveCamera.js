@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var PerspectiveCameraAutogen = require('./PerspectiveCamera.autogen');
 
 class PerspectiveCameraModel extends PerspectiveCameraAutogen.PerspectiveCameraModel {

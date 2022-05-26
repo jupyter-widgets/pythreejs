@@ -7,7 +7,7 @@ var utils = require('../_base/utils');
 
 class ThreeCloneArray extends THREE.Object3D {
     constructor(original, positions, merge) {
-        THREE.Object3D.call(this);
+        super();
 
         this.original = original;
         this.positions = positions;

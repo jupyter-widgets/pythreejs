@@ -155,7 +155,7 @@ function getClassConfig(className) {
 
     const curClass = classConfigs[className];
 
-    const result = Object.assign({}, curClass);
+    const result = { ...curClass};
 
     result.propsDefinedByThree = [];
     result.propsDefinedByThree = result.propsDefinedByThree.concat(curClass.propsDefinedByThree || []);

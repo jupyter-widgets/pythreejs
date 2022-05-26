@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var TrackballControls = require('../examples/controls/TrackballControls.js').TrackballControls;
 var TrackballControlsAutogen = require('./TrackballControls.autogen');
 

@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var OrbitControls = require('../examples/controls/OrbitControls.js').OrbitControls;
 var OrbitControlsAutogen = require('./OrbitControls.autogen');
 

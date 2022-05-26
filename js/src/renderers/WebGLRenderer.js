@@ -15,13 +15,13 @@ class WebGLRendererModel extends RenderableModel {
 
     defaults() {
         return _.extend({}, RenderableModel.prototype.defaults, {
-        _view_name: 'WebGLRendererView',
-        _model_name: 'WebGLRendererModel',
+            _view_name: 'WebGLRendererView',
+            _model_name: 'WebGLRendererModel',
 
-        width: 200,
-        height: 200,
+            width: 200,
+            height: 200,
 
-       });
+        });
     }
 
 }
@@ -29,7 +29,7 @@ class WebGLRendererModel extends RenderableModel {
 WebGLRendererModel.serializers = {
     ...RenderableModel.serializers,
     clippingPlanes: { deserialize: unpackThreeModel },
-}
+};
 
 
 class WebGLRendererView extends RenderableView {

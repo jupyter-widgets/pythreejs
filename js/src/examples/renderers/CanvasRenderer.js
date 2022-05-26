@@ -47,8 +47,8 @@ var CanvasRenderer = function ( parameters ) {
 		_projector = new THREE.Projector(),
 
 		_canvas = parameters.canvas !== undefined
-				? parameters.canvas
-				: document.createElement( 'canvas' ),
+			? parameters.canvas
+			: document.createElement( 'canvas' ),
 
 		_canvasWidth = _canvas.width,
 		_canvasHeight = _canvas.height,
@@ -766,8 +766,8 @@ var CanvasRenderer = function ( parameters ) {
 			_color.r = _color.g = _color.b = 1 - smoothstep( v1.positionScreen.z * v1.positionScreen.w, _camera.near, _camera.far );
 
 			material.wireframe === true
-					? strokePath( _color, material.wireframeLinewidth, material.wireframeLinecap, material.wireframeLinejoin )
-					: fillPath( _color );
+				? strokePath( _color, material.wireframeLinewidth, material.wireframeLinecap, material.wireframeLinejoin )
+				: fillPath( _color );
 
 		} else if ( material instanceof THREE.MeshNormalMaterial ) {
 

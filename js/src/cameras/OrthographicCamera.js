@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var OrthographicCameraAutogen = require('./OrthographicCamera.autogen');
 
 class OrthographicCameraModel extends OrthographicCameraAutogen.OrthographicCameraModel {

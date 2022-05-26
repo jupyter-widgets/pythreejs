@@ -59,15 +59,15 @@ class RendererModel extends RenderableModel {
             this.trigger('rerender', this, {});
         }
     }
-
-    static serializers = {
-        ...RenderableModel.serializers,
-        scene: { deserialize: unpackThreeModel },
-        camera: { deserialize: unpackThreeModel },
-        controls: { deserialize: unpackThreeModel },
-        effect: { deserialize: unpackThreeModel },
-    }
 }
+
+RendererModel.serializers = {
+    ...RenderableModel.serializers,
+    scene: { deserialize: unpackThreeModel },
+    camera: { deserialize: unpackThreeModel },
+    controls: { deserialize: unpackThreeModel },
+    effect: { deserialize: unpackThreeModel },
+};
 
 class RendererView extends RenderableView {
 

@@ -384,11 +384,11 @@ LineMaterial.prototype.copy = function ( source ) {
 
 	this.linewidth = source.linewidth;
 
-    this.resolution = source.resolution;
+	this.resolution = source.resolution;
 
-    this.dashScale = source.dashScale;
+	this.dashScale = source.dashScale;
 
-    this.dashSize = source.dashSize;
+	this.dashSize = source.dashSize;
 
 	this.gapSize = source.gapSize;
 

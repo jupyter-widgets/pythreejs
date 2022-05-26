@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var Promise = require('bluebird');
 var dataserializers = require('jupyter-dataserializers');
 var ndarray = require('ndarray');

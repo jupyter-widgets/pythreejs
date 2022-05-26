@@ -125,7 +125,7 @@ class AnimationActionModel extends AnimationActionAutogen {
 AnimationActionModel.serializers = {
     ...AnimationActionAutogen.serializers,
     ...widgets.DOMWidgetModel.serializers,
-}
+};
 
 
 class AnimationActionView extends widgets.DOMWidgetView {

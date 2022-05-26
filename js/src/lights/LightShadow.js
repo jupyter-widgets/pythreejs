@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var LightShadowAutogen = require('./LightShadow.autogen').LightShadowModel;
 
 class LightShadowModel extends LightShadowAutogen {

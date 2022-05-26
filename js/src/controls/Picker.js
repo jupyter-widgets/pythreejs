@@ -114,13 +114,13 @@ function getinfo(o) {
         if (o.face && o.object.geometry.isBufferGeometry) {
             v = o.object.geometry.attributes.position.array;
             verts = [[v[o.face.a], v[o.face.a] + 1, v[o.face.a] + 2],
-                     [v[o.face.b], v[o.face.b] + 1, v[o.face.b] + 2],
-                     [v[o.face.c], v[o.face.c] + 1, v[o.face.c] + 2]];
+                [v[o.face.b], v[o.face.b] + 1, v[o.face.b] + 2],
+                [v[o.face.c], v[o.face.c] + 1, v[o.face.c] + 2]];
         } else if (o.face) {
             v = o.object.geometry.vertices;
             verts = [[v[o.face.a].x, v[o.face.a].y, v[o.face.a].z],
-                     [v[o.face.b].x, v[o.face.b].y, v[o.face.b].z],
-                     [v[o.face.c].x, v[o.face.c].y, v[o.face.c].z]];
+                [v[o.face.b].x, v[o.face.b].y, v[o.face.b].z],
+                [v[o.face.c].x, v[o.face.c].y, v[o.face.c].z]];
         }
         return {
             point: [o.point.x, o.point.y, o.point.z],

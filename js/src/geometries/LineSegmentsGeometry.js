@@ -1,6 +1,4 @@
 var Promise = require('bluebird');
-var dataserializers = require('jupyter-dataserializers');
-var ndarray = require('ndarray');
 var LineSegmentsGeometry = require('../examples/lines/LineSegmentsGeometry.js').LineSegmentsGeometry;
 var LineSegmentsGeometryAutogen = require('./LineSegmentsGeometry.autogen').LineSegmentsGeometryModel;
 

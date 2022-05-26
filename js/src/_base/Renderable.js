@@ -174,7 +174,7 @@ RenderableModel.serializers = {
     ...widgets.DOMWidgetModel.serializers,
     clippingPlanes: { deserialize: unpackThreeModel },
     shadowMap: { deserialize: unpackThreeModel },
-}
+};
 
 
 class RenderableView extends widgets.DOMWidgetView {

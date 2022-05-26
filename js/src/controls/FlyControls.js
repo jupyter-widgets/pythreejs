@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var THREE = require('three');
 var FlyControls = require('../examples/controls/MomentumCameraControls.js').FlyControls;
 var FlyControlsAutogen = require('./FlyControls.autogen');
