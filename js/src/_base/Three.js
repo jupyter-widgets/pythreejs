@@ -501,9 +501,9 @@ class ThreeModel extends widgets.WidgetModel {
     }
 
     convertFloatThreeToModel(v) {
-        if (isFinite(v)) { // Most common first
+        if (Number.isFinite(v)) { // Most common first
             return v;
-        } else if (isNaN(v)) {
+        } else if (Number.isNaN(v)) {
             return 'nan';
         } else if (v === Infinity) {
             return 'inf';
@@ -554,12 +554,12 @@ class ThreeModel extends widgets.WidgetModel {
         default:
             throw new Error('model vector has invalid length: ' + v.length);
         }
-        result.fromArray(v);
+        result.fromArray(v.map(this.convertFloatModelToThree));
         return result;
     }
 
     convertVectorThreeToModel(v) {
-        return v.toArray();
+        return v.toArray().map(this.convertFloatThreeToModel);
     }
 
     assignVector(obj, key, value) {
@@ -568,11 +568,13 @@ class ThreeModel extends widgets.WidgetModel {
 
     // Euler
     convertEulerModelToThree(v) {
-        return new THREE.Euler().fromArray(v);
+        // The float conversions will ignore the "XYZ" order strings
+        return new THREE.Euler().fromArray(v.map(this.convertFloatModelToThree));
     }
 
     convertEulerThreeToModel(v) {
-        return v.toArray();
+        // The float conversions will ignore the "XYZ" order strings
+        return v.toArray().map(this.convertFloatThreeToModel);
     }
 
     assignEuler(obj, key, value) {
@@ -676,12 +678,12 @@ class ThreeModel extends widgets.WidgetModel {
         default:
             throw new Error('model matrix has invalid length: ' + m.length);
         }
-        result.fromArray(m);
+        result.fromArray(m.map(this.convertFloatModelToThree));
         return result;
     }
 
     convertMatrixThreeToModel(m) {
-        return m.toArray();
+        return m.toArray().map(this.convertFloatThreeToModel);
     }
 
     assignMatrix(obj, key, value) {

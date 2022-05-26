@@ -1,5 +1,5 @@
 from ipywidgets import DOMWidget, Widget, widget_serialization
-from traitlets import Unicode, CInt, CFloat, Enum, Bool, Int, Instance, List
+from traitlets import Unicode, CInt, Enum, Bool, Int, Instance, List
 
 from .._package import npm_pkg_name
 from .._version import EXTENSION_SPEC_VERSION
@@ -8,6 +8,7 @@ from .Three import ThreeWidget
 from ..enums import ToneMappings
 from ..math.Plane_autogen import Plane
 from ..renderers.webgl.WebGLShadowMap_autogen import WebGLShadowMap
+from ..traits import IEEEFloat
 
 
 class RenderableWidget(DOMWidget):
@@ -28,7 +29,7 @@ class RenderableWidget(DOMWidget):
     autoClearDepth = Bool(True).tag(sync=True)
     autoClearStencil = Bool(True).tag(sync=True)
     clippingPlanes = List(Instance(Plane)).tag(sync=True, **widget_serialization)
-    gammaFactor = CFloat(2.0).tag(sync=True)
+    gammaFactor = IEEEFloat(2.0).tag(sync=True)
     gammaInput = Bool(False).tag(sync=True)
     gammaOutput = Bool(False).tag(sync=True)
     localClippingEnabled = Bool(False).tag(sync=True)
@@ -38,11 +39,11 @@ class RenderableWidget(DOMWidget):
     shadowMap = Instance(WebGLShadowMap, args=(), allow_none=True).tag(sync=True, **widget_serialization)
     sortObject = Bool(True).tag(sync=True)
     toneMapping = Enum(ToneMappings, 'LinearToneMapping').tag(sync=True)
-    toneMappingExposure = CFloat(1.0).tag(sync=True)
-    toneMappingWhitePoint = CFloat(1.0).tag(sync=True)
+    toneMappingExposure = IEEEFloat(1.0).tag(sync=True)
+    toneMappingWhitePoint = IEEEFloat(1.0).tag(sync=True)
 
     clearColor = Unicode('#000000').tag(sync=True)
-    clearOpacity = CFloat(1.0).tag(sync=True)
+    clearOpacity = IEEEFloat(1.0).tag(sync=True)
 
     def send_msg(self, message_type, payload=None):
         if payload is None:

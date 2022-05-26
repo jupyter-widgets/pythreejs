@@ -1,5 +1,7 @@
 from ipywidgets import register, DOMWidget, Widget
-from traitlets import Unicode, Union, CInt, CFloat
+from traitlets import Unicode, Union, CInt
+
+from ..traits import IEEEFloat, ieee_float_serializers
 
 from .._package import npm_pkg_name
 from .._version import EXTENSION_SPEC_VERSION
@@ -21,7 +23,11 @@ class AnimationAction(AnimationActionBase, DOMWidget):
     _previewable = False
 
     # Normally an int, but can also be inf:
-    repititions = Union([CInt(), CFloat()], default_value=float('inf'), allow_none=False).tag(sync=True)
+    repititions = Union(
+        [CInt(), IEEEFloat()],
+        default_value=float('inf'),
+        allow_none=False
+    ).tag(sync=True, **ieee_float_serializers)
 
     def play(self):
         content = {
