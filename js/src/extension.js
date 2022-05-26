@@ -22,5 +22,5 @@ if (window.requirejs) {
 
 // Export the required load_ipython_extention
 module.exports = {
-    load_ipython_extension() {}
+    load_ipython_extension: function() {}
 };
