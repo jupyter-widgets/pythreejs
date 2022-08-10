@@ -266,7 +266,7 @@ class Uniform(Dict):
     """A dict holding uniforms for a ShaderMaterial"""
 
     def __init__(self, default_value=Undefined, **kwargs):
-        super(Uniform, self).__init__(traits=dict(
+        super(Uniform, self).__init__(per_key_traits=dict(
             value=Union((
                 Int(), Float(), Color(), Instance('pythreejs.Texture'),
                 List(trait=Union((
