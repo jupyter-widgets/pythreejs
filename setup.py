@@ -84,7 +84,10 @@ setup_args = {
             'nbsphinx>=0.2.13',
             'nbsphinx-link',
             'sphinx-rtd-theme',
-        ]
+        ],
+        'lock': [
+            'conda-lock>=0.8.0'
+        ],
     },
     'packages': [name],  # Manually specify here, update after autogen
     'zip_safe': False,

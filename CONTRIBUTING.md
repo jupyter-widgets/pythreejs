@@ -100,6 +100,29 @@ cd docs
 make html
 ```
 
+#### Updating the ReadTheDocs env
+
+Due to some heavyweight dependencies, the `conda` environment is pre-solved and
+checked in, based on `.binder/environment.yml`. To update this environment,
+install `conda-lock` with `pip`:
+
+```bash
+pip install .[lock]
+```
+
+or `conda`:
+
+```bash
+conda install -c conda-forge 'conda-lock>=0.8.0'
+```
+
+And then:
+
+```bash
+cd docs
+python update_env.py
+```
+
 ### Explore the examples
 
 ```bash
