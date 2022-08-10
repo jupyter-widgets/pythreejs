@@ -35,7 +35,9 @@ var PickerModel = PickerAutogen.PickerModel.extend({
 
     onPick: function() {
         var mouse = this.obj.pickCoordinates;
-        var objects = pick(mouse, this.camera, this.get('controlling').obj);
+        var objects = pick(mouse, this.camera, this.get('controlling').obj,
+            this.get('lineThreshold'), this.get('pointThreshold')
+        );
 
         var info = getinfo(objects.length > 0 ? objects[0] : null);
 
@@ -102,8 +104,12 @@ PickerControls.prototype = Object.create( THREE.EventDispatcher.prototype );
 PickerControls.prototype.constructor = PickerControls;
 
 
-function pick(mouse, camera, root) {
+function pick(mouse, camera, root, lineThreshold, pointThreshold) {
     var raycaster = new THREE.Raycaster();
+    raycaster.params = {
+        'Points': { 'threshold': pointThreshold },
+        'Line': { 'threshold': lineThreshold }
+    };
     raycaster.setFromCamera( mouse, camera );
     return raycaster.intersectObject(root, true);
 }
@@ -134,6 +140,8 @@ function getinfo(o) {
             faceIndex: o.faceIndex !== undefined && o.faceIndex !== null ? o.faceIndex : null,
             object: o.object.ipymodel,
             uv: o.uv ? [o.uv.x, o.uv.y] : [0, 0],
+            instanceId: o.instanceId !== undefined ? o.instanceId : null,
+            index: o.index !== undefined ? o.index : null,
         };
     }
     return {
@@ -146,6 +154,8 @@ function getinfo(o) {
         faceIndex: null,
         object: null,
         uv: [0, 0],
+        instanceId: null,
+        index: null,
     };
 }
 

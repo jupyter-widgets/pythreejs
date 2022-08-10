@@ -266,6 +266,14 @@ module.exports = {
             event: new Types.String('click', {
                 help: 'The DOM MouseEvent type to trigger the pick',
             }),
+            lineThreshold: new Types.Float(1.0, {
+                nullable: false,
+                help: 'The threshold value for line picking',
+            }),
+            pointThreshold: new Types.Float(1.0, {
+                nullable: false,
+                help: 'The threshold value for point picking',
+            }),
             all: new Types.Bool(false, {
                 help: 'Wether to send info on all object intersections beneath the picked point, or only the first one. See ``picked``.',
             }),
@@ -276,6 +284,10 @@ module.exports = {
             point: new Types.Vector3(0, 0, 0, {
                 help: 'The coordinates of the picked point (all zero if no object picked)',
             }),
+            instanceId: new Types.Int(null, {
+                nullable: true,
+                help: 'The InstanceID if picking a multi-instanced object',
+            }),
             face: new Types.Vector3(0, 0, 0, {
                 help: 'The vertex indices of the picked face (all zero if no face picked)',
             }),
@@ -284,6 +296,10 @@ module.exports = {
             }),
             faceVertices: new Types.VectorArray({
                 help: 'The three vertices that make up the picked face, as vectors (empty if no face picked)',
+            }),
+            index: new Types.Int(null, {
+                nullable: true,
+                help: 'The index of a picked Points instance',
             }),
             faceIndex: new Types.Int(null, {
                 nullable: true,
@@ -310,7 +326,8 @@ module.exports = {
         },
         propsDefinedByThree: [
             'distance', 'point', 'face', 'faceNormal', 'faceVertices',
-            'faceIndex', 'object', 'picked', 'uv', 'indices'],
+            'faceIndex', 'object', 'picked', 'uv', 'indices', 'instanceId',
+            'index'],
         constructorArgs: ['controlling'],
     },
 
