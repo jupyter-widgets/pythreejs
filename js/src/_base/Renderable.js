@@ -11,9 +11,9 @@ var ThreeModel = require('./Three').ThreeModel;
 var unpackThreeModel = require('./serializers').unpackThreeModel;
 
 
-var RenderableModel = widgets.DOMWidgetModel.extend({
+class RenderableModel extends widgets.DOMWidgetModel {
 
-    defaults: function() {
+    defaults() {
         return _.extend(widgets.DOMWidgetModel.prototype.defaults.call(this), {
             _model_module: pkgName,
             _view_module: pkgName,
@@ -48,16 +48,16 @@ var RenderableModel = widgets.DOMWidgetModel.extend({
             clearColor: '#000000',
             clearOpacity: 1.0,
         });
-    },
+    }
 
-    initialize: function(attributes, options) {
+    initialize(attributes, options) {
         widgets.DOMWidgetModel.prototype.initialize.apply(this, arguments);
 
         this.createPropertiesArrays();
         ThreeModel.prototype.setupListeners.call(this);
-    },
+    }
 
-    createPropertiesArrays: function() {
+    createPropertiesArrays() {
         // This does not inherit ThreeModel, but follow same pattern
         ThreeModel.prototype.createPropertiesArrays.call(this);
         this.three_nested_properties.push('clippingPlanes');
@@ -80,21 +80,21 @@ var RenderableModel = widgets.DOMWidgetModel.extend({
         this.property_converters['toneMapping'] = 'convertEnum';
         this.property_converters['toneMappingExposure'] = 'convertFloat';
         this.property_converters['toneMappingWhitepoint'] = 'convertFloat';
-    },
+    }
 
-    onChange: function(model, options) {
-    },
+    onChange(model, options) {
+    }
 
-    onChildChanged: function(model, options) {
+    onChildChanged(model, options) {
         console.debug('child changed: ' + model.model_id);
         // Let listeners (e.g. views) know:
         this.trigger('childchange', this);
-    },
+    }
 
     /**
      * Find a view, preferrably a live one
      */
-    _findView: function() {
+    _findView() {
         var viewPromises = Object.keys(this.views).map(function(key) {
             return this.views[key];
         }, this);
@@ -107,12 +107,12 @@ var RenderableModel = widgets.DOMWidgetModel.extend({
             }
             return views[0];
         });
-    },
+    }
 
     /**
      * Interface for jupyter-webrtc.
      */
-    captureStream: function(fps) {
+    captureStream(fps) {
         var stream = new MediaStream();
 
         var that = this;
@@ -166,37 +166,38 @@ var RenderableModel = widgets.DOMWidgetModel.extend({
         return updateStream().then(function() {
             return stream;
         });
-    },
+    }
 
-}, {
-    serializers: _.extend({
-        clippingPlanes: { deserialize: unpackThreeModel },
-        shadowMap: { deserialize: unpackThreeModel },
-    }, widgets.DOMWidgetModel.serializers)
-});
+}
+
+RenderableModel.serializers = {
+    ...widgets.DOMWidgetModel.serializers,
+    clippingPlanes: { deserialize: unpackThreeModel },
+    shadowMap: { deserialize: unpackThreeModel },
+};
 
 
-var RenderableView = widgets.DOMWidgetView.extend({
+class RenderableView extends widgets.DOMWidgetView {
 
-    initialize: function () {
+    initialize() {
         widgets.DOMWidgetView.prototype.initialize.apply(this, arguments);
 
         // starts as "frozen" until renderer is acquired
         this.isFrozen = true;
         this.id = Math.floor(Math.random() * 1000000);
         this._ticking = false;
-    },
+    }
 
-    remove: function() {
-        widgets.DOMWidgetView.prototype.remove.apply(this, arguments);
+    remove() {
+        super.remove();
 
         this.$el.empty();
         if (!this.isFrozen) {
             this.teardownViewer();
         }
-    },
+    }
 
-    processPhosphorMessage: function(msg) {
+    processPhosphorMessage(msg) {
         widgets.DOMWidgetView.prototype.processPhosphorMessage.call(this, msg);
         switch (msg.type) {
         case 'after-attach':
@@ -206,9 +207,9 @@ var RenderableView = widgets.DOMWidgetView.extend({
             this.el.removeEventListener('contextmenu', this, true);
             break;
         }
-    },
+    }
 
-    handleEvent: function(event) {
+    handleEvent(event) {
         switch (event.type) {
         case 'contextmenu':
             this.handleContextMenu(event);
@@ -217,9 +218,9 @@ var RenderableView = widgets.DOMWidgetView.extend({
             widgets.DOMWidgetView.prototype.handleEvent.call(this, event);
             break;
         }
-    },
+    }
 
-    handleContextMenu: function(event) {
+    handleContextMenu(event) {
         // Cancel context menu if on renderer:
         var candidates = [];
         if (this.renderer) {
@@ -232,13 +233,13 @@ var RenderableView = widgets.DOMWidgetView.extend({
             event.preventDefault();
             event.stopPropagation();
         }
-    },
+    }
 
-    render: function() {
+    render() {
         this.doRender();
-    },
+    }
 
-    doRender: function() {
+    doRender() {
         this.el.className = 'jupyter-widget jupyter-threejs';
 
         this.unfreeze();
@@ -246,29 +247,29 @@ var RenderableView = widgets.DOMWidgetView.extend({
         this.lazyRendererSetup();
 
         this.setupEventListeners();
-    },
+    }
 
-    setupEventListeners: function() {
+    setupEventListeners() {
         this.listenTo(this.model, 'rerender',       this.tick.bind(this));
         this.listenTo(this.model, 'msg:custom',     this.onCustomMessage.bind(this));
 
         this.listenTo(this.model, 'change:_width',  this.updateSize.bind(this));
         this.listenTo(this.model, 'change:_height', this.updateSize.bind(this));
-    },
+    }
 
-    tick: function() {
+    tick() {
         if (!this._ticking) {
             requestAnimationFrame(this.tock.bind(this));
             this._ticking = true;
         }
-    },
+    }
 
-    tock: function() {
+    tock() {
         this._ticking = false;
         this.renderScene();
-    },
+    }
 
-    updateSize: function() {
+    updateSize() {
         var width = this.model.get('_width');
         var height = this.model.get('_height');
         if (this.isFrozen) {
@@ -278,9 +279,9 @@ var RenderableView = widgets.DOMWidgetView.extend({
             this.renderer.setSize(width, height);
         }
         this.trigger('updatestream');
-    },
+    }
 
-    updateProperties: function(force) {
+    updateProperties(force) {
         if (this.isFrozen) {
             return;
         }
@@ -315,9 +316,9 @@ var RenderableView = widgets.DOMWidgetView.extend({
         var clearColor = ThreeModel.prototype.convertColorModelToThree(model.get('clearColor'));
         var clearOpacity = ThreeModel.prototype.convertFloatModelToThree(model.get('clearOpacity'));
         this.renderer.setClearColor(clearColor, clearOpacity);
-    },
+    }
 
-    _updateShadowMap: function(force) {
+    _updateShadowMap(force) {
         var model = this.model.get('shadowMap');
         var obj = this.renderer.shadowMap;
         var changes = false;
@@ -353,15 +354,15 @@ var RenderableView = widgets.DOMWidgetView.extend({
         if (changes) {
             obj.needsUpdate = true;
         }
-    },
+    }
 
-    convertThreeTypeArray: function(modelArr, propName) {
+    convertThreeTypeArray(modelArr, propName) {
         return modelArr.map(function(model) {
             return ThreeModel.prototype.convertThreeTypeModelToThree(model, propName);
         }, this);
-    },
+    }
 
-    renderScene: function(scene, camera) {
+    renderScene(scene, camera) {
         this.debug('renderScene');
 
         scene = scene || this.scene;
@@ -384,9 +385,9 @@ var RenderableView = widgets.DOMWidgetView.extend({
         if (scene.ipymodel) {
             scene.ipymodel.trigger('afterRender', scene, this.renderer, camera);
         }
-    },
+    }
 
-    unfreeze: function() {
+    unfreeze() {
         if (!this.isFrozen) {
             return;
         }
@@ -404,9 +405,9 @@ var RenderableView = widgets.DOMWidgetView.extend({
         if (this.controls) {
             this.enableControls();
         }
-    },
+    }
 
-    acquireRenderer: function() {
+    acquireRenderer() {
 
         this.debug('ThreeView.acquiring...');
 
@@ -427,9 +428,9 @@ var RenderableView = widgets.DOMWidgetView.extend({
         this.updateSize();
 
         this.debug('ThreeView.acquireRenderer(' + this.renderer.poolId + ')');
-    },
+    }
 
-    freeze: function() {
+    freeze() {
         if (this.isFrozen) {
             this.log('already frozen...');
             return;
@@ -452,9 +453,9 @@ var RenderableView = widgets.DOMWidgetView.extend({
             }, this));
         }
 
-    },
+    }
 
-    teardownViewer: function() {
+    teardownViewer() {
 
         this.$renderer.off('mouseenter');
         this.$renderer.off('mouseleave');
@@ -471,9 +472,9 @@ var RenderableView = widgets.DOMWidgetView.extend({
 
         this.$el.css('margin-bottom', 'auto');
 
-    },
+    }
 
-    enableControls: function() {
+    enableControls() {
         this.debug('Enable controls');
         this.boundTick = this.tick.bind(this);
         var that = this;
@@ -482,9 +483,9 @@ var RenderableView = widgets.DOMWidgetView.extend({
             control.connectEvents(that.$renderer[0]);
             control.addEventListener('change', that.boundTick);
         });
-    },
+    }
 
-    disableControls: function() {
+    disableControls() {
         this.debug('Disable controls');
         var that = this;
         this.controls.forEach(function(control) {
@@ -492,35 +493,35 @@ var RenderableView = widgets.DOMWidgetView.extend({
             control.dispose();  // Disconnect from DOM events
             control.removeEventListener('change', that.boundTick);
         });
-    },
+    }
 
-    onCustomMessage: function(content, buffers) {
+    onCustomMessage(content, buffers) {
         switch(content.type) {
         case 'freeze':
             this.freeze();
             break;
         default:
         }
-    },
+    }
 
-    onRendererReclaimed: function() {
+    onRendererReclaimed() {
         this.debug('ThreeView WebGL context is being reclaimed: ' + this.renderer.poolId);
 
         this.freeze();
-    },
+    }
 
-    log: function(str) {
+    log(str) {
         console.log('TV(' + this.id + '): ' + str);
-    },
+    }
 
-    debug: function(str) {
+    debug(str) {
         console.debug('TV(' + this.id + '): ' + str);
-    },
+    }
 
-    lazyRendererSetup: function() {
+    lazyRendererSetup() {
         throw new Error('RenderableView should not be used directly, please subclass!');
     }
-});
+}
 
 
 module.exports = {

@@ -2,9 +2,9 @@ var ArrowHelperAutogen = require('./ArrowHelper.autogen').ArrowHelperModel;
 
 var THREE = require('three');
 
-var ArrowHelperModel = ArrowHelperAutogen.extend({
+class ArrowHelperModel extends ArrowHelperAutogen {
 
-    constructThreeObject: function() {
+    constructThreeObject() {
 
         var headLength = this.get('headLength');
         var headWidth = this.get('headWidth');
@@ -26,10 +26,10 @@ var ArrowHelperModel = ArrowHelperAutogen.extend({
         );
         return Promise.resolve(result);
 
-    },
+    }
 
 
-    createPropertiesArrays: function() {
+    createPropertiesArrays() {
         ArrowHelperAutogen.prototype.createPropertiesArrays.call(this);
 
         // Prevent from syncing these to object
@@ -47,9 +47,9 @@ var ArrowHelperModel = ArrowHelperAutogen.extend({
         delete this.property_converters['headWidth'];
 
         this.property_mappers['mapArrowHelper'] = 'mapArrowHelper';
-    },
+    }
 
-    mapArrowHelperModelToThree: function() {
+    mapArrowHelperModelToThree() {
         var headLength = this.get('headLength');
         var headWidth = this.get('headWidth');
 
@@ -69,9 +69,9 @@ var ArrowHelperModel = ArrowHelperAutogen.extend({
             this.convertFloatModelToThree(headLength, 'headLength'),
             this.convertFloatModelToThree(headWidth, 'headWidth')
         );
-    },
+    }
 
-    mapArrowHelperThreeToModel: function() {
+    mapArrowHelperThreeToModel() {
         this.set({
             headLength: this.convertFloatThreeToModel(this.obj.cone.scale.y, 'headLength'),
             headWidth: this.convertFloatThreeToModel(this.obj.cone.scale.x, 'headWidth'),
@@ -79,7 +79,7 @@ var ArrowHelperModel = ArrowHelperAutogen.extend({
         });
     }
 
-});
+}
 
 module.exports = {
     ArrowHelperModel: ArrowHelperModel,

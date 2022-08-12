@@ -10,9 +10,9 @@ var RenderableView = require('../_base/Renderable').RenderableView;
 var ThreeModel = require('../_base/Three').ThreeModel;
 var unpackThreeModel = require('../_base/serializers').unpackThreeModel;
 
-var RendererModel = RenderableModel.extend({
+class RendererModel extends RenderableModel {
 
-    defaults: function() {
+    defaults() {
         return _.extend(RenderableModel.prototype.defaults.call(this), {
 
             _view_name: 'RendererView',
@@ -28,17 +28,17 @@ var RendererModel = RenderableModel.extend({
             background: 'black',
             background_opacity: 1.0,
         });
-    },
+    }
 
-    initialize: function(attributes, options) {
+    initialize(attributes, options) {
         RenderableModel.prototype.initialize.apply(this, arguments);
 
         this.initPromise = this.get('scene').initPromise.bind(this).then(function() {
             this.setupListeners();
         });
-    },
+    }
 
-    setupListeners: function() {
+    setupListeners() {
 
         var scene = this.get('scene');
         var camera = this.get('camera');
@@ -47,38 +47,36 @@ var RendererModel = RenderableModel.extend({
         this.listenTo(scene, 'rerender', this.onChildChanged.bind(this));
         this.listenTo(camera, 'change', this.onCameraChange.bind(this));
 
-    },
+    }
 
-    onCameraChange: function(model, options) {
+    onCameraChange(model, options) {
         this.onChildChanged(model, options);
-    },
+    }
 
-    onChildChanged: function(model, options) {
+    onChildChanged(model, options) {
         RenderableModel.prototype.onChildChanged.apply(this, arguments);
         if (!this.get('_pause_autorender')) {
             this.trigger('rerender', this, {});
         }
-    },
+    }
+}
 
-}, {
+RendererModel.serializers = {
+    ...RenderableModel.serializers,
+    scene: { deserialize: unpackThreeModel },
+    camera: { deserialize: unpackThreeModel },
+    controls: { deserialize: unpackThreeModel },
+    effect: { deserialize: unpackThreeModel },
+};
 
-    serializers: _.extend({
-        scene: { deserialize: unpackThreeModel },
-        camera: { deserialize: unpackThreeModel },
-        controls: { deserialize: unpackThreeModel },
-        effect: { deserialize: unpackThreeModel },
-    }, RenderableModel.serializers),
+class RendererView extends RenderableView {
 
-});
-
-var RendererView = RenderableView.extend({
-
-    render: function() {
+    render() {
         // ensure that model is fully initialized before attempting render
         return this.model.initPromise.bind(this).then(this.doRender);
-    },
+    }
 
-    lazyRendererSetup: function() {
+    lazyRendererSetup() {
         this.scene = this.model.get('scene').obj;
         this.camera = this.model.get('camera').obj;
         var controls = [];
@@ -90,9 +88,9 @@ var RendererView = RenderableView.extend({
             this.enableControls();
         }
         this.renderScene();
-    },
+    }
 
-    setupEventListeners: function() {
+    setupEventListeners() {
         RenderableView.prototype.setupEventListeners.call(this);
 
         this.listenTo(this.model, 'change:camera', this.onCameraSwitched.bind(this));
@@ -114,17 +112,17 @@ var RendererView = RenderableView.extend({
         }
         this.listenTo(this.model, 'change', wrap);
         this.listenTo(this.model.get('shadowMap'), 'change', wrap);
-    },
+    }
 
-    onCameraSwitched: function() {
+    onCameraSwitched() {
         this.camera = this.model.get('camera').obj;
-    },
+    }
 
-    onSceneSwitched: function() {
+    onSceneSwitched() {
         this.scene = this.model.get('scene').obj;
-    },
+    }
 
-    onControlsSwitched: function() {
+    onControlsSwitched() {
         if (!this.isFrozen) {
             this.disableControls();
         }
@@ -138,45 +136,45 @@ var RendererView = RenderableView.extend({
         if (!this.isFrozen) {
             this.enableControls();
         }
-    },
+    }
 
-    enableControls: function() {
+    enableControls() {
         RenderableView.prototype.enableControls.apply(this, arguments);
         this.model.get('controls').forEach(function (controlModel) {
             controlModel.trigger('enableControl', this);
         }, this);
-    },
+    }
 
-    disableControls: function() {
+    disableControls() {
         RenderableView.prototype.disableControls.apply(this, arguments);
         this.model.get('controls').forEach(function (controlModel) {
             controlModel.trigger('disableControl', this);
         }, this);
-    },
+    }
 
-    applyBackground: function() {
+    applyBackground() {
         if (!this.isFrozen) {
             var background = ThreeModel.prototype.convertColorModelToThree(this.model.get('background'));
             var background_opacity = ThreeModel.prototype.convertFloatModelToThree(this.model.get('background_opacity'));
             this.renderer.setClearColor(background, background_opacity);
         }
-    },
+    }
 
-    update: function() {
+    update() {
         if (!this.model.get('_pause_autorender')) {
             this.tick();
         }
-    },
+    }
 
-    acquireRenderer: function() {
+    acquireRenderer() {
         RenderableView.prototype.acquireRenderer.call(this);
 
         // We need to ensure that renderer properties are applied
         // (we have no idea where the renderer has been...)
         this.updateProperties(true);
-    },
+    }
 
-});
+}
 
 module.exports = {
     RendererView: RendererView,

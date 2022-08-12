@@ -73,7 +73,7 @@ async function createPythonWrapper(name, relativePath) {
             if (data[section]['uniforms'] === undefined) {
                 continue;
             }
-            serialized[section] = Object.assign({}, data[section]);
+            serialized[section] = { ...data[section]};
             serialized[section]['uniforms'] = serializeUniforms(data[section]['uniforms']);
         }
     } else {

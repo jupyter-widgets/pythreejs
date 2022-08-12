@@ -2,9 +2,9 @@ var Promise = require('bluebird');
 var THREE = require('three');
 var TextTextureBase = require('./TextTexture.autogen').TextTextureModel;
 
-var TextTextureModel = TextTextureBase.extend({
+class TextTextureModel extends TextTextureBase {
 
-    constructThreeObjectAsync: function() {
+    constructThreeObjectAsync() {
 
         var self = this;
 
@@ -13,10 +13,10 @@ var TextTextureModel = TextTextureBase.extend({
             return resolve(new THREE.CanvasTexture(canvas));
         });
         return p;
-    },
+    }
 
     // push data from model to three object
-    syncToThreeObj: function(force) {
+    syncToThreeObj(force) {
         TextTextureBase.prototype.syncToThreeObj.apply(this, arguments);
 
         // TODO: Use mapping of relevant properties instead of sync?
@@ -25,9 +25,9 @@ var TextTextureModel = TextTextureBase.extend({
         this.obj.needsUpdate = true;
         this.set({ version: this.obj.version }, 'pushFromThree');
         this.save_changes();
-    },
+    }
 
-    buildCanvas: function() {
+    buildCanvas() {
         var fontFace = this.get('fontFace');
         var size = this.get('size');
         var color = this.get('color');
@@ -58,7 +58,7 @@ var TextTextureModel = TextTextureBase.extend({
         return canvas;
     }
 
-});
+}
 
 module.exports = {
     TextTextureModel: TextTextureModel,

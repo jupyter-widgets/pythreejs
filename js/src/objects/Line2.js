@@ -2,9 +2,9 @@ var Promise = require('bluebird');
 var Line2 = require('../examples/lines/Line2.js').Line2;
 var Line2Autogen = require('./Line2.autogen').Line2Model;
 
-var Line2Model = Line2Autogen.extend({
+class Line2Model extends Line2Autogen {
 
-    constructThreeObject: function() {
+    constructThreeObject() {
 
         var result = new Line2(
             this.convertThreeTypeModelToThree(this.get('geometry'), 'geometry'),
@@ -12,9 +12,9 @@ var Line2Model = Line2Autogen.extend({
         );
         return Promise.resolve(result);
 
-    },
+    }
 
-});
+}
 
 module.exports = {
     Line2Model: Line2Model,

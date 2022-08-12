@@ -5,9 +5,9 @@ var LineMaterialAutogen = require('./LineMaterial.autogen').LineMaterialModel;
 var utils = require('../_base/utils');
 
 
-var LineMaterialModel = LineMaterialAutogen.extend({
+class LineMaterialModel extends LineMaterialAutogen {
 
-    constructThreeObject: function() {
+    constructThreeObject() {
 
         var result = new LineMaterial({
             color: this.convertColorModelToThree(this.get('color'), 'color'),
@@ -19,9 +19,9 @@ var LineMaterialModel = LineMaterialAutogen.extend({
         });
         return Promise.resolve(result);
 
-    },
+    }
 
-});
+}
 
 utils.customModelsLut[LineMaterial.prototype.constructor.name] = 'LineMaterial';
 

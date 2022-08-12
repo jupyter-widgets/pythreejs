@@ -15,15 +15,16 @@ function makeRendererClaimToken(renderer, onReclaim) {
     };
 }
 
-function KeyedCollection() {
-    this._collection = [];
-}
-_.extend(KeyedCollection.prototype, {
-    push: function(key, value) {
-        this._collection.push({key: key, value: value});
-    },
+class KeyedCollection {
+    constructor() {
+        this._collection = [];
+    }
 
-    pop: function(key) {
+    push(key, value) {
+        this._collection.push({key: key, value: value});
+    }
+
+    pop(key) {
         for (var i=0, l=this._collection.length; i < l; ++i) {
             var el = this._collection[i];
             if (_.isEqual(el.key, key)) {
@@ -32,20 +33,20 @@ _.extend(KeyedCollection.prototype, {
             }
         }
         return null;
-    },
+    }
 
-    shift: function() {
+    shift() {
         var el = this._collection.shift();
         return el.value;
-    },
+    }
 
-    find: function(evaluator) {
+    find(evaluator) {
         return _.find(this._collection, function(kv) {
             return evaluator(kv.value);
         });
-    },
+    }
 
-    popFind: function(evaluator) {
+    popFind(evaluator) {
         for (var i=0, l=this._collection.length; i < l; ++i) {
             var el = this._collection[i];
             if (evaluator(el.value)) {
@@ -54,12 +55,12 @@ _.extend(KeyedCollection.prototype, {
             }
         }
         return null;
-    },
+    }
 
-    length: function() {
+    length() {
         return this._collection.length;
-    },
-});
+    }
+}
 
 var isWebgl2Available = (function() {
     var isAvailable;
@@ -77,14 +78,14 @@ var isWebgl2Available = (function() {
     return inner;
 })();
 
-function RendererPool() {
-    this.numCreated = 0;
-    this.freePool = new KeyedCollection();
-    this.claimedPool = new KeyedCollection();
-}
-_.extend(RendererPool.prototype, {
+class RendererPool {
+    constructor() {
+        this.numCreated = 0;
+        this.freePool = new KeyedCollection();
+        this.claimedPool = new KeyedCollection();
+    }
 
-    _createRenderer: function(config) {
+    _createRenderer(config) {
         config = _.extend({}, config);
         var webglVersion = config.webglVersion;
         delete config.webglVersion;
@@ -96,7 +97,7 @@ _.extend(RendererPool.prototype, {
                 depth: true,
                 stencil: true,
                 premultipliedAlpha: true,
-                preserveDrawingBuffer: false,
+                preserveDrawingBuffer: true,
                 powerPreference: 'default'
             }, config);
             var context = canvas.getContext('webgl2', config);
@@ -104,31 +105,28 @@ _.extend(RendererPool.prototype, {
             config.context = context;
         }
 
-        var renderer = new THREE.WebGLRenderer(
-            _.extend({},
-                config,
-                {
-                    // required for converting canvas to png
-                    preserveDrawingBuffer: true
-                }
-            ));
+        var renderer = new THREE.WebGLRenderer({
+            ...config,
+            // required for converting canvas to png
+            preserveDrawingBuffer: true
+        });
         renderer.setPixelRatio(window.devicePixelRatio || 1);
         renderer.context.canvas.addEventListener('webglcontextlost', this.onContextLost.bind(this), false);
         renderer.poolId = this.numCreated;
         this.numCreated++;
         return renderer;
-    },
+    }
 
-    _replaceRenderer: function(renderer, config) {
+    _replaceRenderer(renderer, config) {
         var id = renderer.poolId;
         renderer.dispose();
         this.numCreated--;
         renderer = this._createRenderer(config);
         renderer.poolId = id;
         return renderer;
-    },
+    }
 
-    acquire: function(config, onReclaim) {
+    acquire(config, onReclaim) {
 
         var renderer;
         console.debug('RendererPool.acquiring...');
@@ -180,9 +178,9 @@ _.extend(RendererPool.prototype, {
         this.claimedPool.push(config, makeRendererClaimToken(renderer, onReclaim));
         renderer.clear();
         return renderer;
-    },
+    }
 
-    release: function(renderer) {
+    release(renderer) {
         console.debug('RendererPool.release(id=' + renderer.poolId + ')');
 
         var id = renderer.poolId;
@@ -200,9 +198,9 @@ _.extend(RendererPool.prototype, {
         // notify previous claimant
         kvPair.value.onReclaim();
 
-    },
+    }
 
-    onContextLost: function(event) {
+    onContextLost(event) {
         // Find the relevant renderer, and remove claim:
         var kvPair = this.claimedPool.popFind(function(claimToken) {
             return claimToken.renderer.domElement === event.target;
@@ -217,8 +215,8 @@ _.extend(RendererPool.prototype, {
 
         // notify previous claimant
         kvPair.value.onReclaim();
-    },
+    }
 
-});
+}
 
 module.exports = new RendererPool();

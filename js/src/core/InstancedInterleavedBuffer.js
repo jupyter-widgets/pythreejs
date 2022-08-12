@@ -2,9 +2,9 @@ var Promise = require('bluebird');
 var THREE = require('three');
 var InstancedInterleavedBufferAutogen = require('./InstancedInterleavedBuffer.autogen').InstancedInterleavedBufferModel;
 
-var InstancedInterleavedBufferModel = InstancedInterleavedBufferAutogen.extend({
+class InstancedInterleavedBufferModel extends InstancedInterleavedBufferAutogen {
 
-    constructThreeObject: function() {
+    constructThreeObject() {
         var data = this.decodeData();
         var result = new THREE.InstancedInterleavedBuffer(
             data.array,
@@ -14,9 +14,9 @@ var InstancedInterleavedBufferModel = InstancedInterleavedBufferAutogen.extend({
         result.needsUpdate = true;
         return Promise.resolve(result);
 
-    },
+    }
 
-});
+}
 
 module.exports = {
     InstancedInterleavedBufferModel: InstancedInterleavedBufferModel,

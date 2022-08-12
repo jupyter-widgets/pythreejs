@@ -5,30 +5,26 @@ var CloneArrayAutogen = require('./CloneArray.autogen').CloneArrayModel;
 var utils = require('../_base/utils');
 
 
-function ThreeCloneArray(original, positions, merge) {
-    THREE.Object3D.call(this);
+class ThreeCloneArray extends THREE.Object3D {
+    constructor(original, positions, merge) {
+        super();
 
-    this.original = original;
-    this.positions = positions;
-    this.merge = merge;
+        this.original = original;
+        this.positions = positions;
+        this.merge = merge;
 
-    this.build();
-}
+        this.build();
+    }
 
+    clear() {
 
-ThreeCloneArray.prototype = Object.assign(Object.create(THREE.Object3D.prototype), {
+    }
 
-    constructor: ThreeCloneArray,
-
-    clear: function() {
-
-    },
-
-    isComplete: function() {
+    isComplete() {
         return !!this.original && !!this.positions;
-    },
+    }
 
-    build: function() {
+    build() {
         if (this.children) {
             this.clear();
         }
@@ -101,14 +97,14 @@ ThreeCloneArray.prototype = Object.assign(Object.create(THREE.Object3D.prototype
             }, this);
 
         }
-    },
+    }
 
-} );
+}
 
 
-var CloneArrayModel = CloneArrayAutogen.extend({
+class CloneArrayModel extends CloneArrayAutogen {
 
-    constructThreeObject: function() {
+    constructThreeObject() {
 
         var result = new ThreeCloneArray(
             this.convertThreeTypeModelToThree(this.get('original'), 'original'),
@@ -117,10 +113,10 @@ var CloneArrayModel = CloneArrayAutogen.extend({
         );
         return Promise.resolve(result);
 
-    },
+    }
 
     // push data from model to three object
-    syncToThreeObj: function(force) {
+    syncToThreeObj(force) {
 
         this._needs_rebuild = false;
         CloneArrayAutogen.prototype.syncToThreeObj.apply(this, arguments);
@@ -128,9 +124,9 @@ var CloneArrayModel = CloneArrayAutogen.extend({
             this.obj.build();
         }
 
-    },
+    }
 
-    createPropertiesArrays: function() {
+    createPropertiesArrays() {
 
         CloneArrayAutogen.prototype.createPropertiesArrays.call(this);
 
@@ -138,9 +134,9 @@ var CloneArrayModel = CloneArrayAutogen.extend({
         this.property_assigners['positions'] = 'rebuildAssigner';
         this.property_assigners['merge'] = 'rebuildAssigner';
 
-    },
+    }
 
-    rebuildAssigner: function(obj, key, value) {
+    rebuildAssigner(obj, key, value) {
         if (key === 'positions') {
             this.assignArray(obj, key, value);
         } else {
@@ -149,7 +145,7 @@ var CloneArrayModel = CloneArrayAutogen.extend({
         this._needs_rebuild = true;
     }
 
-});
+}
 
 utils.customModelsLut[ThreeCloneArray.prototype.constructor.name] = 'CloneArray';
 

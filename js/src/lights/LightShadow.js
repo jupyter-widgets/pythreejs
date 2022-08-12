@@ -1,9 +1,8 @@
-var _ = require('underscore');
 var LightShadowAutogen = require('./LightShadow.autogen').LightShadowModel;
 
-var LightShadowModel = LightShadowAutogen.extend({
+class LightShadowModel extends LightShadowAutogen {
 
-    syncToThreeObj: function(force) {
+    syncToThreeObj(force) {
         if (force || this.hasChanged('mapSize')) {
             // The map needs to be recreated!
             this.obj.map = null;
@@ -11,7 +10,7 @@ var LightShadowModel = LightShadowAutogen.extend({
         LightShadowAutogen.prototype.syncToThreeObj.apply(this, arguments);
     }
 
-});
+}
 
 module.exports = {
     LightShadowModel: LightShadowModel,

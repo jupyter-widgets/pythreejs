@@ -2,17 +2,15 @@
 # -*- coding: utf-8 -*-
 
 from collections import namedtuple
-try:
-    from collections.abc import Sequence  # python3
-except ImportError:
-    from collections import Sequence  # python2
-import six
+from collections.abc import Sequence
+import numbers
+import math
 import re
 import warnings
 
 from traitlets import (
     Unicode, Int, CInt, Instance, Enum, List, Dict, Float, CFloat,
-    Bool, Tuple, Undefined, TraitError, Union, TraitType
+    Bool, Tuple, Undefined, TraitError, Union, TraitType, CaselessStrEnum
 )
 
 from ipywidgets import widget_serialization
@@ -33,6 +31,30 @@ def _castable_namedtuple(typename, field_names):
     return type(typename, (base,), {'__new__': new_new})
 
 
+def _ieee_to_json(value, owner):
+    if isinstance(value, numbers.Real):
+        # cast out-of-range floats to their reprs
+        if math.isnan(value) or math.isinf(value):
+            return repr(value)
+    return value
+
+ieee_float_serializers = {
+    'to_json': _ieee_to_json,
+}
+
+
+class IEEEFloat(CFloat):
+    def __init__(self, default_value=Undefined, **kwargs):
+        super().__init__(default_value=default_value, **kwargs)
+        self.metadata.setdefault("to_json", _ieee_to_json)
+
+
+def _ieee_tuple_to_json(value, owner):
+    if value is None:
+        return value
+    return [_ieee_to_json(e, owner) for e in value]
+
+
 class Vector2(Tuple):
     """A trait for a 2-tuple corresponding to a three.js Vector2.
     """
@@ -42,12 +64,14 @@ class Vector2(Tuple):
 
     def __init__(self, trait=Undefined, default_value=Undefined, **kwargs):
         if trait is Undefined:
-            trait = CFloat()
+            trait = IEEEFloat()
         if default_value is Undefined:
             default_value = self.default_value
         else:
             self.default_value = default_value
         super(Vector2, self).__init__(*(trait, trait), default_value=default_value, **kwargs)
+        if isinstance(trait, IEEEFloat):
+            self.metadata.setdefault("to_json", _ieee_tuple_to_json)
 
 
 class Vector3(Tuple):
@@ -59,12 +83,14 @@ class Vector3(Tuple):
 
     def __init__(self, trait=Undefined, default_value=Undefined, **kwargs):
         if trait is Undefined:
-            trait = CFloat()
+            trait = IEEEFloat()
         if default_value is Undefined:
             default_value = self.default_value
         else:
             self.default_value = default_value
         super(Vector3, self).__init__(*(trait, trait, trait), default_value=default_value, **kwargs)
+        if isinstance(trait, IEEEFloat):
+            self.metadata.setdefault("to_json", _ieee_tuple_to_json)
 
 
 class Vector4(Tuple):
@@ -76,12 +102,14 @@ class Vector4(Tuple):
 
     def __init__(self, trait=Undefined, default_value=Undefined, **kwargs):
         if trait is Undefined:
-            trait = CFloat()
+            trait = IEEEFloat()
         if default_value is Undefined:
             default_value = self.default_value
         else:
             self.default_value = default_value
         super(Vector4, self).__init__(*(trait, trait, trait, trait), default_value=default_value, **kwargs)
+        if isinstance(trait, IEEEFloat):
+            self.metadata.setdefault("to_json", _ieee_tuple_to_json)
 
 
 class Matrix3(Tuple):
@@ -97,12 +125,14 @@ class Matrix3(Tuple):
 
     def __init__(self, trait=Undefined, default_value=Undefined, **kwargs):
         if trait is Undefined:
-            trait = CFloat()
+            trait = IEEEFloat()
         if default_value is Undefined:
             default_value = self.default_value
         else:
             self.default_value = default_value
         super(Matrix3, self).__init__(*((trait,) * 9), default_value=default_value, **kwargs)
+        if isinstance(trait, IEEEFloat):
+            self.metadata.setdefault("to_json", _ieee_tuple_to_json)
 
 
 class Matrix4(Tuple):
@@ -119,12 +149,29 @@ class Matrix4(Tuple):
 
     def __init__(self, trait=Undefined, default_value=Undefined, **kwargs):
         if trait is Undefined:
-            trait = CFloat()
+            trait = IEEEFloat()
         if default_value is Undefined:
             default_value = self.default_value
         else:
             self.default_value = default_value
         super(Matrix4, self).__init__(*((trait,) * 16), default_value=default_value, **kwargs)
+        if isinstance(trait, IEEEFloat):
+            self.metadata.setdefault("to_json", _ieee_tuple_to_json)
+
+
+def _face_to_json(value, owner):
+    if value is None:
+        return None
+    value = list(value)
+    if value[3] is not None:
+        normal = list(value[3])
+        for i, v in enumerate(normal):
+            if isinstance(v, tuple):
+                normal[i] = _ieee_tuple_to_json(v, owner)
+            else:
+                normal[i] = _ieee_to_json(v, owner)
+        value[3] = normal
+    return value
 
 
 class Face3(Tuple):
@@ -154,7 +201,13 @@ class Face3(Tuple):
             CInt(allow_none=True),     # materialIndex - (optional) which index of an array of materials to associate with the face.
             default_value=(0, 0, 0, None, None, None)
         )
+        self.metadata.setdefault("to_json", _face_to_json)
 
+
+def _euler_to_json(value, owner):
+    if value is None:
+        return None
+    return _ieee_tuple_to_json(value[:3], owner) + [value[3]]
 
 class Euler(Tuple):
     """A trait for a set of Euler angles.
@@ -174,9 +227,10 @@ class Euler(Tuple):
         else:
             self.default_value = default_value
         super(Euler, self).__init__(
-            CFloat(), CFloat(), CFloat(),
+            IEEEFloat(), IEEEFloat(), IEEEFloat(),
             Enum(self._accepted_orders, self._accepted_orders[0]),
             default_value=default_value , **kwargs)
+        self.metadata.setdefault("to_json", _euler_to_json)
 
 
 class WebGLDataUnion(DataUnion):
@@ -254,7 +308,7 @@ class Color(Unicode):
     def validate(self, obj, value):
         if value is None and self.allow_none:
             return value
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             if value.lower() in _color_names or _color_re.match(value):
                 return value
             elif _color_hexa_re.match(value) or _color_rgbhsl_re.match(value):
@@ -268,9 +322,9 @@ class Uniform(Dict):
     def __init__(self, default_value=Undefined, **kwargs):
         super(Uniform, self).__init__(per_key_traits=dict(
             value=Union((
-                Int(), Float(), Color(), Instance('pythreejs.Texture'),
+                Int(), IEEEFloat(), Color(), Instance('pythreejs.Texture'),
                 List(trait=Union((
-                    Int(), Float(), Color(), Instance('pythreejs.Texture')))),
+                    Int(), IEEEFloat(), Color(), Instance('pythreejs.Texture')))),
             ), allow_none=True),
             type=Unicode()
         ), default_value=default_value, **kwargs)

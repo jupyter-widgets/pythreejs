@@ -1,12 +1,12 @@
 module.exports = {
     "env": {
-        "es6": true,
+        "es2018": true,
         "node": true
     },
     "extends": "eslint:recommended",
     "parserOptions": {
         "sourceType": "script",
-        "ecmaVersion": 2017
+        "ecmaVersion": 2018
     },
     "rules": {
         "indent": [

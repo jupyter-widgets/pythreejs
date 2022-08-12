@@ -8,9 +8,9 @@ var THREE = require('three');
 
 var pkgName = require('../../package.json').name;
 
-var AnimationActionModel = AnimationActionAutogen.extend({
+class AnimationActionModel extends AnimationActionAutogen {
 
-    defaults: function() {
+    defaults() {
         return _.extend(
             AnimationActionAutogen.prototype.defaults.call(this),
             widgets.DOMWidgetModel.prototype.defaults.call(this),
@@ -18,19 +18,18 @@ var AnimationActionModel = AnimationActionAutogen.extend({
                 _view_module: pkgName,
                 _view_name: 'AnimationActionView',
             });
-    },
+    }
 
-
-    createPropertiesArrays: function() {
+    createPropertiesArrays() {
         AnimationActionAutogen.prototype.createPropertiesArrays.call(this);
 
         // Prevent from syncing these to object
         delete this.property_converters['mixer'];
         delete this.property_converters['clip'];
         delete this.property_converters['localRoot'];
-    },
+    }
 
-    constructThreeObject: function() {
+    constructThreeObject() {
         // Use mixer.clipAction() instead of constructor for cache
         // (according to THREE docs)
         var mixer = this.convertThreeTypeModelToThree(this.get('mixer'), 'mixer');
@@ -43,9 +42,9 @@ var AnimationActionModel = AnimationActionAutogen.extend({
         rootObj.animations.push(result);
         this.timer = new THREE.Clock();
         return Promise.resolve(result);
-    },
+    }
 
-    play: function() {
+    play() {
         this.obj.play();
         this.timer.start();
         this.obj.paused = false;
@@ -57,17 +56,17 @@ var AnimationActionModel = AnimationActionAutogen.extend({
         }
         this.animateFrame();
         this.syncAnimationState();
-    },
+    }
 
-    syncAnimationState: function() {
+    syncAnimationState() {
         var root = this.get('localRoot');
         var mixer = this.get('mixer');
         root.syncToModel(true);
         mixer.syncToModel(true);
         this.syncToModel(true);
-    },
+    }
 
-    animateFrame: function() {
+    animateFrame() {
         var mixer = this.get('mixer').obj;
         var delta = this.timer.getDelta();
         mixer.update(delta);
@@ -77,35 +76,35 @@ var AnimationActionModel = AnimationActionAutogen.extend({
         if (scene) {
             scene.trigger('rerender', this, {});
         }
-    },
+    }
 
-    pause: function() {
+    pause() {
         this.obj.paused = true;
         this.resetRenderHook();
         this.timer.stop();
         this.syncAnimationState();
-    },
+    }
 
-    stop: function() {
+    stop() {
         this.obj.stop();
         this.resetRenderHook();
         this.timer.stop();
         this.syncAnimationState();
-    },
+    }
 
-    repeat: function() {
+    repeat() {
         this.obj.reset();
         this.obj.play();
-    },
+    }
 
-    resetRenderHook: function() {
+    resetRenderHook() {
         var scene = utils.getModelScene(this.get('localRoot'));
         if (scene) {
             this.stopListening(scene, 'afterRender');
         }
-    },
+    }
 
-    onCustomMessage: function(content, buffers) {
+    onCustomMessage(content, buffers) {
         switch(content.type) {
         case 'play':
             this.play();
@@ -119,17 +118,19 @@ var AnimationActionModel = AnimationActionAutogen.extend({
         default:
             AnimationActionAutogen.prototype.onCustomMessage.call(arguments);
         }
-    },
-}, {
-    serializers: _.extend({
+    }
 
-    }, widgets.DOMWidgetModel.serializers, AnimationActionAutogen.serializers),
-});
+}
+
+AnimationActionModel.serializers = {
+    ...AnimationActionAutogen.serializers,
+    ...widgets.DOMWidgetModel.serializers,
+};
 
 
-var AnimationActionView = widgets.DOMWidgetView.extend({
+class AnimationActionView extends widgets.DOMWidgetView {
 
-    render: function() {
+    render() {
         widgets.DOMWidgetView.prototype.render();
         this.el.classList.add('jupyter-widgets');
         this.el.classList.add('widget-inline-hbox');
@@ -177,18 +178,18 @@ var AnimationActionView = widgets.DOMWidgetView.extend({
             this.update_repeat();
             this.update();
         });
-    },
+    }
 
-    update: function() {
+    update() {
         var disabled = !this.model.get('enabled');
         this.playButton.disabled = disabled;
         this.pauseButton.disabled = disabled;
         this.stopButton.disabled = disabled;
         this.repeatButton.disabled = disabled;
         this.update_playing();
-    },
+    }
 
-    update_playing: function() {
+    update_playing() {
         var playing = !this.model.get('paused');
         var disabled = !this.model.get('enabled');
         if (playing) {
@@ -202,9 +203,9 @@ var AnimationActionView = widgets.DOMWidgetView.extend({
             }
             this.playButton.classList.remove('mod-active');
         }
-    },
+    }
 
-    update_repeat: function() {
+    update_repeat() {
         // TODO: Add loop/repetition modifiers
         // LoopOnce/LoopRepeate/LoopPingPong
         // Zero slope at end
@@ -214,8 +215,8 @@ var AnimationActionView = widgets.DOMWidgetView.extend({
         } else {
             this.repeatButton.classList.remove('mod-active');
         }
-    },
-});
+    }
+}
 
 module.exports = {
     AnimationActionModel: AnimationActionModel,

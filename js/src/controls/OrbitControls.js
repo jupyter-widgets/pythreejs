@@ -1,28 +1,27 @@
-var _ = require('underscore');
 var OrbitControls = require('../examples/controls/OrbitControls.js').OrbitControls;
 var OrbitControlsAutogen = require('./OrbitControls.autogen');
 
 
-var OrbitControlsModel = OrbitControlsAutogen.OrbitControlsModel.extend({
+class OrbitControlsModel extends OrbitControlsAutogen.OrbitControlsModel {
 
-    constructThreeObject: function() {
+    constructThreeObject() {
         var controlling = this.get('controlling');
         var obj = new OrbitControls(controlling.obj);
         obj.dispose();  // Disconnect events, we need to (dis-)connect on freeze/thaw
         obj.enableKeys = false; // turn off keyboard navigation
 
         return obj;
-    },
+    }
 
-    setupListeners: function() {
+    setupListeners() {
         OrbitControlsAutogen.OrbitControlsModel.prototype.setupListeners.call(this);
         var that = this;
         this.obj.addEventListener('end', function() {
             that.update_controlled();
         });
-    },
+    }
 
-    update_controlled: function() {
+    update_controlled() {
         // Since OrbitControls changes the position of the object, we
         // update the position when we've stopped moving the object.
         // It's probably prohibitive to update it in real-time
@@ -44,9 +43,9 @@ var OrbitControlsModel = OrbitControlsAutogen.OrbitControlsModel.extend({
             target: this.obj.target.toArray(),
         }, 'pushFromThree');
         this.save_changes();
-    },
+    }
 
-});
+}
 
 module.exports = {
     OrbitControlsModel: OrbitControlsModel,

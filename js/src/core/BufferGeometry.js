@@ -11,14 +11,14 @@ var BaseGeometryModel = require('../core/BaseGeometry.autogen.js').BaseGeometryM
 var BaseBufferGeometryModel = require('../core/BaseBufferGeometry.autogen.js').BaseBufferGeometryModel;
 
 
-var BufferGeometryModel = AutogenBufferGeometryModel.extend({
+class BufferGeometryModel extends AutogenBufferGeometryModel {
 
-    createPropertiesArrays: function() {
+    createPropertiesArrays() {
         AutogenBufferGeometryModel.prototype.createPropertiesArrays.call(this);
         this.property_assigners['attributes'] = 'assignAttributesMap';
-    },
+    }
 
-    constructFromRef: function(ref, keep_ref) {
+    constructFromRef(ref, keep_ref) {
         var result = new THREE.BufferGeometry();
 
         var chain = ref.initPromise.bind(this);
@@ -109,9 +109,9 @@ var BufferGeometryModel = AutogenBufferGeometryModel.extend({
 
             return result;
         });
-    },
+    }
 
-    constructThreeObject: function() {
+    constructThreeObject() {
         var ref = this.get('_ref_geometry');
         var keep_ref = this.get('_store_ref');
         if (ref) {
@@ -120,9 +120,9 @@ var BufferGeometryModel = AutogenBufferGeometryModel.extend({
 
         var result = new THREE.BufferGeometry();
         return Promise.resolve(result);
-    },
+    }
 
-    assignAttributesMap: function(obj, key, value) {
+    assignAttributesMap(obj, key, value) {
 
         var three = obj[key];
         var oldKeys = three ? Object.keys(three).sort() : [];
@@ -150,9 +150,9 @@ var BufferGeometryModel = AutogenBufferGeometryModel.extend({
             console.warn('Cannot reassign buffer geometry attribute:', commonChanged);
         }
 
-    },
+    }
 
-});
+}
 
 module.exports = {
     BufferGeometryModel: BufferGeometryModel,

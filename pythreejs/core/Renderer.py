@@ -1,7 +1,6 @@
 """
 """
 
-import six
 from contextlib import contextmanager
 from ipywidgets import widget_serialization
 from traitlets import (
@@ -69,17 +68,16 @@ class Renderer(RenderableWidget):
             self._pause_autorender = False
 
 
-if six.PY3:
-    from inspect import Signature, Parameter
-    # Include explicit signature since the metaclass screws it up
-    parameters = [
-        Parameter('scene', Parameter.POSITIONAL_OR_KEYWORD),
-        Parameter('camera', Parameter.POSITIONAL_OR_KEYWORD),
-        Parameter('controls', Parameter.POSITIONAL_OR_KEYWORD, default=None),
-    ]
-    for name in ('width', 'height', 'background', 'background_opacity'):
-        parameters.append(Parameter(
-            name, Parameter.KEYWORD_ONLY, default=getattr(Renderer, name).default_value))
-    parameters.append(Parameter('kwargs', Parameter.VAR_KEYWORD))
-    Renderer.__signature__ = Signature(parameters=tuple(parameters))
-    del parameters
+from inspect import Signature, Parameter
+# Include explicit signature since the metaclass screws it up
+parameters = [
+    Parameter('scene', Parameter.POSITIONAL_OR_KEYWORD),
+    Parameter('camera', Parameter.POSITIONAL_OR_KEYWORD),
+    Parameter('controls', Parameter.POSITIONAL_OR_KEYWORD, default=None),
+]
+for name in ('width', 'height', 'background', 'background_opacity'):
+    parameters.append(Parameter(
+        name, Parameter.KEYWORD_ONLY, default=getattr(Renderer, name).default_value))
+parameters.append(Parameter('kwargs', Parameter.VAR_KEYWORD))
+Renderer.__signature__ = Signature(parameters=tuple(parameters))
+del parameters

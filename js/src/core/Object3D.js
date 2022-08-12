@@ -1,20 +1,20 @@
 var _ = require('underscore');
 var Object3DAutogen = require('./Object3D.autogen').Object3DModel;
 
-var Object3DModel = Object3DAutogen.extend({
+class Object3DModel extends Object3DAutogen {
 
-    createPropertiesArrays: function() {
+    createPropertiesArrays() {
         Object3DAutogen.prototype.createPropertiesArrays.call(this);
 
         this.property_assigners['children'] = 'assignChildren';
-        
+
         _.each(['position', 'quaternion', 'rotation', 'scale'], function(key) {
             delete this.property_converters[key];
             delete this.property_assigners[key];
         }, this);
-    },
+    }
 
-    assignChildren: function(obj, key, value) {
+    assignChildren(obj, key, value) {
         var old = obj[key];
         var removed = _.difference(old, value);
         var added = _.difference(value, old);
@@ -24,9 +24,9 @@ var Object3DModel = Object3DAutogen.extend({
         if (added.length > 0) {
             obj.add.apply(obj, added);
         }
-    },
+    }
 
-    syncToThreeObj: function(force) {
+    syncToThreeObj(force) {
         var matrixChanged;
         if (force) {
             matrixChanged = !_.isEqual(this.obj.matrix.elements, this.get('matrix'));
@@ -50,25 +50,25 @@ var Object3DModel = Object3DAutogen.extend({
             this.syncMatrixDependentsToModel(!matrixChanged);
             this.save_changes();
         }
-    },
+    }
 
-    syncToModel: function(syncAllProps) {
+    syncToModel(syncAllProps) {
         if (syncAllProps) {
             this.syncMatrixDependentsToModel(true);
         }
         Object3DAutogen.prototype.syncToModel.call(this, syncAllProps);
-    },
+    }
 
-    changedDeps: function(force) {
+    changedDeps(force) {
         return _.filter(['position', 'quaternion', 'rotation', 'scale'], function(key) {
             if (force) {
                 return !_.isEqual(this.obj[key].toArray(), this.get(key));
             }
             return this.hasChanged(key);
         }, this);
-    },
+    }
 
-    syncMatrixDependentsToThree: function(changedDeps) {
+    syncMatrixDependentsToThree(changedDeps) {
         if (changedDeps.indexOf('rotation') !== -1) {
             this.assignEuler(this.obj, 'rotation',
                 this.convertEulerModelToThree(this.get('rotation'), 'rotation')
@@ -83,9 +83,9 @@ var Object3DModel = Object3DAutogen.extend({
                 this.convertVectorModelToThree(this.get(key), key)
             );
         }, this);
-    },
+    }
 
-    syncMatrixDependentsToModel: function(includeMatrix) {
+    syncMatrixDependentsToModel(includeMatrix) {
         var toSet = {
             position: this.convertVectorThreeToModel(this.obj.position, 'position'),
             quaternion: this.convertVectorThreeToModel(this.obj.quaternion, 'quaternion'),
@@ -102,9 +102,9 @@ var Object3DModel = Object3DAutogen.extend({
             }, this);
         }
         this.set(toSet, 'pushFromThree');
-    },
+    }
 
-});
+}
 
 module.exports = {
     Object3DModel: Object3DModel,

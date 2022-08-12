@@ -39,10 +39,21 @@ class ThreeWidget(Widget):
         """Message callback used internally for logging exec returns"""
         self.log.info('%s() -> %s' % (method_name, ret_val))
 
-    def _ipython_display_(self, **kwargs):
+    def _repr_mimebundle_(self, **kwargs):
         if self._previewable:
             from IPython.display import display
             from .renderable import Preview
-            return display(Preview(self), **kwargs)
+            plaintext = repr(self)
+            if len(plaintext) > 110:
+                plaintext = plaintext[:110] + '…'
+            preview = Preview(self)
+            return {
+                'text/plain': plaintext,
+                'application/vnd.jupyter.widget-view+json': {
+                    "version_major": 2,
+                    "version_minor": 0,
+                    "model_id": preview._model_id
+                }
+            }
         else:
-            return super(ThreeWidget, self)._ipython_display_(**kwargs)
+            return super(ThreeWidget, self)._repr_mimebundle_(**kwargs)

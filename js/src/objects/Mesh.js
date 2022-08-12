@@ -1,21 +1,22 @@
-var _ = require('underscore');
 var MeshAutogen = require('./Mesh.autogen').MeshModel;
 
 
 var optionalArraySerializer = {
-    serialize: function(value, manager) {
+    serialize(value, manager) {
         if (value === undefined) {
             return [];
         }
     }
 };
 
-var MeshModel = MeshAutogen.extend({
-}, {
-    serializers: _.extend({
-        morphTargetInfluences: optionalArraySerializer,
-    },  MeshAutogen.serializers),
-});
+class MeshModel extends MeshAutogen {
+}
+
+
+MeshModel.serializers = {
+    ...MeshAutogen.serializers,
+    morphTargetInfluences: optionalArraySerializer,
+};
 
 module.exports = {
     MeshModel: MeshModel,

@@ -4,17 +4,17 @@ var ndarray = require('ndarray');
 var THREE = require('three');
 var BufferAttributeAutogen = require('./BufferAttribute.autogen').BufferAttributeModel;
 
-var BufferAttributeModel = BufferAttributeAutogen.extend({
+class BufferAttributeModel extends BufferAttributeAutogen {
 
-    createPropertiesArrays: function() {
+    createPropertiesArrays() {
         BufferAttributeAutogen.prototype.createPropertiesArrays.call(this);
 
         // three.js DataTexture stores the data, width, and height props together in a dict called 'image'
         this.property_mappers['BufferAttributeArray'] = 'mapBufferAttributeArray';
         delete this.property_converters['array'];
-    },
+    }
 
-    decodeData: function() {
+    decodeData() {
         var rawData = dataserializers.getArray(this.get('array'));
         var itemSize = rawData.dimension === 1 ? 1 : rawData.shape[rawData.dimension - 1];
 
@@ -23,9 +23,9 @@ var BufferAttributeModel = BufferAttributeAutogen.extend({
             array: data,
             itemSize: itemSize,
         };
-    },
+    }
 
-    constructThreeObject: function() {
+    constructThreeObject() {
         var data = this.decodeData();
         var result = new THREE.BufferAttribute(
             data.array,
@@ -35,16 +35,16 @@ var BufferAttributeModel = BufferAttributeAutogen.extend({
         result.needsUpdate = true;
         return Promise.resolve(result);
 
-    },
+    }
 
-    mapBufferAttributeArrayModelToThree: function() {
+    mapBufferAttributeArrayModelToThree() {
         var data = this.decodeData();
         this.obj.setArray(data.array);
         this.obj.needsUpdate = true;
         this.set({ version: this.obj.version }, 'pushFromThree');
-    },
+    }
 
-    mapBufferAttributeArrayThreeToModel: function() {
+    mapBufferAttributeArrayThreeToModel() {
         /*
          * There are a few different cases to take into account here:
          * 1. We are during initial setup of a normal creation, with a widget ref
@@ -63,16 +63,16 @@ var BufferAttributeModel = BufferAttributeAutogen.extend({
             // 3. / 4.
             this.set('array', ndarray(attributeData, [this.obj.count, this.obj.itemSize]));
         }
-    },
+    }
 
-    onChildChanged: function(model) {
+    onChildChanged(model) {
         if (model === this.get('array')) {
             // We need to update data
             this.mapBufferAttributeArrayModelToThree();
         }
-    },
+    }
 
-});
+}
 
 module.exports = {
     BufferAttributeModel: BufferAttributeModel,
