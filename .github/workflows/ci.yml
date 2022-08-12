@@ -142,7 +142,7 @@ jobs:
         include:
           - python: 3.7
             dist: 'pythreejs*.tar.gz'
-            node: 12
+            node: 14
             lab: 1
           - python: 3.8
             dist: 'pythreejs*.whl'
