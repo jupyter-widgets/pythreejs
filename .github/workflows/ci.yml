@@ -138,19 +138,21 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu, macos, windows]
-        python: [3.6, 3.7, 3.8, 3.9]
+        python: [3.7, 3.8, 3.9, 3.10]
         include:
-          - python: 3.6
-            dist: 'pythreejs*.tar.gz'
           - python: 3.7
-            dist: 'pythreejs*.whl'
-            lab: 1
-            node: 10
+            dist: 'pythreejs*.tar.gz'
+            node: 14
+            lab: 2
           - python: 3.8
             dist: 'pythreejs*.whl'
-            lab: 2
             node: 14
+            lab: 2
           - python: 3.9
+            node: 16
+            dist: 'pythreejs*.whl'
+            lab: 3
+          - python: 3.10
             dist: 'pythreejs*.whl'
             lab: 3
           - os: windows

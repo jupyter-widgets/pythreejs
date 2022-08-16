@@ -423,7 +423,7 @@ class RenderableView extends widgets.DOMWidgetView {
         this.$renderer = $(this.renderer.domElement);
         this.$el.empty().append(this.$renderer);
 
-        this.$el.css('margin-bottom', '-5px');
+        this.$el.css('display', 'block');
 
         this.updateSize();
 
