@@ -7,21 +7,11 @@ from {{ module.pyRelativePath }} import *
 {{/each}}
 
 
-def _prefix():
-    import sys
-    from pathlib import Path
-    prefix = sys.prefix
-    here = Path(__file__).parent
-    # for when in dev mode
-    if (here.parent / 'setup.py').exists():
-        prefix = here.parent
-    return prefix
-
 
 def _jupyter_labextension_paths():
     return [{
-        'src': f'{_prefix()}/share/jupyter/labextensions/{npm_pkg_name}/',
-        'dest': f'{npm_pkg_name}',
+        'src': 'labextension',
+        'dest': npm_pkg_name,
     }]
 
 
