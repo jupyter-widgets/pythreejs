@@ -1,5 +1,4 @@
 version: 2
-type: sphinx
 build:
   tools:
     python: "3.10"
