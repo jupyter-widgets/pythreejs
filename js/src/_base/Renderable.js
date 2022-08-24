@@ -427,6 +427,10 @@ class RenderableView extends widgets.DOMWidgetView {
 
         this.updateSize();
 
+        // We need to ensure that renderer properties are applied
+        // (we have no idea where the renderer has been...)
+        this.updateProperties(true);
+
         this.debug('ThreeView.acquireRenderer(' + this.renderer.poolId + ')');
     }
 

@@ -440,7 +440,7 @@ class ThreeModel extends widgets.WidgetModel {
             toSet[propName] = converterFn.bind(this)(this.obj[propName], propName);
         }, this);
 
-        if (toSet) {
+        if (Object.keys(toSet).length) {
             // Apply all direct changes at once
             this.set(toSet, 'pushFromThree');
         }
