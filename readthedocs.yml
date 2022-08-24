@@ -1,9 +1,15 @@
+version: 2
 type: sphinx
+build:
+  tools:
+    python: "3.10"
+    nodejs: "18"
 python:
-  version: 3.5
-  pip_install: true
-  extra_requirements:
-    - examples
-    - docs
+  install:
+  - method: pip
+    path: .
+    extra_requirements:
+      - examples
+      - docs
 conda:
-  file: docs/environment.yml
+  environment: docs/environment.yml
