@@ -7,7 +7,7 @@ build:
   jobs:
     pre_install:
       # pip install is now not in-place, so we need to manually ensure autogen gets run
-      - cd .\js && npm install
+      - cd js && npm install
 python:
   install:
   - method: pip
