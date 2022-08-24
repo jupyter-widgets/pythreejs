@@ -9,8 +9,6 @@ This is meant to be a low-level wrapper around three.js. We hope that others
 will use this foundation to build higher-level interfaces to build 3d plots.
 """
 
-from __future__ import absolute_import
-
 from ipywidgets import Widget, widget_serialization
 from traitlets import Unicode, CInt, Instance, List, CFloat, Bool, observe, validate
 import numpy as np
