@@ -166,14 +166,6 @@ class RendererView extends RenderableView {
         }
     }
 
-    acquireRenderer() {
-        RenderableView.prototype.acquireRenderer.call(this);
-
-        // We need to ensure that renderer properties are applied
-        // (we have no idea where the renderer has been...)
-        this.updateProperties(true);
-    }
-
 }
 
 module.exports = {
