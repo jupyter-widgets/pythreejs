@@ -4,6 +4,10 @@ build:
   tools:
     python: "3.10"
     nodejs: "18"
+jobs:
+  pre_install:
+    # pip install is now not in-place, so we need to manually ensure autogen gets run
+    - cd .\js && npm install
 python:
   install:
   - method: pip
