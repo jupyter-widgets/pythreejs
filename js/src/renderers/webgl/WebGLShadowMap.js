@@ -24,7 +24,7 @@ class WebGLShadowMapModel extends WebGLShadowMapAutogenModel {
         // Leave this to Renderable
     }
 
-    synToModel(syncAllProps) {
+    syncToModel(syncAllProps) {
         // Leave this to Renderable
     }
 
