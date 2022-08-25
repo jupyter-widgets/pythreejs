@@ -39,21 +39,29 @@ class ThreeWidget(Widget):
         """Message callback used internally for logging exec returns"""
         self.log.info('%s() -> %s' % (method_name, ret_val))
 
-    def _repr_mimebundle_(self, **kwargs):
-        if self._previewable:
-            from IPython.display import display
-            from .renderable import Preview
-            plaintext = repr(self)
-            if len(plaintext) > 110:
-                plaintext = plaintext[:110] + '…'
-            preview = Preview(self)
-            return {
-                'text/plain': plaintext,
-                'application/vnd.jupyter.widget-view+json': {
-                    "version_major": 2,
-                    "version_minor": 0,
-                    "model_id": preview._model_id
+    if hasattr(Widget, "_ipython_display_"):  # ipywidgets < 8.0.0
+        def _ipython_display_(self, **kwargs):
+            if self._previewable:
+                from IPython.display import display
+                from .renderable import Preview
+                return display(Preview(self), **kwargs)
+            else:
+                return super(ThreeWidget, self)._ipython_display_(**kwargs)
+    else:
+        def _repr_mimebundle_(self, **kwargs):
+            if self._previewable:
+                from .renderable import Preview
+                plaintext = repr(self)
+                if len(plaintext) > 110:
+                    plaintext = plaintext[:110] + '…'
+                preview = Preview(self)
+                return {
+                    'text/plain': plaintext,
+                    'application/vnd.jupyter.widget-view+json': {
+                        "version_major": 2,
+                        "version_minor": 0,
+                        "model_id": preview._model_id
+                    }
                 }
-            }
-        else:
-            return super(ThreeWidget, self)._repr_mimebundle_(**kwargs)
+            else:
+                return super(ThreeWidget, self)._repr_mimebundle_(**kwargs)
