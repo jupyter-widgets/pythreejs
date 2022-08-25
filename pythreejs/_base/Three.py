@@ -3,10 +3,13 @@ from traitlets import Unicode
 
 try:
     from importlib.metadata import version
+    from packaging.version import parse, Version
+    def version_gte_than(pkg, minimum_supported):
+        return parse(version(pkg)) >= Version(minimum_supported)
 except ImportError:
-    def version(pkg):
+    def version_gte_than(pkg, minimum_supported):
         import pkg_resources
-        return pkg_resources.get_distribution(pkg).version
+        return pkg_resources.get_distribution(pkg).parsed_version >= pkg_resources.parse_version(minimum_supported)
 
 from .._package import npm_pkg_name
 from .._version import EXTENSION_SPEC_VERSION
@@ -46,7 +49,7 @@ class ThreeWidget(Widget):
         """Message callback used internally for logging exec returns"""
         self.log.info('%s() -> %s' % (method_name, ret_val))
 
-    if version("ipywidget") >= (8, 0, 0):
+    if version_gte_than("ipywidgets",  "8.0.0"):
         def _repr_mimebundle_(self, **kwargs):
             if self._previewable:
                 from .renderable import Preview
