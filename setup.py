@@ -67,7 +67,6 @@ setup_args = {
         'ipywidgets>=7.2.1',
         'ipydatawidgets>=1.1.1',
         'numpy',
-        'packaging',
         'traitlets',
     ],
     'extras_require': {

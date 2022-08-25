@@ -12,4 +12,3 @@ dependencies:
 - scikit-image
 - sphinx
 - nbsphinx
-- packaging

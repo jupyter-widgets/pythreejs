@@ -1,16 +1,6 @@
 from ipywidgets import Widget, widget_serialization
 from traitlets import Unicode
 
-try:
-    from importlib.metadata import version
-    from packaging.version import parse, Version
-    def version_gte_than(pkg, minimum_supported):
-        return parse(version(pkg)) >= Version(minimum_supported)
-except ImportError:
-    def version_gte_than(pkg, minimum_supported):
-        import pkg_resources
-        return pkg_resources.get_distribution(pkg).parsed_version >= pkg_resources.parse_version(minimum_supported)
-
 from .._package import npm_pkg_name
 from .._version import EXTENSION_SPEC_VERSION
 
@@ -49,7 +39,15 @@ class ThreeWidget(Widget):
         """Message callback used internally for logging exec returns"""
         self.log.info('%s() -> %s' % (method_name, ret_val))
 
-    if version_gte_than("ipywidgets",  "8.0.0"):
+    if hasattr(Widget, "_ipython_display_"):  # ipywidgets < 8.0.0
+        def _ipython_display_(self, **kwargs):
+            if self._previewable:
+                from IPython.display import display
+                from .renderable import Preview
+                return display(Preview(self), **kwargs)
+            else:
+                return super(ThreeWidget, self)._ipython_display_(**kwargs)
+    else:
         def _repr_mimebundle_(self, **kwargs):
             if self._previewable:
                 from .renderable import Preview
@@ -67,11 +65,3 @@ class ThreeWidget(Widget):
                 }
             else:
                 return super(ThreeWidget, self)._repr_mimebundle_(**kwargs)
-    else:
-        def _ipython_display_(self, **kwargs):
-            if self._previewable:
-                from IPython.display import display
-                from .renderable import Preview
-                return display(Preview(self), **kwargs)
-            else:
-                return super(ThreeWidget, self)._ipython_display_(**kwargs)
