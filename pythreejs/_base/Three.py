@@ -41,7 +41,6 @@ class ThreeWidget(Widget):
 
     def _repr_mimebundle_(self, **kwargs):
         if self._previewable:
-            from IPython.display import display
             from .renderable import Preview
             plaintext = repr(self)
             if len(plaintext) > 110:
@@ -57,3 +56,11 @@ class ThreeWidget(Widget):
             }
         else:
             return super(ThreeWidget, self)._repr_mimebundle_(**kwargs)
+
+    def _ipython_display_(self, **kwargs):
+        if self._previewable:
+            from IPython.display import display
+            from .renderable import Preview
+            return display(Preview(self), **kwargs)
+        else:
+            return super(ThreeWidget, self)._ipython_display_(**kwargs)
