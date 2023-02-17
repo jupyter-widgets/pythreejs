@@ -197,8 +197,8 @@ class RenderableView extends widgets.DOMWidgetView {
         }
     }
 
-    processPhosphorMessage(msg) {
-        widgets.DOMWidgetView.prototype.processPhosphorMessage.call(this, msg);
+    _processLuminoMessage(msg, _super) {
+        _super.call(this, msg);
         switch (msg.type) {
         case 'after-attach':
             this.el.addEventListener('contextmenu', this, true);
@@ -207,6 +207,14 @@ class RenderableView extends widgets.DOMWidgetView {
             this.el.removeEventListener('contextmenu', this, true);
             break;
         }
+    }
+
+    processPhosphorMessage(msg) {
+        this._processLuminoMessage(msg, widgets.DOMWidgetView.prototype.processPhosphorMessage);
+    }
+
+    processLuminoMessage(msg) {
+        this._processLuminoMessage(msg, widgets.DOMWidgetView.prototype.processLuminoMessage);
     }
 
     handleEvent(event) {
