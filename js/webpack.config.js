@@ -1,6 +1,6 @@
 const path = require('path');
 
-const externals = ['@jupyter-widgets/base', 'three'];
+const externals = ['@jupyter-widgets/base', 'three', 'module'];
 
 module.exports = [
     {
@@ -17,11 +17,12 @@ module.exports = [
     },
     {
         // jupyter-threejs bundle for the notebook
-        entry: './src/index.js',
+        entry: ['./amd-public-path.js', './src/index.js'],
         output: {
             filename: 'index.js',
             path: path.resolve(__dirname, '..', 'pythreejs', 'static'),
-            libraryTarget: 'amd'
+            libraryTarget: 'amd',
+            publicPath: '', // Set in amd-public-path.js
         },
         devtool: 'source-map',
         externals: externals,
@@ -32,14 +33,15 @@ module.exports = [
     },
     {
         // embeddable jupyter-threejs bundle (e.g. for docs)
-        entry: './src/index.js',
+        entry: ['./amd-public-path.js', './src/index.js'],
         output: {
             filename: 'index.js',
             path: path.resolve(__dirname, 'dist'),
             library: 'jupyter-threejs',
-            libraryTarget: 'amd'
+            libraryTarget: 'amd',
+            publicPath: '', // Set in amd-public-path.js
         },
-        externals: ['@jupyter-widgets/base'],
+        externals: ['@jupyter-widgets/base', 'module'],
         resolve: {
             extensions: [ '.autogen.js', '.js' ]
         },
