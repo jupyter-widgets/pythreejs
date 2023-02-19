@@ -17,7 +17,7 @@ module.exports = [
     },
     {
         // jupyter-threejs bundle for the notebook
-        entry: ['./amd-public-path.js', './lib/index.js'],
+        entry: ['./amd-public-path.js', './src/index.js'],
         output: {
             filename: 'index.js',
             path: path.resolve(__dirname, '..', 'pythreejs', 'static'),
@@ -33,7 +33,7 @@ module.exports = [
     },
     {
         // embeddable jupyter-threejs bundle (e.g. for docs)
-        entry: ['./amd-public-path.js', './lib/index.js'],
+        entry: ['./amd-public-path.js', './src/index.js'],
         output: {
             filename: 'index.js',
             path: path.resolve(__dirname, 'dist'),
