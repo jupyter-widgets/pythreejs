@@ -1,6 +1,5 @@
 var _ = require('underscore');
 var widgets = require('@jupyter-widgets/base');
-var $ = require('jquery');
 var Promise = require('bluebird');
 
 var pkgName = require('../../package.json').name;
@@ -52,6 +51,7 @@ class RenderableModel extends widgets.DOMWidgetModel {
 
     initialize(attributes, options) {
         widgets.DOMWidgetModel.prototype.initialize.apply(this, arguments);
+        this.boundTick = this.tick.bind(this);
 
         this.createPropertiesArrays();
         ThreeModel.prototype.setupListeners.call(this);
@@ -132,10 +132,10 @@ class RenderableModel extends widgets.DOMWidgetModel {
                 var canvas;
                 if (view.isFrozen) {
                     canvas = document.createElement('canvas');
-                    canvas.width = view.$frozenRenderer.width();
-                    canvas.height = view.$frozenRenderer.height();
+                    canvas.width = view.frozenRenderer.width;
+                    canvas.height = view.frozenRenderer.height;
                     var ctx = canvas.getContext('2d');
-                    ctx.drawImage(view.$frozenRenderer[0], 0, 0);
+                    ctx.drawImage(view.frozenRenderer, 0, 0);
                 } else {
                     canvas = view.renderer.domElement;
                 }
@@ -191,7 +191,7 @@ class RenderableView extends widgets.DOMWidgetView {
     remove() {
         super.remove();
 
-        this.$el.empty();
+        this.el.replaceChildren();
         if (!this.isFrozen) {
             this.teardownViewer();
         }
@@ -234,8 +234,8 @@ class RenderableView extends widgets.DOMWidgetView {
         if (this.renderer) {
             candidates.push(this.renderer.domElement);
         }
-        if (this.$frozenRenderer) {
-            candidates.push(this.$frozenRenderer[0]);
+        if (this.frozenRenderer) {
+            candidates.push(this.frozenRenderer);
         }
         if (candidates.indexOf(event.target) !== -1) {
             event.preventDefault();
@@ -282,7 +282,8 @@ class RenderableView extends widgets.DOMWidgetView {
         var height = this.model.get('_height');
         if (this.isFrozen) {
             // Set size of frozen element
-            this.$frozenRenderer.width(width).height(height);
+            this.frozenRenderer.width = width;
+            this.frozenRenderer.height = height;
         } else {
             this.renderer.setSize(width, height);
         }
@@ -403,9 +404,9 @@ class RenderableView extends widgets.DOMWidgetView {
 
         this.isFrozen = false;
 
-        if(this.$frozenRenderer) {
-            this.$frozenRenderer.off('mouseenter');
-            this.$frozenRenderer = null;
+        if(this.frozenRenderer) {
+            this.frozenRenderer.removeEventListener('mouseenter', this.boundTick);
+            this.frozenRenderer = null;
         }
 
         this.acquireRenderer();
@@ -428,10 +429,9 @@ class RenderableView extends widgets.DOMWidgetView {
             config,
             this.onRendererReclaimed.bind(this));
 
-        this.$renderer = $(this.renderer.domElement);
-        this.$el.empty().append(this.$renderer);
+        this.el.replaceChildren(this.renderer);
 
-        this.$el.css('display', 'block');
+        this.el.style.display = 'block';
 
         this.updateSize();
 
@@ -450,49 +450,48 @@ class RenderableView extends widgets.DOMWidgetView {
 
         this.debug('ThreeView.freeze(id=' + this.renderer.poolId + ')');
 
-        this.$el.empty().append('<img src="' + this.renderer.domElement.toDataURL() + '" />');
+        const frozen = document.createElement('img');
+        frozen.src = this.renderer.domElement.toDataURL();
+        this.el.replaceChildren(frozen);
 
         this.teardownViewer();
-        this.$frozenRenderer = this.$el.find('img');
+        this.frozenRenderer = frozen;
 
         // Ensure the image gets set the right size:
         this.updateSize();
 
         if (this.controls) {
-            this.$frozenRenderer.on('mouseenter', _.bind(function() {
-                this.debug('frozenRenderer.mouseenter');
-                this.tick(); // renderer will be acquired by renderScene
-            }, this));
+            this.frozenRenderer.addEventListener('mouseenter', this.boundTick);
         }
 
     }
 
-    teardownViewer() {
+    onFrozenMouseEnter() {
+        this.debug('frozenRenderer.mouseenter');
+        this.tick(); // renderer will be acquired by renderScene
+    }
 
-        this.$renderer.off('mouseenter');
-        this.$renderer.off('mouseleave');
+    teardownViewer() {
 
         this.isFrozen = true;
         RendererPool.release(this.renderer);
 
-        this.$renderer = null;
         this.renderer = null;
 
         if (this.controls) {
             this.disableControls();
         }
 
-        this.$el.css('margin-bottom', 'auto');
+        this.el.style.marginBottom = 'auto';
 
     }
 
     enableControls() {
         this.debug('Enable controls');
-        this.boundTick = this.tick.bind(this);
         var that = this;
         this.controls.forEach(function(control) {
             control.enabled = true;
-            control.connectEvents(that.$renderer[0]);
+            control.connectEvents(that.renderer);
             control.addEventListener('change', that.boundTick);
         });
     }
