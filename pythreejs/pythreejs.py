@@ -231,7 +231,7 @@ def make_text(text, position=(0, 0, 0), height=1):
 
 def height_texture(z, colormap='viridis'):
     """Create a texture corresponding to the heights in z and the given colormap."""
-    from matplotlib import cm
+    from matplotlib import colormaps as cm
     from skimage import img_as_ubyte
 
     colormap = cm.get_cmap(colormap)
