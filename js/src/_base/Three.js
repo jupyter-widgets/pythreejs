@@ -568,8 +568,7 @@ class ThreeModel extends widgets.WidgetModel {
 
     // Euler
     convertEulerModelToThree(v) {
-        // The float conversions will ignore the "XYZ" order strings
-        return new THREE.Euler().fromArray(v.map(this.convertFloatModelToThree));
+        return new THREE.Euler().fromArray(v.map((e, i) => i < 3 ? this.convertFloatModelToThree(e) : e));
     }
 
     convertEulerThreeToModel(v) {
